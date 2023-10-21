@@ -108,11 +108,8 @@ namespace System.Windows.Input.StylusPlugIns
             { 
                 get { return _strokeNodeIterator; }
                 set 
-                { 
-                    if (value == null) 
-                    {
-                        throw new ArgumentNullException("StrokeNodeIterator");
-                    }
+                {
+                    ArgumentNullException.ThrowIfNull(value);
                     _strokeNodeIterator = value; 
                 }
             }
@@ -519,7 +516,8 @@ namespace System.Windows.Input.StylusPlugIns
                 // See if we are done transitioning this stroke!!
                 if (si.StrokeHV.Clip == null)
                 {
-                    TransitionComplete(si);
+                    // Getting _applicationDispatcher is safe, because this runs in main UI thread.
+                    TransitionComplete(si, _applicationDispatcher);
                     _renderCompleteStrokeInfo = null;
                 }
                 else
@@ -601,12 +599,12 @@ namespace System.Windows.Input.StylusPlugIns
                         else
                         {
                             Debug.Assert(_waitingForRenderComplete, "We were expecting to be waiting for a RenderComplete to call our OnRenderComplete, we might never reset and get flashing strokes from here on out");
-                            TransitionComplete(si); // We're done
+                            TransitionComplete(si, dispatcher); // We're done
                         }
                     }
                     else
                     {
-                        TransitionComplete(si); // We're done
+                        TransitionComplete(si, dispatcher); // We're done
                     }
                     return null;
                 },
@@ -696,7 +694,7 @@ namespace System.Windows.Input.StylusPlugIns
             TransitionStrokeVisuals(si, !targetVerified);
         }
 
-        private void OnInternalRenderComplete(object sender, EventArgs e)
+        private void  OnInternalRenderComplete(object sender, EventArgs e)
         {
             // First unhook event handler
             MediaContext.From(_applicationDispatcher).RenderComplete -= _onRenderComplete;
@@ -746,10 +744,7 @@ namespace System.Windows.Input.StylusPlugIns
                                         Geometry geometry, 
                                         Brush fillBrush)
         {
-            if (drawingContext == null)
-            {
-                throw new ArgumentNullException("drawingContext");
-            }
+            ArgumentNullException.ThrowIfNull(drawingContext);
             drawingContext.DrawGeometry(fillBrush, null, geometry);
         }
         
@@ -1022,10 +1017,10 @@ namespace System.Windows.Input.StylusPlugIns
 
 
         // Removes ref from DynamicRendererHostVisual.
-        void TransitionComplete(StrokeInfo si)
+        void TransitionComplete(StrokeInfo si, Dispatcher applicationDispatcher)
         {
             // make sure lock does not cause reentrancy on application thread!
-            using(_applicationDispatcher.DisableProcessing())
+            using(applicationDispatcher.DisableProcessing())
             {
                 lock(__siLock)
                 {
@@ -1074,9 +1069,8 @@ namespace System.Windows.Input.StylusPlugIns
             }
             set // (called in UIContext)
             {
-                if (value == null)
-                    throw new ArgumentNullException("value");
-                
+                ArgumentNullException.ThrowIfNull(value);
+
                 _drawAttrsSource = value;
 
                 OnDrawingAttributesReplaced();

@@ -46,7 +46,7 @@ internal class StorageInfoCore
         safeIStorage = storage;
         validEnumerators = new Hashtable();
         // Storage and Stream names: we preserve casing, but do case-insensitive comparison (Native CompoundFile API behavior)
-        elementInfoCores = new Hashtable(CU.StringCaseInsensitiveComparer);
+        elementInfoCores = new Hashtable(StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -281,12 +281,10 @@ public class StorageInfo
         CheckDisposedStatus();
 
         //check the arguments
-        if( null == name )
-            throw new ArgumentNullException("name");
+        ArgumentNullException.ThrowIfNull(name);
 
         // Stream names: we preserve casing, but do case-insensitive comparison (Native CompoundFile API behavior)
-        if (((IEqualityComparer) CU.StringCaseInsensitiveComparer).Equals(name,
-                    EncryptedPackageEnvelope.PackageStreamName))
+        if (string.Equals(name, EncryptedPackageEnvelope.PackageStreamName, StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException(SR.Format(SR.StreamNameNotValid,name));
 
         //create a new streaminfo object
@@ -392,10 +390,9 @@ public class StorageInfo
     public StreamInfo GetStreamInfo(string name)
     {
         CheckDisposedStatus();
-        
-         //check the arguments
-        if( null == name )
-            throw new ArgumentNullException("name");
+
+        //check the arguments
+        ArgumentNullException.ThrowIfNull(name);
 
         StreamInfo streamInfo = new StreamInfo(this, name);
         if (streamInfo.InternalExists())
@@ -432,11 +429,10 @@ public class StorageInfo
     public void DeleteStream(string name)
     {
         CheckDisposedStatus();
-        
-         //check the arguments
-        if( null == name )
-            throw new ArgumentNullException("name");
-        
+
+        //check the arguments
+        ArgumentNullException.ThrowIfNull(name);
+
         StreamInfo streamInfo = new StreamInfo(this, name);
         if (streamInfo.InternalExists())
         {
@@ -452,11 +448,10 @@ public class StorageInfo
     public StorageInfo CreateSubStorage( string name )
     {
         CheckDisposedStatus();
-        
-         //check the arguments
-        if( null == name )
-            throw new ArgumentNullException("name");
-        
+
+        //check the arguments
+        ArgumentNullException.ThrowIfNull(name);
+
         return CreateStorage(name);
     }
 
@@ -499,9 +494,8 @@ public class StorageInfo
     {
         CheckDisposedStatus();
 
-         //check the arguments
-        if( null == name )
-            throw new ArgumentNullException("name");
+        //check the arguments
+        ArgumentNullException.ThrowIfNull(name);
 
         StorageInfo storageInfo = new StorageInfo(this, name);
         if (storageInfo.InternalExists(name))
@@ -906,8 +900,7 @@ public class StorageInfo
         while( 0 < actual && !nameFound )
         {
             // Stream names: we preserve casing, but do case-insensitive comparison (Native CompoundFile API behavior)
-            if(((IEqualityComparer) CU.StringCaseInsensitiveComparer).Equals(streamName,
-                                            statStg.pwcsName))
+            if (string.Equals(streamName, statStg.pwcsName, StringComparison.OrdinalIgnoreCase))
             {
                 nameFound = true;
             }
