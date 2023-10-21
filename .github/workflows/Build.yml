@@ -14,8 +14,8 @@ jobs:
     #   with:
     #     global-json-file: global.json
     #     cache: true
-    - name: Setup MSBuild.exe
-      uses: warrenbuckley/Setup-MSBuild@v1
+    # - name: Setup MSBuild.exe
+    #   uses: warrenbuckley/Setup-MSBuild@v1
     - name: Build WPF
       run: .\build.cmd -pack -ci -configuration Debug -prepareMachine /p:Platform=x86
     - name: Push
