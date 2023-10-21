@@ -9,11 +9,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        global-json-file: global.json
-        cache: true
+    # - name: Setup .NET
+    #   uses: actions/setup-dotnet@v3
+    #   with:
+    #     global-json-file: global.json
+    #     cache: true
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
     - name: Build WPF
       run: .\build.cmd -pack -ci -configuration Debug -prepareMachine /p:Platform=x86
     - name: Push
