@@ -26,11 +26,11 @@ namespace Microsoft.Windows.Controls
 namespace System
 #endif
 {
-    internal partial class SR :
+    internal partial class SR
 #if WINDOWS_BASE
-         global::WindowsBase.Resources.Strings
+         : global::WindowsBase.Resources.Strings
 #elif SYSTEM_XAML
-         System.Xaml.Resources.Strings
+         : System.Xaml.Resources.Strings
 #endif
     {
     }
