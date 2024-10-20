@@ -1423,9 +1423,12 @@
   <ItemGroup>
     <!-- required for internals access -->
     <ProjectReference Include="$(WpfSourceDir)WindowsBase\WindowsBase.csproj" />
-    <ProjectReference Include="$(WpfSourceDir)DirectWriteForwarder\DirectWriteForwarder.vcxproj">
+    <!--<ProjectReference Include="$(WpfSourceDir)DirectWriteForwarder\DirectWriteForwarder.vcxproj">
       <UndefineProperties>TargetFramework;TargetFrameworks</UndefineProperties>
-    </ProjectReference>
+    </ProjectReference>-->
+    <Reference Include="DirectWriteForwarder">
+      <HintPath>$(WpfReferencePath)DirectWriteForwarder.dll</HintPath>
+    </Reference>
     <ProjectReference Include="$(WpfSourceDir)System.Xaml\System.Xaml.csproj" />
     <ProjectReference Include="$(WpfSourceDir)System.Windows.Input.Manipulations\System.Windows.Input.Manipulations.csproj" />
     <ProjectReference Include="$(WpfSourceDir)UIAutomation\UIAutomationTypes\UIAutomationTypes.csproj" />
@@ -1475,7 +1478,7 @@
         to place these hints in an assembly that has a reference to the corresponding
         C++/CLI assembly.
 
-             PresentationCore -> DirectWriteFowarder
+             PresentationCore -> DirectWriteFowarder                                 
              ReachFramework -> System.Printing
     -->
     <EmbeddedResource Condition="Exists('ILLinkTrim.xml')" Include="ILLinkTrim.xml">
