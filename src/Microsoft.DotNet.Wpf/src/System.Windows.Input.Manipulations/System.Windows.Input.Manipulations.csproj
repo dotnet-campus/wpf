@@ -3,6 +3,7 @@
     
     <EnableDefaultItems>false</EnableDefaultItems>
     <Platforms>AnyCPU;x64;arm64</Platforms>
+    <DefineConstants>$(DefineConstants);System_Windows_Input_Manipulations</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,10 +47,26 @@
     <NetCoreReference Include="System.Runtime.InteropServices" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <ProjectReference Include="$(WpfSourceDir)System.Windows.Input.Manipulations\ref\System.Windows.Input.Manipulations-ref.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>-->
+
+  <ItemGroup>
+    <Compile Include="$(WpfSourceDir)System.Xaml\PatchCode\SR.cs" Link="PatchCode\SR.cs" />
+    <Compile Include="Resources\Strings.Designer.cs" />
+
+    <Compile Update="Resources\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

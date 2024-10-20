@@ -31,6 +31,8 @@ namespace System
          : global::WindowsBase.Resources.Strings
 #elif SYSTEM_XAML
          : System.Xaml.Resources.Strings
+#elif System_Windows_Input_Manipulations
+         : System.Windows.Input.Manipulations.Resources.Strings
 #endif
     {
     }
