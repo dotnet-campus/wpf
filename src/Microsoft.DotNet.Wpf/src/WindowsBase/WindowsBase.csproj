@@ -447,7 +447,7 @@
   <!-- <Import Project="$(WpfCodeGenDir)DesignTimeTextTemplating.targets" /> -->
 
   <ItemGroup>
-    <Compile Include="..\System.Xaml\PatchCode\SR.cs" Link="PatchCode\SR.cs" />
+    <Compile Include="$(WpfSourceDir)System.Xaml\PatchCode\SR.cs" Link="PatchCode\SR.cs" />
     <Compile Include="Resources\Strings.Designer.cs" />
     <Compile Include="PatchCode\AccessibilityCode.cs" />
     <Compile Include="PatchCode\NativeCode.cs" />
