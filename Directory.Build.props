@@ -30,6 +30,10 @@
           Condition="!Exists('$(WpfArcadeSdkProps)') Or !Exists('$(WpfArcadeSdkTargets)')"/>-->
 
   <PropertyGroup>
+    <WpfReferencePath>C:\lindexi\Lib\Microsoft.WindowsDesktop.App\</WpfReferencePath>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <WpfSourceDir>$(MSBuildThisFileDirectory)src\Microsoft.DotNet.Wpf\src\</WpfSourceDir>
     <WpfSharedDir>$(MSBuildThisFileDirectory)src\Microsoft.DotNet.Wpf\src\Shared\</WpfSharedDir>
     <WpfCommonDir>$(MSBuildThisFileDirectory)src\Microsoft.DotNet.Wpf\src\Common\</WpfCommonDir>
