@@ -12,6 +12,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <AssemblyKey>SilverlightExtension</AssemblyKey>
+    <IsWPF>true</IsWPF>
+  </PropertyGroup>
+
+  <PropertyGroup>
     
     <EnableDefaultItems>false</EnableDefaultItems>
   </PropertyGroup>
@@ -358,6 +363,11 @@
     <Compile Include="System\Windows\LocalizabilityAttribute.cs" />
     <Compile Include="System\Windows\LocalizationCategory.cs" />
     <Compile Include="System\Windows\MeasureData.cs" />
+    <Compile Include="System\Windows\Media\Resources\ColorProfiles\ColorProfiles.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ColorProfiles.resx</DependentUpon>
+    </Compile>
     <Compile Include="System\Windows\Modifiability.cs" />
     <Compile Include="System\Windows\MouseCaptureWithinProperty.cs" />
     <Compile Include="System\Windows\MouseOverProperty.cs" />
@@ -1447,6 +1457,7 @@
       <GenerateSource>false</GenerateSource>
       <XlfInput>false</XlfInput>
       <ManifestResourceName>ColorProfiles</ManifestResourceName>
+      <LastGenOutput>ColorProfiles.Designer.cs</LastGenOutput>
     </EmbeddedResource>
 
     <!--
