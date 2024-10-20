@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsBase", "src\Microsof
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfDemo", "Demo\WpfDemo\WpfDemo.csproj", "{B1EB6ECF-58DA-498F-9A87-C0EDEBA0187F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsFormsIntegration", "src\Microsoft.DotNet.Wpf\src\WindowsFormsIntegration\WindowsFormsIntegration.csproj", "{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{B1EB6ECF-58DA-498F-9A87-C0EDEBA0187F}.Release|arm64.Build.0 = Release|Any CPU
 		{B1EB6ECF-58DA-498F-9A87-C0EDEBA0187F}.Release|x64.ActiveCfg = Release|Any CPU
 		{B1EB6ECF-58DA-498F-9A87-C0EDEBA0187F}.Release|x64.Build.0 = Release|Any CPU
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Debug|arm64.ActiveCfg = Debug|arm64
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Debug|arm64.Build.0 = Debug|arm64
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Debug|x64.ActiveCfg = Debug|x64
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Debug|x64.Build.0 = Debug|x64
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Release|arm64.ActiveCfg = Release|arm64
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Release|arm64.Build.0 = Release|arm64
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Release|x64.ActiveCfg = Release|x64
+		{1B7A4CB7-DE0A-4161-BA55-0335807B11DF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
