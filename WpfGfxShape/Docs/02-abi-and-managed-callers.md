@@ -38,7 +38,7 @@
 ### 1.2 明确不在本轮实施
 
 - 不修改 WPF 原生或托管源码、项目文件和生成输入。
-- 不修改 `WpfGfxShape/Code`，不创建 Native AOT 项目，不实现导出原型。
+- 不修改 `WpfGfxShape/Code/WpfGfxShape`，不创建 Native AOT 项目，不实现导出原型。
 - 不构建、不运行测试、不预处理 `.def`、不枚举二进制导入/导出。
 - 不使用 PowerShell、cmd、bash、Python、dotnet、msbuild、dumpbin、link 或任何脚本/命令替代方式。
 

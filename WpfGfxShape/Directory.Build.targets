@@ -1,2 +1,12 @@
 <Project>
+  <PropertyGroup>
+    <WpfGfxShapeLocalBuildTargetsImported>true</WpfGfxShapeLocalBuildTargetsImported>
+  </PropertyGroup>
+
+  <Target Name="ValidateWpfGfxShapeBuildIsolation" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(WpfGfxShapeLocalBuildPropsImported)' != 'true'"
+           Text="The local WpfGfxShape Directory.Build.props was not imported." />
+    <Error Condition="'$(WpfArcadeSdkPath)' != '' Or '$(WpfArcadeSdkProps)' != '' Or '$(WpfArcadeSdkTargets)' != '' Or '$(TestRunnerName)' == 'XUnitV3'"
+           Text="The isolated WpfGfxShape build unexpectedly imported the WPF Arcade build configuration." />
+  </Target>
 </Project>

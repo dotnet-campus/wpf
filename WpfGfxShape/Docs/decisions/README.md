@@ -8,6 +8,7 @@
 |---|---|---|---|
 | `DEC-0001` | Accepted | “整个 wpfgfx”的生产完成分母 | [`DEC-0001-production-scope.md`](DEC-0001-production-scope.md) |
 | `DEC-0002` | Accepted | Silk.NET 按 API 家族经 spike 裁决采用形态 | [`DEC-0002-silknet-adoption-boundary.md`](DEC-0002-silknet-adoption-boundary.md) |
+| `DEC-0003` | Accepted | 发布后 ABI 验证以托管 P/Invoke 集成测试为主，删除 C++ NativeCaller | [`DEC-0003-managed-pinvoke-abi-integration-tests.md`](DEC-0003-managed-pinvoke-abi-integration-tests.md) |
 
 ## 尚待裁决的 P0
 

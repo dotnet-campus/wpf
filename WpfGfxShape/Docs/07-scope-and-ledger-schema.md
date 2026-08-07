@@ -26,7 +26,7 @@
 | 调试扩展 | `exts/exts.vcxproj`（`wpfx`）与 `DbgXHelper` | 否 | 建立 `Sidecar` 哨兵；生成命令布局可作为一致性证据 |
 | 相邻部署组件 | `DirectWriteForwarder`、`PresentationNative`、D3DCompiler redist 等 | 否 | 不翻译进本项目；记录共存、加载和 E2E 环境依赖 |
 | 原 WPF 项目/源码 | 全部现有 WPF C++/C# 产品项目 | 否，且只读 | 不引用、不链接、不复制进新生产项目；只作事实和差分基线 |
-| 测试与 harness | 托管测试、native caller、差分/E2E harness | 不计生产项目数量 | 独立项目/承载；必须进入证据和工作包清单 |
+| 测试与 harness | 托管单元测试、发布后托管 P/Invoke ABI 集成测试、差分/E2E harness | 不计生产项目数量 | 独立项目/承载；必须进入证据和工作包清单；不创建 `Tests/NativeCaller` |
 
 若后续证据表明某文件实际进入最终 DLL闭包，必须先新增 Ledger 记录并更新本表，再开始翻译。任何移出生产分母的决定均需要用户明确批准。
 

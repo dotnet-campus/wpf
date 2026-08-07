@@ -2,7 +2,7 @@
 
 > 状态：静态规划基线已收口；15 批次、Ledger、横切门禁和首个真实实现候选已锁定，后续按构建、二进制和运行证据增量维护  
 > 适用范围：`src/Microsoft.DotNet.Wpf/src/WpfGfx`、其直接构建/生成依赖、wpfgfx ABI 实现和必要托管调用边界  
-> 新生产代码根目录：`WpfGfxShape/Code`  
+> 新生产代码根目录：`WpfGfxShape/Code/WpfGfxShape`  
 > 上位约束：`WpfGfxShape/Docs/00-migration-charter.md`  
 > 事实基线：`01-native-source-topology.md`、`02-abi-and-managed-callers.md`  
 > 调查底稿：`investigations/03a-generated-model-and-protocol.md`、`investigations/03b-file-ledger-and-batches.md`
@@ -94,7 +94,7 @@
 
 原则上映射到：
 
-`WpfGfxShape/Code/<relative-dir>/<name>.cs`
+`WpfGfxShape/Code/WpfGfxShape/<relative-dir>/<name>.cs`
 
 必须保留：
 
@@ -281,7 +281,7 @@
 
 | 批次 | Ready only when | Done only when |
 |---:|---|---|
-| 0 构建/ABI 骨架 | 章程、拓扑、ABI 静态基线和“不修改 WPF 源码/项目”边界已锁定；目标产物名、架构和唯一最小导出已定义 | 按 `WP-00A...WP-00I` 分包取得各自证据；`WP-00A` 只证明隔离项目/测试/probe/caller 承载，`WP-00B` 才证明 x64 Native AOT publish/export/native call；其它架构、linker/resource、COM、callback/unload、原二进制和 Ledger 各自保持独立门禁，未创建假业务导出 |
+| 0 构建/ABI 骨架 | 章程、拓扑、ABI 静态基线和“不修改 WPF 源码/项目”边界已锁定；目标产物名、架构和唯一最小导出已定义 | 按 `WP-00A...WP-00I` 分包取得各自证据；`WP-00A` 只证明隔离项目、probe 和内部单元测试承载，`WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION` 才证明 x64 Native AOT publish/export/真实托管 P/Invoke；其它架构、linker/resource、COM、callback/unload、原二进制和 Ledger 各自保持独立门禁，未创建假业务导出 |
 | 1 基础类型和错误码 | 批 0 测试承载可用；当前原生/托管实际消费副本已冻结并分别登记 | 标量、错误码、enum、三类 handle、固定 `UInt64`、descriptor/packet/基础 command 布局在目标架构达到规定布局/单元证据；不确定项为 `Blocked` |
 | 2 shared util / DLL 生命周期 | 批 1 的 Win32/ABI 基础可表达；attach、显式卸载和进程终止探针已设计 | 目标 UtilLib/DebugLib/DllUtil 文件逐文件迁移并验证；Native AOT 无法逐字表达的 CRT/DllMain 差异有书面决策；失败和关闭顺序有证据 |
 | 3 common/shared / DynamicCall | 批 1-2 所需内存、错误、锁和生命周期承载可用 | 公共 COM/refcount、内存、CPU/像素基础、缓存和 DelayCall 目标文件达到规定单元/差分状态；每个 owner、锁和动态模块有失败/释放证据 |
@@ -303,7 +303,7 @@
 
 **范围**
 
-- `WpfGfxShape/Code` 下独立 .NET 10 Native AOT 生产项目；
+- `WpfGfxShape/Code/WpfGfxShape/WpfGfxShape.csproj` 独立 .NET 10 Native AOT 生产项目；
 - 独立测试项目；
 - 目录镜像；
 - 当前 DLL 名、架构和导出清单的测试数据；
@@ -866,10 +866,10 @@
 - 创建隔离的 .NET 10 Native AOT 单一生产项目和独立测试项目；
 - 建立 `common`/`core`/`shared` 镜像目录，但不创建业务实现；
 - 验证不继承 WPF 根 props/targets 的构建隔离；
-- 只建立 `WpfGfxShape_NativeAotAbiProbe_v1` 的源文件、内部托管测试和原生 caller 承载；本包可执行 restore、普通 build、托管测试和项目图/导入隔离验证，但**不得**执行或把 Native AOT publish、PE export 检查、`GetProcAddress`/静态 import 调用计入本包完成；这些全部属于 `WP-00B`；
+- 只建立 `WpfGfxShape_NativeAotAbiProbe_v1` 的源文件和内部托管单元测试；本包可执行 restore、普通 build、托管测试和项目图/导入隔离验证，但内部 `Invoke` 测试不得计为最终 ABI 证据；发布后真实 P/Invoke 验证属于 `WP-00B`；
 - 建立按 configuration/RID 隔离的输出、中间目录、文件名、架构、导出、HRESULT/异常和后续布局测试承载。
 
-该包不是 wpfgfx 真实生产逻辑翻译。它不得批量创建 106 个导出，不得返回假 `S_OK`/`E_NOTIMPL` 模拟未迁移功能，不得进入批次 1，不得引用/链接编译原 WPF 源码，不得修改现有 WPF/wpfgfx 项目。其唯一目标是把独立边界和 probe/caller **承载**创建正确；下一唯一工作包应为 `WP-00B-NATIVEAOT-ABI-PROBE-X64`。后续架构、linker/resource、COM、callback、Silk.NET 和原 DLL 基线分别由 14.2 的独立工作包领取。
+该包不是 wpfgfx 真实生产逻辑翻译。它不得批量创建 106 个导出，不得返回假 `S_OK`/`E_NOTIMPL` 模拟未迁移功能，不得进入批次 1，不得引用/链接编译原 WPF 源码，不得修改现有 WPF/wpfgfx 项目。其唯一目标是把独立边界、probe 和内部单元测试承载创建正确；下一唯一工作包应为 `WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION`。后续架构、linker/resource、COM、callback、Silk.NET 和原 DLL 基线分别由 14.2 的独立工作包领取。
 
 ### 14.2 批次 0 后续独立工作包
 
@@ -877,10 +877,10 @@
 
 | 工作包 | 唯一目标 | Done 门禁 | Do not start / 明确禁止 |
 |---|---|---|---|
-| `WP-00B-NATIVEAOT-ABI-PROBE-X64` | 完成 x64 Debug/Release 的 Native AOT shared-library probe、动态/静态 native caller 与异常封锁 | 两配置 publish；精确 DLL/PE/export；caller 成功/失败/异常/并发测试；无 AOT/trim/interop warning 压制 | `WP-00A` 未证明隔离；不得加入任何生产导出 |
-| `WP-00C-ARCHITECTURE-AND-X86-DECISION` | 验证 ARM64，并以官方/目标 SDK 证据裁决 Windows x86 | ARM64 真实机器矩阵；x86 支持结论、stdcall/未装饰名探针或明确 `Blocked` + 用户裁决 | 不得从普通 `win-x86` RID 推断 AOT；不得静默删除 Win32 |
+| `WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION` | 完成 x64 Debug/Release 的 Native AOT shared-library probe 与发布后托管 P/Invoke ABI 集成测试 | 两配置 publish；精确 DLL/PE/export；独立托管子进程成功/失败/异常/并发测试；路径与 SHA-256；无 AOT/trim/interop warning 压制 | `WP-00A` 未证明隔离；不得加入任何生产导出；不得恢复 `Tests/NativeCaller` |
+| `WP-00C-ARCHITECTURE-AND-X86-DECISION` | 验证 ARM64，并以官方/目标 SDK 证据裁决 Windows x86 | ARM64 真实机器托管 P/Invoke 矩阵；x86 支持结论或明确 `Blocked` + 用户裁决 | 不得从普通 `win-x86` RID 推断 AOT；不得静默删除 Win32 |
 | `WP-00D-LINKER-RESOURCE-VERSION-SPIKE` | 验证 `.def`/import library/`.res`/VERSIONINFO/ETW/shader/data export 能力 | DLL/LIB/EXP/PDB、resource ID/type/hash、版本字段和 `g_fNoMeterChecks` 可行性有产物证据 | 不迁移 `MILLoadResource` 或生产 shader 逻辑；不依赖未记录 ILC 内部开关进入基线 |
-| `WP-00E-COM-VTABLE-SPIKE` | 用一个受控 IUnknown-like 对象验证 AOT 向 native caller 提供 vtable | QI/AddRef/Release、IID、vtable 顺序、GC root、并发和各架构 caller 通过 | 不开始 `MILCreateFactory`、media、bitmap 等生产对象；不把 GC 地址当 COM 指针 |
+| `WP-00E-COM-VTABLE-SPIKE` | 用一个受控 IUnknown-like 对象验证 AOT 向托管 P/Invoke 消费者提供 vtable | QI/AddRef/Release、IID、vtable 顺序、GC root、并发和各架构托管集成测试通过 | 不开始 `MILCreateFactory`、media、bitmap 等生产对象；不把 GC 地址当 COM 指针 |
 | `WP-00F-CALLBACK-LIFECYCLE-UNLOAD-SPIKE` | 验证同步/长期 callback、双运行时 token、线程停止、process exit 与受支持卸载语义 | CoreCLR→AOT callback、异常、detach、在途计数、子进程退出及官方支持范围有证据 | 不假定 `FreeLibrary` 受支持；不把 CoreCLR `GCHandle` 交给 AOT 解释 |
 | `WP-00G-SILKNET-ADOPTION-SPIKE` | 决定本地 Silk.NET 的可复用形态 | D3D9/D3D9Ex 代表 API 的布局/调用约定/AOT/x64/ARM64/x86 结果；整体引用、冻结源码或局部修正版三者有书面裁决 | 不因存在绑定就宣称覆盖；D3D9 COM Cdecl 风险未解决前不得进入 HW 批次 |
 | `WP-00H-ORIGINAL-BINARY-BASELINE` | 冻结原 DLL 的实际二进制与行为基线 | 每架构/配置的 export/import/resource/version/symbol/hash；106/107/99/8/7 与数据导出状态回写 | 没有可追溯原工件时不得做候选 DLL 二进制兼容声明 |
@@ -899,8 +899,8 @@
 | 配对声明 | `src/Microsoft.DotNet.Wpf/src/WpfGfx/core/geometry/ExactArithmetic.h` |
 | 语义前置头 | `src/Microsoft.DotNet.Wpf/src/WpfGfx/core/geometry/BaseTypes.h` |
 | PCH/聚合证据 | `src/Microsoft.DotNet.Wpf/src/WpfGfx/core/geometry/precomp.hpp`、`geometry.h`；只登记 PCH 暴露面，不把整个 geometry 目录并入本包 |
-| 拟议 C# 主路径 | `WpfGfxShape/Code/core/geometry/ExactArithmetic.cs` |
-| 前置 C# 类型路径 | `WpfGfxShape/Code/core/geometry/BaseTypes.cs`，应在批次 1/本包 ready 前完成并验证 enum/整数范围语义 |
+| 拟议 C# 主路径 | `WpfGfxShape/Code/WpfGfxShape/core/geometry/ExactArithmetic.cs` |
+| 前置 C# 类型路径 | `WpfGfxShape/Code/WpfGfxShape/core/geometry/BaseTypes.cs`，应在批次 1/本包 ready 前完成并验证 enum/整数范围语义 |
 | 主要符号 | `CZBase`、`CZ64`、`CZ128`、`CZ192`，以及原文件局部 `Ea*` digit 算法 |
 | 直接消费者 | `core/geometry/LineSegmentIntersection.cpp`；消费者后置，不随本包迁移 |
 | ABI/循环/线程 | 无已发现平面导出、COM、回调、线程、锁、生成协议或已知循环组；不能据此宣称无 PCH/公共运行依赖 |
@@ -909,9 +909,9 @@
 
 | Ledger ID | Native path / role | Kind | Proposed C# mapping | Status | 当前 blocker |
 |---|---|---|---|---|---|
-| `GEO-BASETYPES-H` | `src/Microsoft.DotNet.Wpf/src/WpfGfx/core/geometry/BaseTypes.h` | Header | `WpfGfxShape/Code/core/geometry/BaseTypes.cs` | `Investigated` | 批次 0-1 测试承载、enum/IEEE 754 整数范围验证 |
-| `GEO-EXACTARITH-H` | `src/Microsoft.DotNet.Wpf/src/WpfGfx/core/geometry/ExactArithmetic.h` | Header | 声明映射到 `WpfGfxShape/Code/core/geometry/ExactArithmetic.cs` | `Investigated` | `GEO-BASETYPES-H`、断言/内存原语承载 |
-| `GEO-EXACTARITH-CPP` | `src/Microsoft.DotNet.Wpf/src/WpfGfx/core/geometry/ExactArithmetic.cpp` | Implementation | `WpfGfxShape/Code/core/geometry/ExactArithmetic.cs` | `Investigated` | 批次 0-3 done、原生/C# 差分入口 |
+| `GEO-BASETYPES-H` | `src/Microsoft.DotNet.Wpf/src/WpfGfx/core/geometry/BaseTypes.h` | Header | `WpfGfxShape/Code/WpfGfxShape/core/geometry/BaseTypes.cs` | `Investigated` | 批次 0-1 测试承载、enum/IEEE 754 整数范围验证 |
+| `GEO-EXACTARITH-H` | `src/Microsoft.DotNet.Wpf/src/WpfGfx/core/geometry/ExactArithmetic.h` | Header | 声明映射到 `WpfGfxShape/Code/WpfGfxShape/core/geometry/ExactArithmetic.cs` | `Investigated` | `GEO-BASETYPES-H`、断言/内存原语承载 |
+| `GEO-EXACTARITH-CPP` | `src/Microsoft.DotNet.Wpf/src/WpfGfx/core/geometry/ExactArithmetic.cpp` | Implementation | `WpfGfxShape/Code/WpfGfxShape/core/geometry/ExactArithmetic.cs` | `Investigated` | 批次 0-3 done、原生/C# 差分入口 |
 | `GEO-PRECOMP-HPP` | `src/Microsoft.DotNet.Wpf/src/WpfGfx/core/geometry/precomp.hpp` | PCH | 无生产 C# 文件；作为依赖映射 Ledger | `Investigated` | `std.h`、`common/common.h`、`geometry.h` 的公共承载面不得被误并入本包 |
 | `GEO-EXACTARITH-DIFF` | 原生/C# `CZ64/CZ128/CZ192` 差分证据 | TestEvidence | 批次 0 锁定的独立测试项目路径 | `NotInvestigated` | 测试项目尚未创建，原生适配入口尚未验证 |
 

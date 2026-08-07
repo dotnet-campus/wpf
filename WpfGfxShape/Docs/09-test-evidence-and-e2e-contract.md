@@ -6,7 +6,7 @@
 
 ## 1. 目的
 
-本文把 `T0–T5` 与 `E2E-00–E2E-09` 从原则表转为后续可执行的项目、进程、输入、输出和证据契约。实际项目在下一轮及后续工作包创建；本轮不选择未经验证的包版本，不运行测试。
+本文把 `T0–T5` 与 `E2E-00–E2E-09` 从原则表转为后续可执行的项目、进程、输入、输出和证据契约。当前 MSTest 项目已经创建并引用 `MSTest` `4.0.1`；其还原、测试发现和运行结果仍需由后续执行证据确认。
 
 测试的目标不是证明“C# 代码看起来合理”，而是持续证明：原实现与候选实现的 ABI、字节、状态、副作用、线程、所有权和真实 PresentationCore 流程等价。
 
@@ -15,8 +15,9 @@
 ```text
 WpfGfxShape/
   Tests/
-    WpfGfxShape.Tests.csproj           # T1：纯逻辑、布局辅助、manifest/schema
-    NativeCaller/                      # T2：动态/静态 C/C++ caller
+    WpfGfxShape.Tests/
+      WpfGfxShape.Tests.csproj         # T1：MSTest；纯逻辑、布局辅助、manifest/schema
+    AbiIntegration/                    # T2：发布、独立托管子进程、真实 P/Invoke ABI
     NativeBaselineAdapter/             # T3：原实现可观察适配；不改原产品源码
     Differential/                      # T3 编排与结果比较
     ComponentHarness/                  # T4 子系统闭环
@@ -29,21 +30,21 @@ WpfGfxShape/
 
 - 一个生产项目仍是唯一生产构建边界；上述均为独立测试/工具承载。
 - 测试不得 `ProjectReference` 原 WPF项目，也不得递归构建原 WPF。
-- 原实现只能通过冻结的原生 DLL/独立 native adapter 进入差分。
-- ABI/loader/crash/unload 测试必须在原生子进程中运行，不能仅托管调用内部方法。
+- 原实现只能通过冻结的原生 DLL/独立 adapter 进入差分。
+- ABI/loader/crash/unload 测试必须在独立托管子进程中通过真实 P/Invoke 进入发布 DLL，不能仅调用内部普通方法。
+- 测试使用 `NativeLibrary.SetDllImportResolver` 将固定库名解析到发布 DLL 绝对路径，并校验实际模块路径和 SHA-256。
 - PresentationCore E2E 原则上不修改其 MilCore P/Invoke 声明；通过隔离部署和进程边界选择 original/candidate。
 
 ## 3. 测试框架与包版本决策
 
-`WP-00A` 必须根据独立还原证据锁定托管测试框架和版本。选择规则：
+托管测试框架锁定为 MSTest。`WP-00A` 必须根据独立还原证据锁定其包版本。执行规则：
 
-1. 不继承根 `eng/Testing.targets` 的包注入；
-2. 与 .NET 10、AOT 项目引用和当前 IDE Test Explorer 兼容；
-3. 不因追求统一而修改 WPF 原测试项目；
-4. 版本和来源写入局部 package policy 与 evidence manifest；
-5. 若框架选择会影响项目形态，记录 Decision ID。
-
-在 `WP-00A` 之前不把 xUnit/MSTest/NUnit 任一写成已锁定事实。
+1. 当前测试项目显式引用 `MSTest` `4.0.1`；是否还需拆分声明 adapter/SDK 依赖，以实际还原、测试发现和项目求值证据为准；
+2. 不继承根 `eng/Testing.targets` 的包注入；
+3. 与 .NET 10、AOT 项目引用和当前 IDE Test Explorer 兼容；
+4. 不因追求统一而修改 WPF 原测试项目；
+5. 版本和来源写入局部 package policy 与 evidence manifest；
+6. 托管测试项目和测试辅助代码位于 `WpfGfxShape/Tests/WpfGfxShape.Tests`，其它 harness 位于 `WpfGfxShape/Tests` 的独立子目录。
 
 ## 4. 测试运行单元
 
@@ -92,7 +93,7 @@ artifacts/test-results/<work-package>/<run-id>/
 - `Original`：冻结原 `wpfgfx_cor3.dll`；
 - `CandidateProbe`：只有非生产 ABI probe；
 - `CandidateProduction`：按工作包实际已实现能力；
-- `Harness`：native caller/PresentationCore app；
+- `Harness`：托管 ABI 集成测试宿主/PresentationCore app；
 - `Comparator`：不加载被测 DLL，只比较落盘结果。
 
 以下必须一 case 一子进程：
@@ -162,9 +163,10 @@ Comparator 独立读取 original/candidate 结果，应用预先批准的比较�
 
 ### `E2E-00` Native AOT probe
 
-- Harness：动态 C caller；若有受支持 `.lib`，再加静态 caller。
+- Harness：MSTest 编排的独立托管 ABI 集成测试进程。
+- 入口：固定 P/Invoke 库名通过 `NativeLibrary.SetDllImportResolver` 解析到指定 publish DLL 的绝对路径。
 - 输入：probe protocol v1 的 success/error/exception/unknown；并发首次和重复调用。
-- 结果：精确 export、PE、路径、HRESULT、out、异常封锁。
+- 结果：精确 export、PE、预期/实际路径、SHA-256、HRESULT、out、异常封锁。
 - 明确不证明：任何生产导出、COM、渲染或 PresentationCore。
 
 ### `E2E-01` version / minimal COM
@@ -250,7 +252,7 @@ Comparator 独立读取 original/candidate 结果，应用预先批准的比较�
 
 格式：`EVID-<work-package>-<level>-<case>`，例如：
 
-- `EVID-WP-00B-T2-PROBE-X64-DEBUG-DYNAMIC`；
+- `EVID-WP-00B-T2-PROBE-X64-DEBUG-PINVOKE`；
 - `EVID-WP-04A-T3-EXACT-ARITHMETIC-RANDOM`；
 - `EVID-WP-09X-T5-E2E-05-RTB-PIXELS`。
 
@@ -281,8 +283,8 @@ Comparator 独立读取 original/candidate 结果，应用预先批准的比较�
 
 以下留给实际项目/环境证据裁决：
 
-- 托管测试框架和包版本；
-- native caller 使用 `.vcxproj`、CMake 或其它最小独立形态；
+- MSTest、MSTest adapter 和 `Microsoft.NET.Test.Sdk` 的具体包版本；
+- 托管 ABI 集成测试宿主/子进程采用一个还是多个最小 .NET 项目；
 - PresentationCore candidate 隔离加载的具体机制；
 - 大型原 DLL/媒体/图像工件是否提交仓库或保存在受控外部存储；
 - ARM64 与硬件/媒体测试机器供给。

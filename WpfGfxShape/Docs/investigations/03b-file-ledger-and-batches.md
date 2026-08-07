@@ -436,7 +436,7 @@
 ### 4.1 路径映射初始规则
 
 - 原生实现文件原则上对应一个主要 C# 实现文件。
-- `src/Microsoft.DotNet.Wpf/src/WpfGfx/<relative-dir>/<name>.<cpp|cxx|c>` 映射到 `WpfGfxShape/Code/<relative-dir>/<name>.cs`。
+- `src/Microsoft.DotNet.Wpf/src/WpfGfx/<relative-dir>/<name>.<cpp|cxx|c>` 映射到 `WpfGfxShape/Code/WpfGfxShape/<relative-dir>/<name>.cs`。
 - 保留 `common`、`core`、`shared` 及 `fxjit/*`、`control/util`、`sw/swlib`、`util/*` 等层级。
 - 头文件不强制一头一 `.cs`，但其类型/常量/布局若拆到多个 C# 文件，台账必须列出完整映射；不得借拆分重组职责。
 - 同名不同扩展文件必须保持可辨识关系；若 C# 文件名冲突，使用保留原扩展语义的稳定后缀并记录例外。

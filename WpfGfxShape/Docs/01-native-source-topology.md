@@ -546,7 +546,7 @@ DXGI、DWM、D2D、软件光栅器 DLL、GDI 内部入口及若干按需加载�
 初始约束建议，待完整拓扑证据补充：
 
 - 单一 `.csproj` 只统一构建和发布边界，不合并源码职责。
-- `WpfGfxShape/Code` 下生产源码应至少镜像 `common`、`core`、`shared` 三大根边界。
+- `WpfGfxShape/Code/WpfGfxShape` 下生产源码应至少镜像 `common`、`core`、`shared` 三大根边界。
 - 对 `core/fxjit/{Collector,Compiler,PixelShader,Platform}`、`core/control/util`、`core/sw/swlib`、`shared/debug/DebugLib`、`shared/util/{DllUtil,UtilLib}` 保留原层级。
 - 原生实现文件原则上一一对应主要 C# 文件；共享头可对应显式的低层类型/常量/互操作文件，但不得借机抽象重组。
 - 原项目边界可转写为命名空间、目录、内部依赖清单和迁移批次标签，不能被“单项目”解释为扁平化源码。

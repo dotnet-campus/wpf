@@ -3,7 +3,8 @@
 > 状态：强制执行  
 > 适用范围：`WpfGfxShape` 下的全部调查、设计、实现、测试与交接工作  
 > 目标源码：`src/Microsoft.DotNet.Wpf/src/WpfGfx` 及其直接依赖、生成协议和托管调用方  
-> 新代码根目录：`WpfGfxShape/Code`  
+> 新生产代码根目录：`WpfGfxShape/Code/WpfGfxShape`  
+> 新测试代码根目录：`WpfGfxShape/Tests/WpfGfxShape.Tests`  
 > 文档根目录：`WpfGfxShape/Docs`
 
 ## 1. 目标
@@ -64,10 +65,10 @@
 
 初始方案如下，除非后续调查提供反证并形成书面决策，否则不得擅自改变：
 
-- 在 `WpfGfxShape/Code` 下创建完全独立的 .NET 10 生产项目。
+- 生产项目固定为 `WpfGfxShape/Code/WpfGfxShape/WpfGfxShape.csproj`，使用 .NET 10。
 - 生产项目采用 Native AOT 原生库发布能力，并导出兼容 C 函数。
 - 所有迁移后的 wpfgfx 生产逻辑置于同一个 .NET 项目中。
-- 在同一根目录下创建独立测试项目；测试项目不并入 WPF 原仓库既有测试工程。
+- 测试项目固定为 `WpfGfxShape/Tests/WpfGfxShape.Tests/WpfGfxShape.Tests.csproj`，使用 MSTest；测试项目不并入 WPF 原仓库既有测试工程。
 - 本章程中的“单一项目”始终指**一个生产项目**；独立测试项目、原生测试 caller/harness 和文档/基线工件不计入生产项目数量。
 - 新项目应尽量隔离 WPF 仓库的全局构建属性、包版本、目标框架和生成流程，避免被现有大型仓库意外影响。
 - 新项目不得反向修改原 wpfgfx 源码来掩盖新实现缺陷。

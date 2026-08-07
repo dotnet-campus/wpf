@@ -1,9 +1,10 @@
 # .NET 10 Native AOT 共享库与 C 导出调查
 
-> 状态：静态调查完成；仅形成静态证据与待验证设计，不代表已构建、已发布或已运行  
+> 状态：历史静态调查；全文凡要求创建/保留 C++ native caller、验证 `.lib` 链接、纯原生消费者、x86 ESP/名称修饰或以 native caller 作为 ABI/COM/loader/crash 证据的段落，均已由 DEC-0003 作废，不得实施  
 > 目标：评估独立 SDK-style C# 项目以 .NET 10 Native AOT 生成 Windows native shared library，并以薄边界导出与现有 `wpfgfx` 调用方兼容的 C ABI  
 > 写入边界：本轮仅维护本文；不修改任何 WPF 源码、项目配置或 `WpfGfxShape/Code`  
-> 工具边界：绝对禁止 PowerShell、cmd、bash、Python、dotnet、msbuild、脚本、构建命令及任何间接命令执行；仅使用 IDE 文件/代码搜索、文件读取、符号导航和文档写入
+> 工具边界：本文记录当时调查约束，不适用于后续实施工作包  
+> 当前 ABI 测试权威决策：[`../decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md`](../decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md)
 
 ## 0. 结论状态与证据标签
 

@@ -24,22 +24,23 @@
 - 一个 .NET 10 Native AOT 生产项目；
 - 一个独立测试项目；
 - `common/core/shared` 空目录边界；
-- 非生产 ABI probe 与 native caller/test 承载；
+- 非生产 ABI probe 与内部托管单元测试承载；
 - 隔离输出目录。
 
 允许验证：restore、普通 build、托管内部测试、项目图和 MSBuild 导入隔离。
 
-不做：任何 Native AOT publish、PE/export 检查、动态/静态 native call、Silk.NET 引用、生产导出、任何 wpfgfx 文件翻译。
+不做：最终发布后 ABI 集成测试、Silk.NET 引用、生产导出、任何 wpfgfx 文件翻译。
 
-停止点：隔离项目结构、probe/caller 承载和普通 build/test/导入证据已创建并验证到本轮环境允许的程度；下一唯一工作包固定为 `WP-00B-NATIVEAOT-ABI-PROBE-X64`。
+停止点：隔离项目结构、probe、内部单元测试和普通 build/test/导入证据已创建并验证；下一唯一工作包固定为 `WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION`。
 
-### 第 2 轮：`WP-00B-NATIVEAOT-ABI-PROBE-X64`
+### 第 2 轮：`WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION`
 
 - x64 Debug/Release publish；
-- PE、DLL/LIB/EXP/PDB 和精确 export；
-- 动态/静态 native caller；
+- PE、DLL/PDB 和精确 export；
+- 独立托管子进程通过真实 DllImport/LibraryImport 调用；
 - success/error/managed-exception/post-exception；
 - 并发首次/重复调用；
+- 绝对加载路径、实际模块路径和 SHA-256；
 - analyzer warning 清零，不压制。
 
 停止点：`E2E-00` x64 通过，且明确只证明 probe。
@@ -48,7 +49,7 @@
 
 - 官方/目标 SDK Native AOT 平台支持证据；
 - ARM64 Debug/Release 在真实 ARM64 Windows 运行；
-- x86 restore/publish/PE/stdcall 支持裁决；
+- x86 restore/publish/PE 与真实 WPF 等价 P/Invoke 支持裁决；
 - 不支持时形成用户决策请求。
 
 停止点：架构矩阵状态明确，不继续 linker/COM 工作。

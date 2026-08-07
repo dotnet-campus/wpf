@@ -190,7 +190,7 @@ ID 保留精确大小写名称；文件系统不安全字符只在路径别名�
 - 托管 GC root 与 native refcount 闭环；
 - apartment/marshalling/agility；
 - final release 与并发调用；
-- C++ caller、PresentationCore 和差分证据。
+- 发布后托管 P/Invoke 集成测试、PresentationCore 和差分证据。
 
 `WP-00E` 的受控 IUnknown-like object 必须先证明机制，不能直接把 factory/media 标为可行。
 

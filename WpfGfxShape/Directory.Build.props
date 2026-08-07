@@ -1,9 +1,11 @@
 <Project>
   <PropertyGroup>
+    <WpfGfxShapeLocalBuildPropsImported>true</WpfGfxShapeLocalBuildPropsImported>
     <WpfGfxShapeArtifactsRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)artifacts'))</WpfGfxShapeArtifactsRoot>
     <BaseIntermediateOutputPath>$(WpfGfxShapeArtifactsRoot)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <BaseOutputPath>$(WpfGfxShapeArtifactsRoot)bin\$(MSBuildProjectName)\</BaseOutputPath>
     <WpfGfxShapePublishRoot>$(WpfGfxShapeArtifactsRoot)publish\</WpfGfxShapePublishRoot>
     <WpfGfxShapeTestResultsRoot>$(WpfGfxShapeArtifactsRoot)test-results\</WpfGfxShapeTestResultsRoot>
+    <PublishDir Condition="'$(RuntimeIdentifier)' != ''">$(WpfGfxShapePublishRoot)$(MSBuildProjectName)\$(Configuration)\$(RuntimeIdentifier)\</PublishDir>
   </PropertyGroup>
 </Project>

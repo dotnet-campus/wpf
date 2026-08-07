@@ -245,14 +245,14 @@
 
 ```text
 WpfGfxShape.Tests ───────> WpfGfxShape production project
-native ABI caller/harness -> published wpfgfx_cor3.dll (file boundary only)
+managed ABI integration host -> published wpfgfx_cor3.dll (file boundary only, real P/Invoke)
 differential harness ─────> frozen original wpfgfx DLL artifact (file boundary only)
 production project ───────> approved local Silk.NET subset or explicit low-level interop
 
 禁止任何箭头从新项目指向原 WPF csproj/vcxproj/solution。
 ```
 
-测试可访问生产项目的内部纯逻辑承载，但 ABI 测试必须从真实 native caller 经 PE export 进入，不能以普通托管方法调用替代。
+测试可访问生产项目的内部纯逻辑承载，但最终 ABI 测试必须先发布 Native AOT DLL，再由独立托管测试进程通过真实 P/Invoke 经 PE export 进入，不能以普通托管方法调用替代。
 
 ### 7.3 明确禁止的跨项目引用
 
@@ -262,35 +262,28 @@ production project ───────> approved local Silk.NET subset or expl
 - 禁止从新项目修改或覆盖原仓库输出目录、WPF artifacts、运输包或现有 `wpfgfx_cor3.dll`。
 - 禁止直接引用本地 Silk.NET 的总聚合项目；只允许引用经评估的最小项目集合，或采用经记录的冻结生成源码/局部修正版。
 
-## 8. 建议文件树
+## 8. 当前实际文件树
 
-本轮只设计、不创建：
+原调查阶段的建议树已被实际创建结果取代，当前结构为：
 
 ```text
 WpfGfxShape/
   Directory.Build.props
   Directory.Build.targets
-  global.json                         # 可选；初始可明确沿用根 10.0.107
-  NuGet.config                        # 引入包时建立局部、可审计来源
   WpfGfxShape.slnx                    # 独立入口，不修改 Microsoft.Dotnet.Wpf.sln
   Code/
-    WpfGfxShape.csproj                # 唯一生产项目；AssemblyName=wpfgfx_cor3
-    Abi/
-    common/
-    core/
-    shared/
+    WpfGfxShape/
+      WpfGfxShape.csproj              # 唯一生产项目
+      Class1.cs                       # 模板占位
   Tests/
-    WpfGfxShape.Tests.csproj          # 托管单元/布局/差分编排
-    NativeCaller/                     # C/C++ 动态/静态 caller，具体项目形态由 WP-00A 验证
-    Baselines/                        # 仅清单/元数据；大型原工件放受控外部位置
-  artifacts/
-    obj/<project>/<configuration>/<rid>/
-    bin/<project>/<configuration>/<rid>/
-    publish/<configuration>/<rid>/
-    test-results/<work-package>/<configuration>/<rid>/
+    WpfGfxShape.Tests/
+      WpfGfxShape.Tests.csproj        # MSTest 4.0.1
+      MSTestSettings.cs
+      Test1.cs                        # 模板测试
+  Docs/
 ```
 
-`Code/common`、`Code/core`、`Code/shared` 只建立目录边界，不在 `WP-00A` 创建生产业务类型。
+后续生产目录边界建立在 `Code/WpfGfxShape/common`、`Code/WpfGfxShape/core`、`Code/WpfGfxShape/shared`；发布后 ABI 集成测试建立在 `Tests` 下的独立托管宿主/子进程承载。`Tests/NativeCaller` 已被 DEC-0003 作废，必须删除且不得恢复。这些边界在 `WP-00A` 中不得包含生产业务实现。局部 `global.json`、`NuGet.config` 和 `artifacts` 仍按实际证据需要创建。
 
 ## 9. 独立 build/publish 入口
 
@@ -319,7 +312,7 @@ WpfGfxShape/
 必须区分：
 
 - Native AOT 候选生产 DLL；
-- 测试宿主/受控 C caller；
+- 托管 ABI 集成测试宿主/子进程；
 - 原生 WPF 基线 DLL；
 - ABI 清单、布局探针和差分结果；
 - Debug/Release、RID、架构和来源。
@@ -329,11 +322,11 @@ WpfGfxShape/
 ## 11. 重复定义、资源与标识符冲突预防
 
 - 局部边界只声明一次 `TargetFramework`、nullable/unsafe、输出根与 analyzer 策略；项目文件只声明项目特有属性。
-- 生产项目固定唯一 `AssemblyName=wpfgfx_cor3`；测试和 native caller 使用不同名称，禁止生成第二个同名 DLL。
+- 生产项目固定唯一 `AssemblyName=wpfgfx_cor3`；托管测试项目/宿主使用不同名称，禁止生成第二个同名 DLL。
 - `EnableDefaultCompileItems` 初始保持 SDK 默认，新增镜像目录时检查重复 glob；生成/冻结文件若显式 Include，必须排除默认重复纳入。
 - managed `EmbeddedResource` 与 Win32 `.res/.rc` 严格分开；在 linker/resource spike 前不得把 shader/ETW/version 资源作为普通 embedded resource 伪装完成。
 - 版本资源、AssemblyInfo 和 SDK 自动字段必须先枚举实际产物再决定是否覆盖，禁止同时生成冲突的 VERSIONINFO。
-- 原生 caller 的头、import library 和 candidate DLL 只从对应 RID publish 目录取得，不从原 WPF 输出目录隐式搜索。
+- 托管 ABI 集成测试只从对应 RID publish 目录按绝对路径加载 candidate DLL，不从原 WPF 输出目录、PATH 或默认 DLL 搜索路径隐式搜索。
 
 ## 12. 事实与决策汇总
 
@@ -351,7 +344,7 @@ WpfGfxShape/
 1. 未来所有新生产/测试项目只位于 `WpfGfxShape` 局部边界内。
 2. 原 WPF 源码、项目和解决方案保持只读；任何基线交互走二进制 C ABI 或独立工件。
 3. 在完成根继承调查前，不应先创建 csproj 并依赖项目内属性尝试“覆盖”仓库行为。
-4. `WP-00A` 创建局部 props/targets、一个生产项目、一个测试项目和 probe/native-caller 承载；不创建任何生产业务实现。
+4. `WP-00A` 创建局部 props/targets、一个生产项目、一个测试项目、probe 和内部单元测试承载；不创建任何生产业务实现。
 5. 初始明确接受根 `global.json` 的 10.0.107，同时由局部 props/targets 隔离 WPF 构建；是否另建局部 `global.json` 由首次求值证据决定。
 6. 引入 Silk.NET/测试包前创建局部 NuGet 来源与版本策略，不继承不透明的仓库包注入。
 
@@ -360,7 +353,7 @@ WpfGfxShape/
 - `Directory.Build.*` 截断后的真实 MSBuild 预处理结果尚未验证。
 - 根 `global.json`、根/局部 NuGet 配置和本地 Silk.NET 项目引用组合的还原行为尚未验证。
 - `NativeLib=Shared` 的实际 DLL/LIB/EXP/PDB、资源和版本输入能力尚未验证。
-- 原生 caller 最合适的独立项目形态及其是否需要 CMake/MSBuild 仍未裁决；不得因此把它并入生产项目。
+- 发布后托管 P/Invoke ABI 集成测试宿主的最小项目形态仍需由实施工作包确定；不得因此把它并入生产项目。
 - 本地 Silk.NET 旧 TFM、旧包依赖和 source generator 可能破坏隔离/AOT，需要 `WP-00G` 独立裁决。
 - 是否需要局部 `global.json`、`NuGet.config`、`Directory.Packages.props` 必须由首次 restore/evaluate 证据决定，不能预先创建全部配置文件制造复杂度。
 
@@ -389,9 +382,9 @@ WpfGfxShape/
 
 1. 下一轮执行 `WP-00A-BUILD-ISOLATION-AND-PROBE-SCAFFOLD`，只创建本文件第 8 节的最小必要子集。
 2. 用 MSBuild 预处理/binlog 或等价 IDE 证据证明局部项目未导入 WPF Arcade/Testing targets；若仍导入，先修隔离，不进入 probe。
-3. 创建生产/测试项目和非生产 probe/native caller 承载；不添加 106 个生产导出。
+3. 创建生产/测试项目、非生产 probe 和内部单元测试承载；不添加 106 个生产导出。
 4. 分 configuration/RID 验证输出目录和项目图；记录实际 package/import/target 列表。
-5. 更新 `next-session-handoff.md`，把 Native AOT publish、PE/export 检查和动态/静态 native caller 执行统一记录为 `NotRun-ByWorkPackageScope`，并将 `WP-00B-NATIVEAOT-ABI-PROBE-X64` 设为下一唯一工作包；不得在 `WP-00A` 内执行这些项目。
+5. 更新 `next-session-handoff.md`，明确内部 `Invoke` 测试不计最终 ABI 证据，并将 `WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION` 设为下一唯一工作包；不得恢复 `Tests/NativeCaller`。
 
 ## 17. 过程更新记录
 

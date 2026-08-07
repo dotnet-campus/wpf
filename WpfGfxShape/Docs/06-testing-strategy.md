@@ -14,7 +14,7 @@
 4. 新实现与原 wpfgfx 对同一输入是否产生同结果/副作用；
 5. 未修改的真实 PresentationCore 是否能逐步使用候选 DLL 完成可观察流程。
 
-单一测试框架不能覆盖全部问题。托管单元测试、native caller、PE/resource 检查、原生差分 harness 和真实 WPF E2E 必须并列存在。
+单一测试层不能覆盖全部问题。托管单元测试、发布后托管 P/Invoke ABI 集成测试、PE/resource 检查、差分 harness 和真实 WPF E2E 必须分层存在。项目真实消费者是 WPF 托管 P/Invoke，因此不再要求独立 C++ NativeCaller；见 [`decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md`](decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md)。
 
 ## 2. 证据分层
 
@@ -37,24 +37,34 @@
 - 固定宽度 `BOOL`、C++ `bool`、handle、pointer 和 `UInt64` 槽；
 - 每个原文件的分支/失败前置，而不只覆盖 happy path。
 
-T1 不能证明 PE export、native 栈、COM vtable、loader 或 unload。
+T1 不能证明发布产物、真实导出、P/Invoke 加载路径或进程级失败行为。
 
-### T2：Native AOT 产物与 native caller
+### T2：Native AOT 发布后托管 ABI 集成测试
 
-至少两类 caller：
+主调用链必须是：
 
-- 动态加载：绝对路径 `LoadLibrary`、`GetModuleFileNameW`、精确 `GetProcAddress`；
-- 静态 import：若 publish 生成受支持 `.lib`，用 C header 正常链接。
+```text
+publish → 独立托管测试进程 → DllImport resolver → 真实导出 → P/Invoke
+```
+
+执行要求：
+
+- 每个 Configuration/RID 先发布生产项目，测试只加载对应 publish 目录中的 DLL；
+- 使用 `[DllImport]`、`[LibraryImport]` 或 unmanaged function pointer 调用真实 `[UnmanagedCallersOnly]` 导出；
+- 使用 `NativeLibrary.SetDllImportResolver` 和发布 DLL 绝对路径，不依赖默认 DLL 搜索路径；
+- 校验预期绝对路径、实际加载模块路径和 SHA-256；
 
 验证：
 
-- DLL/PE machine、精确导出名、大小写、装饰名、ordinal/kind；
+- PE machine、导出表、ordinal/kind、资源和版本由专用二进制检查器补充验证；
 - HRESULT/BOOL/void/out 参数；
 - managed exception 封锁和调用后恢复；
-- x86 stdcall/ESP，x64/ARM64 栈/寄存器/unwind；
+- x86 若进入支持矩阵，使用与真实 WPF 调用方一致的 P/Invoke 声明验证代表签名和连续调用稳定性；
 - 并发首次调用与重复调用；
 - 错误架构、缺失 DLL/symbol、加载路径；
-- 所有 crash/fail-fast/卸载测试在隔离子进程运行。
+- 所有 crash/fail-fast/卸载测试在隔离托管子进程运行。
+
+不再要求 C++ 动态 caller、静态 import caller、`.lib` 链接或纯原生消费者证据。
 
 ### T3：原实现与 C# 差分
 
@@ -107,7 +117,7 @@ E2E 不等待批次 14 才首次出现：
 
 | 级别 | 首次能力 | 主要入口/结果 | 解锁含义 |
 |---|---|---|---|
-| `E2E-00` | Native AOT 机制 | 非生产 ABI probe | 只证明 shared-library/export/caller 机制 |
+| `E2E-00` | Native AOT 机制 | 非生产 ABI probe | 只证明 shared-library/export/托管 P/Invoke 调用机制 |
 | `E2E-01` | 版本与最小对象 | `MilVersionCheck`；受控 IUnknown/factory spike | 版本/error/COM vtable 基础 |
 | `E2E-02` | connection/channel | create/close/commit/destroy | 指针宽度 handle、线程/批次生命周期 |
 | `E2E-03` | resource command | create/addref/send/release、消息失败 | 32 位资源 ID、protocol/router/factory |
@@ -181,12 +191,12 @@ E2E 不等待批次 14 才首次出现：
 
 - 逐入口比较名称、签名、调用约定、布局和错误；
 - 8/7 差异保持显式状态；
-- x86 每个代表签名覆盖栈平衡；
+- x86 若被支持，使用与真实 WPF 调用方一致的 P/Invoke 声明覆盖代表签名和连续调用稳定性；
 - 不通过修改 P/Invoke 或删除导出制造通过。
 
 ### COM
 
-C++ caller 验证：IUnknown 三槽、完整 vtable 顺序、IID/QI、AddRef/Release、create/getter 所有权、null/error、apartment 和并发。GC 只能作为内部存储，不能替代 native refcount 证据。
+发布后托管 P/Invoke 集成测试验证：IUnknown 三槽、完整 vtable 顺序、IID/QI、AddRef/Release、create/getter 所有权、null/error、apartment 和并发。GC 只能作为内部存储，不能替代 native refcount 证据。
 
 ### callback
 

@@ -1,8 +1,8 @@
 # wpfgfx 全量迁移到 C#/.NET 10 NativeAOT 总计划
 
 > 状态：权威总体计划  
-> 当前阶段：调查与规划已完成；尚未创建新项目、构建、发布或翻译生产实现  
-> 下一唯一工作包：`WP-00A-BUILD-ISOLATION-AND-PROBE-SCAFFOLD`  
+> 当前阶段：构建隔离、Native AOT probe 和 x64 publish 已建立；最终 ABI 主证据仍待发布后托管 P/Invoke 集成测试  
+> 下一唯一工作包：`WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION`  
 > 任务顺序细则：`03-migration-order.md`  
 > 测试门禁：`06-testing-strategy.md`  
 > 最新静态复核：`investigations/05-planning-audit-and-source-revalidation.md`
@@ -11,7 +11,7 @@
 
 将整个 WPF `wpfgfx` 生产层逐步迁移为一个独立的 .NET 10 C# 生产项目，使用 Native AOT shared library 生成候选 `wpfgfx_cor3.dll`，保持现有 C ABI、数据布局、调用约定、COM/handle 所有权、线程、回调、资源和生命周期兼容。
 
-另建独立测试项目与 native caller/harness。原 WPF/wpfgfx 源码、项目和解决方案保持只读；新项目不能通过引用或复制原源码掩盖迁移缺陷。
+另建独立托管测试项目与托管 ABI/差分/E2E harness。原 WPF/wpfgfx 源码、项目和解决方案保持只读；新项目不能通过引用或复制原源码掩盖迁移缺陷。项目不需要 C++ `NativeCaller`、`.lib` 链接或纯原生消费者验证。
 
 ## 2. 不可违反原则
 
@@ -65,9 +65,9 @@
 
 | 门 | 当前状态 | 解除条件 |
 |---|---|---|
-| Windows x86 Native AOT shared library | `Blocked` | 官方/目标 SDK 支持 + publish + PE + stdcall/native caller |
-| Native AOT unload/reload | `Blocked` | 官方支持边界 + load/call/free/reload 与线程/callback stress |
-| AOT-safe COM-like vtable/object | `Blocked` | C++ caller 验证 IUnknown、vtable、IID、refcount、GC root、apartment |
+| Windows x86 Native AOT shared library | `Blocked` | 官方/目标 SDK 支持 + publish + PE + 与真实 WPF 调用方一致的托管 P/Invoke 测试 |
+| Native AOT unload/reload | `Blocked` | 官方支持边界 + 隔离托管子进程中的 load/call/free/reload 与线程/callback stress |
+| AOT-safe COM-like vtable/object | `Blocked` | 托管 P/Invoke 集成测试验证 IUnknown、vtable、IID、refcount、GC root、apartment |
 
 平台不支持时不得自行删除 Win32、修改调用方或泄漏 DLL；必须请求用户裁决。
 
@@ -97,19 +97,19 @@
 
 #### `WP-00A-BUILD-ISOLATION-AND-PROBE-SCAFFOLD`
 
-创建局部 props/targets、独立 solution、一个生产项目、一个测试项目、`common/core/shared` 空目录边界、非生产 ABI probe 源码/内部测试和 native caller 承载。不得翻译生产逻辑或引用 Silk.NET；Native AOT publish、PE export 和 native call 明确留给 `WP-00B`。
+创建局部 props/targets、独立 solution、一个生产项目、一个测试项目、`common/core/shared` 空目录边界、非生产 ABI probe 源码和内部单元测试。不得翻译生产逻辑或引用 Silk.NET；内部 `Invoke` 测试不计最终 ABI 证据。
 
-**Done**：项目图隔离；不导入 WPF Arcade/Testing；不引用原 WPF；输出按配置/RID 隔离；probe/caller 源结构存在；restore/普通 build/托管测试和导入证据准确记录；publish/export/native call 以 `NotRun-ByWorkPackageScope` 交给 `WP-00B`。
+**Done**：项目图隔离；不导入 WPF Arcade/Testing；不引用原 WPF；输出按配置/RID 隔离；probe 和内部单元测试存在；restore/普通 build/托管测试和导入证据准确记录。
 
-#### `WP-00B-NATIVEAOT-ABI-PROBE-X64`
+#### `WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION`
 
-完成 x64 Debug/Release Native AOT publish、PE/export、动态/静态 caller、异常封锁、并发首次进入和符号检查。
+完成 x64 Debug/Release Native AOT publish、PE/export、独立托管子进程真实 P/Invoke、异常封锁、并发首次进入和加载路径/哈希检查。
 
-**Done**：`E2E-00` x64 两配置通过，无全局 warning suppression；只证明 probe 机制。
+**Done**：`E2E-00` x64 两配置通过，无全局 warning suppression；只证明 probe 机制。`Tests/NativeCaller` 已删除且不计门禁。
 
 #### `WP-00C-ARCHITECTURE-AND-X86-DECISION`
 
-在真实 ARM64 Windows 重复矩阵；读取官方/SDK证据并裁决 x86。若 x86 可用，增加 stdcall/ESP/未装饰名；否则升级用户决策。
+在真实 ARM64 Windows 重复托管 P/Invoke 矩阵；读取官方/SDK 证据并裁决 x86。若 x86 可用，使用与真实 WPF 调用方一致的 P/Invoke 声明验证；否则升级用户决策。
 
 **Done**：ARM64 结果与 x86 明确状态落盘。
 
@@ -123,7 +123,7 @@
 
 用受控 IUnknown-like 对象验证 AOT 对外 vtable、QI/AddRef/Release、GC root、线程/apartment。
 
-**Done**：原生 C++ caller 跨目标架构通过，或形成明确阻塞。
+**Done**：发布后托管 P/Invoke COM 集成测试跨目标架构通过，或形成明确阻塞。
 
 #### `WP-00F-CALLBACK-LIFECYCLE-UNLOAD-SPIKE`
 

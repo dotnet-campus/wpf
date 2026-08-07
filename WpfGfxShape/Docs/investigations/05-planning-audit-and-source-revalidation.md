@@ -1,9 +1,10 @@
 # wpfgfx 迁移规划审计与源码复核
 
-> 状态：本轮静态审计完成  
+> 状态：历史静态审计；全文凡要求创建/运行 native caller 或把 native caller 计入 ABI 完成门禁的段落，均已由 DEC-0003 作废，不得实施  
 > 用途：复核既有规划是否仍由当前工作区源码支持，并记录需要修正的文档漂移  
 > 上位约束：[`../00-migration-charter.md`](../00-migration-charter.md)  
 > 当前唯一实施入口：[`../next-session-handoff.md`](../next-session-handoff.md)  
+> 当前 ABI 测试决策：[`../decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md`](../decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md)  
 > 实施边界：本轮不创建项目、不编写 probe、不翻译生产代码、不构建、不发布、不运行测试
 
 ## 1. 审计目标
