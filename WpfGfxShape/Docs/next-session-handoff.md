@@ -1,125 +1,93 @@
-# 下一轮交接：建立发布后托管 P/Invoke ABI 集成测试
+# 下一轮交接：继续推进 wpfgfx 代码翻译
 
 > 本文件是下一轮唯一权威入口  
-> 已完成工作包：`WP-00A-BUILD-ISOLATION-AND-PROBE-SCAFFOLD`  
-> 已作废证据模型：`WP-00B` 以 C++ NativeCaller 作为 ABI 主证据的方案  
-> 下一唯一工作包：`WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION`
+> 已完成基础脚手架：`WP-00A`、`WP-00B`  
+> 当前执行方向：持续交付可构建、可测试的生产代码切片  
+> DirectX 技术选型：Silk.NET 2.23.0  
+> Win32 技术选型：优先 Microsoft.Windows.CsWin32 0.3.298
 
-## 1. 已接受的测试架构决策
+## 1. 当前决定
 
-[`decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md`](decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md) 已接受：项目真实消费者是 WPF 托管 P/Invoke，因此 Native AOT ABI 的主证据必须来自发布后托管 P/Invoke 集成测试，而不是独立 C++ caller。
+现有文档已经足以支持编码。不得再以补全 Ledger、扩写迁移计划或继续大范围静态调查作为生产翻译的前置条件。
 
-现有 MSTest 直接调用：
+每轮应先扫描本文件，然后直接选择可独立验证的原生切片，完成近似直译、测试和构建。文档只记录代码实施产生的新事实。
 
-```text
-NativeAotAbiProbe.Invoke(...)
-```
+## 2. 已完成的生产翻译
 
-只验证内部实现，绕过：
+生产项目已经接入：
 
-```text
-AOT publish → DLL 加载 → 导出解析 → UnmanagedCallersOnly → P/Invoke
-```
+- `Silk.NET.Direct3D9` 2.23.0；
+- `Silk.NET.Direct3D11` 2.23.0；
+- `Silk.NET.DXGI` 2.23.0；
+- `Microsoft.Windows.CsWin32` 0.3.298。
 
-因此这些测试只能作为快速单元测试，不能作为最终 ABI 验证。
+已完成 `core/common/d3dloader.cpp` 的首个低层切片：
 
-## 2. 目标测试链
+- 定义 `d3d9.dll`、`d3d11.dll`、`dxgi.dll` 模块名称和代表性导出入口；
+- 使用 CsWin32 生成的 `LoadLibraryExW` 与 `FreeLibrary`；
+- 使用 `LOAD_LIBRARY_SEARCH_SYSTEM32` 加载系统 DirectX 模块；
+- 由于 CsWin32 的原始 `PCWSTR` 重载返回 `HMODULE`，增加最小 `SafeHandle` 包装以固定模块所有权；
+- 从已加载的受控模块解析 `Direct3DCreate9` 和可选的 `Direct3DCreate9Ex`，不再使用 Silk.NET 默认 loader；
+- 函数指针按原生 `WINAPI` 使用 `Stdcall`，DirectX COM 类型使用 Silk.NET；
+- 优先调用 `Direct3DCreate9Ex`；`D3DERR_NOTAVAILABLE` 保持原实现的降级语义，其他失败按 HRESULT 抛出；
+- Ex 创建成功后查询 `IDirect3D9`；查询失败时继续调用 down-level `Direct3DCreate9`；
+- 创建失败时释放已获得的 COM 接口和模块；成功对象按 `IDirect3D9Ex`、`IDirect3D9`、模块的顺序确定性释放；
+- 未采用 Silk.NET 2.23.0 生成的 D3D9 COM 调用方法，因为本地源码将 vtable 声明为 `Cdecl`，当前实现显式保持 Windows COM 的 `Stdcall` ABI；
+- 已加入最小 D3D9 adapter 能力查询：`GetAdapterCount`、默认 HAL `GetAdapterDisplayMode` 和 `GetDeviceCaps`；
+- 查询使用 Silk.NET 的 `Devtype`、`Displaymode`、`Caps9` 类型，但 COM vtable 槽位继续显式按 Windows `Stdcall` 调用；
+- 能力查询对象在释放后拒绝继续访问；显示模式或 caps HRESULT 失败时直接抛出，不返回部分写入的组合结果；
+- 已近似直译 `core/hw/d3ddevicemanager.cpp` 的最小 D3D9 device create/释放切片；
+- 按原实现使用 1×1、`X8R8G8B8`、单 back buffer、`DISCARD`、窗口化且不启用自动 depth/stencil 的 `PresentParameters`；
+- 原 WPF 明确避免在库中创建 dummy window，并使用 `GetDesktopWindow` 满足 D3D9.0c 的有效窗口要求；当前实现同样通过 CsWin32 生成的 `GetDesktopWindow` 承载，而不是新增自定义隐藏窗口生命周期；
+- 行为标志保留 `FPU_PRESERVE`、`MULTITHREADED`、`DISABLE_DRIVER_MANAGEMENT_EX`，并依据 `D3DDEVCAPS_HWTRANSFORMANDLIGHT` 选择硬件或软件顶点处理；
+- `IDirect3D9Ex::CreateDeviceEx` vtable 槽 20 优先，基础 `IDirect3D9::CreateDevice` vtable 槽 16 用于 down-level 路径；两者继续显式使用 Windows `Stdcall`；
+- Ex 创建成功后查询基础 `IDirect3DDevice9`；设备对象随后通过 `QueryInterface` 保留可选 `IDirect3DDevice9Ex` 独立引用，并按 Ex、基础接口顺序确定性释放，释放后拒绝访问；
+- 保留原实现对 `D3DERR_INVALIDCALL + D3DCREATE_DISABLE_DRIVER_MANAGEMENT_EX` 的兼容性重试，重试前移除该标志；每次调用前清空输出，失败时释放任何部分返回的接口并传播 HRESULT；
+- 已近似直译 `CD3DDeviceLevel1::CreateRenderTargetUntracked` 的最小 render-target surface 生命周期；
+- `IDirect3DDevice9::CreateRenderTarget` 使用 vtable 槽 28，`IDirect3DSurface9::GetDesc` 使用槽 12，两者显式按 Windows `Stdcall` 调用；
+- render target 创建使用 Silk.NET 的 `Format`、`MultisampleType`、`SurfaceDesc` 和 `IDirect3DSurface9`，调用前清空输出，HRESULT 失败时释放部分结果并抛出，空成功结果按无效状态拒绝；
+- `Direct3D9Surface` 确定性拥有并释放 COM 引用，提供描述查询，释放后拒绝访问；
+- 已近似直译 `CD3DDeviceLevel1::CreateAdditionalSwapChain`、`CD3DSwapChain::Init/GetBackBuffer` 和 `PresentWithD3D` 的最小 additional swap chain 生命周期；
+- `IDirect3DDevice9::CreateAdditionalSwapChain` 使用 vtable 槽 13，`IDirect3DSwapChain9::Present`、`GetBackBuffer`、`GetPresentParameters` 分别使用槽 3、5、9，全部显式按 Windows `Stdcall` 调用；
+- additional swap chain 使用桌面窗口、固定窗口化 `DISCARD`、单 back buffer、无自动 depth/stencil 参数，创建前清空输出，HRESULT 失败时释放部分结果并抛出；
+- `Direct3D9SwapChain` 确定性拥有 COM 引用，支持参数查询、MONO back buffer 获取和最小全区域 Present；back buffer 继续交由 `Direct3D9Surface` 独立拥有，所有对象释放后拒绝访问；
+- 已近似直译设备状态检查的首个切片：基础 `IDirect3DDevice9::TestCooperativeLevel` 使用 vtable 槽 3，D3D9Ex `IDirect3DDevice9Ex::CheckDeviceState` 使用槽 128，继续显式按 Windows `Stdcall` 调用；
+- `Direct3D9DeviceState` 保留原始 HRESULT 和状态来源，不把设备丢失、模式变化或遮挡等状态统一转换为异常；状态来源可区分基础 cooperative-level、D3D9Ex 检查和 Present；
+- `Direct3D9SwapChain.Present` 已不再调用 `Marshal.ThrowExceptionForHR`，而是返回统一状态分类：成功为 `Operational`、`S_PRESENT_OCCLUDED` 为仍可操作的 `Occluded`、`S_PRESENT_MODE_CHANGED` 为需要重建的 `ModeChanged`，`D3DERR_DEVICELOST`/`DEVICEHUNG`/`DEVICEREMOVED` 为需要重建的 `DeviceLost`，其他结果保留为 `Failure`；
+- 正常设备与遮挡状态可直接判断为可操作，模式变化和设备丢失可判断为需要重建设备；设备和 swap chain 释放后状态检查或 Present 均拒绝访问；
+- 已将原本集中在 `Direct3D9Factory.cs` 的实现按原生文件边界拆分为 `Direct3D9Factory.cs`、`Direct3D9Objects.cs`、`Direct3D9Device.cs`、`Direct3D9Surface.cs` 和 `Direct3D9SwapChain.cs`，未改变现有类型名和行为；
+- 已创建权威实施对照表 `Docs/native-to-managed-file-map.md`，记录已开始生产翻译的原生 C++ 文件、主要 C# 文件、具体切片、状态和验证证据。
 
-```text
-MSTest 编排
-  → 发布指定 Configuration/RID 的 Native AOT DLL
-  → 启动独立托管测试进程
-  → 注册 NativeLibrary.SetDllImportResolver
-  → 使用发布 DLL 绝对路径解析固定 P/Invoke 库名
-  → 通过真实 DllImport/LibraryImport 调用导出
-  → 验证 ABI 行为、实际模块路径和 SHA-256
-```
+## 3. 已完成验证
 
-不得依赖 `[DllImport("wpfgfx_cor3.dll")]` 的默认 DLL 搜索路径。resolver 应采用等价形态：
+本轮已获得实际验证结果：
 
-```csharp
-NativeLibrary.SetDllImportResolver(
-    typeof(NativeAotAbiProbeImports).Assembly,
-    (_, _, _) => NativeLibrary.Load(publishedDllAbsolutePath));
-```
+- `WpfGfxShape.slnx` Debug 构建成功，0 警告、0 错误；
+- 解决方案全部测试运行成功：`WpfGfxShape.Tests` 47/47，`WpfGfxShape.AbiIntegration` 8/8；
+- `Direct3D9FactoryTests`：29/29 通过，真实执行了 D3D9 创建、adapter 枚举、默认 adapter 显示模式、HAL caps 查询、默认 HAL device 创建/释放、1×1 back buffer 参数、2×3 render target 创建、2×3 additional swap chain 创建、present parameters 查询、back buffer 描述查询、最小 Present 原始状态返回、正常设备状态检查、D3D9/D3D9Ex 状态路径匹配和释放后访问保护；并以确定性数据覆盖遮挡、模式变化、设备丢失/挂起/移除和未知失败分类；
+- 生产项目 `Release + net10.0 + win-x64` 构建成功，0 警告、0 错误。
 
-实际实现必须处理 resolver 只能为程序集设置一次、测试并行和独立进程隔离问题。
+带 RID 的构建不是 Native AOT publish。当前尚无新的 Native AOT 发布结果，不得把该构建结果记录为发布验证。
 
-## 3. 当前代码状态
+## 4. 下一步必须执行
 
-保留：
+下一轮直接继续生产翻译，优先顺序如下：
 
-- `Code/WpfGfxShape/WpfGfxShape.csproj`：.NET 10 Native AOT shared library；
-- `Code/WpfGfxShape/Abi/NativeAotAbiProbe.cs`：唯一非生产导出 `WpfGfxShape_NativeAotAbiProbe_v1`；
-- `Tests/WpfGfxShape.Tests`：内部纯逻辑 MSTest；
-- 局部构建隔离和 `artifacts` 输出根。
+1. 继续近似直译 `CD3DDeviceLevel1::MarkUnusable`：设备首次不可用时固定一次性处理、manager 通知和资源销毁调用顺序；
+2. 建立最小 `Direct3D9ResourceManager`/资源登记切片，对应 `d3dresource.cpp` 的 `DestroyAllResources`、`DestroyResource` 与 `ReleaseD3DResources` 回调边界；先覆盖 surface 和 swap chain，保持资源先释放 D3D COM 对象、再脱离 manager 跟踪的顺序；
+3. 原 WPF 当前直接路径没有调用 `IDirect3DDevice9::Reset` 或 `ResetEx`，而是将设备标记不可用、通知 manager、销毁全部资源并最终销毁/重建设备；不得在没有新的原生证据时新增就地 Reset 路径；
+4. 推进 manager 的 unusable device 分区、移除和按既有创建参数重建设备的最小切片，避免在多窗口场景重复发送 device-lost 通知；
+5. 复用现有 `Direct3D9Device`、`Direct3D9SwapChain`、`Direct3D9Surface` 所有权和显式 `Stdcall` COM ABI，保持 HRESULT、COM 引用计数、失败清理和释放后保护；
+6. DirectX 类型、枚举、结构和常量继续优先使用 Silk.NET 2.23.0；测试不得依赖主动制造真实 GPU 丢失，优先使用可确定的资源登记、销毁顺序、幂等通知和释放后保护；
+7. 每次新增或移动生产翻译同步更新 `Docs/native-to-managed-file-map.md`；完成后构建解决方案并运行全部测试；
+8. 在现有构建工具可表达发布目标时补做 `win-x64` Native AOT 发布与 ABI 集成验证，但不得因此阻塞后续可完成的代码翻译。
 
-删除：
+## 5. 技术边界
 
-- `Tests/NativeCaller` 全目录及其中 C++、`.vcxproj`、头文件和 MSBuild wrapper。
-
-不再要求：
-
-- Native AOT `.lib` 能否被 C/C++ 链接；
-- 纯原生消费者是否可调用；
-- C++ 动态或静态 caller；
-- 以 C++ caller 验证 x86 stdcall/ESP、名称修饰、loader 或 crash。
-
-过去 C++ caller 的运行结果只保留为历史调查信息，不再计入当前完成门禁。
-
-## 4. 下一工作包实施内容
-
-1. 在 `Tests` 下建立独立托管 ABI 集成测试宿主/子进程承载，建议边界为 `Tests/WpfGfxShape.AbiIntegration`；具体项目数保持最小，但不得在 MSTest 进程内执行可能污染进程状态的场景。
-2. 建立可重复的 Native AOT publish 编排：
-   - 每次只发布一个 Configuration/RID；
-   - 从项目级执行 RID restore/publish；
-   - 输出固定到 `artifacts/publish/WpfGfxShape/<Configuration>/<RID>/`。
-3. 为 probe 声明真实 `[DllImport]` 或 `[LibraryImport]`，库名保持固定，EntryPoint 精确为 `WpfGfxShape_NativeAotAbiProbe_v1`。
-4. 使用 `NativeLibrary.SetDllImportResolver` 将固定库名解析到当前 publish DLL 的绝对路径。
-5. 加载后校验：
-   - 期望 DLL 绝对路径；
-   - 实际加载模块路径；
-   - 发布前后/加载文件 SHA-256；
-   - PE machine 和导出表可由托管二进制检查器补充验证。
-6. 通过真实 P/Invoke 覆盖：
-   - checksum 成功；
-   - ABI version 错误；
-   - null output；
-   - 受控参数错误；
-   - 受控内部异常及 HRESULT 映射；
-   - 未知 operation；
-   - 失败前 output 清零；
-   - 异常后再次调用成功；
-   - 并发首次调用与重复调用；
-   - 缺失 DLL、缺失导出、错误架构和加载失败。
-7. crash、fail-fast、错误架构、加载失败及 unload/reload 等可能污染状态的 case 必须一 case 一独立托管子进程；父 MSTest 只判断退出码、超时和结果文件。
-8. 更新 `06-testing-strategy.md`、`09-test-evidence-and-e2e-contract.md` 和本交接中的执行证据；不得把内部 `Invoke` 测试记为 ABI 通过。
-
-## 5. 当前完成状态
-
-- [x] Native AOT 生产项目和唯一 probe 存在；
-- [x] 内部纯逻辑 MSTest 存在；
-- [x] Debug/Release x64 Native AOT publish 曾成功；
-- [x] 已确认真实 DLL named exports 包含工具链导出 `DotNetRuntimeDebugHeader` 和项目 probe；
-- [x] 已接受 DEC-0003，C++ NativeCaller 不再是目标架构；
-- [ ] `Tests/NativeCaller` 已删除；当前工作区仍存在该目录，必须先删除；
-- [ ] 发布后托管 P/Invoke ABI 集成测试项目存在；
-- [ ] resolver 使用绝对 publish DLL 路径；
-- [ ] 实际加载模块路径和 SHA-256 已验证；
-- [ ] Debug/Release x64 真实 P/Invoke 全协议测试通过；
-- [ ] 并发和失败场景在隔离托管子进程通过；
-- [ ] 当前 `WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION` 证据写回文档。
-
-## 6. 范围限制
-
-- 不添加任何生产 wpfgfx 导出；
-- 不实现 `MilVersionCheck`、`MILCreateFactory` 或其它真实 API；
-- 不翻译原 C/C++ 文件；
-- 不引用 Silk.NET；
-- 不进入 ARM64/x86 裁决，必须先完成新的 x64 托管 P/Invoke 主证据；
-- 不恢复 `Tests/NativeCaller`；
-- 不以默认 DLL 搜索路径或复制到测试输出目录的偶然命中代替 resolver 和路径校验。
-
-## 7. 后续顺序
-
-完成 `WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION` 后，才可重新领取 `WP-00C-ARCHITECTURE-AND-X86-DECISION`，并将同一托管 P/Invoke 集成测试模型扩展到 ARM64/x86 支持调查。
+- Silk.NET 只承担低层 DirectX 绑定，不得用高层封装重写 wpfgfx 算法；
+- 不得用 D3D11/12 替代原本要求保持等价语义的 D3D9/D3D9Ex 路径；
+- 同一 COM 接口在生产代码中只能有一份权威类型定义；
+- CsWin32 生成符合预期时不得重复手写 P/Invoke；
+- CsWin32 无法直接表达所有权或 ABI 时，允许最小范围包装或降级，并以测试固定行为；
+- 不修改原 WPF/wpfgfx 源码；
+- 不把文档完成度或暂时无法执行的低优先级验证作为停止实际翻译的理由。

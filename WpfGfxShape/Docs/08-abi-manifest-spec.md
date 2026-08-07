@@ -1,6 +1,6 @@
 # wpfgfx ABI Manifest 规范
 
-> 状态：实施前权威 schema；实际 manifest 由 `WP-00H`/`WP-00I` 及后续 ABI 工作包建立  
+> 状态：权威 schema；`WP-00H` 已冻结一个 Release win-x64 原工件的部分 binary record，机器 manifest 由 `WP-00I` 及后续 ABI 工作包建立  
 > 上位事实：[`02-abi-and-managed-callers.md`](02-abi-and-managed-callers.md)  
 > 测试规则：[`06-testing-strategy.md`](06-testing-strategy.md)
 
@@ -211,7 +211,7 @@ ID 保留精确大小写名称；文件系统不安全字符只在路径别名�
 - loader 回读路径；
 - 已执行测试与结果。
 
-未经实际检查时字段必须为 `NotInspected`，不能从 `.def` 或项目属性填成“已验证”。
+未经实际检查时字段必须为 `NotInspected`，不能从 `.def`、项目属性或可提取字符串命中填成“已验证”。当前部分原记录 `ORIGINAL-WPFGFX-NET9.0.5-RELEASE-WIN-X64` 的来源、RID、file version 与 Release CodeView 路径线索见 `investigations/07-original-binary-baseline.md`；其 SHA-256、PE/export/import/resource/PDB identity 和运行字段仍为 `NotInspected`/`NotTested`。
 
 ## 11. 8/7 差异处理
 

@@ -1,8 +1,8 @@
 # wpfgfx 全量迁移到 C#/.NET 10 NativeAOT 总计划
 
 > 状态：权威总体计划  
-> 当前阶段：构建隔离、Native AOT probe 和 x64 publish 已建立；最终 ABI 主证据仍待发布后托管 P/Invoke 集成测试  
-> 下一唯一工作包：`WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION`  
+> 当前阶段：`WP-00I` 状态为 `RepairRequiredPartial`；本轮静态核查 `core/api/api.vcxproj`，并发现既有“7 条完整记录”结论不成立。受限写入接口在覆写、追加和删除时均可复用损坏片段，现已止损为 2 条逐行完整记录：`DynamicCall` 项目与 `DelayCall.cpp`；生产项目哨兵事实源为 1/24，直接 `ClCompile` 为 1/461；`api` 等已核查哨兵待安全恢复  
+> 下一唯一工作包：继续 `WP-00I-MACHINE-READABLE-LEDGER`  
 > 任务顺序细则：`03-migration-order.md`  
 > 测试门禁：`06-testing-strategy.md`  
 > 最新静态复核：`investigations/05-planning-audit-and-source-revalidation.md`
@@ -105,13 +105,13 @@
 
 完成 x64 Debug/Release Native AOT publish、PE/export、独立托管子进程真实 P/Invoke、异常封锁、并发首次进入和加载路径/哈希检查。
 
-**Done**：`E2E-00` x64 两配置通过，无全局 warning suppression；只证明 probe 机制。`Tests/NativeCaller` 已删除且不计门禁。
+**Done**：`E2E-00` x64 两配置通过，无全局 warning suppression；只证明 probe 机制。`Tests/NativeCaller` 不计技术门禁，其物理删除作为低优先级仓库清理债务跟踪。
 
 #### `WP-00C-ARCHITECTURE-AND-X86-DECISION`
 
 在真实 ARM64 Windows 重复托管 P/Invoke 矩阵；读取官方/SDK 证据并裁决 x86。若 x86 可用，使用与真实 WPF 调用方一致的 P/Invoke 声明验证；否则升级用户决策。
 
-**Done**：ARM64 结果与 x86 明确状态落盘。
+**Static decision complete**：架构无关托管 P/Invoke 编排已落地；ARM64 标记为 `ReadyForRealHostValidation`，x86 标记为 `BlockedByPlatformEvidence`。真实平台结果延期，不阻塞 WP-00H/WP-00I。
 
 #### `WP-00D-LINKER-RESOURCE-VERSION-SPIKE`
 
@@ -140,6 +140,8 @@
 #### `WP-00H-ORIGINAL-BINARY-BASELINE`
 
 冻结原 DLL 的 export/import/resource/version/PDB/hash 和关键运行行为。
+
+**当前状态：`PartialBaselineFrozen`。** 已定位并归因 .NET 9.0.5 Release win-x64 `wpfgfx_cor3.dll`，确认伴随 runtime identity、file version 与 Release CodeView 路径线索；SHA-256、PE Machine、export/import/resource/PDB identity、运行回读以及 Debug/x86/ARM64 工件因当前环境能力或工件缺失延期。详见 `investigations/07-original-binary-baseline.md`。
 
 **Done**：106/107/99/8/7、`g_fNoMeterChecks`、各架构/配置有真实基线。
 

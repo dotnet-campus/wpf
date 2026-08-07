@@ -1,6 +1,6 @@
 # wpfgfx 测试证据与渐进 E2E Harness 契约
 
-> 状态：实施前权威 harness/evidence 契约  
+> 状态：权威 harness/evidence 契约；`E2E-00` 托管 ABI harness 已落地并执行通过；Ledger evidence 索引已启动；原 Release win-x64 DLL 已定位但尚未形成 hash/loader 运行 golden  
 > 测试层级与门禁：[`06-testing-strategy.md`](06-testing-strategy.md)  
 > ABI schema：[`08-abi-manifest-spec.md`](08-abi-manifest-spec.md)
 
@@ -10,6 +10,8 @@
 
 测试的目标不是证明“C# 代码看起来合理”，而是持续证明：原实现与候选实现的 ABI、字节、状态、副作用、线程、所有权和真实 PresentationCore 流程等价。
 
+`WP-00I` 已创建 `Ledger/evidence.jsonl` 作为证据 ID 索引。预定义但尚未执行的证据必须显式标记 `Planned` 或 `Deferred`，`satisfiedEvidenceIds` 只能引用真实已执行/已取得的证据；人工 JSONL 复核不得冒充机器 schema 校验。
+
 ## 2. 预期承载边界
 
 ```text
@@ -17,7 +19,8 @@ WpfGfxShape/
   Tests/
     WpfGfxShape.Tests/
       WpfGfxShape.Tests.csproj         # T1：MSTest；纯逻辑、布局辅助、manifest/schema
-    AbiIntegration/                    # T2：发布、独立托管子进程、真实 P/Invoke ABI
+    WpfGfxShape.AbiIntegration/        # T2：MSTest 发布与子进程编排
+    WpfGfxShape.AbiIntegration.Host/   # T2：独立托管进程、resolver、真实 P/Invoke ABI
     NativeBaselineAdapter/             # T3：原实现可观察适配；不改原产品源码
     Differential/                      # T3 编排与结果比较
     ComponentHarness/                  # T4 子系统闭环
@@ -158,6 +161,7 @@ Comparator 独立读取 original/candidate 结果，应用预先批准的比较�
 - 地址、PID、时间等不稳定值只在 schema 明确标记后规范化。
 - golden 更新必须由专用操作触发，附旧/新 hash、原因、审阅人/Decision ID；普通测试失败不得自动覆盖。
 - 原始原 DLL基线只读；candidate 不得写入 original 目录。
+- 当前已定位的 `.NET 9.0.5` Release win-x64 `wpfgfx_cor3.dll` 只有来源/版本/配置归因；在 SHA-256、模块回读和 PE 检查完成前只能作为 original baseline candidate，不能作为不可变 golden。
 
 ## 9. E2E 阶梯可执行合同
 
@@ -279,14 +283,22 @@ Comparator 独立读取 original/candidate 结果，应用预先批准的比较�
 - 随机/属性测试必须可重放；失败保存最小化输入与原 seed。
 - 不能只运行一次 happy path 关闭有状态工作包。
 
-## 15. 当前未锁定项
+## 15. 当前已锁定与未锁定项
 
-以下留给实际项目/环境证据裁决：
+已由 `WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION` 锁定：
 
-- MSTest、MSTest adapter 和 `Microsoft.NET.Test.Sdk` 的具体包版本；
-- 托管 ABI 集成测试宿主/子进程采用一个还是多个最小 .NET 项目；
+- MSTest 包版本为 `4.0.1`；
+- T2 采用 `WpfGfxShape.AbiIntegration` 编排项目与 `WpfGfxShape.AbiIntegration.Host` 独立子进程宿主；
+- 固定库名由 resolver 解析到 publish DLL 绝对路径；
+- Debug/Release `win-x64` 协议、并发、缺失 DLL、缺失导出、无效 PE、错误架构、模块路径和 SHA-256 已执行通过；
+- 本轮全量结果：T1 10/10、T2 8/8 通过。
+
+仍留给后续工作包裁决：
+
 - PresentationCore candidate 隔离加载的具体机制；
 - 大型原 DLL/媒体/图像工件是否提交仓库或保存在受控外部存储；
-- ARM64 与硬件/媒体测试机器供给。
+- ARM64 与硬件/媒体测试机器供给；ARM64 ABI 测试代码已就绪，但真实 ARM64 Windows 运行证据仍缺失；
+- 目标 .NET 10 SDK 的 Windows x86 Native AOT shared-library 支持证据；当前状态为 `BlockedByPlatformEvidence`；
+- 官方支持范围内的 Native AOT unload/reload 与 crash/fail-fast 场景。
 
-未裁决项不得阻止 `WP-00A` 创建最小承载，但必须进入 handoff 风险。
+内部 `NativeAotAbiProbe.Invoke(...)` 测试只计 T1，不得登记为 ABI 通过。

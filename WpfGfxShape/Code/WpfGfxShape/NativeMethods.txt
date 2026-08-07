@@ -1,0 +1,3 @@
+FreeLibrary
+GetDesktopWindow
+LoadLibraryExW

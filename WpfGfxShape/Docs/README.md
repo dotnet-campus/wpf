@@ -33,6 +33,7 @@
 | [`migration-master-plan.md`](migration-master-plan.md) | 总体目标、工作包树、P0 门和最终完成定义 |
 | [`session-roadmap.md`](session-roadmap.md) | 后续对话的推荐领取顺序 |
 | [`next-session-handoff.md`](next-session-handoff.md) | 每轮覆盖更新的唯一交接入口 |
+| [`native-to-managed-file-map.md`](native-to-managed-file-map.md) | 已实施原生 C++ 文件到主要 C# 文件的权威对照表 |
 | [`decisions/README.md`](decisions/README.md) | 已接受决策与待裁决 P0 索引 |
 | [`handoffs/README.md`](handoffs/README.md) | 不可覆盖的历史交接快照索引 |
 
@@ -57,10 +58,10 @@
 - Native AOT 生产项目、唯一非生产 ABI probe 和内部 MSTest 已存在；内部 `NativeAotAbiProbe.Invoke(...)` 测试只属于快速单元测试，不能作为最终 ABI 证据。
 - `Tests/NativeCaller` 是已作废设计，必须删除且不得恢复；项目不要求 C++ `.lib` 链接或纯原生消费者验证。
 - 后续目录以 `Code`、`Tests`、`Docs` 为准，不再使用旧规划中的 `src/tests`。
-- 当前唯一工作包：`WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION`。
+- 当前唯一工作包：继续 `WP-00I-MACHINE-READABLE-LEDGER`；机器 Ledger 已启动但尚未完成 461 逐项与多视图闭包。
 - 当前 P0：Windows x86 Native AOT、unload/reload、COM-like vtable/object。
 - 当前 ABI 静态基线：106 `.def`、107 唯一 EntryPoint、99 交集、8/7 差异。
-- 当前原生项目项下限：24 个生产项目、461 个直接 `ClCompile`，但完整迁移分母仍待 machine-readable Ledger。
+- 当前原生项目项下限：24 个生产项目、461 个直接 `ClCompile`；24 个项目哨兵及根合同已进入 machine-readable Ledger，但完整迁移分母仍待逐项与多视图闭包。
 
 ## 维护规则
 

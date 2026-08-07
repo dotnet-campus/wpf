@@ -65,6 +65,8 @@
 
 ### 第 5 轮：`WP-00I-MACHINE-READABLE-LEDGER`
 
+> 当前：`BootstrapPartial`；schema、JSONL 事实源、24 个项目哨兵及根合同已建立，461 逐项与多视图闭包待续。
+
 - 建立机器可读 Ledger；
 - 合并 24 项目/461 direct ClCompile 下限与磁盘、PCH、生成、资源、ABI、构建、外部供应视图；
 - 创建项目哨兵、生成族、循环组和首批文件映射；

@@ -1,6 +1,6 @@
 # wpfgfx C# NativeAOT 迁移测试与证据策略
 
-> 状态：实施前权威测试基线  
+> 状态：权威测试基线；`E2E-00` x64 托管 P/Invoke 主链已执行通过  
 > 上位约束：测试随迁移同步增长；没有预定义证据的翻译不得称为完成  
 > 适用范围：项目机制、ABI、逐文件逻辑、协议、生命周期、渲染后端及真实 PresentationCore
 
@@ -262,3 +262,21 @@ E2E 不等待批次 14 才首次出现：
 - `Accepted`：该文件规定的全部 ABI/布局/单元/差分/集成/E2E 证据满足，且无未记录偏差。
 
 任何工作包不得只以“build succeeded”关闭。
+
+## 13. `WP-00B` 当前执行证据
+
+`Tests/WpfGfxShape.AbiIntegration` 现以 MSTest 编排 Debug/Release `win-x64` Native AOT publish，并由 `Tests/WpfGfxShape.AbiIntegration.Host` 在独立托管进程中注册 resolver、绝对路径加载发布 DLL，再通过真实 `LibraryImport` 调用 `WpfGfxShape_NativeAotAbiProbe_v1`。
+
+本轮执行 `WpfGfxShape.slnx` 全部测试成功：
+
+- `WpfGfxShape.Tests`：10/10 通过；这些仍仅计为 T1 内部逻辑证据；
+- `WpfGfxShape.AbiIntegration`：8/8 通过；
+- T2 覆盖 Debug/Release x64 协议与并发，以及独立进程中的缺失 DLL、缺失导出、无效 PE 和错误架构加载失败；
+- 成功路径校验期望 DLL 绝对路径、实际加载模块路径与 SHA-256；
+- 协议覆盖 checksum、ABI version 错误、null output、受控参数错误、内部异常 HRESULT 映射、未知 operation、失败时 output 清零和失败后恢复。
+
+上述结果满足当前 `E2E-00` 托管 P/Invoke 主证据，但不证明任何生产导出、COM、渲染或 PresentationCore。
+
+## 14. `WP-00C` 架构化承载
+
+ABI 集成测试现按测试进程架构自动选择 `win-x64`、`win-arm64` 或 `win-x86`，并按 RID 隔离结果目录；错误架构 case 也会选择与当前宿主不同的 PE Machine。该代码就绪状态不等于 ARM64/x86 已运行通过：真实 ARM64 Windows 结果和目标 SDK x86 Native AOT 支持证据仍按 `investigations/06-architecture-and-x86-decision.md` 延期跟踪。
