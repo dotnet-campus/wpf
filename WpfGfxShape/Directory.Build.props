@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <WpfGfxShapeArtifactsRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)artifacts'))</WpfGfxShapeArtifactsRoot>
+    <BaseIntermediateOutputPath>$(WpfGfxShapeArtifactsRoot)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(WpfGfxShapeArtifactsRoot)bin\$(MSBuildProjectName)\</BaseOutputPath>
+    <WpfGfxShapePublishRoot>$(WpfGfxShapeArtifactsRoot)publish\</WpfGfxShapePublishRoot>
+    <WpfGfxShapeTestResultsRoot>$(WpfGfxShapeArtifactsRoot)test-results\</WpfGfxShapeTestResultsRoot>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Code/">
+    <Project Path="Code/WpfGfxShape/WpfGfxShape.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/WpfGfxShape.Tests/WpfGfxShape.Tests.csproj" />
+  </Folder>
+</Solution>
