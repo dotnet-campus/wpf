@@ -11,9 +11,10 @@
 
 ## 归档规则
 
-- 开始覆盖 `next-session-handoff.md` 前，先把旧版本原样归档。
+- `next-session-handoff.md` 只在导航变化时覆盖；覆盖前把旧版本原样归档。
+- 当前规则、稳定基线和工作切片的常规更新不要求为每轮复制入口快照。
 - 归档文件不作为下一轮任务入口。
-- 每项记录 session ID、完成/当前工作包、结果、下一工作包和归档文件。
+- 历史 snapshot 每项记录 session ID、工作包、结果、下一工作包和归档文件。
 - 规则详见 [`../10-session-continuity-protocol.md`](../10-session-continuity-protocol.md)。
 
 ## 索引

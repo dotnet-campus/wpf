@@ -1,7 +1,7 @@
 # wpfgfx 逐文件迁移顺序与工作包规范
 
-> 状态：原始批次、Ledger 和工作包规范基线；不再维护当前执行状态。  
-> 当前中长期缺口顺序以 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 为准，当前唯一动作以 [`next-session-handoff.md`](next-session-handoff.md) 为准。  
+> 历史/规范文档：保留原始批次、Ledger 和工作包门禁，不维护当前状态、完成比例或下一动作。  
+> 本文中的旧批次状态不得用于当前进度报告。当前中长期缺口与阶段状态以 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 为准，当前唯一动作以 [`handoffs/current-work-item.md`](handoffs/current-work-item.md) 为准。  
 > 适用范围：`src/Microsoft.DotNet.Wpf/src/WpfGfx`、其直接构建/生成依赖、wpfgfx ABI 实现和必要托管调用边界  
 > 新生产代码根目录：`WpfGfxShape/Code/WpfGfxShape`  
 > 上位约束：`WpfGfxShape/Docs/00-migration-charter.md`  

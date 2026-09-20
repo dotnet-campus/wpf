@@ -16,8 +16,10 @@
 
 ## 2. 单一当前入口与历史归档
 
-- `Docs/next-session-handoff.md` 永远是**当前唯一下一轮入口**。
-- 每轮开始编辑该文件前，将上一版原样归档到：
+- `Docs/next-session-handoff.md` 永远是**当前唯一恢复入口**，只维护恢复顺序和文档导航。
+- 当前执行规则、稳定基线和唯一工作切片分别维护在 `handoffs/current-execution-rules.md`、`handoffs/current-stable-baseline.md` 和 `handoffs/current-work-item.md`。
+- 只有需要改变入口导航时才编辑 `next-session-handoff.md`；不再要求每轮覆盖入口或为未变更的导航创建快照。
+- 若确需覆盖入口，将上一版原样归档到：
 
 ```text
 Docs/handoffs/<session-id>-<completed-or-current-work-package>.md
@@ -26,7 +28,7 @@ Docs/handoffs/<session-id>-<completed-or-current-work-package>.md
 - `session-id` 格式：`S-YYYYMMDD-NNN`；若无法可靠取得日期，使用 `S-UNDATED-NNN`，后续不得重编号。
 - 归档文件一经写入只允许修正明确笔误并记录原因，不覆盖历史结论。
 - `Docs/handoffs/README.md` 保存按顺序索引、工作包、结果和下一包。
-- 当前 handoff 只描述一个当前/下一工作包，不累积长篇历史日志。
+- `current-work-item.md` 只描述一个当前/下一工作切片，不累积长篇历史日志；完成事实追加到 `progress-completed-work.md`。
 
 ## 3. 会话开始协议
 
@@ -50,28 +52,18 @@ Docs/handoffs/<session-id>-<completed-or-current-work-package>.md
 - 不得为了“顺手”开始下一文件、下一批或重构。
 - 机制 spike、生产迁移和优化分别属于不同工作包。
 
-## 5. Handoff 必填格式
+## 5. 当前交接文档职责
 
-`next-session-handoff.md` 每轮覆盖更新，必须显式包含：
+当前交接信息拆分维护：
 
-1. 文档状态、current/completed work package、下一唯一工作包；
-2. 当前总体状态与最近完成事项；
-3. 本轮涉及的 Ledger Record/Group ID 及状态变化；Ledger 未建立时写 `None (WP-00I pending)`；
-4. ABI/Evidence/Decision ID 及状态；
-5. 实际新增/修改/删除文件；
-6. 已运行证据：操作、配置/RID、结果和工件路径；
-7. 未运行证据：项目、原因和对 Done 的影响；
-8. 新发现事实、偏差、风险、阻塞和用户裁决；
-9. 下一轮唯一主目标；
-10. 范围内事项；
-11. 明确范围外事项；
-12. 必读文档/源码/工件；
-13. 下一轮第一具体动作；
-14. 顺序任务清单与每项完成条件；
-15. 唯一停止点；
-16. 最强约束提醒：逐文件近似直译、禁止提前重构；
-17. 下一轮结束时应回写的 Ledger/ABI/Evidence/文档；
-18. 本 handoff 的归档目标路径。
+1. `next-session-handoff.md`：恢复顺序和文档导航；
+2. `handoffs/current-execution-rules.md`：每轮执行规则和禁止扩展边界；
+3. `handoffs/current-stable-baseline.md`：当前阶段、稳定能力和最近验证基线；
+4. `handoffs/current-work-item.md`：唯一下一动作、范围和完成条件；
+5. `handoffs/progress-completed-work.md`：已完成事实；
+6. Ledger、ABI、Evidence 和 Decision 状态继续写入各自事实源。
+
+不得把完成历史、阶段百分比、长测试流水或多个候选任务重新堆积到 `next-session-handoff.md`。
 
 所有字段必须写明确值；不适用时写 `None` 与原因，不能省略。
 

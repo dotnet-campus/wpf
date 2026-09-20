@@ -1,9 +1,8 @@
 # 第一步编码工作：建立独立构建隔离边界
 
-> 工作包：`WP-00A-BUILD-ISOLATION-AND-PROBE-SCAFFOLD`  
-> 本文范围：定义开始编码后的**第一项具体工作**，不是整个 `WP-00A` 的实施清单  
-> 状态：局部边界文件和项目脚手架已创建；实际 MSBuild 隔离验证未完成  
-> 上位约束：[`00-migration-charter.md`](00-migration-charter.md)、[`next-session-handoff.md`](next-session-handoff.md)
+> 历史文档：记录项目启动时 `WP-00A-BUILD-ISOLATION-AND-PROBE-SCAFFOLD` 的第一步，不再代表当前状态、当前阻塞或下一动作。  
+> `WP-00A` 已由后续事实源标记完成；本文中的未完成表述仅保留历史上下文，不得用于当前调度。  
+> 当前入口：[`next-session-handoff.md`](next-session-handoff.md)；当前阶段与剩余缺口：[`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md)。
 
 ## 1. 第一项具体工作
 

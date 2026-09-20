@@ -3,6 +3,7 @@
 > 状态：当前中长期推进计划。
 > 当前每轮唯一动作仍以 [`next-session-handoff.md`](next-session-handoff.md) 为准。
 > 当前文件实现事实以 [`native-to-managed-file-map.md`](native-to-managed-file-map.md) 为准。
+> 本文同时维护可核验的阶段状态与剩余大项；在生产分母不可确定计算时不维护整体完成百分比。
 > 本文不记录逐轮完成历史和测试流水。
 
 ## 1. 目标与职责

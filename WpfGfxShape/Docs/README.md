@@ -4,7 +4,7 @@
 
 1. [`00-migration-charter.md`](00-migration-charter.md) — 不可违反原则与跨会话协议
 2. [`next-session-handoff.md`](next-session-handoff.md) — 当前唯一下一工作切片
-3. [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) — 与当前实现同步的剩余缺口关闭顺序
+3. [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) — 与当前实现同步的阶段状态、剩余缺口和关闭顺序
 4. [`native-to-managed-file-map.md`](native-to-managed-file-map.md) — 当前原生职责到托管文件的事实映射
 5. [`03-migration-order.md`](03-migration-order.md) — 原始批次、Ledger 和工作包规范
 6. [`06-testing-strategy.md`](06-testing-strategy.md) — 测试层级、渐进 E2E 和证据门禁
@@ -29,7 +29,7 @@
 | [`11-first-coding-step.md`](11-first-coding-step.md) | `WP-00A` 开始编码后的第一项具体工作与停止条件 |
 | [`migration-master-plan.md`](migration-master-plan.md) | 初始总体规划基线；其中阶段状态不代表当前执行状态 |
 | [`session-roadmap.md`](session-roadmap.md) | 初始分轮规划基线；实际领取顺序不以其旧状态为准 |
-| [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) | 当前中长期缺口分类、依赖顺序、进入条件和完成条件 |
+| [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) | 当前中长期缺口分类、阶段状态、依赖顺序、进入条件和完成条件；生产分母不可计算时不维护整体百分比 |
 | [`next-session-handoff.md`](next-session-handoff.md) | 当前唯一入口；只保存恢复顺序和文档导航 |
 | [`handoffs/current-execution-rules.md`](handoffs/current-execution-rules.md) | 当前每轮执行规则与禁止扩展边界 |
 | [`handoffs/current-stable-baseline.md`](handoffs/current-stable-baseline.md) | 当前阶段、稳定能力摘要和最近验证基线 |
@@ -65,7 +65,7 @@
 
 - 原则只在 `00-migration-charter.md` 修改；用户明确批准后才能改变。
 - 当前中长期缺口顺序只在 `remaining-gap-closure-plan.md` 维护。
-- 当前唯一动作只在 `next-session-handoff.md` 维护。
+- 当前唯一动作只在 `handoffs/current-work-item.md` 维护；`next-session-handoff.md` 只维护恢复顺序和导航。
 - 当前文件映射事实只在 `native-to-managed-file-map.md` 维护。
 - 原始批次和工作包规范保留在 `migration-master-plan.md` 与 `03-migration-order.md`，但其中旧状态不代表当前状态。
 - 测试规则在 `06-testing-strategy.md` 和 `09-test-evidence-and-e2e-contract.md` 维护。

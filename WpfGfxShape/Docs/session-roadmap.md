@@ -1,8 +1,8 @@
 # wpfgfx 迁移分轮路线图
 
-> 状态：初始分轮规划基线；不再维护当前执行状态或当前领取顺序。  
-> 当前中长期缺口顺序以 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 为准。  
-> 实际下一轮始终以 [`next-session-handoff.md`](next-session-handoff.md) 为准。
+> 历史文档：初始分轮规划基线，不再维护当前执行状态、完成比例或领取顺序。  
+> 本文中的“已锁定轮次”“候选后续轮”和旧状态均不具有当前调度效力。  
+> 当前中长期缺口与阶段状态以 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 为准；实际下一动作以 [`handoffs/current-work-item.md`](handoffs/current-work-item.md) 为准。
 
 ## 1. 分轮原则
 

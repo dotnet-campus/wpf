@@ -1,8 +1,8 @@
 # wpfgfx 全量迁移到 C#/.NET 10 NativeAOT 总计划
 
-> 状态：初始总体规划基线；保留工作包树和最终完成定义，不再维护当前执行状态。  
-> 当前中长期缺口顺序以 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 为准。  
-> 当前唯一动作以 [`next-session-handoff.md`](next-session-handoff.md) 为准。  
+> 历史文档：初始总体规划基线；只保留工作包树和最终完成定义，不维护当前状态、完成比例或下一动作。  
+> 本文中的工作包状态和百分比推断不得用于当前进度报告。  
+> 当前中长期缺口与阶段状态以 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 为准；当前唯一动作以 [`handoffs/current-work-item.md`](handoffs/current-work-item.md) 为准。  
 > 原始任务顺序细则：`03-migration-order.md`  
 > 测试门禁：`06-testing-strategy.md`  
 > 最新静态复核：`investigations/05-planning-audit-and-source-revalidation.md`

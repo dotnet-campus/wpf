@@ -9,6 +9,7 @@
 - DirectX 绑定固定为 Silk.NET 2.23.0；Win32 优先 Microsoft.Windows.CsWin32 0.3.298。
 - D3D9/HW 底座已形成大量闭环，但生产 ABI、UCE/资源协议、完整图元绘制和 PresentationCore E2E 尚未完成。
 - 当前不能替换原 `wpfgfx_cor3.dll`。
+- 当前阶段状态为：正式关闭阶段 0 个、Active 阶段 1 个、Pending 阶段 6 个；阶段 1 尚未正式关闭。由于机器 Ledger 仍为 `RepairRequiredPartial` 且生产完成分母不可确定计算，不维护整体完成百分比。阶段完成条件与剩余大项见 [`../remaining-gap-closure-plan.md`](../remaining-gap-closure-plan.md)。
 
 ## 稳定能力摘要
 
