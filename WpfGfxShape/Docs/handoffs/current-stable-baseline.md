@@ -21,12 +21,6 @@
 
 ## 最近验证基线
 
-- 本轮完成原生 `CD3DRegistryDatabase::IsAdapterEnabled` 与 HAL 设备创建门控调用链的差集审计。原生先清空输出，adapter ordinal 越界返回 `E_INVALIDARG`，有效输入只按缓存错误计数是否小于固定阈值 5 返回启用状态；device manager 仅对 HAL 路径先检查 adapter count 再查询 registry 状态，禁用时返回 `WGXERR_NO_HARDWARE_DEVICE` 并停止后续 capability、present parameters 和设备创建。现有 `Direct3D9RegistryDatabase`、`Direct3D9Objects.CreateDeviceManager` 与 `Direct3D9DeviceManager.GetDeviceAndPresentParameters` 已保持相同门控、阈值和 software 绕过语义，无生产或测试缺口。验证：`Direct3D9RegistryDatabaseTests` 11/11、全量主测试 3862/3862、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
-
-- 本轮完成原生 `CD3DTexture::DetermineUsageAndLevels` 与两个非禁止生产调用者的 mipmap 创建参数差集审计。单级路径固定 usage 0/levels 1；自动 mipmap 路径固定 `D3DUSAGE_AUTOGENMIPMAP`/levels 0；手动 StretchRect 路径固定 `D3DUSAGE_RENDERTARGET`，并按 `Log2(max(width, height)) + 1` 请求直到 1x1 的完整 mip 链。现有托管实现保持相同语义，无生产缺口；新增高度主导 mip 深度回归。验证：`Direct3D9BitmapColorSourceTests` 111/111、全量主测试 3862/3862、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
-
-- 本轮完成原生 `CD3DVidMemOnlyTexture::Create` 两个重载与 `CD3DTexture::Init/InitResource` 的既有纹理包装、资源注册和所有权提交差集审计。托管 `Direct3D9Texture.TryCreate` 已具备主体语义，但原先只在单次 mip 遍历中取得 level-0 描述；现按原生顺序先单独读取并缓存 level 0，再从 level 0 开始遍历全部 mip 计算资源大小。新增两阶段读取顺序及第二次 level-0 读取失败时零 AddRef、零 Release、零注册和空输出回归。验证：`Direct3D9TextureTests` 35/35、全量主测试 3861/3861、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
-
 - 本轮完成原生 `CD3DTexture::GetTextureSize` 的 level-0 尺寸快照与生产调用者差集审计。原生只在资源有效期内返回初始化缓存的宽高，不重新调用 D3D9、不进入 device/use context，也不改变 COM 引用或资源使用状态。托管 `Direct3D9Texture` 已缓存相同尺寸，但原自动属性允许释放后读取；现改为带有效性检查的只读访问器，并新增有效读取及宽、高分别在释放后拒绝访问的回归。验证：`Direct3D9TextureTests` 33/33、全量主测试 3859/3859、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
 
 - 本轮完成 `CD3DDeviceLevel1::StretchRect` 包装层与非自动 mipmap 消费链的所有权审计：包装只借用源/目标 surface 身份，可空矩形和 filter 原样转发，不增加引用或转移所有权；mipmap 调用者负责逐级引用转移及失败清理。托管实现保持相同语义，无需修改生产或测试代码；详细结论已归档。实际验证：`Direct3D9DeviceStretchRectTests` 与 `Direct3D9TextureTests` 合计 39/39、全量主测试 3856/3856、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。

@@ -115,13 +115,8 @@ internal sealed unsafe class Direct3D9Texture : Direct3D9Resource
         }
 
         SurfaceDesc levelZeroDescription = default;
-        int result = getLevelDescription(existingTexture, 0, &levelZeroDescription);
-        if (result < 0)
-        {
-            return result;
-        }
-
         uint resourceSize = 0;
+        int result = 0;
         for (uint level = 0; level < levelCount; level++)
         {
             SurfaceDesc description = default;
@@ -135,6 +130,11 @@ internal sealed unsafe class Direct3D9Texture : Direct3D9Resource
             if (formatSize == 0)
             {
                 return Direct3D9Factory.WrongTextureFormatHResult;
+            }
+
+            if (level == 0)
+            {
+                levelZeroDescription = description;
             }
 
             resourceSize += description.Width * description.Height * formatSize;

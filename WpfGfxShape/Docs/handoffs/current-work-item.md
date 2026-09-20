@@ -1,34 +1,26 @@
 # 当前工作切片
+
 > 本文是当前唯一工作切片的详细说明；完成一轮后覆盖更新，不积累历史。
 > 执行约束见 [`current-execution-rules.md`](current-execution-rules.md)。
 
 ## 当前方向
-继续阶段 1。下一轮工作切片为 **Direct3D9Device 释放后保护与device-lost全链路闭环**，统一关闭设备部分初始化失败、已标记不可用、已释放后调用的所有生产调用链，完全对齐原生设备生命周期错误语义。
+
+继续阶段 1，优先关闭 `CD3DDeviceLevel1` 与 D3D9 资源包装层尚未验证或尚未归档的资源生命周期和直接设备边界。
 
 ## 最近完成切片
-### S-UNDATED-007-ADAPTER-FAULT-POLICY adapter故障策略模块闭环
-已完成CD3DRegistryDatabase、CD3DDeviceLevel1、CD3DDeviceManager全链路的错误计数、禁用逻辑、错误分类对齐，验证通过。详细结论见 `completed-work/S-UNDATED-007-ADAPTER-FAULT-POLICY.md`。
+
+### CD3DTexture::GetTextureSize 尺寸快照与释放后保护
+
+已完成 level-0 尺寸缓存、全部生产调用者和资源有效期差集审计；托管 `Direct3D9Texture.Width/Height` 现保持零 COM 调用的快照读取，并在释放后拒绝访问。该切片属于新归档规则启用前的最后一批旧归档事实，详细结论保留在冻结的 `progress-completed-work.md`；验证结果见 `current-stable-baseline.md`。
 
 ## 唯一下一动作
-完成 **device-lost与释放后保护模块闭环**。以原生 `CD3DDeviceLevel1` 所有对外方法的前置检查、设备失效后处理、部分初始化失败清理为中心，同时审计和必要时修复以下相邻链路：
-1. 所有`Direct3D9Device`对外公开方法添加前置检查：设备已释放返回`ObjectDisposedException`、已标记不可用返回对应`HRESULT`错误
-2. 设备部分初始化失败时按原生顺序清理已分配资源，不得泄漏COM引用
-3. device-lost处理时按原生顺序先销毁GPU markers、再通知manager、最后销毁资源，清理完成后禁止所有后续底层D3D调用
-4. 已释放/已失效设备的所有方法保持线程安全，无竞态条件
-5. 对齐原生`CD3DDeviceLevel1`中`IsProtected`、`CheckDeviceState`等辅助方法的失效判断逻辑
 
-本轮允许在`Direct3D9Device`、`Direct3D9ResourceManager`、`Direct3D9DeviceManager`相关文件中进行成组修改，不得扩展Reset/ResetEx、GDI presenter、UCE等禁止范围功能。
-
-## 执行顺序
-1. 枚举`CD3DDeviceLevel1`所有对外公开方法的前置检查逻辑，记录每个方法的失效返回值、检查顺序
-2. 对照`Direct3D9Device`所有公开方法，建立原生到托管的检查逻辑差集
-3. 一次性修复所有缺失的前置检查、清理逻辑和线程安全保护
-4. 补齐设备释放后调用、部分初始化失败、device-lost后调用的单元测试
-5. 运行相关device、resource-manager、render-target聚焦测试，再运行全量主测试
-6. 创建一个新的 `completed-work/S-UNDATED-008-DEVICE-LIFETIME-PROTECTION.md`，统一记录该模块的原生证据、生产差集、修改、测试和未扩展边界；随后覆盖更新本文件和`current-stable-baseline.md`。
+继续阶段 1，审计原生 `CD3DDeviceLevel1` 与 D3D9 资源包装层的下一个未归档公开/protected 声明及生产调用者差集；跳过仅有声明而无定义/调用者以及已确认完全属于 effects/UCE、完整 glyph/shader、GDI/software-DC、Reset/ResetEx、普通 scene/render-target/present 等禁止范围的成员，优先选择一个具有明确实现和非禁止生产调用链、可独立验证的生命周期或直接设备切片。选择前先查询完成归档，排除本轮已闭合的 `CD3DTexture::GetTextureSize` 尺寸快照与释放后保护切片，避免重复审计。
 
 ## 本轮完成条件
-- 所有`Direct3D9Device`公开方法均有正确的前置检查，释放/失效后调用不会触发底层COM访问或崩溃
-- 部分初始化失败场景无资源泄漏，所有已分配资源按顺序释放
-- device-lost处理逻辑与原生顺序完全对齐，清理后所有后续操作返回正确错误
-- 定向测试、全量主测试保持通过，并按新归档规则生成一个模块级完成文档。
+
+- 先定位原生声明、实现、生产调用者与所有权，再核对现有托管声明和测试覆盖。
+- 若已有闭环，仅归档差集结论；若存在缺口，只实现一个最小、可独立验证的生产切片。
+- 保持 Windows `Stdcall`、HRESULT 首错、COM 引用计数、失败逆序清理、确定性释放和释放后保护。
+- 不扩展 effects/UCE、生产 ABI、完整 glyph/shader、GDI/software-DC、Reset/ResetEx、普通 scene 或 render-target/present 生命周期等禁止范围。
+- 定向测试、全量主测试、ABI 测试和 Debug 解决方案构建必须保持通过；完成后在 `completed-work/` 中创建一个新的独立历史文档，不追加旧 `progress-completed-work.md`。
