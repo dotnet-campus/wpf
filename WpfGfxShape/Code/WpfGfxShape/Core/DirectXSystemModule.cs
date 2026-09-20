@@ -12,7 +12,16 @@ internal static unsafe class DirectXSystemModule
 {
     internal static DirectXModuleHandle Load(DirectXModule module)
     {
-        string libraryName = DirectXModuleInfo.GetLibraryName(module);
+        return Load(DirectXModuleInfo.GetLibraryName(module));
+    }
+
+    internal static DirectXModuleHandle Load(string libraryName)
+    {
+        if (string.IsNullOrWhiteSpace(libraryName))
+        {
+            throw new ArgumentException("A system library name is required.", nameof(libraryName));
+        }
+
         fixed (char* libraryNamePointer = libraryName)
         {
             HMODULE moduleHandle = PInvoke.LoadLibraryEx(

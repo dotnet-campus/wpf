@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="WpfGfxShape.Tests" />
+    <EmbeddedResource Include="..\..\..\src\Microsoft.DotNet.Wpf\src\WpfGfx\core\hw\Shaders.rc"
+                      LogicalName="WpfGfxShape.Resources.TextPixelShaders.rc" />
   </ItemGroup>
 
   <ItemGroup>

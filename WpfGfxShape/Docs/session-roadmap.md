@@ -1,7 +1,8 @@
 # wpfgfx 迁移分轮路线图
 
-> 用途：把总计划转换成后续对话可领取的唯一主工作包  
-> 规则：轮次编号只是交接顺序，不是时间估计；实际下一轮始终以 `next-session-handoff.md` 为准
+> 状态：初始分轮规划基线；不再维护当前执行状态或当前领取顺序。  
+> 当前中长期缺口顺序以 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 为准。  
+> 实际下一轮始终以 [`next-session-handoff.md`](next-session-handoff.md) 为准。
 
 ## 1. 分轮原则
 

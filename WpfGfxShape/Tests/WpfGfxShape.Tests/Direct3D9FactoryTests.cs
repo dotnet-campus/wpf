@@ -1,4 +1,5 @@
 using System.Runtime.Versioning;
+using Silk.NET.Direct3D9;
 using WpfGfxShape.Core;
 
 namespace WpfGfxShape.Tests;
@@ -116,6 +117,22 @@ public sealed unsafe class Direct3D9FactoryTests
 
     [TestMethod]
     [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenCreatingDefaultDeviceThenRetainsAdapterDisplayFormat()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 device creation requires Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Displaymode displayMode = objects.GetAdapterDisplayMode(0);
+        using Direct3D9Device device = objects.CreateDevice();
+
+        Assert.AreEqual(displayMode.Format, device.DisplayMode.Format);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
     public void WhenCreatingDefaultDeviceThenUsesOnePixelBackBuffer()
     {
         if (!OperatingSystem.IsWindows())
@@ -127,6 +144,23 @@ public sealed unsafe class Direct3D9FactoryTests
         using Direct3D9Device device = objects.CreateDevice();
 
         Assert.AreEqual(1u, device.PresentParameters.BackBufferWidth);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenCheckingDefaultRenderTargetFormatThenDepthStencilMatchSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 depth-stencil matching requires Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int result = device.CheckRenderTargetFormat(Format.X8R8G8B8, _ => 0, out _);
+
+        Assert.AreEqual(0, result);
     }
 
     [TestMethod]
@@ -178,6 +212,43 @@ public sealed unsafe class Direct3D9FactoryTests
         surface.Dispose();
 
         Assert.ThrowsExactly<ObjectDisposedException>(() => surface.GetDescription());
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenTestingLockableRenderTargetDeviceContextThenResultIsCached()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 surface device-context testing requires Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+        using Direct3D9Surface surface = device.CreateRenderTarget(2, 3, Format.X8R8G8B8, lockable: true);
+        Direct3D9TargetFormatTestStatus status = new();
+
+        int first = surface.TestGetDeviceContext(status);
+        int second = surface.TestGetDeviceContext(status);
+
+        Assert.AreEqual((first, true), (second, status.WasGetDeviceContextTested));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenTestingDisposedRenderTargetDeviceContextThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 surface device-context testing requires Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+        Direct3D9Surface surface = device.CreateRenderTarget(2, 3, Format.X8R8G8B8, lockable: true);
+        surface.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(() => surface.TestGetDeviceContext(new Direct3D9TargetFormatTestStatus()));
     }
 
     [TestMethod]
@@ -235,7 +306,7 @@ public sealed unsafe class Direct3D9FactoryTests
 
     [TestMethod]
     [SupportedOSPlatform("windows5.1.2600")]
-    public void WhenPresentingAdditionalSwapChainThenReturnsOperationalState()
+    public void WhenPresentingAdditionalSwapChainThenReturnsUsableState()
     {
         if (!OperatingSystem.IsWindows())
         {
@@ -248,7 +319,7 @@ public sealed unsafe class Direct3D9FactoryTests
 
         Direct3D9DeviceState state = swapChain.Present();
 
-        Assert.AreEqual(Direct3D9DeviceStateKind.Operational, state.Kind);
+        Assert.IsTrue(state.IsOperational);
     }
 
     [TestMethod]
@@ -360,6 +431,261 @@ public sealed unsafe class Direct3D9FactoryTests
 
     [TestMethod]
     [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenSettingRenderTargetThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 render-target changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+        using Direct3D9Surface renderTarget = device.CreateRenderTarget(16, 16);
+
+        int result = device.SetRenderTarget(renderTarget);
+
+        Assert.AreEqual(0, result);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingDepthStencilSurfaceThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 depth-stencil changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int result = device.SetDepthStencilSurface(null);
+
+        Assert.AreEqual(0, result);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingDepthStencilSurfaceAfterDisposeThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 depth-stencil changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(() => device.SetDepthStencilSurface(null));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenCreatingTextureThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 texture creation requires Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+        using Direct3D9Texture texture = device.CreateTexture(16, 16, pool: device.ManagedPool);
+
+        Assert.IsTrue(texture.IsValid);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenAccessingTextureAfterDisposeThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 texture creation requires Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+        Direct3D9Texture texture = device.CreateTexture(16, 16, pool: device.ManagedPool);
+        texture.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(() => _ = texture.Texture);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenSettingAlphaBlendEnableThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 render-state changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int result = device.SetRenderState(Renderstatetype.Alphablendenable, 1);
+
+        Assert.AreEqual(0, result);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingPixelShaderThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 pixel-shader changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int result = device.SetPixelShader(null);
+
+        Assert.AreEqual(0, result);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingVertexShaderThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 vertex-shader changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int result = device.SetVertexShader(null);
+
+        Assert.AreEqual(0, result);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingStreamSourceThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 stream-source changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int result = device.SetStreamSource(0, null, 0, 0);
+
+        Assert.AreEqual(0, result);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingIndicesThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 index-buffer changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int result = device.SetIndices(null);
+
+        Assert.AreEqual(0, result);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenSettingTextureStageStateThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 texture-stage changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int result = device.SetTextureStageState(0, Texturestagestatetype.Colorop, (uint) Textureop.Selectarg1);
+
+        Assert.AreEqual(0, result);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenSettingSamplerStateThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 sampler-state changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int result = device.SetSamplerState(0, Samplerstatetype.Magfilter, (uint) Texturefiltertype.Point);
+
+        Assert.AreEqual(0, result);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingTextureThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 texture changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int result = device.SetTexture(0, null);
+
+        Assert.AreEqual(0, result);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenSettingTextureVertexFormatThenDirect3DCallSucceeds()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 vertex-format changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int result = device.SetFlexibleVertexFormat((uint) (D3D9.FvfXyz | D3D9.FvfDiffuse | D3D9.FvfTex2));
+
+        Assert.AreEqual(0, result);
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenBeginningAndEndingSceneThenDirect3DCallsSucceed()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 scene changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        using Direct3D9Device device = objects.CreateDevice();
+
+        int beginResult = device.BeginScene();
+        int endResult = device.EndScene();
+
+        Assert.AreEqual((0, 0), (beginResult, endResult));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
     public void WhenCheckingDisposedDeviceStateThenThrowsObjectDisposedException()
     {
         if (!OperatingSystem.IsWindows())
@@ -372,6 +698,202 @@ public sealed unsafe class Direct3D9FactoryTests
         device.Dispose();
 
         Assert.ThrowsExactly<ObjectDisposedException>(() => device.CheckDeviceState());
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenBeginningSceneOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 scene changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(() => device.BeginScene());
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenEndingSceneOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 scene changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(() => device.EndScene());
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenSettingTextureVertexFormatOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 vertex-format changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(() => device.SetFlexibleVertexFormat(0));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenDrawingPrimitiveOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 primitive drawing requires Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(
+            () => device.DrawPrimitiveUp(Primitivetype.Trianglefan, 2, null, 32));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenSettingRenderStateOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 render-state changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(
+            () => device.SetRenderState(Renderstatetype.Alphablendenable, 1));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingPixelShaderOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 pixel-shader changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(() => device.SetPixelShader(null));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingVertexShaderOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 vertex-shader changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(() => device.SetVertexShader(null));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingStreamSourceOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 stream-source changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(() => device.SetStreamSource(0, null, 0, 0));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingIndicesOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 index-buffer changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(() => device.SetIndices(null));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenSettingTextureStageStateOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 texture-stage changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(
+            () => device.SetTextureStageState(0, Texturestagestatetype.Colorop, (uint) Textureop.Selectarg1));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenSettingSamplerStateOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 sampler-state changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(
+            () => device.SetSamplerState(0, Samplerstatetype.Magfilter, (uint) Texturefiltertype.Point));
+    }
+
+    [TestMethod]
+    [SupportedOSPlatform("windows5.1.2600")]
+    public void WhenClearingTextureOnDisposedDeviceThenThrowsObjectDisposedException()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Inconclusive("Direct3D 9 texture changes require Windows.");
+        }
+
+        using Direct3D9Objects objects = Direct3D9Factory.Create();
+        Direct3D9Device device = objects.CreateDevice();
+        device.Dispose();
+
+        Assert.ThrowsExactly<ObjectDisposedException>(() => device.SetTexture(0, null));
     }
 
     [TestMethod]

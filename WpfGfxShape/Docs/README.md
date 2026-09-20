@@ -3,16 +3,13 @@
 ## 推荐阅读顺序
 
 1. [`00-migration-charter.md`](00-migration-charter.md) — 不可违反原则与跨会话协议
-2. [`next-session-handoff.md`](next-session-handoff.md) — 当前唯一下一工作包
-3. [`11-first-coding-step.md`](11-first-coding-step.md) — 开始编码后的第一项具体工作
-4. [`migration-master-plan.md`](migration-master-plan.md) — 总体工作包树与完成条件
-5. [`03-migration-order.md`](03-migration-order.md) — 逐文件顺序、Ledger、批次和工作包规范
+2. [`next-session-handoff.md`](next-session-handoff.md) — 当前唯一下一工作切片
+3. [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) — 与当前实现同步的剩余缺口关闭顺序
+4. [`native-to-managed-file-map.md`](native-to-managed-file-map.md) — 当前原生职责到托管文件的事实映射
+5. [`03-migration-order.md`](03-migration-order.md) — 原始批次、Ledger 和工作包规范
 6. [`06-testing-strategy.md`](06-testing-strategy.md) — 测试层级、渐进 E2E 和证据门禁
-7. [`07-scope-and-ledger-schema.md`](07-scope-and-ledger-schema.md) — 生产分母与机器 Ledger schema
-8. [`08-abi-manifest-spec.md`](08-abi-manifest-spec.md) — ABI manifest schema
-9. [`09-test-evidence-and-e2e-contract.md`](09-test-evidence-and-e2e-contract.md) — harness 与 evidence 契约
-10. [`10-session-continuity-protocol.md`](10-session-continuity-protocol.md) — 会话、交接、归档和决策协议
-11. 与当前工作包直接相关的专题文档
+7. [`09-test-evidence-and-e2e-contract.md`](09-test-evidence-and-e2e-contract.md) — harness 与 evidence 契约
+8. 与当前工作切片直接相关的专题文档
 
 ## 权威文档
 
@@ -30,10 +27,14 @@
 | [`09-test-evidence-and-e2e-contract.md`](09-test-evidence-and-e2e-contract.md) | 测试承载、运行目录、Evidence ID 和 E2E 可执行契约 |
 | [`10-session-continuity-protocol.md`](10-session-continuity-protocol.md) | 跨会话领取、归档、决策、失败和中断协议 |
 | [`11-first-coding-step.md`](11-first-coding-step.md) | `WP-00A` 开始编码后的第一项具体工作与停止条件 |
-| [`migration-master-plan.md`](migration-master-plan.md) | 总体目标、工作包树、P0 门和最终完成定义 |
-| [`session-roadmap.md`](session-roadmap.md) | 后续对话的推荐领取顺序 |
-| [`next-session-handoff.md`](next-session-handoff.md) | 每轮覆盖更新的唯一交接入口 |
-| [`native-to-managed-file-map.md`](native-to-managed-file-map.md) | 已实施原生 C++ 文件到主要 C# 文件的权威对照表 |
+| [`migration-master-plan.md`](migration-master-plan.md) | 初始总体规划基线；其中阶段状态不代表当前执行状态 |
+| [`session-roadmap.md`](session-roadmap.md) | 初始分轮规划基线；实际领取顺序不以其旧状态为准 |
+| [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) | 当前中长期缺口分类、依赖顺序、进入条件和完成条件 |
+| [`next-session-handoff.md`](next-session-handoff.md) | 当前唯一入口；只保存恢复顺序和文档导航 |
+| [`handoffs/current-execution-rules.md`](handoffs/current-execution-rules.md) | 当前每轮执行规则与禁止扩展边界 |
+| [`handoffs/current-stable-baseline.md`](handoffs/current-stable-baseline.md) | 当前阶段、稳定能力摘要和最近验证基线 |
+| [`handoffs/current-work-item.md`](handoffs/current-work-item.md) | 当前唯一工作切片及完成条件 |
+| [`native-to-managed-file-map.md`](native-to-managed-file-map.md) | 当前原生职责到主要 C# 文件的事实对照表 |
 | [`decisions/README.md`](decisions/README.md) | 已接受决策与待裁决 P0 索引 |
 | [`handoffs/README.md`](handoffs/README.md) | 不可覆盖的历史交接快照索引 |
 
@@ -53,21 +54,20 @@
 
 ## 当前状态摘要
 
-- 当前实际结构已经创建：`WpfGfxShape.slnx`、`Code/WpfGfxShape/WpfGfxShape.csproj`、`Tests/WpfGfxShape.Tests/WpfGfxShape.Tests.csproj` 以及局部 `Directory.Build.props/targets`。
-- 托管测试框架为 MSTest，当前项目引用 `MSTest` `4.0.1`。
-- Native AOT 生产项目、唯一非生产 ABI probe 和内部 MSTest 已存在；内部 `NativeAotAbiProbe.Invoke(...)` 测试只属于快速单元测试，不能作为最终 ABI 证据。
-- `Tests/NativeCaller` 是已作废设计，必须删除且不得恢复；项目不要求 C++ `.lib` 链接或纯原生消费者验证。
-- 后续目录以 `Code`、`Tests`、`Docs` 为准，不再使用旧规划中的 `src/tests`。
-- 当前唯一工作包：继续 `WP-00I-MACHINE-READABLE-LEDGER`；机器 Ledger 已启动但尚未完成 461 逐项与多视图闭包。
-- 当前 P0：Windows x86 Native AOT、unload/reload、COM-like vtable/object。
-- 当前 ABI 静态基线：106 `.def`、107 唯一 EntryPoint、99 交集、8/7 差异。
-- 当前原生项目项下限：24 个生产项目、461 个直接 `ClCompile`；24 个项目哨兵及根合同已进入 machine-readable Ledger，但完整迁移分母仍待逐项与多视图闭包。
+- 当前位于 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 的阶段 1：继续关闭 HW backend 生命周期和直接设备边界。
+- 每轮只执行 [`next-session-handoff.md`](next-session-handoff.md) 指定的一个可独立验证切片。
+- 当前尚不能替换原 `wpfgfx_cor3.dll`：生产 ABI、generated protocol、UCE/资源协议、完整内容管线和 PresentationCore E2E 尚未闭环。
+- 当前代码和测试结构以 `WpfGfxShape.slnx` 中的生产、主测试、ABI Host、ABI 集成测试四个项目为准。
+- 原生职责到托管文件的当前状态以 [`native-to-managed-file-map.md`](native-to-managed-file-map.md) 为准。
+- 初始规划文档中的旧工作包状态、`Done` 标记和早期下一目标不得覆盖当前交接与缺口关闭计划。
 
 ## 维护规则
 
-- 原则只在 `00` 修改；用户明确批准后才能改变。
-- 总工作包只在 `migration-master-plan.md` 和 `03-migration-order.md` 维护。
-- 测试规则只在 `06-testing-strategy.md` 维护。
+- 原则只在 `00-migration-charter.md` 修改；用户明确批准后才能改变。
+- 当前中长期缺口顺序只在 `remaining-gap-closure-plan.md` 维护。
+- 当前唯一动作只在 `next-session-handoff.md` 维护。
+- 当前文件映射事实只在 `native-to-managed-file-map.md` 维护。
+- 原始批次和工作包规范保留在 `migration-master-plan.md` 与 `03-migration-order.md`，但其中旧状态不代表当前状态。
+- 测试规则在 `06-testing-strategy.md` 和 `09-test-evidence-and-e2e-contract.md` 维护。
 - 调查文档保留历史证据，不作为下一轮任务入口。
-- 每轮结束必须更新 `next-session-handoff.md`，且只留下一个下一主目标。
 - 未 build/publish/test 的结论必须继续标记为未验证。

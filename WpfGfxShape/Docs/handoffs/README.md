@@ -1,6 +1,9 @@
 # wpfgfx 会话交接归档索引
 
-> 当前唯一入口始终是 [`../next-session-handoff.md`](../next-session-handoff.md)。本目录只保存不可覆盖的历史 snapshot。
+> 当前唯一入口始终是 [`../next-session-handoff.md`](../next-session-handoff.md)。本目录保存当前交接支撑文件、不可覆盖的历史 snapshot 与按主题维护的完成进展归档；恢复工作仍必须先从唯一入口开始。
+>
+> 当前执行约束见 [`current-execution-rules.md`](current-execution-rules.md)，稳定基线见 [`current-stable-baseline.md`](current-stable-baseline.md)，当前工作切片见 [`current-work-item.md`](current-work-item.md)。
+> 长期完成状态摘要见 [`progress-completed-work.md`](progress-completed-work.md)，HW render-target 逐轮历史见 [`progress-hw-rendertarget.md`](progress-hw-rendertarget.md)。
 
 ## 命名
 

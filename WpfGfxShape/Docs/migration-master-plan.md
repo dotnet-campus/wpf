@@ -1,9 +1,9 @@
 # wpfgfx 全量迁移到 C#/.NET 10 NativeAOT 总计划
 
-> 状态：权威总体计划  
-> 当前阶段：`WP-00I` 状态为 `RepairRequiredPartial`；本轮静态核查 `core/api/api.vcxproj`，并发现既有“7 条完整记录”结论不成立。受限写入接口在覆写、追加和删除时均可复用损坏片段，现已止损为 2 条逐行完整记录：`DynamicCall` 项目与 `DelayCall.cpp`；生产项目哨兵事实源为 1/24，直接 `ClCompile` 为 1/461；`api` 等已核查哨兵待安全恢复  
-> 下一唯一工作包：继续 `WP-00I-MACHINE-READABLE-LEDGER`  
-> 任务顺序细则：`03-migration-order.md`  
+> 状态：初始总体规划基线；保留工作包树和最终完成定义，不再维护当前执行状态。  
+> 当前中长期缺口顺序以 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 为准。  
+> 当前唯一动作以 [`next-session-handoff.md`](next-session-handoff.md) 为准。  
+> 原始任务顺序细则：`03-migration-order.md`  
 > 测试门禁：`06-testing-strategy.md`  
 > 最新静态复核：`investigations/05-planning-audit-and-source-revalidation.md`
 

@@ -1,6 +1,7 @@
 # wpfgfx 逐文件迁移顺序与工作包规范
 
-> 状态：静态规划基线已收口；15 批次、Ledger、横切门禁和首个真实实现候选已锁定，后续按构建、二进制和运行证据增量维护  
+> 状态：原始批次、Ledger 和工作包规范基线；不再维护当前执行状态。  
+> 当前中长期缺口顺序以 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 为准，当前唯一动作以 [`next-session-handoff.md`](next-session-handoff.md) 为准。  
 > 适用范围：`src/Microsoft.DotNet.Wpf/src/WpfGfx`、其直接构建/生成依赖、wpfgfx ABI 实现和必要托管调用边界  
 > 新生产代码根目录：`WpfGfxShape/Code/WpfGfxShape`  
 > 上位约束：`WpfGfxShape/Docs/00-migration-charter.md`  
@@ -9,11 +10,11 @@
 
 ## 0. 本文如何使用
 
-本文是后续逐文件实施的权威排序入口。每轮实现会话必须：
+本文保留原始批次、Ledger 和工作包门禁，供当前切片核对依赖与验证要求。当前中长期顺序由 `remaining-gap-closure-plan.md` 维护。每轮实现会话必须：
 
-1. 先阅读 `00-migration-charter.md` 和 `next-session-handoff.md`；
-2. 再阅读本文中当前批次、工作包和门禁；
-3. 只领取交接文件指定的一个主工作包；
+1. 先阅读 `00-migration-charter.md`、`next-session-handoff.md` 和 `remaining-gap-closure-plan.md`；
+2. 再按需要阅读本文对应的原始批次、工作包和门禁；
+3. 只领取交接文件指定的一个主工作切片；
 4. 编码前建立或更新目标文件的迁移台账；
 5. 编码后运行该工作包规定的验证；
 6. 结束前更新台账、专题文档和 `next-session-handoff.md`。

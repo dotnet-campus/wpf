@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0.0",
+  "ledgerStatus": "RepairRequiredPartial",
+  "originWpfRevision": "44615ed4b9f033922b3361ea02c02f173b8bf82e",
+  "originWpfWorkingTree": "NotInspected",
+  "silkNetRevision": "ed4b3c299a44e8b6936f6b1c61c0b119e82237cd",
+  "generatedSession": "SESSION-WP00I-STATIC-EXPANSION-06",
+  "encoding": "UTF-8",
+  "pathConvention": "OriginWpf-relative-forward-slash",
+  "validationStatus": "TwoRecordsLineIntegrityConfirmed-WriteChannelCorruptionObserved-MachineValidationDeferred",
+  "deferredValidationReason": "Line-by-line reread disproved the prior seven-record integrity claim. The restricted write channel reused corrupted fragments during overwrite, append, and tail deletion. records.jsonl was reduced to two individually confirmed complete records. core/api/api.vcxproj was statically reviewed and remains queued for safe restoration. Machine schema validation, builds, tests, scripts, and processes remain prohibited and non-blocking."
+}
