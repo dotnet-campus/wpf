@@ -1,18 +1,19 @@
 # wpfgfx 测试证据与渐进 E2E Harness 契约
 
-> 状态：权威 harness/evidence 契约；`E2E-00` 托管 ABI harness 已落地并执行通过；Ledger evidence 索引已启动；原 Release win-x64 DLL 已定位但尚未形成 hash/loader 运行 golden  
-> 测试层级与门禁：[`06-testing-strategy.md`](06-testing-strategy.md)  
-> ABI schema：[`08-abi-manifest-spec.md`](08-abi-manifest-spec.md)
+> 文档身份：权威 harness/evidence 契约；不维护最近测试数量、当前包状态或阶段进度。  
+> `E2E-00` 托管 ABI harness 只证明非生产 probe 机制；生产 ABI、原 DLL golden 和 PresentationCore E2E 仍按契约逐级建立。  
+> 当前测试项目与最近执行结果以 [`handoffs/current-stable-baseline.md`](handoffs/current-stable-baseline.md) 为准。  
+> 测试层级与门禁：[`06-testing-strategy.md`](06-testing-strategy.md)；ABI schema：[`08-abi-manifest-spec.md`](08-abi-manifest-spec.md)。
 
 ## 1. 目的
 
-本文把 `T0–T5` 与 `E2E-00–E2E-09` 从原则表转为后续可执行的项目、进程、输入、输出和证据契约。当前 MSTest 项目已经创建并引用 `MSTest` `4.0.1`；其还原、测试发现和运行结果仍需由后续执行证据确认。
+本文把 `T0–T5` 与 `E2E-00–E2E-09` 从原则表转为可执行的项目、进程、输入、输出和证据契约。MSTest 主测试、ABI Host 和 ABI 集成测试项目均已存在；具体包版本与运行结果属于当前项目和稳定基线事实，不在本文持续复制。
 
 测试的目标不是证明“C# 代码看起来合理”，而是持续证明：原实现与候选实现的 ABI、字节、状态、副作用、线程、所有权和真实 PresentationCore 流程等价。
 
-`WP-00I` 已创建 `Ledger/evidence.jsonl` 作为证据 ID 索引。预定义但尚未执行的证据必须显式标记 `Planned` 或 `Deferred`，`satisfiedEvidenceIds` 只能引用真实已执行/已取得的证据；人工 JSONL 复核不得冒充机器 schema 校验。
+`Ledger/evidence.jsonl` 是证据 ID 索引。预定义但尚未执行的证据必须显式标记 `Planned` 或 `Deferred`，`satisfiedEvidenceIds` 只能引用真实已执行或已取得的证据；人工 JSONL 复核不得冒充机器 schema 校验。
 
-## 2. 预期承载边界
+## 2. 当前与目标承载边界
 
 ```text
 WpfGfxShape/
@@ -21,11 +22,11 @@ WpfGfxShape/
       WpfGfxShape.Tests.csproj         # T1：MSTest；纯逻辑、布局辅助、manifest/schema
     WpfGfxShape.AbiIntegration/        # T2：MSTest 发布与子进程编排
     WpfGfxShape.AbiIntegration.Host/   # T2：独立托管进程、resolver、真实 P/Invoke ABI
-    NativeBaselineAdapter/             # T3：原实现可观察适配；不改原产品源码
-    Differential/                      # T3 编排与结果比较
-    ComponentHarness/                  # T4 子系统闭环
-    PresentationCoreE2E/               # T5 未修改真实 WPF 调用链
-    TestAssets/                         # 小型确定性输入；大型媒体另行管理
+    NativeBaselineAdapter/             # T3 目标承载，尚未完整建立
+    Differential/                      # T3 目标承载，尚未完整建立
+    ComponentHarness/                  # T4 目标承载，按组件增量建立
+    PresentationCoreE2E/               # T5 目标承载，尚未完整建立
+    TestAssets/                         # 确定性输入，按测试需要建立
   artifacts/test-results/
 ```
 
@@ -40,9 +41,9 @@ WpfGfxShape/
 
 ## 3. 测试框架与包版本决策
 
-托管测试框架锁定为 MSTest。`WP-00A` 必须根据独立还原证据锁定其包版本。执行规则：
+托管测试框架锁定为 MSTest。执行规则：
 
-1. 当前测试项目显式引用 `MSTest` `4.0.1`；是否还需拆分声明 adapter/SDK 依赖，以实际还原、测试发现和项目求值证据为准；
+1. 包版本以当前项目文件和成功还原/测试发现证据为准，不在本文硬编码持续变化的版本；
 2. 不继承根 `eng/Testing.targets` 的包注入；
 3. 与 .NET 10、AOT 项目引用和当前 IDE Test Explorer 兼容；
 4. 不因追求统一而修改 WPF 原测试项目；
@@ -283,17 +284,17 @@ Comparator 独立读取 original/candidate 结果，应用预先批准的比较�
 - 随机/属性测试必须可重放；失败保存最小化输入与原 seed。
 - 不能只运行一次 happy path 关闭有状态工作包。
 
-## 15. 当前已锁定与未锁定项
+## 15. 已锁定承载与未关闭能力
 
-已由 `WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION` 锁定：
+已锁定：
 
-- MSTest 包版本为 `4.0.1`；
-- T2 采用 `WpfGfxShape.AbiIntegration` 编排项目与 `WpfGfxShape.AbiIntegration.Host` 独立子进程宿主；
+- T2 使用 `WpfGfxShape.AbiIntegration` 编排项目与 `WpfGfxShape.AbiIntegration.Host` 独立子进程宿主；
 - 固定库名由 resolver 解析到 publish DLL 绝对路径；
-- Debug/Release `win-x64` 协议、并发、缺失 DLL、缺失导出、无效 PE、错误架构、模块路径和 SHA-256 已执行通过；
-- 本轮全量结果：T1 10/10、T2 8/8 通过。
+- ABI probe 覆盖协议、并发、缺失 DLL、缺失导出、无效 PE、错误架构、模块路径和文件身份。
 
-仍留给后续工作包裁决：
+最近执行数字见 `handoffs/current-stable-baseline.md`，不在本文维护。
+
+仍未关闭：
 
 - PresentationCore candidate 隔离加载的具体机制；
 - 大型原 DLL/媒体/图像工件是否提交仓库或保存在受控外部存储；

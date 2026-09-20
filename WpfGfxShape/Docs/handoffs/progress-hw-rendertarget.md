@@ -1,7 +1,7 @@
 # 生产翻译进展归档：HW RenderTarget（hwsurfrt.cpp / hwdisplayrt.cpp / hwhwndrt.cpp）
 
 > 归档自旧版 `next-session-handoff.md` 的 HW render-target 主题段；不作为下一轮任务入口。
-> 维护规则：历史事实不可覆盖；新完成事实写入 `progress-completed-work.md`，当前唯一动作写入 `current-work-item.md`。本文中的“下一切片”仅是历史记录，不具有当前调度效力。
+> 维护规则：历史事实不可覆盖；新完成事实以独立文件写入 `completed-work/`，当前唯一动作写入 `current-work-item.md`。本文中的“下一切片”仅是历史记录，不具有当前调度效力。
 
 ## HW render-target 生产翻译进展
 

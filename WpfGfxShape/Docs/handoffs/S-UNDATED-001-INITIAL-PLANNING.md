@@ -1,8 +1,9 @@
-# 下一轮交接：创建独立构建边界与 NativeAOT probe 脚手架
+# 历史快照：首轮独立构建边界与 NativeAOT probe 规划
 
-> 历史 snapshot：本文件归档自首版 `next-session-handoff.md`；全文所有 NativeCaller、C++ caller、`.lib` 链接和纯原生消费者规划均已由 DEC-0003 作废，不得作为当前实施依据  
-> 下一工作包：`WP-00A-BUILD-ISOLATION-AND-PROBE-SCAFFOLD`  
-> 当时状态：只完成调查和文档；尚未创建项目、构建、发布、运行测试或翻译任何生产实现
+> 完全过期的实施交接：本文件归档自首版 `next-session-handoff.md`，只保留当时规划和决策演变证据，不得用于恢复工作、判断当前状态或选择下一动作。  
+> 当时的下一工作包：`WP-00A-BUILD-ISOLATION-AND-PROBE-SCAFFOLD`；该工作包后续已经完成，此处仅为历史值。  
+> 全文所有 NativeCaller、C++ caller、`.lib` 链接和纯原生消费者规划均已由 DEC-0003 作废。  
+> 当时状态：只完成调查和文档；尚未创建项目、构建、发布、运行测试或翻译任何生产实现。当前事实必须从 [`../next-session-handoff.md`](../next-session-handoff.md) 恢复。
 
 ## 1. 当前总体状态
 

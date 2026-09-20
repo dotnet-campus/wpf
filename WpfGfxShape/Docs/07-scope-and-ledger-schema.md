@@ -1,9 +1,9 @@
 # wpfgfx 迁移范围与机器可读 Ledger 规范
 
-> 状态：实施前权威 schema；实际 Ledger 由 `WP-00I-MACHINE-READABLE-LEDGER` 创建  
-> 上位约束：[`00-migration-charter.md`](00-migration-charter.md)  
-> 当前 WPF 源基线：`44615ed4b9f033922b3361ea02c02f173b8bf82e`（当前工作树 `.git/HEAD` 静态读取；工作区脏状态未验证）  
-> 当前 Silk.NET 基线：`ed4b3c299a44e8b6936f6b1c61c0b119e82237cd`
+> 文档身份：生产范围与 Ledger schema 的权威规范；不维护 Ledger 当前记录数量或修复进度。  
+> Ledger 已位于 `WpfGfxShape/Ledger/`，当前状态为 `RepairRequiredPartial`；实时事实以 `Ledger/*.jsonl` 和 `Ledger/views/status.md` 为准。  
+> 上位约束：[`00-migration-charter.md`](00-migration-charter.md)。  
+> 原调查的 WPF/Silk.NET revision 只作为当时基线，不代表当前依赖版本。
 
 ## 1. 目的
 
@@ -32,7 +32,7 @@
 
 ## 3. 工件位置与格式
 
-`WP-00I` 应创建：
+当前 Ledger 目标结构为：
 
 ```text
 WpfGfxShape/Ledger/
@@ -168,7 +168,7 @@ WpfGfxShape/Ledger/
 
 ## 8. 完整性校验规则
 
-`WP-00I` 必须实现或提供可重复执行的校验，至少检查：
+Ledger 校验器必须可重复执行，并至少检查：
 
 1. ID 全局唯一，所有跨记录引用存在；
 2. 所有 `wpfgfx.vcxproj` 直接项目引用均有项目/供应记录；
@@ -193,19 +193,19 @@ WpfGfxShape/Ledger/
 - 生成时间与 schema version；
 - 输入 hash 或来源 manifest。
 
-当前规划轮次只确认 revision 文本，未验证工作区 clean 状态、项目求值或磁盘完整闭包。
+每次基线更新都必须重新记录 revision、工作区状态和枚举方法；旧调查记录不能代替当前项目求值或磁盘完整闭包。
 
-## 10. 与工作包的关系
+## 10. 与当前工作的关系
 
-- `WP-00A` 只创建未来 Ledger 目录承载所需的最小边界（如确有需要）；不得伪造完整记录。
-- `WP-00H` 提供原二进制 Evidence/Artifact 记录。
-- `WP-00I` 创建并校验首个完整 Ledger，之后每轮先更新受影响记录再编码。
-- 批次 1–14 的每个会话必须在结束前回写状态、依赖、路径、偏差和证据。
-- `next-session-handoff.md` 必须列出本轮涉及的 Record/Group ID；若 Ledger 尚未创建，明确写 `None (WP-00I pending)`。
+- Ledger 已创建，但当前为 `RepairRequiredPartial`；不得把缺失记录解释为已检查或已完成。
+- 原二进制 Evidence/Artifact、ABI、生成、资源和外部供应记录继续按事实增量补齐。
+- 每个生产切片编码前应确认目标记录、映射和验证定义；结束前回写实际状态、依赖、路径、偏差和证据。
+- `current-work-item.md` 记录与当前切片直接相关的 Record/Group ID；无记录时必须明确说明缺口，不再使用“Ledger 尚未创建”分支。
+- 当前有效记录数量和阻塞只从 `Ledger/*.jsonl` 与 `Ledger/views/status.md` 读取。
 
 ## 11. 完成定义
 
-本规范完成不代表 Ledger 完成。`WP-00I` 只有在：
+本规范完成不代表 Ledger 完成。Ledger 只有在以下条件全部满足时才可关闭：
 
 - 生产分母机器可计算；
 - 多视图闭环通过；

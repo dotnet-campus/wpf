@@ -11,7 +11,7 @@
 
 ### CD3DTexture::GetTextureSize 尺寸快照与释放后保护
 
-已完成 level-0 尺寸缓存、全部生产调用者和资源有效期差集审计；托管 `Direct3D9Texture.Width/Height` 现保持零 COM 调用的快照读取，并在释放后拒绝访问。详细证据及完成事实已迁入 `progress-completed-work.md`，本轮验证结果见 `current-stable-baseline.md`。
+已完成 level-0 尺寸缓存、全部生产调用者和资源有效期差集审计；托管 `Direct3D9Texture.Width/Height` 现保持零 COM 调用的快照读取，并在释放后拒绝访问。该切片属于新归档规则启用前的最后一批旧归档事实，详细结论保留在冻结的 `progress-completed-work.md`；验证结果见 `current-stable-baseline.md`。
 
 ## 唯一下一动作
 
@@ -23,4 +23,4 @@
 - 若已有闭环，仅归档差集结论；若存在缺口，只实现一个最小、可独立验证的生产切片。
 - 保持 Windows `Stdcall`、HRESULT 首错、COM 引用计数、失败逆序清理、确定性释放和释放后保护。
 - 不扩展 effects/UCE、生产 ABI、完整 glyph/shader、GDI/software-DC、Reset/ResetEx、普通 scene 或 render-target/present 生命周期等禁止范围。
-- 定向测试、全量主测试、ABI 测试和 Debug 解决方案构建必须保持通过；完成事实迁入 `progress-completed-work.md`。
+- 定向测试、全量主测试、ABI 测试和 Debug 解决方案构建必须保持通过；完成后在 `completed-work/` 中创建一个新的独立历史文档，不追加旧 `progress-completed-work.md`。

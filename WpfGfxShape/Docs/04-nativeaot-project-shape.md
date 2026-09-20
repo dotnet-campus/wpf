@@ -1,44 +1,11 @@
-# 独立 .NET 10 Native AOT 项目方案
+# 当前 .NET 10 Native AOT 项目形态
 
-> 状态：项目脚手架、Native AOT 属性和 x64 publish 已建立；发布后托管 P/Invoke ABI 主证据仍待实现  
-> 上位约束：`00-migration-charter.md`  
-> 调查依据：`investigations/04a-build-isolation.md`、`investigations/04b-nativeaot-exports.md`  
-> 当前实施工作包：`WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION`
+> 本文记录当前项目结构和稳定项目边界，不维护当前工作切片、完成比例或测试流水。
+> 当前恢复入口见 [`next-session-handoff.md`](next-session-handoff.md)，最近构建和测试结果见 [`handoffs/current-stable-baseline.md`](handoffs/current-stable-baseline.md)。
 
-## 1. 目标形态
+## 1. 当前解决方案结构
 
-最终生产形态固定为：
-
-- 一个独立的 `Microsoft.NET.Sdk` C# 生产项目；
-- 目标框架 `net10.0`；
-- Native AOT shared library；
-- 候选产物基础名 `wpfgfx_cor3.dll`；
-- 一个已创建于 `Tests/WpfGfxShape.Tests` 下的独立 MSTest 托管单元测试项目；
-- 一个发布后托管 P/Invoke ABI 集成测试宿主/子进程承载；
-- 不创建或保留 `Tests/NativeCaller`，不要求 C++ 动态/静态 caller 或 `.lib` 链接；
-- 不修改、不引用、不递归构建原 WPF/wpfgfx 项目；
-- 生产源码仍镜像 `common`、`core`、`shared` 等原目录边界。
-
-“一个项目”只约束生产代码的构建和发布边界，不包含托管测试宿主/harness，也不允许扁平化或重构原职责。
-
-## 2. 强制隔离边界
-
-新项目位于 `WpfGfxShape` 下时会默认向上发现仓库根 `Directory.Build.props`、`Directory.Build.targets`、`global.json` 和 `NuGet.config`。根 props/targets 会导入 WPF Arcade SDK 和 `eng/Testing.targets`，不能只靠项目内属性可靠撤销。
-
-下一轮必须先创建并验证：
-
-- `WpfGfxShape/Directory.Build.props`：截断根 props 自动发现，只保留局部最小公共属性；
-- `WpfGfxShape/Directory.Build.targets`：截断根 targets 自动发现，不导入 WPF Arcade/Testing；
-- 独立 solution/solution filter：不修改 `Microsoft.Dotnet.Wpf.sln`；
-- 独立 `artifacts` 输出根：不覆盖原 WPF artifacts。
-
-初始可明确接受根 `global.json` 的 SDK `10.0.107`。是否创建局部 `global.json`，只能由首次 SDK 求值和可重复性证据决定；不要为了“看起来独立”预先复制根配置。
-
-一旦引入 Silk.NET 或测试包，应建立局部、可审计的 NuGet 来源和版本策略；不得依赖 WPF 根 targets 隐式注入测试包。
-
-## 3. 当前实际文件树与后续扩展位置
-
-当前已经创建的项目结构如下，后续实施必须以此为准，不得再按旧的 `src/tests` 规划重复创建项目：
+`WpfGfxShape.slnx` 当前包含四个项目：
 
 ```text
 WpfGfxShape/
@@ -48,117 +15,108 @@ WpfGfxShape/
   Code/
     WpfGfxShape/
       WpfGfxShape.csproj
-      Class1.cs                       # 模板占位，后续处理
+      Abi/
+      Core/
   Tests/
     WpfGfxShape.Tests/
       WpfGfxShape.Tests.csproj
-      MSTestSettings.cs
-      Test1.cs                        # 模板测试，后续处理
-  Docs/
+    WpfGfxShape.AbiIntegration.Host/
+      WpfGfxShape.AbiIntegration.Host.csproj
+    WpfGfxShape.AbiIntegration/
+      WpfGfxShape.AbiIntegration.csproj
+  artifacts/
 ```
 
-生产代码位于 `Code/WpfGfxShape/Abi`、`Code/WpfGfxShape/common`、`Code/WpfGfxShape/core`、`Code/WpfGfxShape/shared`；发布后 ABI 集成测试位于 `Tests` 下的独立托管宿主/子进程承载。`Tests/NativeCaller` 属于已作废设计，必须删除且不得恢复。`common`、`core`、`shared` 在脚手架工作包中只能作为边界占位，不得创建生产业务类型或复制原生文件。输出仍位于局部 `artifacts` 根。
+职责分别为：
 
-## 4. 生产项目属性基线
+- `Code/WpfGfxShape/WpfGfxShape.csproj`：唯一生产项目，目标为 .NET 10 Native AOT shared library；
+- `Tests/WpfGfxShape.Tests`：MSTest 主测试项目；
+- `Tests/WpfGfxShape.AbiIntegration.Host`：发布后 ABI 独立托管进程宿主；
+- `Tests/WpfGfxShape.AbiIntegration`：ABI 集成测试编排项目。
 
-以下是候选配置，不是已验证结果：
+不创建或恢复 `Tests/NativeCaller`，不要求 C++ 动态/静态 caller 或 `.lib` 消费者验证。
 
-| 属性/设置 | 候选值 | 约束 |
-|---|---|---|
-| SDK | `Microsoft.NET.Sdk` | 不使用 WindowsDesktop/WPF SDK |
-| TargetFramework | `net10.0` | 只有真实依赖要求时才评估 `-windows` |
-| OutputType | 类库默认 | 不设为 `Exe` |
-| PublishAot | `true` | 普通 build 不替代 publish |
-| NativeLib | `Shared` | 实际 DLL/LIB/EXP/PDB 待验证 |
-| SelfContained | `true` | 显式固定意图，仍需 SDK 求值验证 |
-| AssemblyName | `wpfgfx_cor3` | 只是文件名候选控制，最终由产物/loader 验证 |
-| AllowUnsafeBlocks | `true` | ABI、指针、vtable 和布局所需 |
-| IsAotCompatible | `true` | 不代表 analyzer 已通过 |
-| EnableAotAnalyzer | `true` | 不允许全局压制 |
-| EnableTrimAnalyzer | `true` | 不允许用裁剪设置掩盖动态根问题 |
-| EnablePInvokeAnalyzer | `true` | 历史 WPF 的关闭策略不得照搬 |
+## 2. 稳定项目边界
 
-初始不得擅自加入：旧 `Ilc*` 属性、广泛 `DirectPInvoke`、symbol stripping、体积优化、关闭异常/stack trace/debug 支持或 AOT/trim warning suppression。
+- 原 WPF/wpfgfx 源码和项目保持只读；
+- 新项目不引用、不复制、不递归构建原 WPF 产品项目；
+- 生产逻辑只位于一个 C# 项目中，但不得因此扁平化原生职责；
+- 生产代码继续保持 loader、device/resource、HW、software、ABI 等可追溯边界；
+- 测试和 ABI Host 是独立承载，不计入生产项目数量；
+- 输出、中间文件和测试结果位于 `WpfGfxShape/artifacts`，不写入原 WPF artifacts；
+- 局部 `Directory.Build.props` 和 `Directory.Build.targets` 隔离仓库根 WPF Arcade/Testing 构建注入。
 
-## 5. 唯一最小导出 probe
+## 3. 生产项目要求
 
-`WP-00A/WP-00B` 只允许一个非生产导出：
+生产项目保持以下能力和约束：
 
-`WpfGfxShape_NativeAotAbiProbe_v1`
+- 目标框架为 `net10.0`；
+- 使用 `Microsoft.NET.Sdk`；
+- 支持 unsafe 低层互操作；
+- 以 Native AOT shared library 生成候选 `wpfgfx_cor3.dll`；
+- Native AOT 导出仅作为薄 ABI 边界；
+- 托管异常不得越过导出边界；
+- 不通过 warning suppression、假导出或批量 `E_NOTIMPL` 隐藏未迁移能力；
+- 不修改 TFM、SDK 或语言版本来绕过实现问题。
 
-建议 ABI：
+具体项目属性以当前 `.csproj`、局部 `Directory.Build.*` 和实际 publish 结果为事实源，不在本文复制易漂移的完整属性表。
 
-```c
-HRESULT WINAPI WpfGfxShape_NativeAotAbiProbe_v1(
-    uint32_t abiVersion,
-    uint32_t operation,
-    uint64_t input,
-    uintptr_t context,
-    uint64_t* output);
-```
+## 4. DirectX 和 Win32 依赖
 
-约束：
+- DirectX 绑定固定为 Silk.NET 2.23.0；
+- Silk.NET ABI 或类型存疑时读取对应版本源码；
+- Windows API 优先使用 Microsoft.Windows.CsWin32 0.3.298；
+- COM vtable 调用保持显式 Windows `Stdcall`；
+- 未覆盖或语义不透明的 API 使用最小低层互操作，不引入高层替代架构。
 
-- `static`、非泛型、明确 `EntryPoint` 和候选 `CallConvStdcall`；
-- C# 只使用明确 blittable 的 `uint`、`ulong`、`nuint` 和指针；
-- 任何可恢复失败前先清零 `output`；
-- 覆盖成功、参数错误、受控内部异常和未知 operation；
-- 异常必须在最外层封锁；
-- probe 名不在生产 106/107 清单中；
-- 不创建任何生产导出 stub，不返回假成功。
+版本事实以 `handoffs/current-stable-baseline.md` 和项目包引用为准。
 
-## 6. 配置和架构矩阵
+## 5. ABI 测试承载
 
-| Configuration | RID | 状态 | 要求 |
-|---|---|---|---|
-| Debug | `win-x64` | 首个机制验证 | publish、PE/export、独立托管进程真实 P/Invoke、异常和并发 |
-| Release | `win-x64` | 紧随 Debug | 裁剪、优化、符号和托管 P/Invoke 行为对照 |
-| Debug/Release | `win-arm64` | 独立验证 | 必须在真实 ARM64 Windows 运行托管 P/Invoke 集成测试 |
-| Debug/Release | `win-x86` | `Blocked` | 先取得官方/目标 SDK 支持证据，再以真实 WPF 等价 P/Invoke 声明验证 |
+当前 ABI Host/集成测试用于验证非生产 probe 和 Native AOT 加载机制，包括：
 
-每次 publish 只设置一个 RID，且使用独立输出目录。一个架构或配置通过不能替代其它格。
+- 独立进程加载；
+- 绝对路径 DLL 解析；
+- 真实 P/Invoke；
+- 缺失 DLL、缺失导出、无效 PE 和错误架构；
+- 模块路径和文件身份；
+- HRESULT、out 参数、异常封锁和失败后恢复。
 
-## 7. 批次 0 工作包
+该承载不能替代完整生产 ABI。生产导出、COM/factory、资源、版本和 PresentationCore E2E 仍按 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 推进。
 
-| ID | 目标 | 主要产物/证据 |
-|---|---|---|
-| `WP-00A-BUILD-ISOLATION-AND-PROBE-SCAFFOLD` | 创建隔离边界、生产/测试项目、probe 源码和内部单元测试 | 项目图、MSBuild 导入证据、普通 build/test、目录/属性、无生产逻辑；不含最终 ABI 证据 |
-| `WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION` | x64 Debug/Release shared-library 机制 | publish 产物、PE/export、独立托管进程真实 P/Invoke、异常/并发 |
-| `WP-00C-ARCHITECTURE-AND-X86-DECISION` | ARM64 验证和 x86 裁决 | ARM64 真实运行；x86 支持或阻塞证据 |
-| `WP-00D-LINKER-RESOURCE-VERSION-SPIKE` | `.def`、`.res`、VERSIONINFO、ETW、shader、data export | DLL/LIB/EXP/PDB 与资源差分 |
-| `WP-00E-COM-VTABLE-SPIKE` | AOT 对外 native COM-like 对象 | IUnknown vtable、QI/AddRef/Release、GC root |
-| `WP-00F-CALLBACK-LIFECYCLE-UNLOAD-SPIKE` | 双运行时 callback、线程和卸载 | token 不透明性、detach、join、exit/unload 证据 |
-| `WP-00G-SILKNET-ADOPTION-SPIKE` | 决定 Silk.NET 复用形态 | 调用约定/AOT/布局结果与采用裁决 |
-| `WP-00H-ORIGINAL-BINARY-BASELINE` | 冻结原 DLL 二进制事实 | export/import/resource/version/symbol/hash |
-| `WP-00I-MACHINE-READABLE-LEDGER` | 建立完整迁移分母和稳定 ID | 多视图合并的 machine-readable Ledger |
+## 6. 架构边界
 
-不得把这些包合并为一次无法审计的“大项目初始化”。
+- x64 是当前主要构建和测试环境；
+- ARM64 必须在真实 ARM64 Windows 环境验证；
+- x86 Native AOT shared-library 支持必须有目标 SDK 和运行证据，不能由普通 RID 或 x64 结果推断；
+- 任一架构通过不能替代其它架构；
+- 平台能力不足时保持明确阻塞并请求范围裁决，不自行删除兼容目标。
 
-## 8. P0 决策门
+## 7. 当前完成与未完成
 
-以下任一项未有证据时，不得承诺完整替换：
+已经形成稳定承载：
 
-1. Windows x86 Native AOT shared library 与 stdcall/未装饰导出可行性；
-2. Native AOT shared library 的官方 unload/reload 语义能否满足原显式 detach；
-3. AOT-safe COM-like vtable/object 是否能满足 factory/media/bitmap 等返回对象。
+- 独立解决方案和四项目结构；
+- 局部构建隔离；
+- 生产项目、主测试和 ABI Host/集成测试；
+- Native AOT probe 机制；
+- 大量 D3D9/HW 和部分 software 生产实现。
 
-若平台明确不支持，必须保留 `Blocked` 并请求用户决定支持范围或批准局部例外，不能自行删除 Win32、修改调用方或泄漏模块引用。
+仍未完成：
 
-## 9. WP-00A 完成条件
+- 完整生产 ABI 和导出；
+- 完整 COM/factory；
+- generated protocol；
+- resources/UCE；
+- 完整内容管线；
+- PresentationCore E2E 与最终替换验收。
 
-- 局部 props/targets 已创建，并有证据证明未导入 WPF Arcade/Testing 目标；
-- 一个生产项目和一个测试项目存在，生产项目没有引用原 WPF 项目；
-- 独立 solution/入口存在，不修改原解决方案；
-- 输出和中间目录按 project/configuration/RID 隔离；
-- `common/core/shared` 边界存在但没有业务实现；
-- probe 源码和托管内部单元测试承载存在；
-- restore、普通 build、托管内部测试和项目图/导入隔离验证已在环境允许范围内执行并准确记录；
-- 发布后真实 P/Invoke ABI 集成测试明确交由下一唯一工作包 `WP-00B-MANAGED-PINVOKE-ABI-INTEGRATION` 执行；
-- 未添加任何生产导出、Silk.NET 依赖或 wpfgfx 文件翻译；
-- `next-session-handoff.md` 已更新。
+当前不能替换原 `wpfgfx_cor3.dll`。
 
-## 10. 维护规则
+## 8. 维护规则
 
-- SDK、Native AOT 或 linker 行为发生变化时，先更新 investigation，再更新本文件的稳定结论。
-- 项目属性存在不等于产物已满足；所有 ABI 结论必须链接到 build/publish/PE 和发布后托管 P/Invoke 集成测试证据。
-- 本文件定义项目形态，任务顺序以 `migration-master-plan.md` 和 `03-migration-order.md` 为准。
+- 项目结构发生实质变化时更新本文；
+- 包版本变化更新稳定基线和项目文件，不在多个规划文档复制版本状态；
+- 最近测试数字只写入 `handoffs/current-stable-baseline.md`；
+- 当前下一动作只写入 `handoffs/current-work-item.md`；
+- 每个完成切片在 `handoffs/completed-work/` 创建独立历史文件。

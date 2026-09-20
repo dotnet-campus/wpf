@@ -1,7 +1,7 @@
 # 当前稳定基线
 
 > 本文只保存恢复工作所需的稳定摘要与最近验证基线。
-> 逐项完成历史见 [`progress-completed-work.md`](progress-completed-work.md)，HW render-target 历史见 [`progress-hw-rendertarget.md`](progress-hw-rendertarget.md)。
+> 新完成切片历史见 [`completed-work/`](completed-work/)；旧完成归档 [`progress-completed-work.md`](progress-completed-work.md) 和 HW render-target 历史 [`progress-hw-rendertarget.md`](progress-hw-rendertarget.md) 均保留为冻结历史。
 
 ## 当前状态
 

@@ -1,8 +1,8 @@
 # wpfgfx 生产翻译完成进展归档
 
-> 本文保存已经形成可构建、可测试闭环的长期事实，不作为下一轮任务入口。
-> 当前唯一动作始终以 [`../next-session-handoff.md`](../next-session-handoff.md) 为准。
-> 详细 HW render-target 逐轮记录见 [`progress-hw-rendertarget.md`](progress-hw-rendertarget.md)。
+> 冻结历史：本文保留旧有可构建、可测试闭环事实，不作为下一轮任务入口。
+> 本文不拆分、不迁移，并自新归档规则启用后停止追加；后续每个完成切片在 [`completed-work/`](completed-work/) 中创建一个新的独立文件。
+> 当前恢复入口见 [`../next-session-handoff.md`](../next-session-handoff.md)；详细 HW render-target 旧历史见 [`progress-hw-rendertarget.md`](progress-hw-rendertarget.md)。
 
 ## 1. D3D9 加载、显示与设备管理
 

@@ -260,5 +260,5 @@
 
 1. 更新交接中的真实验证结果和唯一下一目标；
 2. 更新 [`native-to-managed-file-map.md`](native-to-managed-file-map.md) 的当前事实；
-3. 将长期完成事实写入 [`handoffs/progress-completed-work.md`](handoffs/progress-completed-work.md)；
+3. 在 [`handoffs/completed-work/`](handoffs/completed-work/) 中为本轮完成事实创建一个新的独立历史文件；旧 `progress-completed-work.md` 不再追加；
 4. 仅在阶段状态、依赖或完成条件变化时更新本文。

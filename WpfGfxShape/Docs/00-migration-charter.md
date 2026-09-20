@@ -1,6 +1,7 @@
 # wpfgfx C#/.NET Native AOT 迁移章程
 
-> 状态：强制执行  
+> 状态：强制执行；本文只维护最高原则，不维护当前阶段、完成比例或下一动作  
+> 当前恢复入口：[`next-session-handoff.md`](next-session-handoff.md)  
 > 适用范围：`WpfGfxShape` 下的全部调查、设计、实现、测试与交接工作  
 > 目标源码：`src/Microsoft.DotNet.Wpf/src/WpfGfx` 及其直接依赖、生成协议和托管调用方  
 > 新生产代码根目录：`WpfGfxShape/Code/WpfGfxShape`  
@@ -76,8 +77,8 @@
 
 ## 6. DirectX 与 Silk.NET 原则
 
-- DirectX 底层互操作优先评估本地仓库 `D:/lindexi/Code/OriginWpf/Silk.NET`。
-- 本地 Silk.NET 是 DirectX 绑定的首选证据与复用来源，但不是可以绕过 ABI、调用约定和 Native AOT 验证的强制黑盒依赖；采用整体项目引用、冻结生成源码或局部手写互操作，必须由专题 spike 的证据决定。
+- DirectX 底层互操作的当前生产绑定以 `handoffs/current-stable-baseline.md` 为准；当前固定为 Silk.NET 2.23.0，存疑 API 应读取对应版本源码核验。
+- 旧本地 Silk.NET 仓库调查仅作为历史风险证据，不得覆盖当前包版本和已验证生产调用方式。Silk.NET 不是可以绕过 ABI、调用约定和 Native AOT 验证的黑盒依赖。
 - 使用 Silk.NET 的前提是其接口能够保持原有调用语义、COM 生命周期、结构布局和错误处理。
 - Silk.NET 只作为低层互操作工具，不得借机把原 wpfgfx 算法改写成另一套高层渲染架构。
 - 对 Silk.NET 未覆盖、版本不匹配或语义不透明的接口，可采用局部手写互操作；该决定必须有专题记录和测试。
@@ -98,19 +99,15 @@
 
 端到端验证不得全部推迟到最后一批。随着真实实现落位，必须按能力逐步扩展：Native AOT probe、版本/工厂、connection/channel、资源命令、软件像素、真实 PresentationCore `RenderTargetBitmap`、硬件/HWND、D3DImage、媒体和关闭/卸载。后续能力未就绪不影响前级测试存在，但不得用前级通过替代后级验收。
 
-## 8. 规划轮次工具禁令与后续执行方式
+## 8. 工具与证据规则
 
-生成本章程和总体计划的规划轮次及其分派任务中：
+- 工具使用必须遵守当前会话环境和用户约束，不得用未授权方式绕过限制。
+- 优先使用工作区提供的结构读取、代码搜索、文件编辑、构建和测试能力。
+- 静态调查、实际构建、发布、测试和二进制检查必须明确区分；未运行的结果不得描述为已验证。
+- 生产代码变更必须执行可用的定向测试、全量主测试、ABI 测试和解决方案构建；无法执行时记录原因和对完成条件的影响。
+- 过程中的稳定事实、决策、阻塞和验证结果必须写入对应事实源，不能只存在于对话。
 
-- **禁止调用任何命令行、终端或脚本。**
-- 禁止 PowerShell、cmd、bash、Python、批处理、构建脚本、枚举脚本以及通过命令执行的间接替代方式。
-- 禁止为了方便统计、搜索、构建、测试或生成文档而绕过此限制。
-- 只允许使用 IDE 提供的解决方案/项目结构读取、文件搜索、代码搜索、符号导航、文件读取和文件写入能力。
-- 因此本轮结论必须区分“静态调查已确认”和“尚待构建/运行验证”；不得把未运行的结果描述为已验证。
-
-每个子智能体的任务说明必须原文或等价地包含上述禁令，并要求其把过程结论及时写入指定专题文档，而不是只在最终回复中汇报。
-
-后续实现轮次不自动继承“禁止构建/测试”的限制。应优先使用 IDE 的项目编辑、构建和测试能力；若需要终端或脚本，必须遵守当轮用户要求和环境授权。无论使用何种工具，都不得跳过可重复的 build/publish/test 证据。
+旧规划轮次曾有禁止命令行和脚本的临时边界，该限制不再作为项目级永久规则；当前环境若另有禁令，以当前会话约束为准。
 
 ## 9. 文档先行与跨会话协议
 
@@ -125,8 +122,9 @@
 - `04-nativeaot-project-shape.md`：独立 .NET 10 Native AOT 项目方案。
 - `05-silknet-directx-assessment.md`：Silk.NET 与 DirectX 接入评估。
 - `06-testing-strategy.md`：测试体系和门禁。
-- `migration-master-plan.md`：总体阶段、工作包和完成条件。
-- `next-session-handoff.md`：下一轮唯一权威交接入口。
+- `remaining-gap-closure-plan.md`：当前阶段、剩余大项和完成条件。
+- `migration-master-plan.md`：历史总体工作包树和最终完成定义，不维护当前状态。
+- `next-session-handoff.md`：当前唯一恢复入口和文档导航；唯一动作由 `handoffs/current-work-item.md` 维护。
 - `README.md`：文档索引和推荐阅读顺序。
 
 ### 9.2 专题调查文档最低内容
@@ -140,8 +138,8 @@
 - 未决问题；
 - 风险；
 - 对总体计划的影响；
-- 下一位调查者可直接执行的后续动作；
-- 本轮因禁止命令行而未能完成的验证。
+- 可供当前工作切片引用的后续证据需求；
+- 尚未完成的验证、原因及其对当前结论的影响。
 
 ### 9.3 过程文档要求
 
@@ -159,8 +157,9 @@
 2. `handoffs/current-execution-rules.md` 保存每轮执行规则和禁止扩展边界；
 3. `handoffs/current-stable-baseline.md` 保存当前阶段、稳定能力和最近验证基线；
 4. `handoffs/current-work-item.md` 保存唯一下一动作、范围、完成条件和停止点；
-5. `handoffs/progress-completed-work.md` 保存已完成事实；
-6. Ledger、ABI、Evidence 和 Decision 状态写入各自事实源。
+5. `handoffs/completed-work/<session-topic>.md` 保存本轮已完成事实，每个切片创建一个新文件；
+6. 旧 `handoffs/progress-completed-work.md` 保留为冻结历史，不拆分、不迁移、不再追加；
+7. Ledger、ABI、Evidence 和 Decision 状态写入各自事实源。
 
 每轮结束前必须更新受影响的职责文件，但不得把完成历史、阶段百分比、长测试流水或多个同优先级候选堆积到入口文件。下一轮主目标必须只有一个。
 

@@ -1,193 +1,178 @@
 # wpfgfx 跨会话连续性、交接与决策协议
 
-> 状态：强制执行  
-> 当前入口：[`next-session-handoff.md`](next-session-handoff.md)  
-> 最高约束：[`00-migration-charter.md`](00-migration-charter.md)
+> 状态：强制执行。
+> 当前恢复入口：[`next-session-handoff.md`](next-session-handoff.md)。
+> 最高约束：[`00-migration-charter.md`](00-migration-charter.md)。
 
 ## 1. 目的
 
-迁移预计跨越大量会话。任何关键事实、状态、决策、偏差或下一动作不得只存在于对话上下文。本协议规定：
+任何关键事实、状态、决策、偏差、验证结果或下一动作不得只存在于对话上下文。本协议规定：
 
-- 每轮如何领取唯一工作包；
-- 如何归档 handoff，避免覆盖后丢失历史；
-- 如何记录决策与例外；
-- 如何把 Ledger、ABI、测试证据和计划保持一致；
-- 如何在被中断、失败或上下文耗尽时安全停下。
+- 如何恢复当前工作；
+- 如何保持每轮只有一个工作切片；
+- 如何维护稳定基线和下一动作；
+- 如何归档完成事实；
+- 如何处理中断、失败、阻塞和决策；
+- 如何避免历史文档重新成为当前调度源。
 
-## 2. 单一当前入口与历史归档
+## 2. 文档职责
 
-- `Docs/next-session-handoff.md` 永远是**当前唯一恢复入口**，只维护恢复顺序和文档导航。
-- 当前执行规则、稳定基线和唯一工作切片分别维护在 `handoffs/current-execution-rules.md`、`handoffs/current-stable-baseline.md` 和 `handoffs/current-work-item.md`。
-- 只有需要改变入口导航时才编辑 `next-session-handoff.md`；不再要求每轮覆盖入口或为未变更的导航创建快照。
-- 若确需覆盖入口，将上一版原样归档到：
+| 文档 | 唯一职责 |
+|---|---|
+| `next-session-handoff.md` | 当前唯一恢复入口，只保存阅读顺序和导航 |
+| `handoffs/current-execution-rules.md` | 每轮执行规则和禁止扩展边界 |
+| `handoffs/current-stable-baseline.md` | 当前阶段、稳定能力和最近验证基线 |
+| `handoffs/current-work-item.md` | 当前唯一工作切片、范围、完成条件和停止点 |
+| `remaining-gap-closure-plan.md` | 当前阶段状态、依赖顺序、剩余大项和完成条件 |
+| `native-to-managed-file-map.md` | 原生职责到托管文件的当前事实映射 |
+| `handoffs/completed-work/<session-topic>.md` | 每个已完成切片的独立历史文件 |
+| `handoffs/progress-completed-work.md` | 冻结的旧完成历史，不再追加 |
+| `Ledger/*.jsonl`、`Abi/*`、Evidence、Decision | 各自机器或决策事实源 |
 
-```text
-Docs/handoffs/<session-id>-<completed-or-current-work-package>.md
-```
+不得把完成历史、阶段百分比、长测试流水或多个候选任务写回入口文件。
 
-- `session-id` 格式：`S-YYYYMMDD-NNN`；若无法可靠取得日期，使用 `S-UNDATED-NNN`，后续不得重编号。
-- 归档文件一经写入只允许修正明确笔误并记录原因，不覆盖历史结论。
-- `Docs/handoffs/README.md` 保存按顺序索引、工作包、结果和下一包。
-- `current-work-item.md` 只描述一个当前/下一工作切片，不累积长篇历史日志；完成事实追加到 `progress-completed-work.md`。
+## 3. 会话恢复顺序
 
-## 3. 会话开始协议
+执行者必须按顺序：
 
-下一位执行者必须按顺序：
+1. 读取 `next-session-handoff.md`；
+2. 读取 `current-execution-rules.md`；
+3. 读取 `current-stable-baseline.md`；
+4. 读取 `current-work-item.md`；
+5. 按工作切片需要读取阶段计划、编号规范、原生源码和测试；
+6. 检查工作区现有改动，不覆盖用户修改；
+7. 确认目标声明、实现、调用者、所有权、测试和完成条件后才编辑代码。
 
-1. 读取 `00-migration-charter.md`；
-2. 读取 `next-session-handoff.md`；
-3. 读取 handoff 指定的专题/schema；
-4. 检查当前 Git/工作区变更，禁止覆盖用户改动；
-5. 确认工作包 ID、Ledger/ABI/Evidence ID、Ready 条件、范围外事项和唯一停止点；
-6. 若 handoff 与 machine-readable Ledger/ABI/证据冲突，停止编码，记录冲突并先修事实源；
-7. 更新受影响 Ledger 行/工作包为当前 owner 后，才编辑生产代码。
+不得从 `migration-master-plan.md`、`session-roadmap.md`、旧 handoff、旧完成历史或 investigation 自行领取任务。
 
-不得在每轮重新规划整个项目，也不得从 roadmap 自行选择另一个同优先级工作包。
+## 4. 唯一工作切片
 
-## 4. 每轮唯一主目标
+- 每轮只有一个主工作切片；
+- 子任务必须直接服务于该切片完成条件；
+- 不得顺手开始下一文件、下一阶段或重构；
+- 新发现前置可在小范围内解决时登记后继续；
+- 若前置改变切片边界，当前切片标记为 `Blocked`，`current-work-item.md` 只交接唯一前置；
+- 机制验证、生产迁移、文档治理和优化不得混为同一生产切片。
 
-- 每轮只有一个主工作包。
-- 可执行子任务必须都直接服务于该工作包 Done 条件。
-- 新发现前置若可在当前包的小范围内解决，登记后继续；若改变包边界，当前目标转 `Blocked`，交接下一唯一前置包。
-- 不得为了“顺手”开始下一文件、下一批或重构。
-- 机制 spike、生产迁移和优化分别属于不同工作包。
+## 5. 证据状态
 
-## 5. 当前交接文档职责
+统一使用：
 
-当前交接信息拆分维护：
+- `StaticConfirmed`：源码、项目或静态工件直接支持；
+- `ExecutedPassed`：实际 build、publish、test 或 inspection 通过；
+- `ExecutedFailed`：已执行失败，保留日志和上下文；
+- `NotRun`：未执行，并说明原因；
+- `Blocked`：完成条件所需证据当前不可取得；
+- `Invalidated`：输入变化使旧证据失效。
 
-1. `next-session-handoff.md`：恢复顺序和文档导航；
-2. `handoffs/current-execution-rules.md`：每轮执行规则和禁止扩展边界；
-3. `handoffs/current-stable-baseline.md`：当前阶段、稳定能力和最近验证基线；
-4. `handoffs/current-work-item.md`：唯一下一动作、范围和完成条件；
-5. `handoffs/progress-completed-work.md`：已完成事实；
-6. Ledger、ABI、Evidence 和 Decision 状态继续写入各自事实源。
+禁止用“应该通过”“看起来可行”或单纯 build success 代替对应 ABI、差分、集成或 E2E 证据。
 
-不得把完成历史、阶段百分比、长测试流水或多个候选任务重新堆积到 `next-session-handoff.md`。
+## 6. 会话结束协议
 
-所有字段必须写明确值；不适用时写 `None` 与原因，不能省略。
+结束前按顺序：
 
-## 6. 已运行与未运行证据
+1. 停止扩大范围；
+2. 完成当前切片要求的定向测试、全量主测试、ABI 测试和构建，或明确记录无法执行的原因；
+3. 更新受影响的 Ledger、ABI、Evidence、映射和专题事实；
+4. 更新 `current-stable-baseline.md` 的最近验证基线；
+5. 更新 `current-work-item.md`，只留下一个下一动作或当前恢复点；
+6. 若切片完成，在 `handoffs/completed-work/` 创建一个新的独立历史文件；
+7. 检查链接、路径、ID、状态和范围一致；
+8. 只有导航发生变化时才更新 `next-session-handoff.md`；若覆盖入口，再按需保存历史 snapshot；
+9. 给出简短、可核验的结果总结。
 
-统一术语：
+旧 `progress-completed-work.md` 和 `progress-hw-rendertarget.md` 不拆分、不迁移、不再追加。
 
-- `StaticConfirmed`：源码/项目文件直接支持；
-- `ExecutedPassed`：实际 build/publish/test/inspection 通过；
-- `ExecutedFailed`：已运行失败，附错误和工件；
-- `NotRun`：未执行，附原因；
-- `Blocked`：Done 所需证据无法执行；
-- `Invalidated`：输入变化后旧证据不再有效。
+## 7. 完成历史文件
 
-禁止使用“应该通过”“看起来可行”“已完成”代替上述状态。静态调查不等于运行验证，build success 不等于 ABI/E2E pass。
+每个完成切片创建一个文件：
 
-## 7. 决策与例外
+`handoffs/completed-work/S-YYYYMMDD-NNN-<topic>.md`
+
+无法确定日期时使用 `S-UNDATED-NNN-<topic>.md`。
+
+每个文件只记录一个切片：
+
+- 原生声明、实现和调用者；
+- 托管差集和修改；
+- ABI、HRESULT、所有权和释放顺序；
+- 定向测试、全量主测试、ABI 测试和构建结果；
+- 明确未扩展的范围。
+
+历史文件创建后保持不可变，仅允许修正明确笔误并记录原因。
+
+## 8. 中断协议
+
+无法完成时：
+
+- 不开始新的实现文件；
+- 保持工作区可编译或明确标识未完成变更；
+- 不把状态提升到证据不支持的级别；
+- 在 `current-work-item.md` 写明最后完成动作、当前文件/函数、未完成检查和首个恢复动作；
+- 在 `current-stable-baseline.md` 明确哪些测试未运行；
+- 下一动作保持“恢复并完成当前切片”或其唯一前置。
+
+不得依赖下一轮从 diff 猜测意图。
+
+## 9. 失败与阻塞
+
+发生构建、测试或技术门失败时：
+
+- 保存错误、配置、日志和相关工件；
+- 标记 `ExecutedFailed` 或 `Blocked`；
+- 区分实现缺陷、环境能力缺失、平台不支持和计划假设错误；
+- 只修当前切片根因，不用 suppression、假成功或绕过隐藏失败；
+- 若影响范围、架构或强约束，建立 Decision 并请求必要裁决。
+
+## 10. Decision
 
 稳定决策写入：
 
-```text
-Docs/decisions/DEC-<NNNN>-<short-title>.md
-```
+`Docs/decisions/DEC-<NNNN>-<short-title>.md`
 
-每份包含：
+必须包含：
 
-- Decision ID、状态（Proposed/Accepted/Superseded/Rejected）；
-- 背景和受影响工作包/Record/ABI/Evidence ID；
-- 已确认事实与未验证假设；
-- 选择；
-- 被拒绝替代方案；
-- 对 ABI、正确性、追溯和测试的影响；
+- Decision ID 和状态；
+- 背景与受影响范围；
+- 已确认事实和未验证假设；
+- 选择与被拒绝方案；
+- ABI、正确性、追溯和测试影响；
 - 重新评估触发条件；
-- 用户批准（若涉及章程例外）；
+- 用户批准要求；
 - supersedes/superseded-by。
 
-必须记录 Decision 的情况：
+以下情况必须建立或更新 Decision：
 
 - 改变生产范围或目标架构；
 - 章程例外；
-- Silk.NET 每 API 家族采用 A/B/C；
-- COM 实现机制；
-- NativeAOT unload/x86 处理；
-- generator/frozen source 长期策略；
-- 允许的 C# 语言承载偏差；
-- 测试框架、candidate 加载方式或大型基线存储策略（若影响长期项目图）。
+- COM、callback、unload 或 x86 机制变化；
+- generator/frozen source 长期策略变化；
+- 允许的 C# 承载偏差；
+- 测试框架、candidate 加载或大型基线存储策略变化。
 
-强约束只能由用户明确批准。智能体不得用 Decision 文档自行授权重构或删减兼容范围。
+Decision 不能自行授权违反章程或删除兼容范围。
 
-## 8. 会话结束协议
+## 11. 进度报告
 
-结束前必须按顺序：
+只报告：
 
-1. 停止新增范围；
-2. 完成当前工作包规定验证，或明确记录阻塞；
-3. 更新受影响 Ledger/ABI/Evidence；
-4. 更新专题/主计划中的新稳定事实；
-5. 检查本轮仅修改预期范围；
-6. 归档旧 handoff；
-7. 覆盖 `next-session-handoff.md`，只留下一个下一目标；
-8. 检查所有链接、ID 和状态一致；
-9. 给出本轮简短总结。
+- 当前切片是否完成；
+- 当前 Active 阶段；
+- 正式关闭与 Pending 阶段数量；
+- 当前硬阻塞；
+- 是否具备替换原 DLL 的条件。
 
-工作包 Done 未满足时，下一 handoff 仍指向同一工作包或其唯一前置，不得为了显示进度切换后续包。
-
-## 9. 中断与上下文耗尽协议
-
-若无法在当前会话完成：
-
-- 不开始新的实现文件；
-- 将正在编辑的文件保持可编译/可辨识状态，或回退未完成局部变更；
-- Ledger 状态最多提升到真实证据支持的级别；
-- handoff 写明最后完成动作、当前文件/函数、未完成检查、首个恢复动作；
-- 明确哪些测试未运行；
-- 唯一停止点写为“恢复并完成当前工作包”，不跳到下一包。
-
-不得依赖下一轮从 Git diff 猜测意图。
-
-## 10. 失败与阻塞协议
-
-发生构建/测试/技术门失败时：
-
-- 保存错误、命令、配置/RID、日志和工件；
-- 对应 Evidence 标 `ExecutedFailed`；
-- 当前 Record/Work package 设 `blocked=true`；
-- 区分实现 bug、环境能力缺失、平台不支持和计划假设错误；
-- 只修当前包根因，不用 suppression、假成功或绕过隐藏失败；
-- 若影响范围/顺序/架构，写 Decision proposal 并在 handoff 请求用户裁决。
-
-## 11. 文档职责与防漂移
-
-- `00-migration-charter.md`：唯一最高原则。
-- `migration-master-plan.md`：总体工作包树与最终 Done。
-- `03-migration-order.md`：批次、逐文件工作包门禁。
-- `06-testing-strategy.md`：测试层级与规范性测试规则。
-- `07-scope-and-ledger-schema.md`：生产分母与 Ledger schema。
-- `08-abi-manifest-spec.md`：ABI schema。
-- `09-test-evidence-and-e2e-contract.md`：harness/evidence 可执行契约。
-- 本文：会话、handoff、decision 协议。
-- `next-session-handoff.md`：当前唯一动作。
-
-其它文档应引用上述规范，而不是复制可漂移的完整规则。若必须摘录，注明“摘要；以权威文档为准”。
+在生产分母不可确定计算时，不报告整体完成百分比。单个切片完成 100% 不得表述为项目总进度 100%。
 
 ## 12. 一致性检查
 
-每轮结束至少检查：
+每轮至少确认：
 
-- handoff 的工作包与 master plan/roadmap 一致；
-- Ledger owner/status 与 handoff 一致；
-- ABI/Evidence ID 存在且状态一致；
-- Done 条件没有把 NotRun 写成 pass；
-- 下一目标只有一个；
-- 无断链文档引用；
-- 所有文件路径采用仓库相对路径（外部 Silk.NET 可用绝对根）；
-- 未修改原 WPF产品代码，除非未来用户明确改变边界；
-- 未混入重构、优化、重命名或无关清理。
-
-## 13. 当前规划轮次的归档要求
-
-本轮结束时应：
-
-- 将上一轮 handoff 归档为首个历史 snapshot；
-- 更新 handoff 索引；
-- `next-session-handoff.md` 继续只指向 `WP-00A-BUILD-ISOLATION-AND-PROBE-SCAFFOLD`；
-- 明确本轮没有 Ledger ID，因为 `WP-00I` 尚未实施；
-- 记录本轮没有 build/publish/test；
-- 记录本次规划审计在读到章程工具禁令前误用的两次只读命令：一次列出 Docs 文件，一次统计文档行数；后续未再使用终端，并不得把这些操作当作源码、构建或运行证据。
+- `current-work-item.md` 与阶段计划一致；
+- Ledger、ABI、Evidence 和映射状态一致；
+- `NotRun` 未被写成通过；
+- 下一动作只有一个；
+- 完成历史写入独立文件；
+- 无断链引用；
+- 未修改原 WPF 产品代码；
+- 未混入无关重构、优化或清理。

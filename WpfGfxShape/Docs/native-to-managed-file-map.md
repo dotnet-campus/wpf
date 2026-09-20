@@ -1,7 +1,7 @@
 # wpfgfx 原生到 C# 文件映射
 
 > 本文只记录当前状态和已确认事实，不记录逐轮增量、历史测试数字或下一步任务。
-> 当前工作入口见 [`next-session-handoff.md`](next-session-handoff.md)，剩余缺口顺序见 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md)，完成历史见 [`handoffs/progress-completed-work.md`](handoffs/progress-completed-work.md)。
+> 当前工作入口见 [`next-session-handoff.md`](next-session-handoff.md)，剩余缺口顺序见 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md)，新完成历史见 [`handoffs/completed-work/`](handoffs/completed-work/)，旧完成归档保留在 [`handoffs/progress-completed-work.md`](handoffs/progress-completed-work.md)。
 
 ## 状态定义
 
@@ -66,4 +66,4 @@
 - 主测试：`Tests/WpfGfxShape.Tests/`。
 - ABI Host：`Tests/WpfGfxShape.AbiIntegration.Host/`。
 - ABI 集成测试：`Tests/WpfGfxShape.AbiIntegration/`。
-- 最近稳定验证数字记录在 [`handoffs/progress-completed-work.md`](handoffs/progress-completed-work.md)，不在本文重复维护。
+- 最近稳定验证数字记录在 [`handoffs/current-stable-baseline.md`](handoffs/current-stable-baseline.md)；每轮完成证据写入 [`handoffs/completed-work/`](handoffs/completed-work/) 的独立文件，不在本文重复维护。

@@ -1,8 +1,9 @@
 # wpfgfx ABI Manifest 规范
 
-> 状态：权威 schema；`WP-00H` 已冻结一个 Release win-x64 原工件的部分 binary record，机器 manifest 由 `WP-00I` 及后续 ABI 工作包建立  
-> 上位事实：[`02-abi-and-managed-callers.md`](02-abi-and-managed-callers.md)  
-> 测试规则：[`06-testing-strategy.md`](06-testing-strategy.md)
+> 文档身份：ABI manifest 的权威 schema；不维护生产 ABI 实现进度或当前导出完成度。  
+> 当前只有探针级 ABI 承载，不能替代生产 manifest；机器 ABI 清单仍是明确缺口。  
+> ABI 工件尚未完整建立；本文直接定义目标结构、状态和验收规则，不从旧工作包选择当前动作。  
+> 上位事实：[`02-abi-and-managed-callers.md`](02-abi-and-managed-callers.md)；测试规则：[`06-testing-strategy.md`](06-testing-strategy.md)。
 
 ## 1. 目的
 
@@ -15,7 +16,7 @@ ABI manifest 是 `wpfgfx_cor3.dll` 原实现与 Native AOT 候选之间的机器
 
 当前静态基线为 106 个 `.def` 名、109 个托管声明出现、107 个唯一 native EntryPoint、99 个交集、托管独有 8、`.def` 独有 7。上述数字必须由后续机器 manifest 复核，不能当作不可变常量硬编码到校验器。
 
-## 2. 建议工件
+## 2. 目标工件结构
 
 ```text
 WpfGfxShape/Abi/

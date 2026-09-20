@@ -11,22 +11,22 @@
 7. [`09-test-evidence-and-e2e-contract.md`](09-test-evidence-and-e2e-contract.md) — harness 与 evidence 契约
 8. 与当前工作切片直接相关的专题文档
 
-## 权威文档
+## 文档职责与有效性
 
-| 文档 | 职责 |
+| 文档 | 当前身份与职责 |
 |---|---|
-| [`00-migration-charter.md`](00-migration-charter.md) | 原则、最高约束、项目边界、交接硬规则 |
-| [`01-native-source-topology.md`](01-native-source-topology.md) | 原生项目、构建、生成、依赖和规模事实 |
-| [`02-abi-and-managed-callers.md`](02-abi-and-managed-callers.md) | ABI、托管调用方、布局、所有权和 callback 基线 |
-| [`03-migration-order.md`](03-migration-order.md) | 15 批实施顺序、Ledger 和工作包门禁 |
-| [`04-nativeaot-project-shape.md`](04-nativeaot-project-shape.md) | 独立 .NET 10 Native AOT 项目方案 |
-| [`05-silknet-directx-assessment.md`](05-silknet-directx-assessment.md) | 本地 Silk.NET 覆盖、风险和采用条件 |
-| [`06-testing-strategy.md`](06-testing-strategy.md) | 单元、发布后托管 P/Invoke ABI、差分、集成和 E2E 策略 |
-| [`07-scope-and-ledger-schema.md`](07-scope-and-ledger-schema.md) | “整个 wpfgfx”的生产分母与机器 Ledger schema |
-| [`08-abi-manifest-spec.md`](08-abi-manifest-spec.md) | 导出、类型、callback、COM 和二进制 ABI manifest schema |
-| [`09-test-evidence-and-e2e-contract.md`](09-test-evidence-and-e2e-contract.md) | 测试承载、运行目录、Evidence ID 和 E2E 可执行契约 |
-| [`10-session-continuity-protocol.md`](10-session-continuity-protocol.md) | 跨会话领取、归档、决策、失败和中断协议 |
-| [`11-first-coding-step.md`](11-first-coding-step.md) | `WP-00A` 开始编码后的第一项具体工作与停止条件 |
+| [`00-migration-charter.md`](00-migration-charter.md) | **强制权威规范**：最高原则、项目边界与交接硬规则；不维护当前进度 |
+| [`01-native-source-topology.md`](01-native-source-topology.md) | **稳定事实基线**：当前原生生产边界、主要源码域、生成/资源和外部供应拓扑 |
+| [`02-abi-and-managed-callers.md`](02-abi-and-managed-callers.md) | **权威静态事实基线**：当前 DLL 身份、106/107/99/8/7 ABI 基线、所有权和调用方边界 |
+| [`03-migration-order.md`](03-migration-order.md) | **权威实施规范**：当前迁移顺序原则、编码/验证门禁和证据触发型分支；不维护唯一下一动作 |
+| [`04-nativeaot-project-shape.md`](04-nativeaot-project-shape.md) | **当前项目形态基线**：四项目结构、构建隔离、Native AOT、依赖和架构边界 |
+| [`05-silknet-directx-assessment.md`](05-silknet-directx-assessment.md) | **当前互操作规范**：Silk.NET 2.23.0 与 CsWin32 的采用边界、ABI 核对和禁止事项 |
+| [`06-testing-strategy.md`](06-testing-strategy.md) | **权威规范**：单元、ABI、差分、集成和 E2E 测试分层；不维护最近运行数字 |
+| [`07-scope-and-ledger-schema.md`](07-scope-and-ledger-schema.md) | **权威规范**：“整个 wpfgfx”的生产分母与 Ledger schema；当前 Ledger 状态另见其事实源 |
+| [`08-abi-manifest-spec.md`](08-abi-manifest-spec.md) | **权威规范**：导出、类型、callback、COM 和二进制 ABI manifest schema |
+| [`09-test-evidence-and-e2e-contract.md`](09-test-evidence-and-e2e-contract.md) | **权威规范**：测试承载、运行目录、Evidence ID 和 E2E 可执行契约 |
+| [`10-session-continuity-protocol.md`](10-session-continuity-protocol.md) | **强制权威规范**：跨会话领取、独立完成历史、决策、失败和中断协议 |
+| [`11-first-coding-step.md`](11-first-coding-step.md) | **历史完成结果**：记录构建隔离边界和已废弃启动方案，不含可执行待办 |
 | [`migration-master-plan.md`](migration-master-plan.md) | 初始总体规划基线；其中阶段状态不代表当前执行状态 |
 | [`session-roadmap.md`](session-roadmap.md) | 初始分轮规划基线；实际领取顺序不以其旧状态为准 |
 | [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) | 当前中长期缺口分类、阶段状态、依赖顺序、进入条件和完成条件；生产分母不可计算时不维护整体百分比 |
