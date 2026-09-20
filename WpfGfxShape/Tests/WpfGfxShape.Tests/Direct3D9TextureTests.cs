@@ -22,6 +22,8 @@ public sealed unsafe class Direct3D9TextureTests
     private static int _addRefCount;
     private static uint _levelCount;
     private static int _getLevelDescriptionResult;
+    private static int _getLevelDescriptionCallCount;
+    private static int _getLevelDescriptionFailureCall;
     private static SurfaceDesc[] _levelDescriptions = [];
     private static int _getSurfaceLevelResult;
     private static int _getSurfaceLevelCallCount;
@@ -51,6 +53,8 @@ public sealed unsafe class Direct3D9TextureTests
         _addRefCount = 0;
         _levelCount = 1;
         _getLevelDescriptionResult = 0;
+        _getLevelDescriptionCallCount = 0;
+        _getLevelDescriptionFailureCall = -1;
         _getSurfaceLevelResult = 0;
         _getSurfaceLevelCallCount = 0;
         _surfaceGetDescriptionResult = 0;
@@ -201,6 +205,39 @@ public sealed unsafe class Direct3D9TextureTests
 
         Assert.AreEqual((Direct3D9Factory.InvalidCallHResult, 0, 0, 0, null),
             (result, _addRefCount, _releaseCount, manager.ResourceCount, texture));
+    }
+
+    [TestMethod]
+    public void WhenWrappingExistingTextureThenLevelZeroDescriptionIsReadBeforeResourceSizeEnumeration()
+    {
+        using FakeTextureObject textureObject = new();
+        Direct3D9ResourceManager manager = new();
+        _levelCount = 2;
+        _levelDescriptions =
+        [
+            new SurfaceDesc(format: Format.A8R8G8B8, type: Resourcetype.Texture, pool: Pool.Default, width: 64, height: 32),
+            new SurfaceDesc(format: Format.A8R8G8B8, type: Resourcetype.Texture, pool: Pool.Default, width: 32, height: 16)
+        ];
+
+        int result = Direct3D9Texture.TryCreate(manager, textureObject.Texture, isEvictable: false, out Direct3D9Texture? texture);
+
+        Assert.AreEqual((0, 3, 10240u, 64u, 32u),
+            (result, _getLevelDescriptionCallCount, texture?.ResourceSize, texture?.Width, texture?.Height));
+        texture?.Dispose();
+    }
+
+    [TestMethod]
+    public void WhenResourceSizeEnumerationFailsThenOwnershipAndRegistrationRemainWithCaller()
+    {
+        using FakeTextureObject textureObject = new();
+        Direct3D9ResourceManager manager = new();
+        _getLevelDescriptionResult = Direct3D9Factory.OutOfMemoryHResult;
+        _getLevelDescriptionFailureCall = 2;
+
+        int result = Direct3D9Texture.TryCreate(manager, textureObject.Texture, isEvictable: true, out Direct3D9Texture? texture);
+
+        Assert.AreEqual((Direct3D9Factory.OutOfMemoryHResult, 2, 0, 0, 0, null),
+            (result, _getLevelDescriptionCallCount, _addRefCount, _releaseCount, manager.ResourceCount, texture));
     }
 
     [TestMethod]
@@ -616,7 +653,9 @@ public sealed unsafe class Direct3D9TextureTests
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static int GetLevelDescription(IDirect3DTexture9* self, uint level, SurfaceDesc* description)
     {
-        if (_getLevelDescriptionResult < 0)
+        _getLevelDescriptionCallCount++;
+        if (_getLevelDescriptionResult < 0 &&
+            (_getLevelDescriptionFailureCall < 0 || _getLevelDescriptionCallCount == _getLevelDescriptionFailureCall))
         {
             return _getLevelDescriptionResult;
         }

@@ -1172,6 +1172,23 @@ public sealed class Direct3D9BitmapColorSourceTests
     }
 
     [TestMethod]
+    public void WhenTextureHeightDeterminesManualMipMapDepthThenAllLevelsReachOneByOne()
+    {
+        Direct3D9BitmapRealizationProperties properties = CreateMipMappedRealizationProperties(64, 256) with
+        {
+            LayoutU = new Direct3D9BitmapDimensionLayout(64, Direct3D9TexelLayout.Natural, Textureaddress.Clamp),
+            LayoutV = new Direct3D9BitmapDimensionLayout(256, Direct3D9TexelLayout.Natural, Textureaddress.Clamp)
+        };
+
+        SurfaceDesc description = Direct3D9BitmapRealizationParameterComputer.GetRequiredTextureDescription(
+            canAutoGenerateMipmaps: false,
+            properties,
+            out uint levels);
+
+        Assert.AreEqual(((uint) D3D9.UsageRendertarget, 9u), (description.Usage, levels));
+    }
+
+    [TestMethod]
     [DataRow((int) MilPixelFormat.Bgr24Bpp, (int) Format.R8G8B8)]
     [DataRow((int) MilPixelFormat.Bgra32Bpp, (int) Format.A8R8G8B8)]
     [DataRow((int) MilPixelFormat.Bgr16Bpp565, (int) Format.R5G6B5)]
