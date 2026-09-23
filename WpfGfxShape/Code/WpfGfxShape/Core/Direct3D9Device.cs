@@ -83,6 +83,13 @@ internal delegate int Direct3D9DrawIndexedTriangleList(
 
 internal delegate int Direct3D9DrawTriangleList(uint startVertex, uint primitiveCount);
 
+internal unsafe delegate int Direct3D9DrawIndexedTriangleListUp(
+    uint vertexCount,
+    uint primitiveCount,
+    ushort* indexData,
+    void* vertexStreamZeroData,
+    uint vertexStreamZeroStride);
+
 internal unsafe delegate int Direct3D9DrawPrimitiveUp(
     Primitivetype primitiveType,
     uint primitiveCount,
@@ -307,6 +314,7 @@ internal sealed unsafe class Direct3D9Device : IDisposable
     private readonly Direct3D9SetIndices? _setIndices;
     private readonly Direct3D9DrawIndexedTriangleList? _drawIndexedTriangleList;
     private readonly Direct3D9DrawTriangleList? _drawTriangleList;
+    private readonly Direct3D9DrawIndexedTriangleListUp? _drawIndexedTriangleListUp;
     private readonly Direct3D9DrawPrimitiveUp? _drawPrimitiveUp;
     private readonly Direct3D9SetTexture? _setTexture;
     private readonly Direct3D9SetDepthStencilSurface? _setDepthStencilSurface;
@@ -393,7 +401,9 @@ internal sealed unsafe class Direct3D9Device : IDisposable
     private uint _frameNumber;
     private readonly List<Direct3D9GpuMarker> _activeGpuMarkers = [];
     private readonly List<Direct3D9GpuMarker> _freeGpuMarkers = [];
-    private readonly Direct3D9PixelShader?[] _textPixelShaders = new Direct3D9PixelShader?[TextPixelShaderCount];
+    private readonly Direct3D9PixelShader?[] _legacyTextPixelShaders = new Direct3D9PixelShader?[TextPixelShaderCount];
+    private readonly Direct3D9CachedPixelShader?[] _textPixelShaders = new Direct3D9CachedPixelShader?[TextPixelShaderCount];
+    private readonly Direct3D9ShaderCache _shaderCache;
     private ulong _lastGpuMarkerId;
     private ulong _lastConsumedGpuMarkerId;
     private uint _successfulPresentsSinceGpuMarkerFlush;
@@ -486,9 +496,11 @@ internal sealed unsafe class Direct3D9Device : IDisposable
         Action<uint>? presentFailureDelay = null,
         Direct3D9PostWindowMessage? postWindowMessage = null,
         Direct3D9DrawPrimitiveUp? drawPrimitiveUp = null,
-        Action<Direct3D9FrameMetrics>? consumeFrameMetrics = null)
+        Action<Direct3D9FrameMetrics>? consumeFrameMetrics = null,
+        Direct3D9DrawIndexedTriangleListUp? drawIndexedTriangleListUp = null)
     {
         _resourceManager = new Direct3D9ResourceManager(this);
+        _shaderCache = new Direct3D9ShaderCache(this);
         Direct3D9Factory.AddRef(direct3D);
         _direct3D = direct3D;
         _device = device;
@@ -528,6 +540,7 @@ internal sealed unsafe class Direct3D9Device : IDisposable
         _drawIndexedTriangleList = drawIndexedTriangleList;
         _drawTriangleList = drawTriangleList;
         _drawPrimitiveUp = drawPrimitiveUp;
+        _drawIndexedTriangleListUp = drawIndexedTriangleListUp;
         _consumeFrameMetrics = consumeFrameMetrics;
         _setTexture = setTexture;
         _setSamplerState = setSamplerState;
@@ -1025,7 +1038,7 @@ internal sealed unsafe class Direct3D9Device : IDisposable
             : GlyphAlphaTextureFormat == Direct3D9GlyphAlphaTextureFormat.L8 ? 104u : 100u;
 
         ReleaseTextPixelShaders();
-        for (int index = 0; index < _textPixelShaders.Length; index++)
+        for (int index = 0; index < _legacyTextPixelShaders.Length; index++)
         {
             int result = createPixelShader(firstResourceId + (uint) index, out Direct3D9PixelShader? pixelShader);
             if (result < 0)
@@ -1040,7 +1053,7 @@ internal sealed unsafe class Direct3D9Device : IDisposable
                 throw new InvalidOperationException("Direct3D text pixel shader creation returned a null shader.");
             }
 
-            _textPixelShaders[index] = pixelShader;
+            _legacyTextPixelShaders[index] = pixelShader;
         }
 
         IsTextPixelShaderInitialized = true;
@@ -1048,23 +1061,92 @@ internal sealed unsafe class Direct3D9Device : IDisposable
         return 0;
     }
 
-    internal unsafe int InitializeTextPixelShadersFromResources()
+    internal int InitializeTextPixelShadersFromResources()
     {
-        return InitializeTextPixelShaders(CreatePixelShaderFromResource);
-    }
-
-    private unsafe int CreatePixelShaderFromResource(uint resourceId, out Direct3D9PixelShader? pixelShader)
-    {
-        if (!Direct3D9TextPixelShaderResources.TryGetShaderBytecode(resourceId, out ReadOnlySpan<uint> bytecode))
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        if (!IsTextPixelShaderInitializationEligible)
         {
-            pixelShader = null;
             return Direct3D9Factory.GenericFailureHResult;
         }
 
-        fixed (uint* shaderFunction = bytecode)
+        uint firstResourceId = Capabilities.PixelShaderVersion >= PixelShaderVersion20
+            ? GlyphAlphaTextureFormat == Direct3D9GlyphAlphaTextureFormat.L8 ? 112u : 108u
+            : GlyphAlphaTextureFormat == Direct3D9GlyphAlphaTextureFormat.L8 ? 104u : 100u;
+
+        ReleaseTextPixelShaders();
+        for (int index = 0; index < _textPixelShaders.Length; index++)
         {
-            return TryCreatePixelShader(shaderFunction, out pixelShader);
+            if (!Direct3D9ShaderDescriptors.TryGetTextPixelShader(firstResourceId + (uint) index, out Direct3D9ShaderDescriptor? descriptor))
+            {
+                ReleaseTextPixelShaders();
+                return Direct3D9Factory.GenericFailureHResult;
+            }
+
+            int result = _shaderCache.TryGetPixelShader(descriptor, out Direct3D9CachedPixelShader? pixelShader);
+            if (result < 0)
+            {
+                ReleaseTextPixelShaders();
+                return result;
+            }
+
+            _textPixelShaders[index] = pixelShader;
         }
+
+        IsTextPixelShaderInitialized = true;
+        CanDrawText = true;
+        return Direct3D9Factory.SuccessHResult;
+    }
+
+    internal int TryGetCachedVertexShader(
+        Direct3D9ShaderDescriptor descriptor,
+        out Direct3D9CachedVertexShader? shader)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        return _shaderCache.TryGetVertexShader(descriptor, out shader);
+    }
+
+    internal int TryGetCachedPixelShader(
+        Direct3D9ShaderDescriptor descriptor,
+        out Direct3D9CachedPixelShader? shader)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        return _shaderCache.TryGetPixelShader(descriptor, out shader);
+    }
+
+    internal int TryGetEffectPipelineVertexShader(bool useShaderModel30, out Direct3D9CachedVertexShader? shader)
+    {
+        return TryGetCachedVertexShader(
+            useShaderModel30 ? Direct3D9ShaderDescriptors.EffectVertex30 : Direct3D9ShaderDescriptors.EffectVertex20,
+            out shader);
+    }
+
+    internal int TryCreateShaderProgram(
+        Direct3D9ShaderDescriptor vertexShaderDescriptor,
+        Direct3D9ShaderDescriptor pixelShaderDescriptor,
+        out Direct3D9ShaderProgram? program)
+    {
+        program = null;
+        int result = TryGetCachedVertexShader(vertexShaderDescriptor, out Direct3D9CachedVertexShader? vertexShader);
+        if (result < 0)
+        {
+            return result;
+        }
+
+        result = TryGetCachedPixelShader(pixelShaderDescriptor, out Direct3D9CachedPixelShader? pixelShader);
+        if (result < 0)
+        {
+            return result;
+        }
+
+        program = new Direct3D9ShaderProgram(this, vertexShader!, pixelShader!);
+        return result;
+    }
+
+    internal void InvalidateShaderCache()
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        ReleaseTextPixelShaders();
+        _shaderCache.Invalidate();
     }
 
     internal int InitializeGlyphAlphaTextureFormat()
@@ -1318,6 +1400,8 @@ internal sealed unsafe class Direct3D9Device : IDisposable
             }
 
             ResetGpuMarkers();
+            ReleaseTextPixelShaders();
+            _shaderCache.Invalidate();
             _deviceLostProcessed = true;
             _unusableNotification?.Invoke(this);
             _resourceManager.DestroyAllResources();
@@ -1417,16 +1501,7 @@ internal sealed unsafe class Direct3D9Device : IDisposable
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(hResult, 0);
 
-        if (_currentRenderTarget != null)
-        {
-            _currentRenderTarget = null;
-            if (_device != null && _dummyBackBuffer != null)
-            {
-                _ = SetNativeRenderTarget(_dummyBackBuffer);
-            }
-
-            ReleaseUseOfDepthStencilBuffer(_depthStencilSurfaceForCurrentRenderTarget);
-        }
+        UnbindCurrentRenderTarget(endScene: false);
 
         int unusableReason = hResult;
         if (hResult is Direct3D9Factory.GenericFailureHResult or Direct3D9Factory.DriverInternalErrorHResult)
@@ -2461,13 +2536,21 @@ internal sealed unsafe class Direct3D9Device : IDisposable
 
     private void ReleaseUseOfRenderTarget(IDirect3DSurface9* renderTarget)
     {
-        if (renderTarget != _currentRenderTarget)
+        if (renderTarget == _currentRenderTarget)
+        {
+            UnbindCurrentRenderTarget(endScene: true);
+        }
+    }
+
+    private void UnbindCurrentRenderTarget(bool endScene)
+    {
+        if (_currentRenderTarget == null)
         {
             return;
         }
 
         _currentRenderTarget = null;
-        if (_inScene)
+        if (endScene && _inScene)
         {
             _ = EndSceneWithoutErrorMapping();
         }
@@ -2477,7 +2560,7 @@ internal sealed unsafe class Direct3D9Device : IDisposable
             _ = SetNativeRenderTarget(_dummyBackBuffer);
         }
 
-        ReleaseUseOfDepthStencilBuffer(_depthStencilSurfaceForCurrentRenderTarget);
+        _ = ReleaseUseOfDepthStencilBuffer(_depthStencilSurfaceForCurrentRenderTarget);
     }
 
     internal bool IsDepthStencilSurfaceSmallerThan(uint width, uint height)
@@ -3208,6 +3291,45 @@ internal sealed unsafe class Direct3D9Device : IDisposable
                 _ = indexBuffer.Unlock();
             }
         }
+    }
+
+    internal int DrawIndexedTriangleListUp(
+        uint vertexCount,
+        uint primitiveCount,
+        ushort* indexData,
+        void* vertexStreamZeroData,
+        uint vertexStreamZeroStride)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed || (_device is null && _drawIndexedTriangleListUp is null), this);
+        ArgumentNullException.ThrowIfNull(indexData);
+        ArgumentNullException.ThrowIfNull(vertexStreamZeroData);
+        if (vertexCount == 0 || primitiveCount == 0 || vertexStreamZeroStride == 0)
+        {
+            return Direct3D9Factory.InvalidArgumentHResult;
+        }
+
+        int result = SetStreamSource(0, null, 0, 0);
+        if (result >= 0)
+        {
+            result = SetIndices(null);
+        }
+
+        if (result >= 0)
+        {
+            result = (_drawIndexedTriangleListUp ?? DrawNativeIndexedTriangleListUp)(
+                vertexCount,
+                primitiveCount,
+                indexData,
+                vertexStreamZeroData,
+                vertexStreamZeroStride);
+        }
+
+        if (result >= 0)
+        {
+            UpdateMetrics(vertexCount, primitiveCount);
+        }
+
+        return HandleDeviceInternalError(result);
     }
 
     private int DrawNativeIndexedTriangleListUp(
@@ -5161,11 +5283,13 @@ internal sealed unsafe class Direct3D9Device : IDisposable
     {
         IsTextPixelShaderInitialized = false;
         CanDrawText = false;
-        for (int index = 0; index < _textPixelShaders.Length; index++)
+        for (int index = 0; index < _legacyTextPixelShaders.Length; index++)
         {
-            _textPixelShaders[index]?.Dispose();
-            _textPixelShaders[index] = null;
+            _legacyTextPixelShaders[index]?.Dispose();
+            _legacyTextPixelShaders[index] = null;
         }
+
+        Array.Clear(_textPixelShaders);
     }
 
     public void Dispose()
@@ -5189,15 +5313,16 @@ internal sealed unsafe class Direct3D9Device : IDisposable
         try
         {
             ReleaseTextPixelShaders();
+            _shaderCache.Invalidate();
             ResetGpuMarkers();
+
+            _currentRenderTarget = null;
 
             Direct3D9Factory.Release(_dummyBackBuffer);
             _dummyBackBuffer = null;
 
             Direct3D9Factory.Release(_deviceEx);
             _deviceEx = null;
-
-            _currentRenderTarget = null;
 
             _hardwareIndexBuffer?.Dispose();
             _hardwareIndexBuffer = null;

@@ -208,6 +208,51 @@ internal sealed unsafe class Direct3D9TextureRenderTarget : IDisposable
 
     internal int DrawVideo(Func<int> drawVideo) => InvalidateContentsAndDraw(drawVideo, static (target, draw) => target.DrawVideo(draw));
 
+    internal int ProductionDrawBitmap(
+        Direct3D9BitmapDrawState drawState,
+        nint bitmapSource,
+        nint effects,
+        Direct3D9ProductionBitmapDrawOperations operations) =>
+        InvalidateContentsAndDraw(target => target.ProductionDrawBitmap(drawState, bitmapSource, effects, operations));
+
+    internal int ProductionDrawPath(
+        Matrix4x4 worldToDevice,
+        nint shape,
+        nint pen,
+        nint strokeBrushRealizer,
+        nint fillBrushRealizer,
+        Direct3D9ProductionPathDrawOperations operations) =>
+        InvalidateContentsAndDraw(target => target.ProductionDrawPath(
+            worldToDevice,
+            shape,
+            pen,
+            strokeBrushRealizer,
+            fillBrushRealizer,
+            operations));
+
+    internal int ProductionDrawGlyphs(
+        Direct3D9GlyphDrawState drawState,
+        Direct3D9GlyphRun glyphRun,
+        Direct3D9GlyphRunDrawOperations operations) =>
+        InvalidateContentsAndDraw(target => target.ProductionDrawGlyphs(drawState, glyphRun, operations));
+
+    internal int ProductionDrawGlyphs(
+        Direct3D9GlyphDrawState drawState,
+        Direct3D9ProductionGlyphDrawOperations operations) =>
+        InvalidateContentsAndDraw(target => target.ProductionDrawGlyphs(drawState, operations));
+
+    internal int ProductionDrawVideo(
+        Direct3D9VideoRenderState renderState,
+        Direct3D9VideoSurfaceRenderer? surfaceRenderer,
+        nint bitmapSource,
+        Direct3D9ProductionVideoDrawOperations operations) =>
+        InvalidateContentsAndDraw(target => target.ProductionDrawVideo(renderState, surfaceRenderer, bitmapSource, operations));
+
+    internal int ProductionDrawMesh3D(
+        Direct3D9ContextState contextState,
+        Direct3D9ProductionMeshDrawOperations operations) =>
+        InvalidateContentsAndDraw(target => target.ProductionDrawMesh3D(contextState, operations));
+
     internal static int TryCreate(
         uint width,
         uint height,
@@ -441,11 +486,17 @@ internal sealed unsafe class Direct3D9TextureRenderTarget : IDisposable
         Func<int> drawingOperation,
         Func<Direct3D9SurfaceRenderTarget, Func<int>, int> draw)
     {
-        ObjectDisposedException.ThrowIf(_isDisposed, this);
         ArgumentNullException.ThrowIfNull(drawingOperation);
+        return InvalidateContentsAndDraw(target => draw(target, drawingOperation));
+    }
+
+    private int InvalidateContentsAndDraw(Func<Direct3D9SurfaceRenderTarget, int> draw)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        ArgumentNullException.ThrowIfNull(draw);
         _hasInvalidContents = true;
         _deviceBitmap?.InvalidateContents();
-        return draw(_surfaceRenderTarget!, drawingOperation);
+        return draw(_surfaceRenderTarget!);
     }
 
     public void Dispose()

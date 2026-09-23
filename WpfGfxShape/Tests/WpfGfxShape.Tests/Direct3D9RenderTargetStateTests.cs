@@ -622,6 +622,39 @@ public sealed unsafe class Direct3D9RenderTargetStateTests
             (Direct3D9Factory.InvalidArgumentHResult, 2, dummyIdentity, 1, 0, 0, true),
             (state.HResult, _nativeSetRenderTargetCallCount, _nativeRenderTarget, _nativeBeginSceneCallCount,
                 _nativeEndSceneCallCount, clearedDepthStencil, device.IsInScene));
+
+        renderTarget.Dispose();
+
+        Assert.AreEqual(
+            (2, 1, 0, true),
+            (_nativeSetRenderTargetCallCount, _nativeBeginSceneCallCount, _nativeEndSceneCallCount, device.IsInScene));
+    }
+
+    [TestMethod]
+    public void WhenRepeatedPresentFailureCleanupRunsThenDummyAndDepthStencilAreReleasedOnce()
+    {
+        using FakeDeviceObject deviceObject = new();
+        using FakeSurfaceObject renderTargetObject = new(D3D9.UsageRendertarget);
+        using FakeSurfaceObject dummyObject = new();
+        using FakeSurfaceObject depthStencilObject = new();
+        int depthStencilCallCount = 0;
+        using Direct3D9Device device = CreateNativeDevice(
+            deviceObject.Device,
+            dummyObject.Surface,
+            depthStencilSurface =>
+            {
+                depthStencilCallCount++;
+                return 0;
+            });
+        using Direct3D9Surface renderTarget = CreateSurface(renderTargetObject.Surface);
+        Assert.AreEqual(0, device.SetRenderTarget(renderTarget));
+        Assert.AreEqual(0, device.SetDepthStencilSurfaceForCurrentRenderTarget(depthStencilObject.Surface, 16, 24));
+
+        _ = device.HandlePresentFailure(Direct3D9Factory.InvalidArgumentHResult);
+        _ = device.HandlePresentFailure(Direct3D9Factory.InvalidArgumentHResult);
+
+        Assert.AreEqual((2, 2, 0, true),
+            (_nativeSetRenderTargetCallCount, depthStencilCallCount, _nativeEndSceneCallCount, device.IsInScene));
     }
 
     [TestMethod]

@@ -20,7 +20,9 @@ internal unsafe delegate IDirect3DBaseTexture9* Direct3D9GetPipelineTexture();
 internal enum Direct3D9VertexFormatAttribute : uint
 {
     None = 0,
-    Xyz = 0x3,
+    Xy = 0x1,
+    Z = 0x2,
+    Xyz = Xy | Z,
     Normal = 0x4,
     Diffuse = 0x8,
     Specular = 0x10,
@@ -28,6 +30,10 @@ internal enum Direct3D9VertexFormatAttribute : uint
     Uv2 = 0x300,
     Uv3 = 0x700,
     Uv4 = 0xF00,
+    Uv5 = 0x1F00,
+    Uv6 = 0x3F00,
+    Uv7 = 0x7F00,
+    Uv8 = 0xFF00,
 }
 
 [SupportedOSPlatform("windows5.1.2600")]
@@ -167,7 +173,13 @@ internal static unsafe class Direct3D9BitmapColorSourceDeviceStateFactory
             useHardwareTransform,
             shaderTextureTransformRegister,
             xSpaceToTextureUv,
-            setShaderMatrix);
+            setShaderMatrix,
+            Direct3D9BitmapColorSourceDeviceState.CreateWaffleMode(
+                realizationProperties.LayoutU.TexelLayout,
+                realizationProperties.LayoutV.TexelLayout),
+            Direct3D9BitmapColorSourceDeviceState.CreateWaffleSubrect(
+                realizationProperties.LayoutU.Length,
+                realizationProperties.LayoutV.Length));
         return Direct3D9Factory.SuccessHResult;
     }
 }
@@ -183,6 +195,8 @@ internal sealed unsafe class Direct3D9BitmapColorSourceDeviceState
     private bool _useHardwareTransform;
     private uint? _shaderTextureTransformRegister;
     private readonly Matrix3x2 _devicePointToTextureUv;
+    private readonly Direct3D9WaffleMode _waffleMode;
+    private readonly Direct3D9WaffleTextureSubrect _waffleSubrect;
     private readonly Direct3D9SetPipelineShaderMatrix3x2? _setShaderMatrix;
 
     internal Direct3D9BitmapColorSourceDeviceState(
@@ -194,7 +208,9 @@ internal sealed unsafe class Direct3D9BitmapColorSourceDeviceState
         bool useHardwareTransform,
         uint? shaderTextureTransformRegister,
         Matrix3x2 devicePointToTextureUv,
-        Direct3D9SetPipelineShaderMatrix3x2? setShaderMatrix = null)
+        Direct3D9SetPipelineShaderMatrix3x2? setShaderMatrix = null,
+        Direct3D9WaffleMode waffleMode = Direct3D9WaffleMode.None,
+        Direct3D9WaffleTextureSubrect waffleSubrect = default)
     {
         ArgumentNullException.ThrowIfNull(device);
         ArgumentOutOfRangeException.ThrowIfZero((nint) texture);
@@ -212,6 +228,8 @@ internal sealed unsafe class Direct3D9BitmapColorSourceDeviceState
         _useHardwareTransform = useHardwareTransform;
         _shaderTextureTransformRegister = shaderTextureTransformRegister;
         _devicePointToTextureUv = devicePointToTextureUv;
+        _waffleMode = waffleMode;
+        _waffleSubrect = waffleSubrect;
         _setShaderMatrix = setShaderMatrix;
     }
 
@@ -224,7 +242,9 @@ internal sealed unsafe class Direct3D9BitmapColorSourceDeviceState
         bool useHardwareTransform,
         uint? shaderTextureTransformRegister,
         Matrix3x2 devicePointToTextureUv,
-        Direct3D9SetPipelineShaderMatrix3x2? setShaderMatrix = null)
+        Direct3D9SetPipelineShaderMatrix3x2? setShaderMatrix = null,
+        Direct3D9WaffleMode waffleMode = Direct3D9WaffleMode.None,
+        Direct3D9WaffleTextureSubrect waffleSubrect = default)
     {
         ArgumentNullException.ThrowIfNull(device);
         ArgumentNullException.ThrowIfNull(getTexture);
@@ -241,6 +261,8 @@ internal sealed unsafe class Direct3D9BitmapColorSourceDeviceState
         _useHardwareTransform = useHardwareTransform;
         _shaderTextureTransformRegister = shaderTextureTransformRegister;
         _devicePointToTextureUv = devicePointToTextureUv;
+        _waffleMode = waffleMode;
+        _waffleSubrect = waffleSubrect;
         _setShaderMatrix = setShaderMatrix;
     }
 
@@ -256,7 +278,8 @@ internal sealed unsafe class Direct3D9BitmapColorSourceDeviceState
             ResetForPipelineReuse,
             SetTextureTransformHandle,
             SendVertexMapping,
-            IsOpaque: isOpaque);
+            IsOpaque: isOpaque,
+            SendBuilderVertexMapping: SendBuilderVertexMapping);
     }
 
     internal void ResetForPipelineReuse()
@@ -313,6 +336,75 @@ internal sealed unsafe class Direct3D9BitmapColorSourceDeviceState
             ? Direct3D9Factory.NotImplementedHResult
             : setTextureMapping(vertexBuilder, (uint) coordinateIndex, uint.MaxValue, _devicePointToTextureUv);
     }
+
+    private int SendBuilderVertexMapping(
+        Direct3D9VertexBufferBuilder? vertexBuilder,
+        Direct3D9VertexFormatAttribute location)
+    {
+        if (location == Direct3D9VertexFormatAttribute.None)
+        {
+            throw new ArgumentOutOfRangeException(nameof(location));
+        }
+
+        _useHardwareTransform = vertexBuilder is null;
+        if (_useHardwareTransform)
+        {
+            return Direct3D9Factory.SuccessHResult;
+        }
+
+        int coordinateIndex = location switch
+        {
+            Direct3D9VertexFormatAttribute.Uv1 => 0,
+            Direct3D9VertexFormatAttribute.Uv2 or
+                (Direct3D9VertexFormatAttribute.Uv2 & ~Direct3D9VertexFormatAttribute.Uv1) => 1,
+            Direct3D9VertexFormatAttribute.Uv3 or
+                (Direct3D9VertexFormatAttribute.Uv3 & ~Direct3D9VertexFormatAttribute.Uv2) => 2,
+            Direct3D9VertexFormatAttribute.Uv4 or
+                (Direct3D9VertexFormatAttribute.Uv4 & ~Direct3D9VertexFormatAttribute.Uv3) => 3,
+            _ => -1
+        };
+
+        if (coordinateIndex < 0)
+        {
+            return Direct3D9Factory.NotImplementedHResult;
+        }
+
+        int result = vertexBuilder.SetTextureMapping((uint) coordinateIndex, uint.MaxValue, _devicePointToTextureUv);
+        return result < 0 || _waffleMode == Direct3D9WaffleMode.None
+            ? result
+            : vertexBuilder.SetWaffling((uint) coordinateIndex, _devicePointToTextureUv, _waffleSubrect, _waffleMode);
+    }
+
+    internal static Direct3D9WaffleMode CreateWaffleMode(
+        Direct3D9TexelLayout layoutU,
+        Direct3D9TexelLayout layoutV)
+    {
+        if (layoutU is Direct3D9TexelLayout.Natural or Direct3D9TexelLayout.FirstOnly
+            && layoutV is Direct3D9TexelLayout.Natural or Direct3D9TexelLayout.FirstOnly)
+        {
+            return Direct3D9WaffleMode.None;
+        }
+
+        Direct3D9WaffleMode mode = Direct3D9WaffleMode.Enabled;
+        if (layoutU == Direct3D9TexelLayout.EdgeMirrored)
+        {
+            mode |= Direct3D9WaffleMode.FlipX;
+        }
+
+        if (layoutV == Direct3D9TexelLayout.EdgeMirrored)
+        {
+            mode |= Direct3D9WaffleMode.FlipY;
+        }
+
+        return mode;
+    }
+
+    internal static Direct3D9WaffleTextureSubrect CreateWaffleSubrect(uint textureWidth, uint textureHeight) =>
+        new(
+            1f / textureWidth,
+            1f / textureHeight,
+            (textureWidth - 2f) / textureWidth,
+            (textureHeight - 2f) / textureHeight);
 
     internal int SendDeviceStates(uint stage, uint sampler)
     {

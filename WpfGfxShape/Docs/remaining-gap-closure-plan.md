@@ -29,7 +29,7 @@
 - D3D9 loader、display/device manager、device/resource/use-context、状态缓存、surface/texture/swap-chain 已有大量可运行切片。
 - HW display/window/surface render target、软件 3D fallback、geometry renderer、部分 shader/fixed-function pipeline、bitmap color source/cache、software rasterizer/render target 和 glyph/text 窄路径已有实现。
 - 当前全部原生到托管映射仍为 `Partial` 或 `Not started`，没有完整原生文件族可标记为替换完成。
-- 生产 ABI、generated protocol、UCE/资源协议、完整内容管线和 PresentationCore E2E 尚未闭环。
+- HW 内容管线与最小软件 HWND/GDI 呈现链已闭环；生产 ABI、generated protocol、UCE/资源协议和 PresentationCore E2E 尚未闭环。
 - 当前不能替换原 `wpfgfx_cor3.dll`。
 
 ## 3. 缺口分类
@@ -50,7 +50,7 @@
 - effects；
 - 完整 glyph 私有模型；
 - 真实 shader bytecode 加载链；
-- GDI presenter、software-DC present context、兼容 DC/DIB。
+- 软件 layered-window/格式转换等扩展呈现分支；最小 GDI presenter、software-DC present context、兼容 DC/DIB 已关闭。
 
 ### 3.3 证据触发型兼容分支
 
@@ -68,10 +68,10 @@
 
 | 阶段 | 目标 | 当前状态 | 是否阻塞完整替换 |
 |---:|---|---|---|
-| 1 | 完成 HW backend 生命周期和直接设备边界 | Active | 是 |
-| 2 | 完成 HW 内容管线 | Pending | 是 |
-| 3 | 完成软件呈现链 | Pending | 是 |
-| 4 | 冻结并实现 generated protocol | Pending | 是 |
+| 1 | 完成 HW backend 生命周期和直接设备边界 | Closed | 是 |
+| 2 | 完成 HW 内容管线 | Closed | 是 |
+| 3 | 完成软件呈现链 | Closed | 是 |
+| 4 | 冻结并实现 generated protocol | Active | 是 |
 | 5 | 实现 resources/UCE 最小到完整链 | Pending | 是 |
 | 6 | 收口 meta/API、生产 ABI 和 DLL 导出 | Pending | 是 |
 | 7 | 渐进 PresentationCore E2E 与替换验收 | Pending | 是 |
@@ -101,17 +101,21 @@
 - driver error、device-lost、部分初始化失败和释放后调用均有回归；
 - 定向测试、全量主测试、ABI 测试和解决方案构建通过。
 
+### 当前状态结论
+
+阶段 1 已正式关闭。直接设备方法、scene/use-context、当前 render-target 非拥有身份、dummy back-buffer 所有权与借用解绑、depth-stencil 配对、present failure、device-lost、部分初始化失败、资源销毁与释放后保护均已有生产实现和回归。后续如发现新原生证据可新增独立修复切片，但不再阻塞进入阶段 2。
+
 ## 6. 阶段 2：HW 内容管线
 
 ### 顺序
 
-1. 完整 layer stack 与嵌套恢复；
-2. 几何 mask；
-3. effect list 与 effect 消费链；
-4. glyph run/bank/painter 私有模型；
-5. shader 资源定位、bytecode 加载、创建和设备释放；
-6. bitmap/path/glyph/video 的完整生产绘制链；
-7. pipeline builder、waffling 和 expanded vertex 消费链。
+1. 完整 layer stack 与嵌套恢复（已关闭）；
+2. 几何 mask（已关闭）；
+3. effect list 与 effect 消费链（已关闭）；
+4. glyph run/bank/painter 私有模型（已关闭）；
+5. shader 资源定位、bytecode 加载、创建和设备释放（已关闭）；
+6. bitmap/path/glyph/video 的完整生产绘制链（已关闭）；
+7. pipeline builder、waffling 和 expanded vertex 消费链（已关闭）。
 
 ### 前置
 
@@ -126,6 +130,10 @@
 - layer、mask、effect 和 fallback 不依赖测试替身绕过核心逻辑；
 - shader 和 glyph 资源具备成功、失败、设备释放和重建证据；
 - 组件级输出可与原生实现进行差分。
+
+### 当前状态结论
+
+阶段 2 已正式关闭。layer、几何 mask、effect list、glyph run/bank/painter、真实 shader 资源、bitmap/path/glyph/video 生产绘制以及统一 pipeline builder、waffling、expanded vertex conversion、vertex-buffer flush 和 Direct3D draw 均已有生产实现与回归；shader/fixed-function 保持原生 operation ordering、typed vertex mapping、首错停止和 owned color source 逆序释放。后续如发现新的 HW 原生差集可新增独立修复切片，但当前优先级转入阶段 3。
 
 ## 7. 阶段 3：软件呈现链
 
@@ -150,6 +158,10 @@
 - dirty rect、stride、DPI、pixel format、GDI present 和资源释放有确定性证据；
 - 满足 `E2E-04` 的软件像素要求。
 
+### 当前状态结论
+
+阶段 3 已正式关闭。现有软件 surface 像素输出已接通 HWND target、compatible DC、32bpp top-down DIB、selected bitmap、dirty-region BitBlt、resize、Win32 失败映射和确定性逆序释放；empty/no-render、partial creation、目标销毁、重复释放和释放后保护均有回归。ScrollBlt、software dirty notification、layered-window 和低色深转换仍按原生可达性与后续 E2E 证据单独进入，不阻塞当前推进到阶段 4。
+
 ## 8. 阶段 4：generated protocol
 
 ### 顺序
@@ -173,6 +185,10 @@
 - 当前消费副本、原生布局和托管镜像可逐项追溯；
 - 代表命令和资源更新具备 golden bytes、size/offset 和失败码证据；
 - generated dispatch、factory 和消费者签名能够支持阶段 5。
+
+### 当前状态结论
+
+阶段 4 Active。已完成首个 transport/channel 协议闭环：完整 command/resource ID、MIL/DWM SDK fingerprint、32 位 HMIL handle 已冻结，五类核心命令已有显式 layout、golden-byte writer、exact-size router、typed handler、malformed/unknown HRESULT、首错停止和最小 handle/resource identity/refcount。下一步关闭基础值资源族的 generated data、factory、update packet 与 `ProcessUpdate` 生命周期；阶段 4 尚未完成。
 
 ## 9. 阶段 5：resources/UCE
 

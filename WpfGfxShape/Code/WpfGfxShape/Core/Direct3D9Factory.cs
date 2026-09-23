@@ -46,6 +46,9 @@ internal static unsafe class Direct3D9Factory
     internal const int WinCodecInternalErrorHResult = unchecked((int) 0x88982F48);
     internal const int NotInitializedHResult = unchecked((int) 0x88982F0C);
     internal const int InvalidWindowHandleHResult = unchecked((int) 0x80070578);
+    internal const int UceUnknownPacketHResult = unchecked((int) 0x88980401);
+    internal const int UceMalformedPacketHResult = unchecked((int) 0x88980403);
+    internal const int UceHandleLookupFailedHResult = unchecked((int) 0x88980405);
 
     internal static bool IsOutOfMemory(int hresult)
     {

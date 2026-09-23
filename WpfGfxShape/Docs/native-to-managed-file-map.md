@@ -34,31 +34,32 @@
 | `core/hw/d3dswapchainwithswdc.cpp` | 无完整对应实现 | Not started | software-DC present context、兼容 DC/DIB 和 GDI presenter 未翻译。 |
 | `core/hw/d3dgeometry.cpp` | `Direct3D9GeometryRenderer.cs`、`Direct3D9PrimitiveVertexBuffer.cs` | Partial | 已有 indexed/non-indexed 批次、顶点打包和设备绘制委托。 |
 | `core/hw/hwpipeline.cpp`、`HwShaderPipeline.cpp`、fixed-function shader 职责 | `Direct3D9Pipeline.cs`、`Direct3D9FixedFunctionMeshShader.cs`、`Direct3D9Shaders.cs` | Partial | 已有部分 fixed-function/shader pipeline 状态发送和绘制恢复。 |
-| `core/hw/hwpipelinebuilder.cpp` | 无完整对应实现 | Not started | 完整 pipeline builder、waffling 和 expanded vertex 消费链未翻译。 |
+| `core/hw/hwpipelinebuilder.cpp`、`Waffler.h`、`waffler.cpp` | `Direct3D9LineWaffler.cs`、`Direct3D9TriangleWaffler.cs` | Partial | 已翻译 `LineWaffler<PointXYA>` 与 `TriangleWaffler<PointXYA>` 的分区参数归一化、score/排序、对称边界插值、逐 cell 分段、triangle/quad/pent 扇形输出和 HRESULT 首错停止；完整 pipeline builder、waffler 链组装和 expanded vertex 消费链仍未翻译。 |
 | `core/targets/BaseRT.cpp`、`BaseSurfRT.cpp`，`core/hw/hwsurfrt.cpp`、`hwdisplayrt.cpp`、`hwtexturert.cpp` | `Direct3D9SurfaceRenderTarget.cs`、`Direct3D9TextureRenderTarget.cs`、`Direct3D9DelayedBounds.cs`、`Direct3D9Software3DSurface.cs` | Partial | 已有 layer 捕获后透明清理失败的 source-bitmap 保留、上层单次释放与 capture 失败无释放边界，以及 opaque partial-capture 成功返回空矩形时跳过 capture/clear、source bitmap 为空并由 EndLayer 走 no-fixup 但仍恢复状态的边界，以及 display/window/surface/texture 目标的创建、Clear、Begin3D/End3D、Present、Resize、失效门控、窄 layer、软件 3D fallback，以及 texture render-target 的格式检查、固定 surface description、尺寸验证、cache-index 门控、不可驱逐纹理与 level-0 surface 创建/失败清理、派生析构、bitmap-source 引用生命周期、底层 texture 有效性与 no-ref 借用，以及对基础 pixel format、逻辑尺寸、device transform、shader pipeline capability、realization cache index、bounds/Clear/Begin3D/End3D、接口发现、hardware-raster 目标类型和 queued-present 查询的直接委托；三个描述访问器只返回基础目标已保存值，两个设备能力访问器只复用基础目标依据 device capability/cache token 得出的结果，D3D texture format 访问器只返回基础目标构造时保存的 target-surface format，associated display 访问器只返回基础目标构造时保存的 display index；ClearType hint 入口只更新基础目标保存的 force-ClearType 状态并保持 `S_OK`；cacheable bitmap-source 入口恰好一次复用现有 `GetBitmapSource`；`GetBitmapSource` 先清空输出并由窄 `GetBitmap` 取得独立引用，失败时保留首个 HRESULT 并释放临时 texture 引用，成功时直接转移既有引用而不额外 AddRef；窄 `GetBitmap` 自身先清空输出，首次成功后由 render target 保留缓存对象引用，每次成功调用在内容重新验证后仅对同一对象增加一个调用者独立引用，失败后可重试且调用者与 render target 的释放顺序互不提前终止对方生命周期；两入口保持相同缓存对象、内容重新验证和独立引用语义且不创建第二套状态；这些访问器均不读取纹理描述、不从 device adapter 或当前 display set 推导、不进入 device entry/use-context 或创建额外 bitmap-source/cache；六个现有窄绘制入口已在委托基础 surface render-target 前使 texture-backed bitmap-source 内容失效，并由后续窄 `GetBitmapSource` 或 `GetCacheableBitmapSource` 访问恢复有效状态；surface render-target 的 HW intermediate 对象创建重载在既有门控后原样转发 width、height、device、associated display 与 `ForBlending` 到 texture render-target 创建链，失败保持输出为空、首错传播、无 software 回退和部分候选清理，成功后才转移调用者所有权并提交 hardware-used 状态。 |
 | `core/hw/hwbitmapcolorsource.cpp`、`hwdevicebitmapcolorsource.cpp`、`hwtexturedcolorsource.cpp`、`bitmapofdevicebitmaps.cpp` | `Direct3D9BitmapColorSource*.cs`、`Direct3D9BitmapReusableRealization*.cs`、`Direct3D9BitmapSystemMemorySurfaceSource.cs`、`Direct3D9BitmapTexturePopulationPreparer.cs`、`Direct3D9DeviceBitmapColorSource*.cs` | Partial | 已有 bitmap color source、realization、staging、device bitmap 更新和 cache 生命周期切片。 |
 | `core/hw/HwBitmapCache.cpp` | `Direct3D9BitmapCache*.cs`、`Direct3D9BitmapFormatCacheEntry.cs`、`Direct3D9BitBltColorSourceCache.cs` | Partial | 已有格式缓存、候选复用、检索和生命周期承载面。 |
 | `core/hw/HwBitmapBrush.cpp` | `Direct3D9BitmapBrush.cs`、`Direct3D9ImmediateBrushRealizer.cs` | Partial | 已有窄 bitmap brush 和即时 realization 路径。 |
 | `core/hw/d3dglyphpainter.cpp`、`d3dglyphrun.cpp`、`d3dglyphbank.cpp` | `Direct3D9SurfaceRenderTarget.cs`、`Direct3D9TextPixelShaderResources.cs`、`Direct3D9Shaders.cs` | Partial | 已有硬件 painter、软件 fallback、ClearType/text shader 与 alpha texture 的窄路径；完整 glyph 私有模型未翻译。 |
 | `core/sw/swlib/bilinearspan.cpp` | `Direct3D9SoftwareBilinearSpan.cs`、`Direct3D9SoftwareRasterizer.cs` | Partial | 已有部分 Tile/Flip/Extend/Border fallback、插值与 batch 推进。 |
-| `common/scanop/scanpipeline.h`、`core/sw/swlib/swsurfrt.cpp`、`core/sw/scanpipelinerender.h`、`core/sw/swlib/scanpipelinerender.cpp` | `Direct3D9SoftwareIntermediateBuffers.cs`、`Direct3D9SoftwareRenderTargetSurface.cs`、`Direct3D9SoftwareRenderTargetBitmap.cs`、`Direct3D9SoftwareScanPipeline.cs` | Partial | 已有三个 `MilColorF` intermediate buffer 的单块有界分配、索引切片、代际与旧视图失效，并连接 surface 的 SetSurface/失败/重绑/Dispose 所有权；surface 另有 resize uniqueness、DPI device transform、锁定、基础 bitmap/glyph/path 绘制、surface-bounds current clip、CSpanSink 参数转发与 span 输出、`Pbgra32Bpp` 目标 alpha 判定及 glyph ClearType hint 决策，以及非 effect scan pipeline 的 owned operation、初始化代际、失败清理与 PPAA filler slot。完整 scan-op builder/effect/glyph 私有算法仍未翻译。 |
+| `common/scanop/scanpipeline.h`、`core/sw/swlib/swsurfrt.cpp`、`core/sw/scanpipelinerender.h`、`core/sw/swlib/scanpipelinerender.cpp`、`core/sw/swlib/swhwndrt.cpp`、`core/sw/swlib/swpresentgdi.cpp`、`core/common/mildc.cpp` | `Direct3D9SoftwareIntermediateBuffers.cs`、`Direct3D9SoftwareRenderTargetSurface.cs`、`Direct3D9SoftwareRenderTargetBitmap.cs`、`Direct3D9SoftwareScanPipeline.cs`、`Direct3D9SoftwareGdiPresenter.cs` | Partial | 已有三个 `MilColorF` intermediate buffer 的单块有界分配、索引切片、代际与旧视图失效，并连接 surface 的 SetSurface/失败/重绑/Dispose 所有权；surface 另有 resize uniqueness、DPI device transform、锁定、基础 bitmap/glyph/path 绘制、surface-bounds current clip、CSpanSink 参数转发与 span 输出、`Pbgra32Bpp` 目标 alpha 判定及 glyph ClearType hint 决策，以及非 effect scan pipeline 的 owned operation、初始化代际、失败清理与 PPAA filler slot。最小 HWND 软件呈现已接通 compatible DC、32bpp top-down DIB、selected bitmap、dirty-region BitBlt、resize、窗口销毁错误映射、partial creation 和逆序释放；ScrollBlt、software dirty notification、layered-window 与低色深转换仍未实现。完整 scan-op builder/effect/glyph 私有算法仍未翻译。 |
 | `core/common/dwritefactory.cpp`、显示文本设置职责 | `DirectWriteFactory.cs`、`DirectWriteDisplaySettings.cs` | Partial | 已有 DirectWrite factory 和显示设置承载面。 |
 | registry 与设备开关职责 | `Direct3D9RegistryDatabase.cs` | Partial | 已有当前使用的 registry 查询切片；WOW64 view 未实现。 |
+| `include/Generated/wgx_command_types.*`、`wgx_resource_types.*`、`wgx_commands.*`、`include/processed/wgx_core_types.*`、`core/uce/generated_process_message.inl`、`composition.cpp`、`htmaster.cpp`、`htslave.cpp` | `GeneratedProtocol.cs` | Partial | 已冻结完整 command/resource ID、MIL/DWM SDK fingerprint、32 位 HMIL handle，并实现 transport sync/destroy 与 channel create/delete/duplicate 五类命令的显式 layout、golden-byte writer、exact-size router、HRESULT 首错传播、最小 channel/handle/resource identity 与引用计数；generated resource data/factory、`ProcessUpdate`、marshal 和 render-data 尚未实现。 |
 | NativeAOT 导出 ABI | `Abi/NativeAotAbiProbe.cs` | Partial | 当前仅有探针级 ABI 和独立 Host/集成测试，不是完整生产 ABI。 |
 
 ## 当前未覆盖边界
 
 以下内容当前没有完整托管映射；其分类、依赖顺序、进入条件和完成条件统一见 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md)：
 
-- effects、UCE 和资源协议；
-- 完整 glyph 私有模型与真实 shader bytecode 加载链；
-- GDI presenter、software-DC present context、兼容 DC/DIB；
+- effects、完整 UCE 与 generated resource data/factory/`ProcessUpdate` 协议；
+- 完整 glyph 私有模型；
+- software layered-window、低色深转换等扩展呈现分支；
 - `Reset/ResetEx`；
 - registry WOW64 view；
 - surface ScrollBlt 和 software dirty 通知；
 - 普通 render-target dummy 解绑；
-- 完整 layer stack、几何 mask/effect；
-- 普通 scene/dummy back-buffer 生命周期；
+- 已关闭链路以外的新 layer/mask/effect 原生差集；
+- 已关闭链路以外的新 scene/dummy back-buffer 原生差集；
 - 完整 PresentationCore 到托管替代库的 E2E 调用链。
 
 ## 当前验证承载面

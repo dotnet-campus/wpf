@@ -133,6 +133,86 @@ internal delegate int Direct3D9CompositeSavedLayer(
     Direct3D9SurfaceRect layerBounds,
     MilCompositingMode compositingMode);
 
+internal readonly record struct Direct3D9LayerState(
+    Direct3D9SurfaceRect LayerBounds,
+    Direct3D9SurfaceRect CurrentClip,
+    float Alpha = 1,
+    MilAntiAliasMode AntiAliasMode = MilAntiAliasMode.None,
+    nint GeometricMask = 0,
+    nint AlphaMaskBrush = 0);
+
+internal readonly record struct Direct3D9LayerCompositeState(
+    nint SourceBitmap,
+    Direct3D9SurfaceRect LayerBounds,
+    float Alpha,
+    MilAntiAliasMode AntiAliasMode,
+    nint GeometricMask,
+    nint AlphaMaskBrush,
+    bool TargetHasAlpha,
+    bool RequiresSourceUnder);
+
+internal delegate int Direct3D9RetainLayerResource(nint resource, out nint retainedResource);
+
+internal delegate int Direct3D9CreateLayerMaskShape(nint geometricMask, out Direct3D9LayerMaskShape? shape);
+
+internal delegate int Direct3D9CreateLayerGeometryGenerator(
+    Direct3D9LayerMaskShape? shape,
+    Direct3D9SurfaceRect layerBounds,
+    out Direct3D9PathGeometryGenerator? geometryGenerator);
+
+internal delegate int Direct3D9CombineLayerMaskWithBounds(
+    Direct3D9SurfaceRect layerBounds,
+    Direct3D9LayerMaskShape geometricMask,
+    out Direct3D9LayerMaskShape? complementedShape);
+
+internal delegate int Direct3D9CreateLayerBrush(nint sourceBitmap, bool useOpaqueBlack, out Direct3D9PathHardwareBrush? brush);
+
+internal delegate int Direct3D9CreateLayerAlphaScaleEffect(float alpha, out Direct3D9LayerEffectList? effectList);
+
+internal delegate int Direct3D9FillLayerPath(
+    MilCompositingMode compositingMode,
+    Direct3D9PathGeometryGenerator geometryGenerator,
+    Direct3D9PathHardwareBrush hardwareBrush,
+    nint effects,
+    Direct3D9PathBrushContext brushContext,
+    Direct3D9SurfaceRect? complementBounds,
+    bool needInside);
+
+internal delegate int Direct3D9ExecuteEffectLayerPath(
+    MilCompositingMode compositingMode,
+    Direct3D9PathGeometryGenerator geometryGenerator,
+    Direct3D9PathHardwareBrush hardwareBrush,
+    Direct3D9EffectList? effects,
+    Direct3D9PathBrushContext brushContext,
+    Direct3D9SurfaceRect? complementBounds,
+    bool needInside);
+
+internal sealed record Direct3D9LayerMaskOperations(
+    Direct3D9CreateLayerMaskShape CreateMaskShape,
+    Direct3D9CreateLayerGeometryGenerator CreateAntialiasedGeometryGenerator,
+    Direct3D9CombineLayerMaskWithBounds CombineMaskWithBounds,
+    Direct3D9CreateLayerGeometryGenerator CreateAliasedGeometryGenerator,
+    Direct3D9CreateLayerGeometryGenerator CreateBoundsGeometryGenerator,
+    Direct3D9CreateLayerBrush CreateBrush,
+    Direct3D9CreateLayerAlphaScaleEffect CreateAlphaScaleEffect,
+    Direct3D9FillLayerPath FillPath,
+    Direct3D9RetainEffectResource? RetainAlphaMaskResource = null,
+    Action<nint>? ReleaseAlphaMaskResource = null,
+    Direct3D9ExecuteEffectLayerPath? FillEffectPath = null);
+
+internal sealed record Direct3D9LayerOperations(
+    Direct3D9GetPartialLayerCaptureRects GetPartialCaptureRects,
+    Direct3D9CaptureLayerTarget CaptureTarget,
+    Func<Direct3D9SurfaceRect, int> ClearTargetToTransparent,
+    Direct3D9RetainLayerResource RetainGeometricMask,
+    Direct3D9RetainLayerResource RetainAlphaMaskBrush,
+    Func<Direct3D9SurfaceRect, int> RestoreParentTargetState,
+    Func<Direct3D9LayerCompositeState, int> Composite,
+    Action<nint> ReleaseSourceBitmap,
+    Action<nint> ReleaseGeometricMask,
+    Action<nint> ReleaseAlphaMaskBrush,
+    Direct3D9LayerMaskOperations? MaskOperations = null);
+
 internal readonly record struct Direct3D9EffectComposeState(
     nint ScaleTransform,
     nint Effect,
@@ -421,6 +501,7 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
     private bool _hasEmptyInvalidation;
     private bool _in3D;
     private bool _wasUsedToCreateHardwareRenderTarget;
+    private readonly List<Direct3D9LayerFrame> _layerStack = [];
     private bool _isDisposed;
 
     internal Direct3D9SurfaceRenderTarget(
@@ -680,6 +761,10 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
 
     internal Direct3D9SurfaceRect Bounds => _bounds;
 
+    internal int LayerCount => _layerStack.Count;
+
+    internal bool ForceClearType => _forceClearType;
+
     internal bool In3D => _in3D;
 
     internal bool IsRenderingEnabled => _isRenderingEnabled;
@@ -827,6 +912,50 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
     }
 
     internal int DrawBitmap(Func<int> drawBitmap) => ExecuteDisplayDrawing(drawBitmap);
+
+    internal int ProductionDrawBitmap(
+        Direct3D9BitmapDrawState drawState,
+        nint bitmapSource,
+        nint effects,
+        Direct3D9ProductionBitmapDrawOperations operations)
+    {
+        ArgumentNullException.ThrowIfNull(operations);
+        return DrawBitmap(
+            drawState,
+            bitmapSource,
+            effects,
+            operations.GetScratchBitmapBrush,
+            operations.SetScratchBitmapBrush,
+            operations.ClearScratchBitmapBrush,
+            operations.CreateBrushRealizer,
+            operations.CreateBitmapShape,
+            operations.EnsureState,
+            operations.ClipToSafeDeviceBounds,
+            (shape, shapeToDevice, bounds, brush, worldToDevice, currentEffects) =>
+                ProductionFillPathWithBrush(
+                    shape,
+                    shapeToDevice,
+                    bounds,
+                    brush,
+                    worldToDevice,
+                    currentEffects,
+                    operations.AntiAliasMode,
+                    operations.CurrentClip,
+                    operations.ApplyGuidelines,
+                    operations.ApplyBrushClip,
+                    operations.GetBoundsInDeviceSpace,
+                    operations.CreateHardwareBrush,
+                    operations.CreateAntialiasedGeometryGenerator,
+                    operations.CreateAliasedGeometryGenerator,
+                    (geometryGenerator, hardwareBrush, acceleratedEffects, brushContext) =>
+                        ProductionAcceleratedFillPath(
+                            operations.CompositingMode,
+                            geometryGenerator,
+                            hardwareBrush,
+                            acceleratedEffects,
+                            brushContext)),
+            operations.SoftwareFillPath);
+    }
 
     internal int DrawBitmap(
         Direct3D9BitmapDrawState drawState,
@@ -1063,6 +1192,27 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
 
     internal int DrawMesh3D(Func<int> drawMesh3D) => ExecuteDisplayDrawing(drawMesh3D);
 
+    internal int ProductionDrawMesh3D(
+        Direct3D9ContextState contextState,
+        Direct3D9ProductionMeshDrawOperations operations)
+    {
+        ArgumentNullException.ThrowIfNull(operations);
+        if (!_in3D)
+        {
+            return Direct3D9Factory.InvalidCallHResult;
+        }
+
+        return DrawMesh3DCore(
+            contextState,
+            operations.EnsureBrushRealizations,
+            operations.EnsureState ?? EnsureState,
+            operations.ApplyProjectedMeshTo2DState,
+            operations.DeriveMeshShader,
+            operations.IsMeshBoundsDebugEnabled,
+            operations.GetMeshBounds,
+            operations.DrawMeshBounds);
+    }
+
     internal int DrawMesh3D(
         Func<int> beginShader,
         Func<bool> canRunShaderPath,
@@ -1118,6 +1268,27 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
         ArgumentNullException.ThrowIfNull(applyProjectedMeshTo2DState);
         ArgumentNullException.ThrowIfNull(deriveMeshShader);
 
+        return DrawMesh3DCore(
+            contextState,
+            ensureBrushRealizations,
+            EnsureState,
+            applyProjectedMeshTo2DState,
+            deriveMeshShader,
+            isMeshBoundsDebugEnabled,
+            getMeshBounds,
+            drawMeshBounds);
+    }
+
+    private int DrawMesh3DCore(
+        Direct3D9ContextState contextState,
+        Func<int> ensureBrushRealizations,
+        Func<Direct3D9ContextState, int> ensureState,
+        Direct3D9ApplyProjectedMeshTo2DState applyProjectedMeshTo2DState,
+        Direct3D9DeriveMeshShader deriveMeshShader,
+        Func<bool>? isMeshBoundsDebugEnabled,
+        Direct3D9GetMeshBounds? getMeshBounds,
+        Func<Direct3D9Box, int>? drawMeshBounds)
+    {
         return ExecuteDisplayDrawing(() =>
         {
             if (_bounds.Right <= _bounds.Left || _bounds.Bottom <= _bounds.Top)
@@ -1136,7 +1307,7 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
                 return NormalizeMeshResult(result);
             }
 
-            result = EnsureState(contextState);
+            result = ensureState(contextState);
             if (result == Direct3D9Factory.ClippedToEmptyHResult)
             {
                 return 0;
@@ -1363,6 +1534,245 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
         }
     }
 
+    internal int ProductionFillPathWithBrush(
+        nint shape,
+        Matrix4x4? shapeToDevice,
+        MilRectF shapeBounds,
+        nint brush,
+        Matrix4x4 worldToDevice,
+        nint effects,
+        MilAntiAliasMode antiAliasMode,
+        Direct3D9SurfaceRect currentClip,
+        Direct3D9ApplyPathGuidelines applyGuidelines,
+        Direct3D9ApplyPathBrushClip applyBrushClip,
+        Direct3D9GetPathBoundsInDeviceSpace getBoundsInDeviceSpace,
+        Direct3D9CreatePathHardwareBrush createHardwareBrush,
+        Direct3D9CreateTypedPathGeometryGenerator createAntialiasedGeometryGenerator,
+        Direct3D9CreateTypedPathGeometryGenerator createAliasedGeometryGenerator,
+        Direct3D9ExecuteTypedAcceleratedFillPath acceleratedFillPath)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        ArgumentOutOfRangeException.ThrowIfZero(shape);
+        ArgumentOutOfRangeException.ThrowIfZero(brush);
+        ArgumentNullException.ThrowIfNull(applyGuidelines);
+        ArgumentNullException.ThrowIfNull(applyBrushClip);
+        ArgumentNullException.ThrowIfNull(getBoundsInDeviceSpace);
+        ArgumentNullException.ThrowIfNull(createHardwareBrush);
+        ArgumentNullException.ThrowIfNull(createAntialiasedGeometryGenerator);
+        ArgumentNullException.ThrowIfNull(createAliasedGeometryGenerator);
+        ArgumentNullException.ThrowIfNull(acceleratedFillPath);
+
+        Direct3D9PathClipperState clipperState = new(shape, shapeToDevice, shapeBounds);
+        int result = applyGuidelines(clipperState, out clipperState);
+        if (result < 0)
+        {
+            return result;
+        }
+
+        result = applyBrushClip(clipperState, brush, worldToDevice, out clipperState);
+        if (result < 0)
+        {
+            return result;
+        }
+
+        result = getBoundsInDeviceSpace(clipperState, out MilRectF deviceBounds);
+        if (result < 0 || !TryIntersectBoundsWithSurface(deviceBounds, currentClip, antiAliasMode, out Direct3D9SurfaceRect renderingBounds))
+        {
+            return result;
+        }
+
+        Direct3D9PathBrushContext brushContext = new(
+            worldToDevice,
+            renderingBounds,
+            new MilRectF(renderingBounds.Left, renderingBounds.Top, renderingBounds.Right, renderingBounds.Bottom),
+            CanFallback: true);
+        Direct3D9PathHardwareBrush? hardwareBrush = null;
+        Direct3D9PathGeometryGenerator? geometryGenerator = null;
+        try
+        {
+            result = createHardwareBrush(brush, brushContext, out hardwareBrush);
+            if (result < 0)
+            {
+                return result;
+            }
+
+            if (hardwareBrush is null)
+            {
+                return Direct3D9Factory.InternalErrorHResult;
+            }
+
+            Direct3D9CreateTypedPathGeometryGenerator createGeometryGenerator = antiAliasMode == MilAntiAliasMode.None
+                ? createAliasedGeometryGenerator
+                : createAntialiasedGeometryGenerator;
+            result = createGeometryGenerator(clipperState, out geometryGenerator);
+            if (result == Direct3D9Factory.EmptyFillHResult)
+            {
+                return Direct3D9Factory.SuccessHResult;
+            }
+
+            if (result < 0)
+            {
+                return result;
+            }
+
+            if (geometryGenerator is null)
+            {
+                return Direct3D9Factory.InternalErrorHResult;
+            }
+
+            return acceleratedFillPath(geometryGenerator, hardwareBrush, effects, brushContext);
+        }
+        finally
+        {
+            hardwareBrush?.Dispose();
+            geometryGenerator?.Dispose();
+        }
+    }
+
+    internal int ProductionAcceleratedFillPath(
+        MilCompositingMode compositingMode,
+        Direct3D9PathGeometryGenerator geometryGenerator,
+        Direct3D9PathHardwareBrush hardwareBrush,
+        Direct3D9EffectList? effects,
+        Direct3D9PathBrushContext effectContext)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        ArgumentNullException.ThrowIfNull(geometryGenerator);
+        ArgumentNullException.ThrowIfNull(hardwareBrush);
+        ArgumentNullException.ThrowIfNull(effectContext);
+
+        int result = ExecutePathPipeline(
+            compositingMode,
+            geometryGenerator,
+            hardwareBrush,
+            effects,
+            effectContext,
+            static (Direct3D9PathHardwareBrush brush, MilCompositingMode mode, Direct3D9EffectList? currentEffects, Direct3D9PathBrushContext context, out Direct3D9PathPipelineDescription? description) =>
+                brush.CreateShaderPipeline(mode, currentEffects, context, out description));
+        return result == Direct3D9Factory.NotImplementedHResult
+            ? ExecutePathPipeline(
+                compositingMode,
+                geometryGenerator,
+                hardwareBrush,
+                effects,
+                effectContext,
+                static (Direct3D9PathHardwareBrush brush, MilCompositingMode mode, Direct3D9EffectList? currentEffects, Direct3D9PathBrushContext context, out Direct3D9PathPipelineDescription? description) =>
+                    brush.CreateFixedFunctionPipeline(mode, currentEffects, context, out description))
+            : result;
+    }
+
+    internal int ProductionAcceleratedFillPath(
+        MilCompositingMode compositingMode,
+        Direct3D9PathGeometryGenerator geometryGenerator,
+        Direct3D9PathHardwareBrush hardwareBrush,
+        nint effects,
+        Direct3D9PathBrushContext effectContext)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        ArgumentNullException.ThrowIfNull(geometryGenerator);
+        ArgumentNullException.ThrowIfNull(hardwareBrush);
+        ArgumentNullException.ThrowIfNull(effectContext);
+
+        int result = ExecutePathPipeline(
+            compositingMode,
+            geometryGenerator,
+            hardwareBrush,
+            effects,
+            effectContext,
+            static (Direct3D9PathHardwareBrush brush, MilCompositingMode mode, nint currentEffects, Direct3D9PathBrushContext context, out Direct3D9PathPipelineDescription? description) =>
+                brush.CreateShaderPipeline(mode, currentEffects, context, out description));
+        return result == Direct3D9Factory.NotImplementedHResult
+            ? ExecutePathPipeline(
+                compositingMode,
+                geometryGenerator,
+                hardwareBrush,
+                effects,
+                effectContext,
+                static (Direct3D9PathHardwareBrush brush, MilCompositingMode mode, nint currentEffects, Direct3D9PathBrushContext context, out Direct3D9PathPipelineDescription? description) =>
+                    brush.CreateFixedFunctionPipeline(mode, currentEffects, context, out description))
+            : result;
+    }
+
+    private static int ExecutePathPipeline(
+        MilCompositingMode compositingMode,
+        Direct3D9PathGeometryGenerator geometryGenerator,
+        Direct3D9PathHardwareBrush hardwareBrush,
+        Direct3D9EffectList? effects,
+        Direct3D9PathBrushContext effectContext,
+        Direct3D9CreateOwnedEffectPathPipelineDescription createPipeline)
+    {
+        int result = createPipeline(hardwareBrush, compositingMode, effects, effectContext, out Direct3D9PathPipelineDescription? description);
+        if (result < 0)
+        {
+            return result;
+        }
+
+        if (description is null)
+        {
+            return Direct3D9Factory.InternalErrorHResult;
+        }
+
+        Direct3D9Pipeline? pipeline = null;
+        try
+        {
+            result = description.Initializer.Initialize(
+                geometryGenerator,
+                description.OutsideBounds,
+                description.NeedInside,
+                out pipeline);
+            if (result < 0)
+            {
+                return result;
+            }
+
+            return pipeline?.Execute() ?? Direct3D9Factory.InternalErrorHResult;
+        }
+        finally
+        {
+            pipeline?.ReleaseExpensiveResources();
+        }
+    }
+
+    private static int ExecutePathPipeline(
+        MilCompositingMode compositingMode,
+        Direct3D9PathGeometryGenerator geometryGenerator,
+        Direct3D9PathHardwareBrush hardwareBrush,
+        nint effects,
+        Direct3D9PathBrushContext effectContext,
+        Direct3D9CreateOwnedPathPipelineDescription createPipeline)
+    {
+        int result = createPipeline(hardwareBrush, compositingMode, effects, effectContext, out Direct3D9PathPipelineDescription? description);
+        if (result < 0)
+        {
+            return result;
+        }
+
+        if (description is null)
+        {
+            return Direct3D9Factory.InternalErrorHResult;
+        }
+
+        Direct3D9Pipeline? pipeline = null;
+        try
+        {
+            result = description.Initializer.Initialize(
+                geometryGenerator,
+                description.OutsideBounds,
+                description.NeedInside,
+                out pipeline);
+            if (result < 0)
+            {
+                return result;
+            }
+
+            return pipeline?.Execute() ?? Direct3D9Factory.InternalErrorHResult;
+        }
+        finally
+        {
+            pipeline?.ReleaseExpensiveResources();
+        }
+    }
+
     internal int HwShaderFillPath(
         nint shader,
         nint shape,
@@ -1488,6 +1898,53 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
     }
 
     internal int DrawPath(Func<int> drawPath) => ExecuteDisplayDrawing(drawPath);
+
+    internal int ProductionDrawPath(
+        Matrix4x4 worldToDevice,
+        nint shape,
+        nint pen,
+        nint strokeBrushRealizer,
+        nint fillBrushRealizer,
+        Direct3D9ProductionPathDrawOperations operations)
+    {
+        ArgumentNullException.ThrowIfNull(operations);
+        return DrawPath(
+            worldToDevice,
+            shape,
+            pen,
+            strokeBrushRealizer,
+            fillBrushRealizer,
+            operations.EnsureBrushRealization,
+            operations.GetShapeBounds,
+            operations.WidenShape,
+            operations.GetRealizedBrush,
+            operations.ClipToSafeDeviceBounds,
+            operations.EnsureState,
+            (currentShape, currentShapeToDevice, bounds, brush, currentWorldToDevice, effects) =>
+                ProductionFillPathWithBrush(
+                    currentShape,
+                    currentShapeToDevice,
+                    bounds,
+                    brush,
+                    currentWorldToDevice,
+                    effects,
+                    operations.AntiAliasMode,
+                    operations.CurrentClip,
+                    operations.ApplyGuidelines,
+                    operations.ApplyBrushClip,
+                    operations.GetBoundsInDeviceSpace,
+                    operations.CreateHardwareBrush,
+                    operations.CreateAntialiasedGeometryGenerator,
+                    operations.CreateAliasedGeometryGenerator,
+                    (geometryGenerator, hardwareBrush, currentEffects, brushContext) =>
+                        ProductionAcceleratedFillPath(
+                            operations.CompositingMode,
+                            geometryGenerator,
+                            hardwareBrush,
+                            currentEffects,
+                            brushContext)),
+            operations.SoftwareFillPath);
+    }
 
     internal int DrawPath(
         Matrix4x4 worldToDevice,
@@ -1936,6 +2393,590 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
             out renderTargetBitmap);
     }
 
+    internal int BeginLayer(Direct3D9LayerState layerState, Direct3D9LayerOperations operations)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        ArgumentNullException.ThrowIfNull(operations);
+        if (!float.IsFinite(layerState.Alpha) || layerState.Alpha < 0 || layerState.Alpha > 1)
+        {
+            return Direct3D9Factory.InvalidArgumentHResult;
+        }
+
+        Direct3D9SurfaceRect previousBounds = _bounds;
+        Direct3D9SurfaceRect layerBounds = IntersectSurfaceRects(previousBounds, layerState.LayerBounds);
+        bool isEmpty = IsEmpty(layerBounds) || layerState.Alpha <= 0;
+        bool needsFixup = !isEmpty
+            && (layerState.GeometricMask != 0 || layerState.Alpha < 1 || layerState.AlphaMaskBrush != 0);
+        bool savedClearTypeHint = _forceClearType;
+        nint geometricMask = 0;
+        nint alphaMaskBrush = 0;
+        nint sourceBitmap = 0;
+
+        if (needsFixup && HasAlpha())
+        {
+            _forceClearType = false;
+        }
+
+        int result = 0;
+        bool pushed = false;
+        try
+        {
+            if (needsFixup && layerState.GeometricMask != 0)
+            {
+                result = operations.RetainGeometricMask(layerState.GeometricMask, out geometricMask);
+                if (result < 0)
+                {
+                    return result;
+                }
+            }
+
+            if (needsFixup && layerState.AlphaMaskBrush != 0)
+            {
+                result = operations.RetainAlphaMaskBrush(layerState.AlphaMaskBrush, out alphaMaskBrush);
+                if (result < 0)
+                {
+                    return result;
+                }
+            }
+
+            if (needsFixup)
+            {
+                result = BeginLayerInternal(
+                    new Direct3D9LayerBeginState(layerBounds, HasAlphaMaskBrush: false),
+                    operations.GetPartialCaptureRects,
+                    operations.CaptureTarget,
+                    operations.ClearTargetToTransparent,
+                    out sourceBitmap);
+                if (result < 0)
+                {
+                    return result;
+                }
+            }
+
+            _layerStack.Add(new Direct3D9LayerFrame(
+                layerBounds,
+                previousBounds,
+                IntersectSurfaceRects(layerBounds, layerState.CurrentClip),
+                layerState.Alpha,
+                layerState.AntiAliasMode,
+                geometricMask,
+                alphaMaskBrush,
+                sourceBitmap,
+                savedClearTypeHint,
+                operations));
+            _bounds = layerBounds;
+            geometricMask = 0;
+            alphaMaskBrush = 0;
+            sourceBitmap = 0;
+            pushed = true;
+            return 0;
+        }
+        finally
+        {
+            if (sourceBitmap != 0)
+            {
+                operations.ReleaseSourceBitmap(sourceBitmap);
+            }
+
+            if (alphaMaskBrush != 0)
+            {
+                operations.ReleaseAlphaMaskBrush(alphaMaskBrush);
+            }
+
+            if (geometricMask != 0)
+            {
+                operations.ReleaseGeometricMask(geometricMask);
+            }
+
+            if (!pushed)
+            {
+                _bounds = previousBounds;
+                _forceClearType = savedClearTypeHint;
+            }
+        }
+    }
+
+    internal int EndLayer()
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        if (_layerStack.Count == 0)
+        {
+            return Direct3D9Factory.WgxInvalidCallHResult;
+        }
+
+        int index = _layerStack.Count - 1;
+        Direct3D9LayerFrame frame = _layerStack[index];
+        try
+        {
+            if (frame.SourceBitmap == 0)
+            {
+                return 0;
+            }
+
+            using Direct3D9UseContextGuard useContext = new(_device);
+            using Direct3D9DeviceEntryGuard deviceEntry = new(_device);
+            if (!IsValid)
+            {
+                return 0;
+            }
+
+            int result = frame.Operations.RestoreParentTargetState(frame.CurrentClip);
+            if (result >= 0)
+            {
+                result = (frame.GeometricMask != 0 || frame.AlphaMaskBrush != 0)
+                    && frame.Operations.MaskOperations is not null
+                    ? CompositeLayerMask(frame, frame.Operations.MaskOperations)
+                    : frame.Operations.Composite(new Direct3D9LayerCompositeState(
+                        frame.SourceBitmap,
+                        frame.LayerBounds,
+                        frame.Alpha,
+                        frame.AntiAliasMode,
+                        frame.GeometricMask,
+                        frame.AlphaMaskBrush,
+                        HasAlpha(),
+                        RequiresSourceUnder: HasAlpha()));
+            }
+
+            return NormalizeNoRenderResult(result);
+        }
+        finally
+        {
+            _layerStack.RemoveAt(index);
+            _bounds = frame.PreviousBounds;
+            _forceClearType = frame.SavedClearTypeHint;
+            frame.Release();
+        }
+    }
+
+    private int CompositeLayerMask(Direct3D9LayerFrame frame, Direct3D9LayerMaskOperations operations)
+    {
+        Direct3D9LayerMaskShape? maskShape = null;
+        int result = Direct3D9Factory.SuccessHResult;
+        if (frame.GeometricMask != 0)
+        {
+            result = operations.CreateMaskShape(frame.GeometricMask, out maskShape);
+            if (result < 0)
+            {
+                return result;
+            }
+
+            if (maskShape is null)
+            {
+                return Direct3D9Factory.InternalErrorHResult;
+            }
+        }
+
+        using (maskShape)
+        {
+            bool targetHasAlpha = HasAlpha();
+            bool needsConstantAlphaFixup = frame.Alpha < 1;
+            MilCompositingMode complementedMaskMode = targetHasAlpha
+                ? MilCompositingMode.SourceInverseAlphaMultiply
+                : MilCompositingMode.SourceOverNonPremultiplied;
+            MilCompositingMode regularMaskMode = targetHasAlpha
+                ? MilCompositingMode.SourceAlphaMultiply
+                : MilCompositingMode.SourceInverseAlphaOverNonPremultiplied;
+
+            if (maskShape is null)
+            {
+                result = operations.CreateBoundsGeometryGenerator(null, frame.LayerBounds, out Direct3D9PathGeometryGenerator? boundsGeometry);
+                if (result == Direct3D9Factory.EmptyFillHResult)
+                {
+                    return Direct3D9Factory.SuccessHResult;
+                }
+
+                if (result < 0)
+                {
+                    return result;
+                }
+
+                if (boundsGeometry is null)
+                {
+                    return Direct3D9Factory.InternalErrorHResult;
+                }
+
+                using (boundsGeometry)
+                {
+                    result = FillLayerPath(
+                        frame,
+                        operations,
+                        boundsGeometry,
+                        frame.Alpha < 1 ? frame.Alpha : null,
+                        regularMaskMode,
+                        null,
+                        needInside: true,
+                        targetHasAlpha);
+                    if (result < 0 || !targetHasAlpha)
+                    {
+                        return result;
+                    }
+                }
+
+                result = operations.CreateBoundsGeometryGenerator(null, frame.LayerBounds, out Direct3D9PathGeometryGenerator? alphaMaskSourceUnderGeometry);
+                if (result == Direct3D9Factory.EmptyFillHResult)
+                {
+                    return Direct3D9Factory.SuccessHResult;
+                }
+
+                if (result < 0)
+                {
+                    return result;
+                }
+
+                if (alphaMaskSourceUnderGeometry is null)
+                {
+                    return Direct3D9Factory.InternalErrorHResult;
+                }
+
+                using (alphaMaskSourceUnderGeometry)
+                {
+                    return FillLayerPath(
+                        frame,
+                        operations,
+                        alphaMaskSourceUnderGeometry,
+                        null,
+                        MilCompositingMode.SourceUnder,
+                        null,
+                        needInside: true,
+                        useOpaqueBlack: false,
+                        includeAlphaMask: false);
+                }
+            }
+
+            if (frame.AntiAliasMode != MilAntiAliasMode.None)
+            {
+                result = operations.CreateAntialiasedGeometryGenerator(maskShape, frame.LayerBounds, out Direct3D9PathGeometryGenerator? geometryGenerator);
+                if (result != Direct3D9Factory.EmptyFillHResult && result < 0)
+                {
+                    return result;
+                }
+
+                if (result != Direct3D9Factory.EmptyFillHResult)
+                {
+                    if (geometryGenerator is null)
+                    {
+                        return Direct3D9Factory.InternalErrorHResult;
+                    }
+
+                    using (geometryGenerator)
+                    {
+                        result = operations.CreateAlphaScaleEffect(frame.Alpha, out Direct3D9LayerEffectList? effectList);
+                        if (result < 0)
+                        {
+                            return result;
+                        }
+
+                        if (effectList is null)
+                        {
+                            return Direct3D9Factory.InternalErrorHResult;
+                        }
+
+                        using (effectList)
+                        {
+                            result = FillLayerPath(
+                                frame,
+                                operations,
+                                geometryGenerator,
+                                effectList.Handle,
+                                regularMaskMode,
+                                frame.LayerBounds,
+                                needsConstantAlphaFixup,
+                                targetHasAlpha);
+                            if (result < 0)
+                            {
+                                return result;
+                            }
+                        }
+                    }
+                }
+
+                needsConstantAlphaFixup = false;
+            }
+            else
+            {
+                result = operations.CombineMaskWithBounds(frame.LayerBounds, maskShape, out Direct3D9LayerMaskShape? complementedShape);
+                if (result != Direct3D9Factory.EmptyFillHResult && result < 0)
+                {
+                    return result;
+                }
+
+                if (result != Direct3D9Factory.EmptyFillHResult)
+                {
+                    if (complementedShape is null)
+                    {
+                        return Direct3D9Factory.InternalErrorHResult;
+                    }
+
+                    using (complementedShape)
+                    {
+                        result = operations.CreateAliasedGeometryGenerator(complementedShape, frame.LayerBounds, out Direct3D9PathGeometryGenerator? geometryGenerator);
+                        if (result != Direct3D9Factory.EmptyFillHResult && result < 0)
+                        {
+                            return result;
+                        }
+
+                        if (result != Direct3D9Factory.EmptyFillHResult)
+                        {
+                            if (geometryGenerator is null)
+                            {
+                                return Direct3D9Factory.InternalErrorHResult;
+                            }
+
+                            using (geometryGenerator)
+                            {
+                                result = FillLayerPath(
+                                    frame,
+                                    operations,
+                                    geometryGenerator,
+                                    0,
+                                    complementedMaskMode,
+                                    null,
+                                    needInside: true,
+                                    useOpaqueBlack: targetHasAlpha);
+                                if (result < 0)
+                                {
+                                    return result;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (needsConstantAlphaFixup)
+            {
+                result = operations.CreateBoundsGeometryGenerator(maskShape, frame.LayerBounds, out Direct3D9PathGeometryGenerator? boundsGeometry);
+                if (result != Direct3D9Factory.EmptyFillHResult && result < 0)
+                {
+                    return result;
+                }
+
+                if (result != Direct3D9Factory.EmptyFillHResult)
+                {
+                    if (boundsGeometry is null)
+                    {
+                        return Direct3D9Factory.InternalErrorHResult;
+                    }
+
+                    using (boundsGeometry)
+                    {
+                        result = operations.CreateAlphaScaleEffect(1 - frame.Alpha, out Direct3D9LayerEffectList? effectList);
+                        if (result < 0)
+                        {
+                            return result;
+                        }
+
+                        if (effectList is null)
+                        {
+                            return Direct3D9Factory.InternalErrorHResult;
+                        }
+
+                        using (effectList)
+                        {
+                            result = FillLayerPath(
+                                frame,
+                                operations,
+                                boundsGeometry,
+                                effectList.Handle,
+                                complementedMaskMode,
+                                null,
+                                needInside: true,
+                                useOpaqueBlack: targetHasAlpha);
+                            if (result < 0)
+                            {
+                                return result;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!targetHasAlpha)
+            {
+                return Direct3D9Factory.SuccessHResult;
+            }
+
+            result = operations.CreateBoundsGeometryGenerator(maskShape, frame.LayerBounds, out Direct3D9PathGeometryGenerator? sourceUnderGeometry);
+            if (result == Direct3D9Factory.EmptyFillHResult)
+            {
+                return Direct3D9Factory.SuccessHResult;
+            }
+
+            if (result < 0)
+            {
+                return result;
+            }
+
+            if (sourceUnderGeometry is null)
+            {
+                return Direct3D9Factory.InternalErrorHResult;
+            }
+
+            using (sourceUnderGeometry)
+            {
+                return FillLayerPath(
+                    frame,
+                    operations,
+                    sourceUnderGeometry,
+                    0,
+                    MilCompositingMode.SourceUnder,
+                    null,
+                    needInside: true,
+                    useOpaqueBlack: false);
+            }
+        }
+    }
+
+    private static int FillLayerPath(
+        Direct3D9LayerFrame frame,
+        Direct3D9LayerMaskOperations operations,
+        Direct3D9PathGeometryGenerator geometryGenerator,
+        nint effects,
+        MilCompositingMode compositingMode,
+        Direct3D9SurfaceRect? complementBounds,
+        bool needInside,
+        bool useOpaqueBlack)
+    {
+        if (frame.AlphaMaskBrush == 0 || operations.FillEffectPath is null)
+        {
+            return FillLayerPathLegacy(
+                frame,
+                operations,
+                geometryGenerator,
+                effects,
+                compositingMode,
+                complementBounds,
+                needInside,
+                useOpaqueBlack);
+        }
+
+        float? alpha = effects == 0 ? null : frame.Alpha;
+        return FillLayerPath(
+            frame,
+            operations,
+            geometryGenerator,
+            alpha,
+            compositingMode,
+            complementBounds,
+            needInside,
+            useOpaqueBlack);
+    }
+
+    private static int FillLayerPath(
+        Direct3D9LayerFrame frame,
+        Direct3D9LayerMaskOperations operations,
+        Direct3D9PathGeometryGenerator geometryGenerator,
+        float? alpha,
+        MilCompositingMode compositingMode,
+        Direct3D9SurfaceRect? complementBounds,
+        bool needInside,
+        bool useOpaqueBlack,
+        bool includeAlphaMask = true)
+    {
+        if (operations.FillEffectPath is null)
+        {
+            return Direct3D9Factory.UnsupportedOperationHResult;
+        }
+
+        using Direct3D9EffectList effectList = new();
+        if (includeAlphaMask && frame.AlphaMaskBrush != 0)
+        {
+            if (operations.RetainAlphaMaskResource is null || operations.ReleaseAlphaMaskResource is null)
+            {
+                return Direct3D9Factory.UnsupportedOperationHResult;
+            }
+
+            int result = effectList.AddAlphaMask(
+                new Direct3D9AlphaMaskParameters(Matrix4x4.Identity),
+                frame.AlphaMaskBrush,
+                operations.RetainAlphaMaskResource,
+                operations.ReleaseAlphaMaskResource);
+            if (result < 0)
+            {
+                return result;
+            }
+        }
+
+        if (alpha is float alphaValue)
+        {
+            int result = effectList.AddAlphaScale(alphaValue);
+            if (result < 0)
+            {
+                return result;
+            }
+        }
+
+        int brushResult = operations.CreateBrush(frame.SourceBitmap, useOpaqueBlack, out Direct3D9PathHardwareBrush? brush);
+        if (brushResult < 0)
+        {
+            return brushResult;
+        }
+
+        if (brush is null)
+        {
+            return Direct3D9Factory.InternalErrorHResult;
+        }
+
+        using (brush)
+        {
+            Direct3D9PathBrushContext context = CreateLayerBrushContext(frame);
+            return NormalizeNoRenderResult(operations.FillEffectPath(
+                compositingMode,
+                geometryGenerator,
+                brush,
+                effectList.Entries.Count == 0 ? null : effectList,
+                context,
+                complementBounds,
+                needInside));
+        }
+    }
+
+    private static int FillLayerPathLegacy(
+        Direct3D9LayerFrame frame,
+        Direct3D9LayerMaskOperations operations,
+        Direct3D9PathGeometryGenerator geometryGenerator,
+        nint effects,
+        MilCompositingMode compositingMode,
+        Direct3D9SurfaceRect? complementBounds,
+        bool needInside,
+        bool useOpaqueBlack)
+    {
+        int result = operations.CreateBrush(frame.SourceBitmap, useOpaqueBlack, out Direct3D9PathHardwareBrush? brush);
+        if (result < 0)
+        {
+            return result;
+        }
+
+        if (brush is null)
+        {
+            return Direct3D9Factory.InternalErrorHResult;
+        }
+
+        using (brush)
+        {
+            return NormalizeNoRenderResult(operations.FillPath(
+                compositingMode,
+                geometryGenerator,
+                brush,
+                effects,
+                CreateLayerBrushContext(frame),
+                complementBounds,
+                needInside));
+        }
+    }
+
+    private static Direct3D9PathBrushContext CreateLayerBrushContext(Direct3D9LayerFrame frame) => new(
+        Matrix4x4.Identity,
+        frame.LayerBounds,
+        new MilRectF(frame.LayerBounds.Left, frame.LayerBounds.Top, frame.LayerBounds.Right, frame.LayerBounds.Bottom),
+        CanFallback: false);
+
+    internal void EndAndIgnoreAllLayers()
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        EndAndIgnoreAllLayersCore();
+    }
+
     internal int BeginLayerInternal(
         Direct3D9LayerBeginState layerState,
         Direct3D9GetPartialLayerCaptureRects getPartialLayerCaptureRects,
@@ -2111,7 +3152,124 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
             MilCompositingMode.SourceUnder);
     }
 
+    private static bool GlyphBoundsIntersectTarget(MilRectF bounds, Direct3D9SurfaceRect targetBounds) =>
+        IsEmpty(targetBounds)
+        || (bounds.Left < targetBounds.Right
+            && bounds.Right > targetBounds.Left
+            && bounds.Top < targetBounds.Bottom
+            && bounds.Bottom > targetBounds.Top);
+
     internal int DrawGlyphs(Func<int> drawGlyphs) => ExecuteDisplayDrawing(drawGlyphs);
+
+    internal int ProductionDrawGlyphs(
+        Direct3D9GlyphDrawState drawState,
+        Direct3D9GlyphRun glyphRun,
+        Direct3D9GlyphRunDrawOperations operations)
+    {
+        ArgumentNullException.ThrowIfNull(glyphRun);
+        ArgumentNullException.ThrowIfNull(operations);
+
+        int validationResult = glyphRun.Validate();
+        if (validationResult < 0)
+        {
+            return validationResult;
+        }
+
+        if (glyphRun.IsEmpty || !GlyphBoundsIntersectTarget(glyphRun.Bounds, _bounds))
+        {
+            return _isRenderingEnabled ? CompleteDisplayDrawing(0) : 0;
+        }
+
+        if (operations.DeviceIdentity == 0
+            || !float.IsFinite(operations.ScaleX)
+            || !float.IsFinite(operations.ScaleY)
+            || operations.ScaleX <= 0
+            || operations.ScaleY <= 0
+            || !Enum.IsDefined(operations.RecommendedBlendMode))
+        {
+            return Direct3D9Factory.InvalidArgumentHResult;
+        }
+
+        Direct3D9GlyphBlendMode blendMode = operations.RecommendedBlendMode == Direct3D9GlyphBlendMode.ClearType
+            && drawState.TargetSupportsClearType
+            ? Direct3D9GlyphBlendMode.ClearType
+            : Direct3D9GlyphBlendMode.Grayscale;
+        Direct3D9GlyphBankKey key = new(
+            operations.DeviceIdentity,
+            operations.DisplayIndex,
+            glyphRun.CacheKey,
+            blendMode,
+            glyphRun.UseSubpixelPositioning,
+            operations.ScaleX,
+            operations.ScaleY);
+
+        return DrawGlyphs(
+            drawState,
+            operations.EnsureHardwareBrushRealization,
+            operations.EnsureState,
+            supportsClearType =>
+            {
+                int result = operations.GlyphBank.GetOrCreate(
+                    glyphRun,
+                    key,
+                    operations.CreateRealization,
+                    out Direct3D9GlyphRealization? realization);
+                if (result < 0)
+                {
+                    return result;
+                }
+
+                if (realization is null)
+                {
+                    return Direct3D9Factory.InternalErrorHResult;
+                }
+
+                using Direct3D9GlyphRunPainter painter = new(
+                    glyphRun,
+                    realization,
+                    blendMode == Direct3D9GlyphBlendMode.ClearType && supportsClearType,
+                    operations.PaintRealization,
+                    operations.ReleasePainter);
+                return painter.Paint();
+            },
+            operations.SoftwareRenderer);
+    }
+
+    internal int ProductionDrawGlyphs(
+        Direct3D9GlyphDrawState drawState,
+        Direct3D9ProductionGlyphDrawOperations operations)
+    {
+        ArgumentNullException.ThrowIfNull(operations);
+        if (!operations.HasGlyphs)
+        {
+            return _isRenderingEnabled ? CompleteDisplayDrawing(0) : 0;
+        }
+
+        return DrawGlyphs(
+            drawState,
+            operations.EnsureHardwareBrushRealization,
+            operations.EnsureState,
+            supportsClearType =>
+            {
+                int result = operations.CreateHardwareRenderer(supportsClearType, out Direct3D9ProductionGlyphRenderer? renderer);
+                if (result < 0)
+                {
+                    renderer?.Dispose();
+                    return result;
+                }
+
+                if (renderer is null)
+                {
+                    return Direct3D9Factory.InternalErrorHResult;
+                }
+
+                using (renderer)
+                {
+                    return renderer.Paint();
+                }
+            },
+            operations.SoftwareRenderer);
+    }
 
     internal int DrawGlyphs(
         Func<int> ensureHardwareBrushRealization,
@@ -2325,6 +3483,24 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
 
     internal int DrawVideo(Func<int> drawVideo) => ExecuteDisplayDrawing(drawVideo);
 
+    internal int ProductionDrawVideo(
+        Direct3D9VideoRenderState renderState,
+        Direct3D9VideoSurfaceRenderer? surfaceRenderer,
+        nint bitmapSource,
+        Direct3D9ProductionVideoDrawOperations operations)
+    {
+        ArgumentNullException.ThrowIfNull(operations);
+        return DrawVideo(
+            renderState,
+            surfaceRenderer,
+            bitmapSource,
+            currentBitmapSource => ProductionDrawBitmap(
+                operations.BitmapDrawState,
+                currentBitmapSource,
+                operations.Effects,
+                operations.BitmapOperations));
+    }
+
     internal int DrawVideo(
         Direct3D9VideoRenderState renderState,
         Direct3D9VideoSurfaceRenderer? surfaceRenderer,
@@ -2489,6 +3665,11 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
     internal int Present()
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
+        if (_layerStack.Count > 0)
+        {
+            return Direct3D9Factory.WgxInvalidCallHResult;
+        }
+
         using Direct3D9DeviceEntryGuard deviceEntry = new(_device);
         try
         {
@@ -2503,6 +3684,11 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
     internal int Present(Direct3D9SurfaceRect inputRect)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
+        if (_layerStack.Count > 0)
+        {
+            return Direct3D9Factory.WgxInvalidCallHResult;
+        }
+
         using Direct3D9DeviceEntryGuard deviceEntry = new(_device);
         try
         {
@@ -2684,6 +3870,21 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
         AddIfNotEmpty(result, new Direct3D9SurfaceRect(right, top, source.Right, bottom));
     }
 
+    private static Direct3D9SurfaceRect IntersectSurfaceRects(
+        Direct3D9SurfaceRect first,
+        Direct3D9SurfaceRect second)
+    {
+        Direct3D9SurfaceRect intersection = new(
+            Math.Max(first.Left, second.Left),
+            Math.Max(first.Top, second.Top),
+            Math.Min(first.Right, second.Right),
+            Math.Min(first.Bottom, second.Bottom));
+        return IsEmpty(intersection) ? default : intersection;
+    }
+
+    private static bool IsEmpty(Direct3D9SurfaceRect rectangle) =>
+        rectangle.Left >= rectangle.Right || rectangle.Top >= rectangle.Bottom;
+
     private static void AddIfNotEmpty(List<Direct3D9SurfaceRect> rectangles, Direct3D9SurfaceRect rectangle)
     {
         if (rectangle.Left < rectangle.Right && rectangle.Top < rectangle.Bottom)
@@ -2725,6 +3926,7 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
         ObjectDisposedException.ThrowIf(_isDisposed, this);
         using Direct3D9DeviceEntryGuard deviceEntry = new(_device);
 
+        EndAndIgnoreAllLayersCore();
         _hasValidContents = false;
 
         if (_ownsRenderTargetSurface)
@@ -3072,6 +4274,7 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
         }
 
         using Direct3D9DeviceEntryGuard deviceEntry = new(_device);
+        EndAndIgnoreAllLayersCore();
         _isDisposed = true;
         _in3D = false;
         _bounds = _boundsPre3D;
@@ -3091,6 +4294,98 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
             _device.ReleaseUseOfDepthStencilBuffer(_createdDepthStencilSurface.SurfaceForDeviceCall);
             _createdDepthStencilSurface.Dispose();
             _createdDepthStencilSurface = null;
+        }
+    }
+
+    private void EndAndIgnoreAllLayersCore()
+    {
+        if (_layerStack.Count == 0)
+        {
+            return;
+        }
+
+        _forceClearType = _layerStack[0].SavedClearTypeHint;
+        while (_layerStack.Count > 0)
+        {
+            int index = _layerStack.Count - 1;
+            Direct3D9LayerFrame frame = _layerStack[index];
+            _layerStack.RemoveAt(index);
+            frame.Release();
+        }
+
+        _bounds = new Direct3D9SurfaceRect(0, 0, checked((int) _width), checked((int) _height));
+    }
+
+    private sealed class Direct3D9LayerFrame
+    {
+        private bool _isReleased;
+
+        internal Direct3D9LayerFrame(
+            Direct3D9SurfaceRect layerBounds,
+            Direct3D9SurfaceRect previousBounds,
+            Direct3D9SurfaceRect currentClip,
+            float alpha,
+            MilAntiAliasMode antiAliasMode,
+            nint geometricMask,
+            nint alphaMaskBrush,
+            nint sourceBitmap,
+            bool savedClearTypeHint,
+            Direct3D9LayerOperations operations)
+        {
+            LayerBounds = layerBounds;
+            PreviousBounds = previousBounds;
+            CurrentClip = currentClip;
+            Alpha = alpha;
+            AntiAliasMode = antiAliasMode;
+            GeometricMask = geometricMask;
+            AlphaMaskBrush = alphaMaskBrush;
+            SourceBitmap = sourceBitmap;
+            SavedClearTypeHint = savedClearTypeHint;
+            Operations = operations;
+        }
+
+        internal Direct3D9SurfaceRect LayerBounds { get; }
+
+        internal Direct3D9SurfaceRect PreviousBounds { get; }
+
+        internal Direct3D9SurfaceRect CurrentClip { get; }
+
+        internal float Alpha { get; }
+
+        internal MilAntiAliasMode AntiAliasMode { get; }
+
+        internal nint GeometricMask { get; }
+
+        internal nint AlphaMaskBrush { get; }
+
+        internal nint SourceBitmap { get; }
+
+        internal bool SavedClearTypeHint { get; }
+
+        internal Direct3D9LayerOperations Operations { get; }
+
+        internal void Release()
+        {
+            if (_isReleased)
+            {
+                return;
+            }
+
+            _isReleased = true;
+            if (SourceBitmap != 0)
+            {
+                Operations.ReleaseSourceBitmap(SourceBitmap);
+            }
+
+            if (AlphaMaskBrush != 0)
+            {
+                Operations.ReleaseAlphaMaskBrush(AlphaMaskBrush);
+            }
+
+            if (GeometricMask != 0)
+            {
+                Operations.ReleaseGeometricMask(GeometricMask);
+            }
         }
     }
 

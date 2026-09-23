@@ -2764,9 +2764,9 @@ public class Direct3D9PipelineTests
     }
 
     [TestMethod]
-    [DataRow(0, "FirstOwned|SecondOwned|ReleaseColors|ReleaseBuilder")]
-    [DataRow(1, "Begin|Geometry|FirstOwned|SecondOwned|ReleaseColors|ReleaseBuilder")]
-    [DataRow(2, "Begin|Geometry|Flush|ReleaseBuilder|FirstOwned|SecondOwned|ReleaseColors")]
+    [DataRow(0, "SecondOwned|FirstOwned|ReleaseColors|ReleaseBuilder")]
+    [DataRow(1, "Begin|Geometry|SecondOwned|FirstOwned|ReleaseColors|ReleaseBuilder")]
+    [DataRow(2, "Begin|Geometry|Flush|ReleaseBuilder|SecondOwned|FirstOwned|ReleaseColors")]
     public void WhenPipelineResourcesAreReleasedAtEachExecutionStageThenOwnedResourcesAreIndependentFromBorrowedResources(
         int executionStage,
         string expectedCalls)

@@ -5,21 +5,76 @@
 
 ## 当前状态
 
-- 当前位于 [`../remaining-gap-closure-plan.md`](../remaining-gap-closure-plan.md) 的阶段 1：完成 HW backend 生命周期和直接设备边界。
+- 当前位于 [`../remaining-gap-closure-plan.md`](../remaining-gap-closure-plan.md) 的阶段 4：冻结并实现 generated protocol；阶段 1 的 HW backend 生命周期和直接设备边界、阶段 2 的 HW 内容管线、阶段 3 的最小软件呈现链均已正式关闭。
 - DirectX 绑定固定为 Silk.NET 2.23.0；Win32 优先 Microsoft.Windows.CsWin32 0.3.298。
-- D3D9/HW 底座已形成大量闭环，但生产 ABI、UCE/资源协议、完整图元绘制和 PresentationCore E2E 尚未完成。
+- D3D9/HW 内容管线与最小软件 HWND/GDI 呈现链已形成生产闭环，但 generated protocol、生产 ABI、UCE/资源协议和 PresentationCore E2E 尚未完成。
 - 当前不能替换原 `wpfgfx_cor3.dll`。
-- 当前阶段状态为：正式关闭阶段 0 个、Active 阶段 1 个、Pending 阶段 6 个；阶段 1 尚未正式关闭。由于机器 Ledger 仍为 `RepairRequiredPartial` 且生产完成分母不可确定计算，不维护整体完成百分比。阶段完成条件与剩余大项见 [`../remaining-gap-closure-plan.md`](../remaining-gap-closure-plan.md)。
+- 当前阶段状态为：正式关闭阶段 3 个、Active 阶段 1 个、Pending 阶段 3 个；阶段 4 当前 Active。由于机器 Ledger 仍为 `RepairRequiredPartial` 且生产完成分母不可确定计算，不维护整体完成百分比。阶段完成条件与剩余大项见 [`../remaining-gap-closure-plan.md`](../remaining-gap-closure-plan.md)。
 
 ## 稳定能力摘要
 
 - loader、display/device manager、device/resource/use-context、HW render state、surface/texture/swap-chain、registry/display 已形成大量闭环。
 - HW display/window/surface render target、软件 3D fallback、3D geometry renderer、shader/fixed-function pipeline、bitmap color source/cache、software rasterizer/render target、glyph/text 窄路径已有可运行实现。
-- `CSwRenderTargetSurface` 的 pipeline、intermediate buffers、alpha、SetSurface、current clip 与 Clear/32bpp 格式分派已形成闭环。
+- `CSwRenderTargetSurface` 的 pipeline、intermediate buffers、alpha、SetSurface、current clip 与 Clear/32bpp 格式分派已形成闭环，并已接通 compatible DC、top-down DIB、dirty-region BitBlt 与 HWND 生命周期。
 - 直接设备边界已覆盖大量 capability、资源创建/更新、状态设置、绘制、render-target、GPU marker query、错误映射与释放后保护。
+- generated protocol 已冻结完整 command/resource ID、SDK fingerprint、32 位 handle，并形成 transport/channel 五类核心命令的生产 writer/router/handle-table 闭环。
 - 详细完成事实不再复制到当前入口，统一维护在完成进展归档中。
 
 ## 最近验证基线
+
+- 本轮完整关闭 generated protocol transport/channel 核心命令闭环。冻结完整 `MILCMD`/`MIL_RESOURCE_TYPE`、SDK fingerprint、32 位 handle 与五类 command layout，新增共享生产 writer、exact-size router、强类型 handler 和最小 handle/resource table，覆盖 malformed/unknown、首错停止、create/delete/duplicate、identity/refcount 与 channel lookup。验证：新增定向测试 10/10、全量主测试 4017/4017、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-031-GENERATED-PROTOCOL-TRANSPORT-CHANNEL.md`。
+
+- 上一轮完整关闭 software surface/HWND target 到 compatible DC、32bpp top-down DIB、selected bitmap、dirty-region BitBlt、resize、失败恢复和确定性释放的最小生产链，并复用现有 `Direct3D9SoftwareRenderTargetSurface` 像素输出。验证：新增定向测试 8/8、全量主测试 4007/4007、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-030-SOFTWARE-HWND-GDI-PRESENT.md`。
+
+- 上一轮完整关闭 pipeline builder、waffling 与 expanded vertex 生产消费链。新增 shader/fixed-function 共享生产 builder，按原生顺序执行 primary、effects、geometry modifiers、lighting、clip；补齐常量颜色与常量 Alpha typed mapping、line/triangle waffling 到 expanded conversion/flush、expanded batch 到 Direct3D TriangleList/TriangleStrip/LineList/IndexedTriangleList draw，并统一 owned color source 逆序释放。验证：相关定向回归 43/43、全量主测试 3999/3999、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-029-PIPELINE-BUILDER-WAFFLING-EXPANDED-VERTEX.md`。
+
+- 上一轮完整核验并正式关闭 bitmap、path、glyph、video 生产绘制链。四类图元已从 surface/texture production 入口进入 brush/effect、shader/fixed-function pipeline、geometry/vertex、Direct3D draw、unsupported software fallback、display completion 与确定性释放；强类型 glyph run/bank/painter 是 glyph 核心模型，video 保持 Begin/End、COM source 与 prefilter 生命周期。验证：Production 定向回归 51/51、全量主测试 3994/3994、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-028-BITMAP-PATH-GLYPH-VIDEO-PRODUCTION-DRAW.md`。
+
+- 上一轮完整关闭 shader 资源、真实 bytecode、D3D 创建、device-owned cache、pipeline 消费与设备释放闭环。文本 pixel shader 从原生生成 `Shaders.rc` 加载；effect vertex shader 从仓库 `ShaderEffectsVS.fx` 按原生 entry point/profile 经 `D3DCompile` 生成真实 bytecode；新增 descriptor、bytecode owner、vertex/pixel cache resource、强类型 program 与 capability/完整性检查，并接入显式 invalidation、device lost、resource manager 和设备 Dispose。验证：新增定向测试 10/10、相关回归 49/49、全量主测试 3994/3994、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-027-SHADER-RESOURCE-BYTECODE-CACHE-LIFECYCLE.md`。
+
+- 上一轮完整关闭 HW glyph run、bank 与 painter 生产生命周期。新增强类型 glyph run/offset、device-display-bank key、realization、LRU bank 与短生命周期 painter；production draw 从 run 验证进入 cache miss/hit/persistent、ClearType/gray、subpixel、bounds/no-render、HW paint 与 unsupported software fallback，覆盖 eviction、device invalidation、partial creation、paint failure 和逆序释放；texture target 同步新增强类型转发。验证：新增定向测试 8/8、全量主测试 3984/3984、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-026-HW-GLYPH-RUN-BANK-PAINTER.md`。
+
+- 上一轮完整关闭 HW effect list 与 effect 消费链。新增强类型 effect entry/list/resource 与共享 processor，按原生顺序消费 AlphaMask、AlphaScale，覆盖参数复制、resource retain/release、shader/fixed-function 一致消费、unsupported/首错、partial creation 和 derived color-source 清理；path accelerated fill 新增强类型 effect overload，layer alpha-mask 从 retained frame resource 进入 bounds/geometric fill，并在 alpha target 最终无 effect SourceUnder。验证：新增定向测试 5/5、全量主测试 3976/3976、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-025-HW-EFFECT-LIST-CONSUMPTION.md`。
+
+- 上一轮完整关闭几何 mask 的 HW 生产消费闭环。新增强类型 layer mask shape/effect/operations，把 retained geometric mask 直接接入 AA rasterizer/aliased XOR complement generator 与 production accelerated fill；覆盖 complement bounds、inside、constant alpha 合并、opaque/alpha target compositing mode、alpha target source-under、empty fill、首错停止和 temporary shape/generator/effect/brush 逆序释放。验证：新增定向测试 5/5、全量主测试 3971/3971、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-024-HW-GEOMETRIC-MASK-PRODUCTION-CONSUMPTION.md`。
+
+- 上一轮完整关闭 HW render-target layer stack 与嵌套恢复生命周期。新增拥有资源的强类型 layer frame/operations 与 LIFO stack，覆盖 bounds/clip/ClearType 保存恢复、partial/full capture、alpha target transparent clear、constant alpha、geometric/alpha-mask 窄合成状态、parent target state 恢复、source-under、Begin 失败回滚、End 合成失败后恢复、重复 End、Present 拒绝、Resize/Dispose abort 和资源逆序释放；保留既有低层 HW capture/composite 入口，未扩展 effects/UCE。验证：layer 定向测试 30/30、全量主测试 3966/3966、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-023-HW-LAYER-STACK-LIFECYCLE.md`。
+
+- 上一轮完整关闭 HW render-target 当前使用身份与 present/释放失败解绑生命周期。`Direct3D9Device` 抽取统一 `UnbindCurrentRenderTarget`：surface release 路径按需忽略 EndScene 错误后借用 dummy 解绑并释放 depth-stencil；present failure 复用同一清理但明确不重复 EndScene；identity 先清空保证重复 present failure、surface 随后释放和递归资源销毁幂等。device Dispose 也改为先清空非拥有 current identity，再释放 dummy 并销毁资源。验证：render-target-state 定向测试通过、全量主测试 3957/3957、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-022-RENDERTARGET-USE-UNBIND-LIFECYCLE.md`。
+
+- 上一轮完整关闭 surface/texture render-target 的强类型 production dispatch。`Direct3D9TextureRenderTarget` 新增 bitmap/path/glyph/video/mesh production 路由，统一在转发前失效 texture contents 与缓存 bitmap，并直接调用内部 surface target 的对应 production 入口；dispatch 不重复拼装 pipeline/fallback，也不重复 display completion。旧 `Func<int>` 兼容入口保留并复用统一 invalidation 实现。验证：production dispatch 定向测试 2/2、全量主测试 3956/3956、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-021-PRODUCTION-RENDERTARGET-DISPATCH.md`。
+
+- 上一轮完整关闭 mesh 3D shader/fixed-function 的生产集成。新增 `Direct3D9ProductionMeshDrawOperations` 与 `ProductionDrawMesh3D`，抽取共享 `DrawMesh3DCore`，复用既有 bounds/3D-disabled、brush realization、state、clip/projected mesh、visible、derived shader、shader/fixed-function renderer、debug bounds、non-invertible 归一化和 display completion；production 入口显式要求处于 Begin3D/End3D 区间，derived shader 在 finish 后确定性释放。验证：production mesh 定向测试 4/4、全量主测试 3954/3954、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-020-MESH-DRAW-PRODUCTION-INTEGRATION.md`。
+
+- 上一轮完整关闭 video draw 到 production bitmap pipeline 的生产集成。新增 `Direct3D9ProductionVideoDrawOperations` 与 `ProductionDrawVideo`，复用既有 surface renderer/device `BeginRender`、bitmap source AddRef/Release、空帧、prefilter 保存恢复、`EndRender` 忽略失败、device/use-context 和 display completion 生命周期，并固定把 surface frame 或调用方 bitmap source 接入 `ProductionDrawBitmap`；begin 失败不 EndRender，begin 成功后 bitmap 失败仍 EndRender，EndRender 不覆盖主结果。验证：production video 定向测试 3/3、全量主测试 3950/3950、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-019-VIDEO-DRAW-PRODUCTION-INTEGRATION.md`。
+
+- 上一轮完整关闭 glyph draw 的窄生产集成。新增 `Direct3D9ProductionGlyphRenderer`、`Direct3D9ProductionGlyphDrawOperations` 与 `ProductionDrawGlyphs`，复用既有 target/device ClearType 与 hardware text 能力、POW2/NPOT、source clip、brush realization、EnsureState、software brush alpha fallback、device/use-context 和 display completion 语义；hardware painter/renderer 在 paint 后确定性释放，`E_NOTIMPL`/device-cannot-render-text 时先释放再 software fallback，empty glyph run 不创建资源。验证：production glyph 定向测试 4/4、全量主测试 3947/3947、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-018-GLYPH-DRAW-PRODUCTION-INTEGRATION.md`。
+
+- 上一轮完整关闭 bitmap draw 到 shader/fixed-function production pipeline 的强类型生产集成。新增 `Direct3D9ProductionBitmapDrawOperations` 与 `ProductionDrawBitmap`，复用既有 source rect/default bounds、shape、首次 ensure-state、scratch bitmap brush、immediate brush realizer、safe clip、software fallback 和 display completion 生命周期，并固定把 bitmap fill 接入 `ProductionFillPathWithBrush`/`ProductionAcceleratedFillPath`；shape 与 brush sampling 均保持 `WorldToDevice`，effects 原样传播，hardware 仅在 `E_NOTIMPL` 时 fallback，realizer 与 scratch brush 按原生逆序清理。验证：production bitmap 定向测试 3/3、全量主测试 3943/3943、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-017-BITMAP-DRAW-PRODUCTION-INTEGRATION.md`。
+
+- 上一轮完整关闭 `DrawPathInternal` 的 fill/stroke 双分支到强类型 path pipeline 的生产集成。新增 `Direct3D9ProductionPathDrawOperations` 和 `ProductionDrawPath`，复用既有 device/use-context、invalid target、display completion、no-render 归一化及 fill/stroke 顺序，同时固定把 fill 和 widened stroke 接入 `ProductionFillPathWithBrush`/`ProductionAcceleratedFillPath`；fill 保留 shape-to-device，stroke widen 后以空 transform 发送，hardware 仅在 `E_NOTIMPL` 时 software fallback，其他失败保持首错并短路 stroke。验证：path production 联合定向测试 7/7、全量主测试 3940/3940、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-016-DRAW-PATH-PRODUCTION-INTEGRATION.md`。
+
+- 上一轮完整关闭 path fill 到 shader/fixed-function production pipeline 的强类型生产集成。`Direct3D9PathGeometryGenerator` 移除占位 handle，ordinary geometry 与 complex-scan 直接发送到同一 vertex builder；`Direct3D9PathHardwareBrush` 自身拥有 shader/fixed-function pipeline 创建入口，`ProductionAcceleratedFillPath` 不再接收外部 pipeline 拼装委托；production initializer/pipeline 支持无原生 geometry handle 的强类型执行，同时保持 shader 优先、仅 `E_NOTIMPL` fallback、empty-fill/outside、HRESULT 首错、昂贵资源释放及 brush/generator 确定性清理。验证：path fill 与 production pipeline 联合定向测试 10/10、全量主测试 3937/3937、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-015-PATH-FILL-PRODUCTION-INTEGRATION.md`。
+
+- 上一轮完整关闭 vertex builder 与 HW pipeline 的生产集成闭环。新增强类型 `Direct3D9VertexPipelineOwner` 与 `Direct3D9ProductionPipelineInitializer`，将 shader/fixed-function mapping、pre-generated 跳过、outside bounds、geometry 发送、complex-scan/waffle expanded allocation、懒 realization、draw、单缓冲缓存重画及失败/最终释放连为同一生产生命周期；旧 `nint` 路径仅保留为既有 ABI 兼容边界，未扩展生产 ABI。验证：production pipeline 定向测试 6/6、相关联合定向测试 186/186、全量主测试 3933/3933、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-014-VERTEX-PIPELINE-PRODUCTION-INTEGRATION.md`。
+
+- 上一轮完整关闭原生 `CHwTVertexBuffer<TVertex>::Builder` 的 outside stratum、最终提交与复用生命周期。新增 `Direct3D9VertexBufferBuilder`，覆盖 outside bounds 顶部、stratum 间隙、底部和 trapezoid 左右补形，inside/outside 组合，indexed/non-indexed triangle-list、triangle-strip、line-list 与 precomputed indexed geometry，复用 expanded-vertex converter，保持 packed-coordinate 分组、pipeline realization、primitive draw、HRESULT 首错、失败 reset、可选返回缓冲区及再次构建。验证：vertex-builder 定向测试 11/11、全量主测试 3927/3927、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-013-VERTEX-BUILDER-LIFECYCLE.md`。
+
+- 上一轮完整关闭原生 `CHwTVertexBuffer<TVertex>::Builder` 的 expanded-vertex 映射与消费方法族。新增统一 `Direct3D9ExpandedVertexConverter`，覆盖 `SetupConverter`、`FinalizeMappings`、原地/分离转换、position-first UV 生成、默认/显式 Z、constant/default diffuse、coverage float 位模式到 packed ARGB 的原生 lane 缩放、最多八组累计 UV，以及快速/通用路径选择；同时将 complex-scan direct line-list、顶部 triangle-strip 与 waffle 输出直接接入最终 expanded-vertex 分配，不创建堆中间数组。验证：expanded-vertex 与 complex-scan 定向测试 34/34、全量主测试 3916/3916、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。详细结论见 `completed-work/S-UNDATED-012-EXPANDED-VERTEX-CONVERTER.md`。
+
+- 本轮完成原生 `CHwTVertexBuffer<TVertex>::Builder::AddComplexScan` 的 coverage interval 转换切片。新增 `Direct3D9ComplexScanIntervalBuilder`，保持 `INT_MAX` 尾哨兵遍历、inside/full coverage 与 outside/zero coverage 过滤、coverage/64、X/Y `+0.5f` pixel-center、outside bounds 固定 min/max 顺序及零长度线保留，并原样传播首个失败 HRESULT。验证：定向测试 6/6、全量主测试 3894/3894、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
+
+- 本轮完成原生 `CHwTVertexBuffer<TVertex>::Builder::AddComplexScan` 的 line sink 选择切片。新增 `Direct3D9ComplexScanLineBuilder`，保持有效 waffler 优先、仅请求但全部密度过滤时不使用 waffle sink、严格 `rPixelY < viewportTop + 1` 的顶部行 vertex-buffer fallback、其余 direct line-list 及 HRESULT 原样传播；同时确认 `fWafflersUsed` 不直接控制 flush，expanded vertex 仍由整体 `AreWaffling()` 状态处理。验证：定向测试 6/6、全量主测试 3888/3888、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
+
+- 本轮完成原生 `CHwTVertexBuffer<TVertex>::Builder::BuildWafflePipeline<TWaffler>` 的独立组装翻译。新增 `Direct3D9WafflePipelineBuilder`，保持 texture-coordinate 顺序、每个 `Matrix3x2` 第一列再第二列、任意非零 waffle mode、严格 `a*a+b*b < 16` 的最小宽度过滤、无有效 waffler 时直达最终 sink、line/triangle 链连接及 HRESULT 首错停止。当前仍未接入完整 vertex builder 或 expanded vertex 消费。验证：pipeline builder 定向测试 7/7、全量主测试 3882/3882、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
+
+- 本轮完成原生 `TriangleWaffler<PointXYA>` 多 cell 三角形拆分翻译。新增 `Direct3D9TriangleWaffler`，保持三个 score 的固定 compare/swap 排序、NaN 与最高 cell 饱和的 `WGXERR_BADNUMBER`、八种有效 left/right cell 配置、对称 edge split、坐标/alpha 原端点范围限制、triangle/quad/pent 固定扇形输出及下游 HRESULT 首错停止。当前仍未接入完整 vertex-builder waffle pipeline。验证：triangle 定向测试 9/9、line + triangle 定向测试 16/16、全量主测试 3875/3875、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
+
+- 本轮开始从审计转向新增生产翻译，完成原生 `LineWaffler<PointXYA>` 的一维分区最小闭环。新增 `Direct3D9LineWaffler` 与 `Direct3D9WafflePoint`，保持大平移只保留 `c` 的带符号小数部分、score 降序时仅反转 score 而保留调用方顶点方向、整数边界对称插值、位置/alpha 原端点范围限制、逐 cell 分段、NaN 返回 `E_FAIL` 及下游 HRESULT 首错停止。当前组件尚未接入完整 vertex builder，后续继续翻译 `TriangleWaffler` 和 waffle pipeline 组装。验证：新定向测试 7/7、全量主测试 3866/3866、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
+
+- 本轮完成原生 `CD3DDeviceLevel1::DbgBeginStepRenderingPresent`、`DbgEndStepRenderingPresent` 与 `DbgInStepRenderingPresent` 的条件编译调试状态差集审计。该状态只由 HW display stepped-rendering 调试入口在增量 Present 前后配对维护，并在调试 Present 期间阻止 `MarkUnusable` 批量销毁仍被无引用借用的缓存资源，同时让 `CD3DResourceManager::EndFrame` 跳过同一 use context 内的额外帧推进。托管项目未启用该调试协议；现有生产 `MarkUnusable` 和 `EndFrame` 已覆盖正常 entry/use-context 边界，不得把该状态扩展进普通 Present。无需修改生产或测试代码。验证：`Direct3D9ResourceManagerTests` 199/199、`Direct3D9DeviceManagerTests` 113/113、全量主测试 3859/3859、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
+
+- 本轮完成原生 `CD3DDeviceLevel1::DbgCanShrinkRectLinear` 的 debug stepped-rendering capability 差集审计。该内联访问器只读取缓存 `StretchRectFilterCaps` 的 `D3DPTFILTERCAPS_MINFLINEAR` 位；唯一调用者仅在增量调试呈现确实缩小时选择 `StretchRect` 的 linear 或 none filter，不调用底层 COM、不改变 HRESULT、引用或设备状态。现有托管 `CanGenerateMipmapsWithStretchRect` 已覆盖同一缓存位及释放后保护，既有 capability 测试已覆盖位判断、无关能力干扰、重复读取和零 device-entry 副作用，无需修改生产或测试代码。验证：`Direct3D9DeviceCapabilityAccessorTests` 200/200、全量主测试 3859/3859、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
 
 - 本轮完成原生 `CD3DTexture::GetTextureSize` 的 level-0 尺寸快照与生产调用者差集审计。原生只在资源有效期内返回初始化缓存的宽高，不重新调用 D3D9、不进入 device/use context，也不改变 COM 引用或资源使用状态。托管 `Direct3D9Texture` 已缓存相同尺寸，但原自动属性允许释放后读取；现改为带有效性检查的只读访问器，并新增有效读取及宽、高分别在释放后拒绝访问的回归。验证：`Direct3D9TextureTests` 33/33、全量主测试 3859/3859、ABI 8/8，Debug 解决方案构建 0 警告、0 错误。
 

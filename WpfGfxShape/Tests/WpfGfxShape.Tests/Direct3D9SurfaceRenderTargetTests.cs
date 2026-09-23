@@ -3054,6 +3054,269 @@ public sealed partial class Direct3D9SurfaceRenderTargetTests
     }
 
     [TestMethod]
+    public unsafe void WhenNestedLayersEndThenFramesCompositeAndReleaseInLifoOrder()
+    {
+        using Direct3D9Device device = CreatePresentDevice(static () => 0);
+        using Direct3D9SurfaceRenderTarget renderTarget = new(
+            device,
+            MultisampleType.MultisampleNone,
+            pixelFormat: MilPixelFormat.Pbgra32Bpp);
+        Assert.AreEqual(0, renderTarget.Resize(16, 16));
+        List<string> calls = [];
+        int nextBitmap = 10;
+        Direct3D9LayerOperations operations = CreateLayerOperations(
+            calls,
+            capture: (Direct3D9SurfaceRect _, IReadOnlyList<Direct3D9SurfaceRect>? _, out nint bitmap) =>
+            {
+                bitmap = ++nextBitmap;
+                calls.Add($"Capture:{bitmap}");
+                return 0;
+            });
+
+        Assert.AreEqual(0, renderTarget.BeginLayer(
+            new Direct3D9LayerState(
+                new Direct3D9SurfaceRect(1, 1, 15, 15),
+                new Direct3D9SurfaceRect(2, 2, 14, 14),
+                Alpha: 0.75f,
+                GeometricMask: 21),
+            operations));
+        Assert.AreEqual(0, renderTarget.BeginLayer(
+            new Direct3D9LayerState(
+                new Direct3D9SurfaceRect(3, 3, 12, 12),
+                new Direct3D9SurfaceRect(4, 4, 11, 11),
+                AlphaMaskBrush: 31),
+            operations));
+        Assert.AreEqual((2, new Direct3D9SurfaceRect(3, 3, 12, 12), false),
+            (renderTarget.LayerCount, renderTarget.Bounds, renderTarget.ForceClearType));
+
+        Assert.AreEqual(0, renderTarget.EndLayer());
+        Assert.AreEqual((1, new Direct3D9SurfaceRect(1, 1, 15, 15)),
+            (renderTarget.LayerCount, renderTarget.Bounds));
+        Assert.AreEqual(0, renderTarget.EndLayer());
+
+        Assert.AreEqual(
+            "RetainGeometry:21|Capture:11|Clear:1,1,15,15|RetainAlpha:31|Capture:12|Clear:3,3,12,12|Restore:4,4,11,11|Composite:12:0:31:True|ReleaseSource:12|ReleaseAlpha:31|Restore:2,2,14,14|Composite:11:21:0:True|ReleaseSource:11|ReleaseGeometry:21",
+            string.Join('|', calls));
+    }
+
+    [TestMethod]
+    public unsafe void WhenLayerBeginFailsAfterRetainingResourcesThenStackAndStateRollback()
+    {
+        using Direct3D9Device device = CreatePresentDevice(static () => 0);
+        using Direct3D9SurfaceRenderTarget renderTarget = new(
+            device,
+            MultisampleType.MultisampleNone,
+            pixelFormat: MilPixelFormat.Pbgra32Bpp,
+            forceClearType: true);
+        Assert.AreEqual(0, renderTarget.Resize(16, 16));
+        List<string> calls = [];
+        Direct3D9LayerOperations operations = CreateLayerOperations(
+            calls,
+            retainAlphaMask: (nint resource, out nint retained) =>
+            {
+                calls.Add($"RetainAlpha:{resource}");
+                retained = 0;
+                return Direct3D9Factory.OutOfMemoryHResult;
+            });
+
+        int result = renderTarget.BeginLayer(
+            new Direct3D9LayerState(
+                new Direct3D9SurfaceRect(1, 1, 8, 8),
+                new Direct3D9SurfaceRect(1, 1, 8, 8),
+                GeometricMask: 41,
+                AlphaMaskBrush: 43),
+            operations);
+
+        Assert.AreEqual(
+            (Direct3D9Factory.OutOfMemoryHResult, 0, new Direct3D9SurfaceRect(0, 0, 16, 16), true,
+                "RetainGeometry:41|RetainAlpha:43|ReleaseGeometry:41"),
+            (result, renderTarget.LayerCount, renderTarget.Bounds, renderTarget.ForceClearType, string.Join('|', calls)));
+    }
+
+    [TestMethod]
+    public unsafe void WhenLayerCompositeFailsThenFrameIsReleasedAndParentStateIsRestored()
+    {
+        using Direct3D9Device device = CreatePresentDevice(static () => 0);
+        using Direct3D9SurfaceRenderTarget renderTarget = new(
+            device,
+            MultisampleType.MultisampleNone,
+            pixelFormat: MilPixelFormat.Pbgra32Bpp,
+            forceClearType: true);
+        Assert.AreEqual(0, renderTarget.Resize(16, 16));
+        List<string> calls = [];
+        Direct3D9LayerOperations operations = CreateLayerOperations(
+            calls,
+            composite: state =>
+            {
+                calls.Add($"Composite:{state.SourceBitmap}");
+                return Direct3D9Factory.GenericFailureHResult;
+            });
+        Assert.AreEqual(0, renderTarget.BeginLayer(
+            new Direct3D9LayerState(
+                new Direct3D9SurfaceRect(2, 2, 10, 10),
+                new Direct3D9SurfaceRect(2, 2, 10, 10),
+                Alpha: 0.5f),
+            operations));
+
+        int result = renderTarget.EndLayer();
+
+        Assert.AreEqual(
+            (Direct3D9Factory.GenericFailureHResult, 0, new Direct3D9SurfaceRect(0, 0, 16, 16), true,
+                "Capture:101|Clear:2,2,10,10|Restore:2,2,10,10|Composite:101|ReleaseSource:101"),
+            (result, renderTarget.LayerCount, renderTarget.Bounds, renderTarget.ForceClearType, string.Join('|', calls)));
+    }
+
+    [TestMethod]
+    public unsafe void WhenRenderTargetIsDisposedWithActiveLayersThenOwnedResourcesReleaseInLifoOrder()
+    {
+        using Direct3D9Device device = CreatePresentDevice(static () => 0);
+        Direct3D9SurfaceRenderTarget renderTarget = new(device, MultisampleType.MultisampleNone);
+        Assert.AreEqual(0, renderTarget.Resize(16, 16));
+        List<string> calls = [];
+        int nextBitmap = 100;
+        Direct3D9LayerOperations operations = CreateLayerOperations(
+            calls,
+            capture: (Direct3D9SurfaceRect _, IReadOnlyList<Direct3D9SurfaceRect>? _, out nint bitmap) =>
+            {
+                bitmap = ++nextBitmap;
+                return 0;
+            });
+        Assert.AreEqual(0, renderTarget.BeginLayer(
+            new Direct3D9LayerState(new Direct3D9SurfaceRect(0, 0, 12, 12), new Direct3D9SurfaceRect(0, 0, 12, 12), Alpha: 0.5f),
+            operations));
+        Assert.AreEqual(0, renderTarget.BeginLayer(
+            new Direct3D9LayerState(new Direct3D9SurfaceRect(1, 1, 8, 8), new Direct3D9SurfaceRect(1, 1, 8, 8), GeometricMask: 61),
+            operations));
+
+        renderTarget.Dispose();
+        renderTarget.Dispose();
+
+        Assert.AreEqual(
+            "RetainGeometry:61|ReleaseSource:102|ReleaseGeometry:61|ReleaseSource:101",
+            string.Join('|', calls));
+    }
+
+    [TestMethod]
+    public unsafe void WhenLayerIsActiveThenPresentIsRejectedUntilLayerEnds()
+    {
+        using Direct3D9Device device = CreatePresentDevice(static () => 0);
+        using Direct3D9SurfaceRenderTarget renderTarget = new(device, MultisampleType.MultisampleNone);
+        Assert.AreEqual(0, renderTarget.Resize(16, 16));
+        Direct3D9LayerOperations operations = CreateLayerOperations([]);
+        Assert.AreEqual(0, renderTarget.BeginLayer(
+            new Direct3D9LayerState(new Direct3D9SurfaceRect(0, 0, 8, 8), new Direct3D9SurfaceRect(0, 0, 8, 8), Alpha: 0.5f),
+            operations));
+
+        Assert.AreEqual(Direct3D9Factory.WgxInvalidCallHResult, renderTarget.Present());
+        Assert.AreEqual(0, renderTarget.EndLayer());
+        Assert.AreEqual(0, renderTarget.LayerCount);
+    }
+
+    [TestMethod]
+    public unsafe void WhenEmptyLayerBeginsThenCallbacksAreSkippedButNestedBoundsRestore()
+    {
+        using Direct3D9Device device = CreatePresentDevice(static () => 0);
+        using Direct3D9SurfaceRenderTarget renderTarget = new(device, MultisampleType.MultisampleNone);
+        Assert.AreEqual(0, renderTarget.Resize(16, 16));
+        List<string> calls = [];
+
+        Assert.AreEqual(0, renderTarget.BeginLayer(
+            new Direct3D9LayerState(
+                new Direct3D9SurfaceRect(20, 20, 30, 30),
+                new Direct3D9SurfaceRect(20, 20, 30, 30),
+                Alpha: 0.5f,
+                GeometricMask: 71,
+                AlphaMaskBrush: 73),
+            CreateLayerOperations(calls)));
+        Assert.AreEqual((1, default(Direct3D9SurfaceRect)), (renderTarget.LayerCount, renderTarget.Bounds));
+
+        Assert.AreEqual(0, renderTarget.EndLayer());
+        Assert.AreEqual(
+            (0, new Direct3D9SurfaceRect(0, 0, 16, 16), string.Empty),
+            (renderTarget.LayerCount, renderTarget.Bounds, string.Join('|', calls)));
+    }
+
+    [TestMethod]
+    public unsafe void WhenPartialCaptureIsAvailableThenHighLevelLayerForwardsExactRectangles()
+    {
+        using Direct3D9Device device = CreatePresentDevice(static () => 0);
+        using Direct3D9SurfaceRenderTarget renderTarget = new(
+            device,
+            MultisampleType.MultisampleNone,
+            pixelFormat: MilPixelFormat.Bgr32Bpp);
+        Assert.AreEqual(0, renderTarget.Resize(16, 16));
+        Direct3D9SurfaceRect first = new(1, 1, 3, 8);
+        Direct3D9SurfaceRect second = new(7, 1, 9, 8);
+        IReadOnlyList<Direct3D9SurfaceRect>? captured = null;
+        Direct3D9LayerOperations operations = CreateLayerOperations(
+            [],
+            capture: (Direct3D9SurfaceRect _, IReadOnlyList<Direct3D9SurfaceRect>? rectangles, out nint bitmap) =>
+            {
+                captured = rectangles;
+                bitmap = 151;
+                return 0;
+            }) with
+        {
+            GetPartialCaptureRects = (out IReadOnlyList<Direct3D9SurfaceRect> rectangles) =>
+            {
+                rectangles = [first, second];
+                return true;
+            }
+        };
+
+        Assert.AreEqual(0, renderTarget.BeginLayer(
+            new Direct3D9LayerState(
+                new Direct3D9SurfaceRect(1, 1, 9, 8),
+                new Direct3D9SurfaceRect(1, 1, 9, 8),
+                GeometricMask: 81),
+            operations));
+        Assert.AreEqual(0, renderTarget.EndLayer());
+
+        CollectionAssert.AreEqual(new[] { first, second }, captured!.ToArray());
+    }
+
+    [TestMethod]
+    public unsafe void WhenEndLayerIsRepeatedThenSecondCallReturnsInvalidCall()
+    {
+        using Direct3D9Device device = CreatePresentDevice(static () => 0);
+        using Direct3D9SurfaceRenderTarget renderTarget = new(device, MultisampleType.MultisampleNone);
+        Assert.AreEqual(0, renderTarget.Resize(16, 16));
+        Assert.AreEqual(0, renderTarget.BeginLayer(
+            new Direct3D9LayerState(
+                new Direct3D9SurfaceRect(1, 1, 8, 8),
+                new Direct3D9SurfaceRect(1, 1, 8, 8)),
+            CreateLayerOperations([])));
+        Assert.AreEqual(0, renderTarget.EndLayer());
+
+        Assert.AreEqual(Direct3D9Factory.WgxInvalidCallHResult, renderTarget.EndLayer());
+    }
+
+    [TestMethod]
+    public unsafe void WhenResizeAbortsActiveLayersThenResourcesAndClearTypeStateAreRestored()
+    {
+        using Direct3D9Device device = CreatePresentDevice(static () => 0);
+        using Direct3D9SurfaceRenderTarget renderTarget = new(
+            device,
+            MultisampleType.MultisampleNone,
+            pixelFormat: MilPixelFormat.Pbgra32Bpp,
+            forceClearType: true);
+        Assert.AreEqual(0, renderTarget.Resize(16, 16));
+        List<string> calls = [];
+        Assert.AreEqual(0, renderTarget.BeginLayer(
+            new Direct3D9LayerState(
+                new Direct3D9SurfaceRect(1, 1, 8, 8),
+                new Direct3D9SurfaceRect(1, 1, 8, 8),
+                Alpha: 0.5f),
+            CreateLayerOperations(calls)));
+
+        Assert.AreEqual(0, renderTarget.Resize(12, 10));
+
+        Assert.AreEqual(
+            (0, new Direct3D9SurfaceRect(0, 0, 12, 10), true, "Capture:101|Clear:1,1,8,8|ReleaseSource:101"),
+            (renderTarget.LayerCount, renderTarget.Bounds, renderTarget.ForceClearType, string.Join('|', calls)));
+    }
+
+    [TestMethod]
     public unsafe void WhenDisposedRepeatedlyThenBeginLayerRejectsUseBeforeInspectingCallbacks()
     {
         using Direct3D9Device device = CreateClearDevice([]);
@@ -11444,6 +11707,62 @@ public sealed partial class Direct3D9SurfaceRenderTargetTests
     {
         Direct3D9SurfaceRect value = rectangle.GetValueOrDefault();
         return $"{value.Left},{value.Top},{value.Right},{value.Bottom}";
+    }
+
+    private static Direct3D9LayerOperations CreateLayerOperations(
+        List<string> calls,
+        Direct3D9CaptureLayerTarget? capture = null,
+        Direct3D9RetainLayerResource? retainAlphaMask = null,
+        Func<Direct3D9LayerCompositeState, int>? composite = null,
+        Direct3D9LayerMaskOperations? maskOperations = null)
+    {
+        capture ??= (Direct3D9SurfaceRect _, IReadOnlyList<Direct3D9SurfaceRect>? _, out nint bitmap) =>
+        {
+            bitmap = 101;
+            calls.Add("Capture:101");
+            return 0;
+        };
+        retainAlphaMask ??= (nint resource, out nint retained) =>
+        {
+            retained = resource;
+            calls.Add($"RetainAlpha:{resource}");
+            return 0;
+        };
+        composite ??= state =>
+        {
+            calls.Add($"Composite:{state.SourceBitmap}:{state.GeometricMask}:{state.AlphaMaskBrush}:{state.RequiresSourceUnder}");
+            return 0;
+        };
+
+        return new Direct3D9LayerOperations(
+            static (out IReadOnlyList<Direct3D9SurfaceRect> rectangles) =>
+            {
+                rectangles = [];
+                return false;
+            },
+            capture,
+            bounds =>
+            {
+                calls.Add($"Clear:{bounds.Left},{bounds.Top},{bounds.Right},{bounds.Bottom}");
+                return 0;
+            },
+            (nint resource, out nint retained) =>
+            {
+                retained = resource;
+                calls.Add($"RetainGeometry:{resource}");
+                return 0;
+            },
+            retainAlphaMask,
+            clip =>
+            {
+                calls.Add($"Restore:{clip.Left},{clip.Top},{clip.Right},{clip.Bottom}");
+                return 0;
+            },
+            composite,
+            bitmap => calls.Add($"ReleaseSource:{bitmap}"),
+            mask => calls.Add($"ReleaseGeometry:{mask}"),
+            brush => calls.Add($"ReleaseAlpha:{brush}"),
+            maskOperations);
     }
 
     private static unsafe Direct3D9Device CreatePresentDevice(Func<Direct3D9PresentRequest, int> present)
