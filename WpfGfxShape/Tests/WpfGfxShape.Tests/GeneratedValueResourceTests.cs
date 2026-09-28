@@ -10,7 +10,7 @@ public sealed class GeneratedValueResourceTests
     public void WhenValueCommandLayoutsAreMeasuredThenNativeSizesAndOffsetsMatch()
     {
         Assert.AreEqual(
-            (16, 24, 24, 40, 24, 56, 20, 20, 24, 4, 8),
+            (16, 24, 24, 40, 24, 56, 20, 20, 24, 0, 8),
             (
                 Marshal.SizeOf<MilDoubleResourceCommand>(),
                 Marshal.SizeOf<MilColorResourceCommand>(),
@@ -90,6 +90,59 @@ public sealed class GeneratedValueResourceTests
     }
 
     [TestMethod]
+    public void WhenAllValueResourcesAreUpdatedThenStrongValuesMatchPackets()
+    {
+        GeneratedProtocolHandleTable table = new();
+        GeneratedProtocolChannelRegistry channels = new();
+        _ = channels.TryAdd(1, table);
+        GeneratedProtocolRouter router = new GeneratedProtocolProductionContext(1, channels).CreateRouter();
+        MilColorF color = new(1, 0.25f, 0.5f, 0.75f);
+        MilPoint2D point = new(1, 2);
+        MilRectD rect = new(1, 2, 3, 4);
+        MilSizeD size = new(5, 6);
+        MilMatrix3x2D matrix = new(1, 2, 3, 4, 5, 6);
+        MilPoint3F point3D = new(7, 8, 9);
+        MilPoint3F vector3D = new(10, 11, 12);
+        MilQuaternionF quaternion = new(13, 14, 15, 16);
+
+        int result = router.ProcessPackets(
+        [
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(1, MilResourceType.DoubleResource),
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(2, MilResourceType.ColorResource),
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(3, MilResourceType.PointResource),
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(4, MilResourceType.RectResource),
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(5, MilResourceType.SizeResource),
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(6, MilResourceType.MatrixResource),
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(7, MilResourceType.Point3DResource),
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(8, MilResourceType.Vector3DResource),
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(9, MilResourceType.QuaternionResource),
+            GeneratedProtocolPacketWriter.WriteDoubleResource(1, 17),
+            GeneratedProtocolPacketWriter.WriteColorResource(2, color),
+            GeneratedProtocolPacketWriter.WritePointResource(3, point),
+            GeneratedProtocolPacketWriter.WriteRectResource(4, rect),
+            GeneratedProtocolPacketWriter.WriteSizeResource(5, size),
+            GeneratedProtocolPacketWriter.WriteMatrixResource(6, matrix),
+            GeneratedProtocolPacketWriter.WritePoint3DResource(7, point3D),
+            GeneratedProtocolPacketWriter.WriteVector3DResource(8, vector3D),
+            GeneratedProtocolPacketWriter.WriteQuaternionResource(9, quaternion)
+        ]);
+
+        Assert.AreEqual(
+            (0, 17d, color, point, rect, size, matrix, point3D, vector3D, quaternion),
+            (
+                result,
+                GetValue<double>(table, 1),
+                GetValue<MilColorF>(table, 2),
+                GetValue<MilPoint2D>(table, 3),
+                GetValue<MilRectD>(table, 4),
+                GetValue<MilSizeD>(table, 5),
+                GetValue<MilMatrix3x2D>(table, 6),
+                GetValue<MilPoint3F>(table, 7),
+                GetValue<MilPoint3F>(table, 8),
+                GetValue<MilQuaternionF>(table, 9)));
+    }
+
+    [TestMethod]
     public void WhenValueResourceIsCreatedUpdatedDuplicatedAndDeletedThenIdentityValueAndReferencesArePreserved()
     {
         GeneratedProtocolHandleTable source = new();
@@ -143,6 +196,27 @@ public sealed class GeneratedValueResourceTests
     }
 
     [TestMethod]
+    public void WhenValueBatchFailsThenLaterUpdateIsNotApplied()
+    {
+        GeneratedProtocolHandleTable table = new();
+        GeneratedProtocolChannelRegistry channels = new();
+        _ = channels.TryAdd(1, table);
+        GeneratedProtocolRouter router = new GeneratedProtocolProductionContext(1, channels).CreateRouter();
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteChannelCreateResource(1, MilResourceType.DoubleResource));
+
+        int result = router.ProcessPackets(
+        [
+            GeneratedProtocolPacketWriter.WriteDoubleResource(1, 2),
+            GeneratedProtocolPacketWriter.WriteDoubleResource(99, 3),
+            GeneratedProtocolPacketWriter.WriteDoubleResource(1, 4)
+        ]);
+
+        Assert.AreEqual(
+            (Direct3D9Factory.UceMalformedPacketHResult, 2d, 1),
+            (result, GetValue<double>(table, 1), GetChangeCount<double>(table, 1)));
+    }
+
+    [TestMethod]
     public void WhenInvalidResourceTypeOrCollisionIsCreatedThenFactoryAndTableRemainUnchanged()
     {
         GeneratedProtocolHandleTable table = new();
@@ -155,5 +229,17 @@ public sealed class GeneratedValueResourceTests
         Assert.AreEqual(
             (Direct3D9Factory.UceMalformedPacketHResult, 0, Direct3D9Factory.UceMalformedPacketHResult, null, MilResourceType.QuaternionResource, 1),
             (invalidResult, createResult, collisionResult, invalidResource, createdResource!.ResourceType, createdResource.ReferenceCount));
+    }
+
+    private static T GetValue<T>(GeneratedProtocolHandleTable table, uint handle) where T : unmanaged
+    {
+        _ = table.TryGetResource(handle, out GeneratedProtocolResource? resource);
+        return ((GeneratedValueResource<T>) resource!).Value;
+    }
+
+    private static int GetChangeCount<T>(GeneratedProtocolHandleTable table, uint handle) where T : unmanaged
+    {
+        _ = table.TryGetResource(handle, out GeneratedProtocolResource? resource);
+        return ((GeneratedValueResource<T>) resource!).ChangeCount;
     }
 }

@@ -371,13 +371,17 @@ internal static partial class GeneratedProtocolPacketWriter
     }
 }
 
+internal delegate int GeneratedResourceUpdateHandler(MilCommand command, uint handle, ReadOnlySpan<byte> value);
+internal delegate int GeneratedStateCommandHandler(MilCommand command, uint handle, ReadOnlySpan<byte> packet);
+
 internal sealed record GeneratedProtocolHandlers(
     Func<int> TransportSyncFlush,
     Func<uint, int> TransportDestroyResourcesOnChannel,
     Func<uint, MilResourceType, int> ChannelCreateResource,
     Func<uint, MilResourceType, int> ChannelDeleteResource,
     Func<uint, uint, uint, int> ChannelDuplicateHandle,
-    Func<MilCommand, uint, ReadOnlyMemory<byte>, int>? ResourceUpdate = null);
+    GeneratedResourceUpdateHandler? ResourceUpdate = null,
+    GeneratedStateCommandHandler? StateCommand = null);
 
 internal sealed class GeneratedProtocolRouter
 {
@@ -404,6 +408,33 @@ internal sealed class GeneratedProtocolRouter
             MilCommand.ChannelCreateResource => ProcessExact<MilChannelCreateResourceCommand>(packet, value => _handlers.ChannelCreateResource(value.Handle, value.ResourceType)),
             MilCommand.ChannelDeleteResource => ProcessExact<MilChannelDeleteResourceCommand>(packet, value => _handlers.ChannelDeleteResource(value.Handle, value.ResourceType)),
             MilCommand.ChannelDuplicateHandle => ProcessExact<MilChannelDuplicateHandleCommand>(packet, value => _handlers.ChannelDuplicateHandle(value.Original, value.TargetChannel, value.Duplicate)),
+            MilCommand.VisualCreate or MilCommand.VisualSetOffset or MilCommand.VisualSetTransform or MilCommand.VisualSetClip or MilCommand.VisualSetAlpha or MilCommand.VisualSetContent or MilCommand.VisualSetAlphaMask or MilCommand.VisualRemoveAllChildren or MilCommand.VisualRemoveChild or MilCommand.VisualInsertChildAt or MilCommand.Viewport3DVisualSetCamera or MilCommand.Viewport3DVisualSetViewport or MilCommand.Viewport3DVisualSet3DChild or MilCommand.Visual3DSetContent or MilCommand.Visual3DSetTransform or MilCommand.Visual3DRemoveAllChildren or MilCommand.Visual3DRemoveChild or MilCommand.Visual3DInsertChildAt or MilCommand.TargetSetRoot or MilCommand.TargetSetClearColor or MilCommand.TargetInvalidate or MilCommand.TargetSetFlags => ProcessStateCommand(packet, command),
+            MilCommand.BitmapSource or MilCommand.BitmapInvalidate or MilCommand.MediaPlayer => ProcessStateCommand(packet, command),
+            MilCommand.PixelShader => ProcessVariableResourceUpdate<MilPixelShaderCommand>(packet, command),
+            MilCommand.ImplicitInputBrush => ProcessResourceUpdate<MilImplicitInputBrushCommand>(packet, command),
+            MilCommand.BlurEffect => ProcessResourceUpdate<MilBlurEffectCommand>(packet, command),
+            MilCommand.DropShadowEffect => ProcessResourceUpdate<MilDropShadowEffectCommand>(packet, command),
+            MilCommand.ShaderEffect => ProcessVariableResourceUpdate<MilShaderEffectCommand>(packet, command),
+            MilCommand.RenderData => ProcessVariableResourceUpdate<MilRenderDataCommand>(packet, command),
+            MilCommand.AxisAngleRotation3D => ProcessResourceUpdate<MilAxisAngleRotation3DCommand>(packet, command),
+            MilCommand.QuaternionRotation3D => ProcessResourceUpdate<MilQuaternionRotation3DCommand>(packet, command),
+            MilCommand.PerspectiveCamera or MilCommand.OrthographicCamera => ProcessResourceUpdate<MilProjectionCameraCommand>(packet, command),
+            MilCommand.MatrixCamera => ProcessResourceUpdate<MilMatrixCameraCommand>(packet, command),
+            MilCommand.Model3DGroup => ProcessVariableResourceUpdate<MilModel3DGroupCommand>(packet, command),
+            MilCommand.AmbientLight => ProcessResourceUpdate<MilAmbientLightCommand>(packet, command),
+            MilCommand.DirectionalLight => ProcessResourceUpdate<MilDirectionalLightCommand>(packet, command),
+            MilCommand.PointLight => ProcessResourceUpdate<MilPointLightCommand>(packet, command),
+            MilCommand.SpotLight => ProcessResourceUpdate<MilSpotLightCommand>(packet, command),
+            MilCommand.GeometryModel3D => ProcessResourceUpdate<MilGeometryModel3DCommand>(packet, command),
+            MilCommand.MeshGeometry3D => ProcessVariableResourceUpdate<MilMeshGeometry3DCommand>(packet, command),
+            MilCommand.MaterialGroup or MilCommand.Transform3DGroup => ProcessVariableResourceUpdate<MilResourceGroup3DCommand>(packet, command),
+            MilCommand.DiffuseMaterial => ProcessResourceUpdate<MilDiffuseMaterialCommand>(packet, command),
+            MilCommand.SpecularMaterial => ProcessResourceUpdate<MilSpecularMaterialCommand>(packet, command),
+            MilCommand.EmissiveMaterial => ProcessResourceUpdate<MilEmissiveMaterialCommand>(packet, command),
+            MilCommand.TranslateTransform3D => ProcessResourceUpdate<MilTranslateTransform3DCommand>(packet, command),
+            MilCommand.ScaleTransform3D => ProcessResourceUpdate<MilScaleTransform3DCommand>(packet, command),
+            MilCommand.RotateTransform3D => ProcessResourceUpdate<MilRotateTransform3DCommand>(packet, command),
+            MilCommand.MatrixTransform3D => ProcessResourceUpdate<MilMatrixTransform3DCommand>(packet, command),
             MilCommand.DoubleResource => ProcessResourceUpdate<MilDoubleResourceCommand>(packet, command),
             MilCommand.ColorResource => ProcessResourceUpdate<MilColorResourceCommand>(packet, command),
             MilCommand.PointResource => ProcessResourceUpdate<MilPointResourceCommand>(packet, command),
@@ -413,6 +444,35 @@ internal sealed class GeneratedProtocolRouter
             MilCommand.Point3DResource => ProcessResourceUpdate<MilPoint3DResourceCommand>(packet, command),
             MilCommand.Vector3DResource => ProcessResourceUpdate<MilVector3DResourceCommand>(packet, command),
             MilCommand.QuaternionResource => ProcessResourceUpdate<MilQuaternionResourceCommand>(packet, command),
+            MilCommand.TransformGroup => ProcessVariableResourceUpdate<MilTransformGroupCommand>(packet, command),
+            MilCommand.TranslateTransform => ProcessResourceUpdate<MilTranslateTransformCommand>(packet, command),
+            MilCommand.ScaleTransform => ProcessResourceUpdate<MilScaleTransformCommand>(packet, command),
+            MilCommand.SkewTransform => ProcessResourceUpdate<MilSkewTransformCommand>(packet, command),
+            MilCommand.RotateTransform => ProcessResourceUpdate<MilRotateTransformCommand>(packet, command),
+            MilCommand.MatrixTransform => ProcessResourceUpdate<MilMatrixTransformCommand>(packet, command),
+            MilCommand.LineGeometry => ProcessResourceUpdate<MilLineGeometryCommand>(packet, command),
+            MilCommand.RectangleGeometry => ProcessResourceUpdate<MilRectangleGeometryCommand>(packet, command),
+            MilCommand.EllipseGeometry => ProcessResourceUpdate<MilEllipseGeometryCommand>(packet, command),
+            MilCommand.GeometryGroup => ProcessVariableResourceUpdate<MilGeometryGroupCommand>(packet, command),
+            MilCommand.CombinedGeometry => ProcessResourceUpdate<MilCombinedGeometryCommand>(packet, command),
+            MilCommand.PathGeometry => ProcessVariableResourceUpdate<MilPathGeometryCommand>(packet, command),
+            MilCommand.SolidColorBrush => ProcessResourceUpdate<MilSolidColorBrushCommand>(packet, command),
+            MilCommand.LinearGradientBrush => ProcessVariableResourceUpdate<MilLinearGradientBrushCommand>(packet, command),
+            MilCommand.RadialGradientBrush => ProcessVariableResourceUpdate<MilRadialGradientBrushCommand>(packet, command),
+            MilCommand.ImageBrush => ProcessResourceUpdate<MilTileBrushCommand>(packet, command),
+            MilCommand.DrawingBrush => ProcessResourceUpdate<MilTileBrushCommand>(packet, command),
+            MilCommand.VisualBrush => ProcessResourceUpdate<MilTileBrushCommand>(packet, command),
+            MilCommand.BitmapCacheBrush => ProcessResourceUpdate<MilBitmapCacheBrushCommand>(packet, command),
+            MilCommand.DashStyle => ProcessVariableResourceUpdate<MilDashStyleCommand>(packet, command),
+            MilCommand.Pen => ProcessResourceUpdate<MilPenCommand>(packet, command),
+            MilCommand.GeometryDrawing => ProcessResourceUpdate<MilGeometryDrawingCommand>(packet, command),
+            MilCommand.GlyphRunDrawing => ProcessResourceUpdate<MilGlyphRunDrawingCommand>(packet, command),
+            MilCommand.DrawingImage => ProcessResourceUpdate<MilDrawingImageCommand>(packet, command),
+            MilCommand.ImageDrawing => ProcessResourceUpdate<MilImageDrawingCommand>(packet, command),
+            MilCommand.VideoDrawing => ProcessResourceUpdate<MilVideoDrawingCommand>(packet, command),
+            MilCommand.DrawingGroup => ProcessVariableResourceUpdate<MilDrawingGroupCommand>(packet, command),
+            MilCommand.GuidelineSet => ProcessVariableResourceUpdate<MilGuidelineSetCommand>(packet, command),
+            MilCommand.BitmapCache => ProcessResourceUpdate<MilBitmapCacheCommand>(packet, command),
             _ => Direct3D9Factory.UceUnknownPacketHResult
         };
     }
@@ -432,6 +492,18 @@ internal sealed class GeneratedProtocolRouter
         return Direct3D9Factory.SuccessHResult;
     }
 
+    private int ProcessStateCommand(ReadOnlySpan<byte> packet, MilCommand command)
+    {
+        if (_handlers.StateCommand is null)
+        {
+            return Direct3D9Factory.UceUnknownPacketHResult;
+        }
+
+        return packet.Length < 8
+            ? Direct3D9Factory.UceMalformedPacketHResult
+            : _handlers.StateCommand(command, BinaryPrimitives.ReadUInt32LittleEndian(packet[4..]), packet);
+    }
+
     private int ProcessResourceUpdate<T>(ReadOnlySpan<byte> packet, MilCommand command)
         where T : unmanaged, IMilResourceUpdateCommand
     {
@@ -446,7 +518,25 @@ internal sealed class GeneratedProtocolRouter
         }
 
         T value = MemoryMarshal.Read<T>(packet);
-        return _handlers.ResourceUpdate(command, value.Handle, packet[8..].ToArray());
+        return _handlers.ResourceUpdate(command, value.Handle, packet[8..]);
+    }
+
+    private int ProcessVariableResourceUpdate<T>(ReadOnlySpan<byte> packet, MilCommand command)
+        where T : unmanaged, IMilResourceUpdateCommand
+    {
+        if (_handlers.ResourceUpdate is null)
+        {
+            return Direct3D9Factory.UceUnknownPacketHResult;
+        }
+
+        int commandSize = Marshal.SizeOf<T>();
+        if (packet.Length < commandSize)
+        {
+            return Direct3D9Factory.UceMalformedPacketHResult;
+        }
+
+        T value = MemoryMarshal.Read<T>(packet);
+        return _handlers.ResourceUpdate(command, value.Handle, packet[8..]);
     }
 
     private static int ProcessExact<T>(ReadOnlySpan<byte> packet, Func<T, int> handler)
@@ -464,6 +554,9 @@ internal sealed class GeneratedProtocolRouter
 
 internal class GeneratedProtocolResource
 {
+    private readonly List<GeneratedProtocolResource> _listeners = [];
+    private bool _isNotifying;
+
     internal GeneratedProtocolResource(MilResourceType resourceType)
     {
         ResourceType = resourceType;
@@ -474,9 +567,61 @@ internal class GeneratedProtocolResource
 
     internal int ReferenceCount { get; private set; }
 
+    internal int ChangeCount { get; private set; }
+
+    internal bool IsReleased => ReferenceCount == 0;
+
     internal void AddRef() => ReferenceCount++;
 
-    internal void Release() => ReferenceCount--;
+    internal void Release()
+    {
+        ReferenceCount--;
+        if (ReferenceCount == 0)
+        {
+            OnFinalRelease();
+        }
+    }
+
+    internal void AddListener(GeneratedProtocolResource listener)
+    {
+        _listeners.Add(listener);
+        AddRef();
+    }
+
+    internal void RemoveListener(GeneratedProtocolResource listener)
+    {
+        if (_listeners.Remove(listener))
+        {
+            Release();
+        }
+    }
+
+    protected void NotifyChanged()
+    {
+        if (_isNotifying)
+        {
+            return;
+        }
+
+        _isNotifying = true;
+        try
+        {
+            ChangeCount++;
+            GeneratedProtocolResource[] listeners = [.. _listeners];
+            foreach (GeneratedProtocolResource listener in listeners)
+            {
+                listener.NotifyChanged();
+            }
+        }
+        finally
+        {
+            _isNotifying = false;
+        }
+    }
+
+    protected virtual void OnFinalRelease()
+    {
+    }
 }
 
 internal sealed class GeneratedProtocolHandleTable
@@ -533,18 +678,48 @@ internal sealed class GeneratedProtocolHandleTable
         return _resources.TryGetValue(handle, out resource);
     }
 
+    internal bool TryGetResource(uint handle, MilResourceType resourceType, out GeneratedProtocolResource? resource)
+    {
+        if (handle == 0)
+        {
+            resource = null;
+            return true;
+        }
+
+        return _resources.TryGetValue(handle, out resource) && resource.ResourceType == resourceType;
+    }
+
+    internal int ProcessStateCommand(MilCommand command, uint handle, ReadOnlySpan<byte> packet)
+    {
+        if (!_resources.TryGetValue(handle, out GeneratedProtocolResource? resource))
+        {
+            return Direct3D9Factory.UceMalformedPacketHResult;
+        }
+
+        return resource switch
+        {
+            GeneratedMediaPlayerResource media when command == MilCommand.MediaPlayer => media.ProcessCommand(packet),
+            GeneratedBitmapSourceResource bitmap when command is MilCommand.BitmapSource or MilCommand.BitmapInvalidate => bitmap.ProcessCommand(command, packet),
+            GeneratedVisualResource visual when command is >= MilCommand.VisualCreate and <= MilCommand.VisualInsertChildAt => visual.ProcessCommand(this, command, packet),
+            GeneratedViewport3DVisualResource viewport when command is >= MilCommand.Viewport3DVisualSetCamera and <= MilCommand.Viewport3DVisualSet3DChild => viewport.ProcessCommand(this, command, packet),
+            GeneratedVisual3DResource visual3D when command is >= MilCommand.Visual3DSetContent and <= MilCommand.Visual3DInsertChildAt => visual3D.ProcessCommand(this, command, packet),
+            GeneratedTargetResource target when command is >= MilCommand.TargetSetRoot and <= MilCommand.TargetSetFlags => target.ProcessCommand(this, command, packet),
+            _ => Direct3D9Factory.UceMalformedPacketHResult
+        };
+    }
+
     internal int ProcessUpdate(MilCommand command, uint handle, ReadOnlySpan<byte> value)
     {
         MilResourceType expectedType = GeneratedResourceFactory.GetResourceType(command);
         if (expectedType == MilResourceType.Null
             || !_resources.TryGetValue(handle, out GeneratedProtocolResource? resource)
             || resource.ResourceType != expectedType
-            || resource is not GeneratedValueResource valueResource)
+            || resource is not GeneratedUpdatableResource updatableResource)
         {
             return Direct3D9Factory.UceMalformedPacketHResult;
         }
 
-        return valueResource.ProcessUpdate(value);
+        return updatableResource.ProcessUpdate(this, value);
     }
 }
 
@@ -592,7 +767,8 @@ internal sealed class GeneratedProtocolProductionContext
             CreateResource,
             DeleteResource,
             DuplicateHandle,
-            UpdateResource));
+            UpdateResource,
+            ProcessStateCommand));
     }
 
     private int CreateResource(uint handle, MilResourceType resourceType)
@@ -620,10 +796,17 @@ internal sealed class GeneratedProtocolProductionContext
         return source.DuplicateTo(original, target, duplicate);
     }
 
-    private int UpdateResource(MilCommand command, uint handle, ReadOnlyMemory<byte> value)
+    private int UpdateResource(MilCommand command, uint handle, ReadOnlySpan<byte> value)
     {
         return TryGetCurrentTable(out GeneratedProtocolHandleTable? table)
-            ? table.ProcessUpdate(command, handle, value.Span)
+            ? table.ProcessUpdate(command, handle, value)
+            : Direct3D9Factory.UceHandleLookupFailedHResult;
+    }
+
+    private int ProcessStateCommand(MilCommand command, uint handle, ReadOnlySpan<byte> packet)
+    {
+        return TryGetCurrentTable(out GeneratedProtocolHandleTable? table)
+            ? table.ProcessStateCommand(command, handle, packet)
             : Direct3D9Factory.UceHandleLookupFailedHResult;
     }
 

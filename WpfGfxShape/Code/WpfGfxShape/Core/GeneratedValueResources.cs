@@ -135,28 +135,32 @@ internal static partial class GeneratedProtocolPacketWriter
     }
 }
 
-internal abstract class GeneratedValueResource : GeneratedProtocolResource
+internal abstract class GeneratedUpdatableResource : GeneratedProtocolResource
+{
+    protected GeneratedUpdatableResource(MilResourceType resourceType) : base(resourceType) { }
+    internal abstract int ProcessUpdate(GeneratedProtocolHandleTable handleTable, ReadOnlySpan<byte> value);
+}
+
+internal abstract class GeneratedValueResource : GeneratedUpdatableResource
 {
     protected GeneratedValueResource(MilResourceType resourceType) : base(resourceType) { }
-    internal abstract int ProcessUpdate(ReadOnlySpan<byte> value);
 }
 
 internal sealed class GeneratedValueResource<T> : GeneratedValueResource where T : unmanaged
 {
     internal GeneratedValueResource(MilResourceType resourceType) : base(resourceType) { }
     internal T Value { get; private set; }
-    internal int ChangeCount { get; private set; }
 
-    internal override int ProcessUpdate(ReadOnlySpan<byte> value)
+    internal override int ProcessUpdate(GeneratedProtocolHandleTable handleTable, ReadOnlySpan<byte> value)
     {
+        ArgumentNullException.ThrowIfNull(handleTable);
         if (value.Length != Marshal.SizeOf<T>())
         {
             return Direct3D9Factory.UceMalformedPacketHResult;
         }
 
-        T nextValue = MemoryMarshal.Read<T>(value);
-        Value = nextValue;
-        ChangeCount++;
+        Value = MemoryMarshal.Read<T>(value);
+        NotifyChanged();
         return Direct3D9Factory.SuccessHResult;
     }
 }
@@ -165,6 +169,33 @@ internal static class GeneratedResourceFactory
 {
     internal static MilResourceType GetResourceType(MilCommand command) => command switch
     {
+        MilCommand.PixelShader => MilResourceType.PixelShader,
+        MilCommand.ImplicitInputBrush => MilResourceType.ImplicitInputBrush,
+        MilCommand.BlurEffect => MilResourceType.BlurEffect,
+        MilCommand.DropShadowEffect => MilResourceType.DropShadowEffect,
+        MilCommand.ShaderEffect => MilResourceType.ShaderEffect,
+        MilCommand.RenderData => MilResourceType.RenderData,
+        MilCommand.AxisAngleRotation3D => MilResourceType.AxisAngleRotation3D,
+        MilCommand.QuaternionRotation3D => MilResourceType.QuaternionRotation3D,
+        MilCommand.PerspectiveCamera => MilResourceType.PerspectiveCamera,
+        MilCommand.OrthographicCamera => MilResourceType.OrthographicCamera,
+        MilCommand.MatrixCamera => MilResourceType.MatrixCamera,
+        MilCommand.Model3DGroup => MilResourceType.Model3DGroup,
+        MilCommand.AmbientLight => MilResourceType.AmbientLight,
+        MilCommand.DirectionalLight => MilResourceType.DirectionalLight,
+        MilCommand.PointLight => MilResourceType.PointLight,
+        MilCommand.SpotLight => MilResourceType.SpotLight,
+        MilCommand.GeometryModel3D => MilResourceType.GeometryModel3D,
+        MilCommand.MeshGeometry3D => MilResourceType.MeshGeometry3D,
+        MilCommand.MaterialGroup => MilResourceType.MaterialGroup,
+        MilCommand.DiffuseMaterial => MilResourceType.DiffuseMaterial,
+        MilCommand.SpecularMaterial => MilResourceType.SpecularMaterial,
+        MilCommand.EmissiveMaterial => MilResourceType.EmissiveMaterial,
+        MilCommand.Transform3DGroup => MilResourceType.Transform3DGroup,
+        MilCommand.TranslateTransform3D => MilResourceType.TranslateTransform3D,
+        MilCommand.ScaleTransform3D => MilResourceType.ScaleTransform3D,
+        MilCommand.RotateTransform3D => MilResourceType.RotateTransform3D,
+        MilCommand.MatrixTransform3D => MilResourceType.MatrixTransform3D,
         MilCommand.DoubleResource => MilResourceType.DoubleResource,
         MilCommand.ColorResource => MilResourceType.ColorResource,
         MilCommand.PointResource => MilResourceType.PointResource,
@@ -174,6 +205,35 @@ internal static class GeneratedResourceFactory
         MilCommand.Point3DResource => MilResourceType.Point3DResource,
         MilCommand.Vector3DResource => MilResourceType.Vector3DResource,
         MilCommand.QuaternionResource => MilResourceType.QuaternionResource,
+        MilCommand.TransformGroup => MilResourceType.TransformGroup,
+        MilCommand.TranslateTransform => MilResourceType.TranslateTransform,
+        MilCommand.ScaleTransform => MilResourceType.ScaleTransform,
+        MilCommand.SkewTransform => MilResourceType.SkewTransform,
+        MilCommand.RotateTransform => MilResourceType.RotateTransform,
+        MilCommand.MatrixTransform => MilResourceType.MatrixTransform,
+        MilCommand.LineGeometry => MilResourceType.LineGeometry,
+        MilCommand.RectangleGeometry => MilResourceType.RectangleGeometry,
+        MilCommand.EllipseGeometry => MilResourceType.EllipseGeometry,
+        MilCommand.GeometryGroup => MilResourceType.GeometryGroup,
+        MilCommand.CombinedGeometry => MilResourceType.CombinedGeometry,
+        MilCommand.PathGeometry => MilResourceType.PathGeometry,
+        MilCommand.SolidColorBrush => MilResourceType.SolidColorBrush,
+        MilCommand.LinearGradientBrush => MilResourceType.LinearGradientBrush,
+        MilCommand.RadialGradientBrush => MilResourceType.RadialGradientBrush,
+        MilCommand.ImageBrush => MilResourceType.ImageBrush,
+        MilCommand.DrawingBrush => MilResourceType.DrawingBrush,
+        MilCommand.VisualBrush => MilResourceType.VisualBrush,
+        MilCommand.BitmapCacheBrush => MilResourceType.BitmapCacheBrush,
+        MilCommand.DashStyle => MilResourceType.DashStyle,
+        MilCommand.Pen => MilResourceType.Pen,
+        MilCommand.GeometryDrawing => MilResourceType.GeometryDrawing,
+        MilCommand.GlyphRunDrawing => MilResourceType.GlyphRunDrawing,
+        MilCommand.DrawingImage => MilResourceType.DrawingImage,
+        MilCommand.ImageDrawing => MilResourceType.ImageDrawing,
+        MilCommand.VideoDrawing => MilResourceType.VideoDrawing,
+        MilCommand.DrawingGroup => MilResourceType.DrawingGroup,
+        MilCommand.GuidelineSet => MilResourceType.GuidelineSet,
+        MilCommand.BitmapCache => MilResourceType.BitmapCache,
         _ => MilResourceType.Null
     };
 
@@ -181,6 +241,32 @@ internal static class GeneratedResourceFactory
     {
         resource = resourceType switch
         {
+            MilResourceType.PixelShader => new GeneratedPixelShaderResource(),
+            MilResourceType.ImplicitInputBrush => new GeneratedImplicitInputBrushResource(),
+            MilResourceType.BlurEffect => new GeneratedBlurEffectResource(),
+            MilResourceType.DropShadowEffect => new GeneratedDropShadowEffectResource(),
+            MilResourceType.ShaderEffect => new GeneratedShaderEffectResource(),
+            MilResourceType.AxisAngleRotation3D => new GeneratedAxisAngleRotation3DResource(),
+            MilResourceType.QuaternionRotation3D => new GeneratedQuaternionRotation3DResource(),
+            MilResourceType.PerspectiveCamera => new GeneratedPerspectiveCameraResource(),
+            MilResourceType.OrthographicCamera => new GeneratedOrthographicCameraResource(),
+            MilResourceType.MatrixCamera => new GeneratedMatrixCameraResource(),
+            MilResourceType.Model3DGroup => new Generated3DGroupResource(resourceType, 8, 4, static type => type is >= MilResourceType.Model3DGroup and <= MilResourceType.GeometryModel3D, 0),
+            MilResourceType.AmbientLight => new GeneratedAmbientLightResource(),
+            MilResourceType.DirectionalLight => new GeneratedDirectionalLightResource(),
+            MilResourceType.PointLight => new GeneratedPointLightResource(),
+            MilResourceType.SpotLight => new GeneratedSpotLightResource(),
+            MilResourceType.GeometryModel3D => new GeneratedGeometryModel3DResource(),
+            MilResourceType.MeshGeometry3D => new GeneratedMeshGeometry3DResource(),
+            MilResourceType.MaterialGroup => new Generated3DGroupResource(resourceType, 4, 0, static type => type is >= MilResourceType.MaterialGroup and <= MilResourceType.EmissiveMaterial),
+            MilResourceType.DiffuseMaterial => new GeneratedDiffuseMaterialResource(),
+            MilResourceType.SpecularMaterial => new GeneratedSpecularMaterialResource(),
+            MilResourceType.EmissiveMaterial => new GeneratedEmissiveMaterialResource(),
+            MilResourceType.Transform3DGroup => new Generated3DGroupResource(resourceType, 4, 0, static type => type is >= MilResourceType.Transform3DGroup and <= MilResourceType.MatrixTransform3D),
+            MilResourceType.TranslateTransform3D => new GeneratedTranslateTransform3DResource(),
+            MilResourceType.ScaleTransform3D => new GeneratedScaleTransform3DResource(),
+            MilResourceType.RotateTransform3D => new GeneratedRotateTransform3DResource(),
+            MilResourceType.MatrixTransform3D => new GeneratedMatrixTransform3DResource(),
             MilResourceType.DoubleResource => new GeneratedValueResource<double>(resourceType),
             MilResourceType.ColorResource => new GeneratedValueResource<MilColorF>(resourceType),
             MilResourceType.PointResource => new GeneratedValueResource<MilPoint2D>(resourceType),
@@ -190,6 +276,42 @@ internal static class GeneratedResourceFactory
             MilResourceType.Point3DResource => new GeneratedValueResource<MilPoint3F>(resourceType),
             MilResourceType.Vector3DResource => new GeneratedValueResource<MilPoint3F>(resourceType),
             MilResourceType.QuaternionResource => new GeneratedValueResource<MilQuaternionF>(resourceType),
+            MilResourceType.TransformGroup => new GeneratedTransformGroupResource(),
+            MilResourceType.TranslateTransform => new GeneratedTranslateTransformResource(),
+            MilResourceType.ScaleTransform => new GeneratedScaleTransformResource(),
+            MilResourceType.SkewTransform => new GeneratedSkewTransformResource(),
+            MilResourceType.RotateTransform => new GeneratedRotateTransformResource(),
+            MilResourceType.MatrixTransform => new GeneratedMatrixTransformResource(),
+            MilResourceType.LineGeometry => new GeneratedLineGeometryResource(),
+            MilResourceType.RectangleGeometry => new GeneratedRectangleGeometryResource(),
+            MilResourceType.EllipseGeometry => new GeneratedEllipseGeometryResource(),
+            MilResourceType.GeometryGroup => new GeneratedGeometryGroupResource(),
+            MilResourceType.CombinedGeometry => new GeneratedCombinedGeometryResource(),
+            MilResourceType.PathGeometry => new GeneratedPathGeometryResource(),
+            MilResourceType.SolidColorBrush => new GeneratedSolidColorBrushResource(),
+            MilResourceType.LinearGradientBrush => new GeneratedLinearGradientBrushResource(),
+            MilResourceType.RadialGradientBrush => new GeneratedRadialGradientBrushResource(),
+            MilResourceType.ImageBrush => new GeneratedImageBrushResource(),
+            MilResourceType.DrawingBrush => new GeneratedDrawingBrushResource(),
+            MilResourceType.VisualBrush => new GeneratedVisualBrushResource(),
+            MilResourceType.BitmapCacheBrush => new GeneratedBitmapCacheBrushResource(),
+            MilResourceType.DashStyle => new GeneratedDashStyleResource(),
+            MilResourceType.Pen => new GeneratedPenResource(),
+            MilResourceType.GeometryDrawing => new GeneratedGeometryDrawingResource(),
+            MilResourceType.GlyphRunDrawing => new GeneratedGlyphRunDrawingResource(),
+            MilResourceType.MediaPlayer => new GeneratedMediaPlayerResource(),
+            MilResourceType.BitmapSource => new GeneratedBitmapSourceResource(),
+            MilResourceType.DrawingImage => new GeneratedDrawingImageResource(),
+            MilResourceType.ImageDrawing => new GeneratedImageDrawingResource(),
+            MilResourceType.VideoDrawing => new GeneratedVideoDrawingResource(),
+            MilResourceType.DrawingGroup => new GeneratedDrawingGroupResource(),
+            MilResourceType.GuidelineSet => new GeneratedGuidelineSetResource(),
+            MilResourceType.BitmapCache => new GeneratedBitmapCacheResource(),
+            MilResourceType.RenderData => new GeneratedRenderDataResource(),
+            MilResourceType.Visual => new GeneratedVisualResource(),
+            MilResourceType.Viewport3DVisual => new GeneratedViewport3DVisualResource(),
+            MilResourceType.Visual3D => new GeneratedVisual3DResource(),
+            MilResourceType.RenderTarget or MilResourceType.HwndRenderTarget or MilResourceType.GenericRenderTarget => new GeneratedTargetResource(resourceType),
             MilResourceType.GlyphRun => new GeneratedProtocolResource(resourceType),
             > MilResourceType.Null and < MilResourceType.Last => new GeneratedProtocolResource(resourceType),
             _ => null

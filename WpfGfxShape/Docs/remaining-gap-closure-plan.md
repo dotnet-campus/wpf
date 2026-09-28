@@ -188,7 +188,7 @@
 
 ### 当前状态结论
 
-阶段 4 Active。已完成首个 transport/channel 协议闭环：完整 command/resource ID、MIL/DWM SDK fingerprint、32 位 HMIL handle 已冻结，五类核心命令已有显式 layout、golden-byte writer、exact-size router、typed handler、malformed/unknown HRESULT、首错停止和最小 handle/resource identity/refcount。下一步关闭基础值资源族的 generated data、factory、update packet 与 `ProcessUpdate` 生命周期；阶段 4 尚未完成。
+阶段 4 Active。已完成 transport/channel、九类基础值资源、六类 2D transform、六类 2D geometry、七类 brush、七类 dash/pen/drawing、`GuidelineSet`/`BitmapCache`、Visual/Target 核心状态、代表性 render-data 指令流以及 Visual3D/Viewport3DVisual 生命周期：完整 command/resource ID、MIL/DWM SDK fingerprint、32 位 HMIL handle 已冻结；已覆盖显式 layout、golden-byte writer、typed data/factory、transactional dependency/tree update、精确 resource-family lookup、2D/3D parent-child identity、AddRef/release、changed/invalidation notification、动态 payload、render-data record/stack 校验和枚举/flag 校验，并保持 malformed/unknown/type mismatch HRESULT、首错停止和 create/duplicate/update/delete identity/refcount。3D generated resource family 已有强类型状态、group/mesh payload、factory/update、通知与引用生命周期回归；animated/rounded/ellipse 及 PushOpacityAnimate 已有解析，支持 null dependency slots 并保留独立 payload。五类 effects/shader 已有强类型协议状态、动态 payload、依赖和引用生命周期，不再使用通用占位。DrawingImage 已完成强类型协议更新及 ImageBrush/ImageDrawing/render-data 上下游依赖、通知和确定性释放，定向 11/11、主测试 4146/4146、ABI 8/8。BitmapSource source/invalidate 接收与 COM 所有权、image 消费者通知已验收，定向 17/17、主测试 4163/4163、ABI 8/8；完整发送队列及未消费包回收、真实 wrapper E2E 未验收。阶段 4 尚不满足关闭条件：DoubleBufferedBitmap/D3DImage、media/glyph 更新、DrawingImage GetBounds/Draw 与完整消费者仍有缺口；shader 编译/GPU 消费、超过 16 个 sampler 和零 sampler handle 的原生消费兼容性未验收。协议解析不等于完整渲染执行。MediaPlayer 已有固定宽度命令、强类型接收与 COM 失败引用清理、VideoDrawing/render-data 消费者释放回归；真实注册仍受 CMilSlaveVideo C++ 回调/AV composition 桥缺失阻塞，当前 provider QI 成功明确返回 E_NOTIMPL，不计作注册或通知完成。下一步先完成 AV 实现路线决策，再整体完成真实媒体创建/provider/composition 注册—帧就绪通知—确定性释放闭环。纯 C# 路线必须联动迁移 AV 创建与通知调用方，涉及阶段 5 composition 和阶段 6 创建入口前置；仅托管 VideoSlave 不能接入旧 provider 的非虚 C++ 回调。复用旧播放器的原生桥需另行批准及私有类型构造/链接验证，不能假定一个 COM wrapper 即可完成。真实闭环验收前保留 E_NOTIMPL；硬件 BeginRender 的 CD3DDeviceLevel1 边界单独保留，不将软件路径等同于完整媒体兼容。完成后再核查其余占位资源与阶段 5 消费契约。
 
 ## 9. 阶段 5：resources/UCE
 
@@ -270,7 +270,7 @@
 
 ## 12. 当前执行位置
 
-当前位于阶段 1。
+当前位于阶段 4。
 
 当前唯一切片由 [`next-session-handoff.md`](next-session-handoff.md) 指定。完成每个切片后：
 
