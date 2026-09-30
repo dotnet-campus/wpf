@@ -408,8 +408,8 @@ internal sealed class GeneratedProtocolRouter
             MilCommand.ChannelCreateResource => ProcessExact<MilChannelCreateResourceCommand>(packet, value => _handlers.ChannelCreateResource(value.Handle, value.ResourceType)),
             MilCommand.ChannelDeleteResource => ProcessExact<MilChannelDeleteResourceCommand>(packet, value => _handlers.ChannelDeleteResource(value.Handle, value.ResourceType)),
             MilCommand.ChannelDuplicateHandle => ProcessExact<MilChannelDuplicateHandleCommand>(packet, value => _handlers.ChannelDuplicateHandle(value.Original, value.TargetChannel, value.Duplicate)),
-            MilCommand.VisualCreate or MilCommand.VisualSetOffset or MilCommand.VisualSetTransform or MilCommand.VisualSetClip or MilCommand.VisualSetAlpha or MilCommand.VisualSetContent or MilCommand.VisualSetAlphaMask or MilCommand.VisualRemoveAllChildren or MilCommand.VisualRemoveChild or MilCommand.VisualInsertChildAt or MilCommand.Viewport3DVisualSetCamera or MilCommand.Viewport3DVisualSetViewport or MilCommand.Viewport3DVisualSet3DChild or MilCommand.Visual3DSetContent or MilCommand.Visual3DSetTransform or MilCommand.Visual3DRemoveAllChildren or MilCommand.Visual3DRemoveChild or MilCommand.Visual3DInsertChildAt or MilCommand.TargetSetRoot or MilCommand.TargetSetClearColor or MilCommand.TargetInvalidate or MilCommand.TargetSetFlags => ProcessStateCommand(packet, command),
-            MilCommand.BitmapSource or MilCommand.BitmapInvalidate or MilCommand.MediaPlayer => ProcessStateCommand(packet, command),
+            MilCommand.VisualCreate or MilCommand.VisualSetOffset or MilCommand.VisualSetTransform or MilCommand.VisualSetClip or MilCommand.VisualSetAlpha or MilCommand.VisualSetRenderOptions or MilCommand.VisualSetContent or MilCommand.VisualSetAlphaMask or MilCommand.VisualRemoveAllChildren or MilCommand.VisualRemoveChild or MilCommand.VisualInsertChildAt or MilCommand.Viewport3DVisualSetCamera or MilCommand.Viewport3DVisualSetViewport or MilCommand.Viewport3DVisualSet3DChild or MilCommand.Visual3DSetContent or MilCommand.Visual3DSetTransform or MilCommand.Visual3DRemoveAllChildren or MilCommand.Visual3DRemoveChild or MilCommand.Visual3DInsertChildAt or MilCommand.TargetSetRoot or MilCommand.TargetSetClearColor or MilCommand.TargetInvalidate or MilCommand.TargetSetFlags => ProcessStateCommand(packet, command),
+            MilCommand.GenericTargetCreate or MilCommand.BitmapSource or MilCommand.BitmapInvalidate or MilCommand.MediaPlayer or MilCommand.DoubleBufferedBitmap or MilCommand.DoubleBufferedBitmapCopyForward => ProcessStateCommand(packet, command),
             MilCommand.PixelShader => ProcessVariableResourceUpdate<MilPixelShaderCommand>(packet, command),
             MilCommand.ImplicitInputBrush => ProcessResourceUpdate<MilImplicitInputBrushCommand>(packet, command),
             MilCommand.BlurEffect => ProcessResourceUpdate<MilBlurEffectCommand>(packet, command),
@@ -473,7 +473,7 @@ internal sealed class GeneratedProtocolRouter
             MilCommand.DrawingGroup => ProcessVariableResourceUpdate<MilDrawingGroupCommand>(packet, command),
             MilCommand.GuidelineSet => ProcessVariableResourceUpdate<MilGuidelineSetCommand>(packet, command),
             MilCommand.BitmapCache => ProcessResourceUpdate<MilBitmapCacheCommand>(packet, command),
-            _ => Direct3D9Factory.UceUnknownPacketHResult
+            _ => Direct3D9Factory.UceMalformedPacketHResult
         };
     }
 
@@ -627,6 +627,14 @@ internal class GeneratedProtocolResource
 internal sealed class GeneratedProtocolHandleTable
 {
     private readonly Dictionary<uint, GeneratedProtocolResource> _resources = [];
+    private readonly IVideoCompositionOwner? _videoComposition;
+    private readonly GeneratedTargetRegistry? _targets;
+
+    internal GeneratedProtocolHandleTable(IVideoCompositionOwner? videoComposition = null, GeneratedTargetRegistry? targets = null)
+    {
+        _videoComposition = videoComposition;
+        _targets = targets;
+    }
 
     internal int Create(uint handle, MilResourceType resourceType)
     {
@@ -635,7 +643,18 @@ internal sealed class GeneratedProtocolHandleTable
             return Direct3D9Factory.UceMalformedPacketHResult;
         }
 
-        int result = GeneratedResourceFactory.Create(resourceType, out GeneratedProtocolResource? resource);
+        int result;
+        GeneratedProtocolResource? resource;
+        if (resourceType == MilResourceType.MediaPlayer && _videoComposition is not null)
+        {
+            resource = new GeneratedMediaPlayerResource(_videoComposition);
+            result = 0;
+        }
+        else
+        {
+            result = GeneratedResourceFactory.Create(resourceType, out resource);
+        }
+
         if (result < 0)
         {
             return result;
@@ -643,6 +662,18 @@ internal sealed class GeneratedProtocolHandleTable
 
         _resources.Add(handle, resource!);
         return Direct3D9Factory.SuccessHResult;
+    }
+
+    internal void ReleaseAll()
+    {
+        while (_resources.Count != 0)
+        {
+            using var enumerator = _resources.GetEnumerator();
+            enumerator.MoveNext();
+            KeyValuePair<uint, GeneratedProtocolResource> entry = enumerator.Current;
+            _resources.Remove(entry.Key);
+            entry.Value.Release();
+        }
     }
 
     internal int Delete(uint handle, MilResourceType resourceType)
@@ -654,6 +685,7 @@ internal sealed class GeneratedProtocolHandleTable
         }
 
         _resources.Remove(handle);
+        if (resource is GeneratedTargetResource target) _targets?.Remove(target);
         resource.Release();
         return Direct3D9Factory.SuccessHResult;
     }
@@ -696,14 +728,22 @@ internal sealed class GeneratedProtocolHandleTable
             return Direct3D9Factory.UceMalformedPacketHResult;
         }
 
+        if (command == MilCommand.GenericTargetCreate && resource is GeneratedTargetResource genericTarget)
+        {
+            int result = genericTarget.ProcessCommand(this, command, packet);
+            if (result >= 0) _targets?.Add(genericTarget);
+            return result;
+        }
+
         return resource switch
         {
+            GeneratedDoubleBufferedBitmapResource doubleBitmap when command is MilCommand.DoubleBufferedBitmap or MilCommand.DoubleBufferedBitmapCopyForward => doubleBitmap.ProcessCommand(command, packet),
             GeneratedMediaPlayerResource media when command == MilCommand.MediaPlayer => media.ProcessCommand(packet),
             GeneratedBitmapSourceResource bitmap when command is MilCommand.BitmapSource or MilCommand.BitmapInvalidate => bitmap.ProcessCommand(command, packet),
             GeneratedVisualResource visual when command is >= MilCommand.VisualCreate and <= MilCommand.VisualInsertChildAt => visual.ProcessCommand(this, command, packet),
             GeneratedViewport3DVisualResource viewport when command is >= MilCommand.Viewport3DVisualSetCamera and <= MilCommand.Viewport3DVisualSet3DChild => viewport.ProcessCommand(this, command, packet),
             GeneratedVisual3DResource visual3D when command is >= MilCommand.Visual3DSetContent and <= MilCommand.Visual3DInsertChildAt => visual3D.ProcessCommand(this, command, packet),
-            GeneratedTargetResource target when command is >= MilCommand.TargetSetRoot and <= MilCommand.TargetSetFlags => target.ProcessCommand(this, command, packet),
+            GeneratedTargetResource target when command is MilCommand.GenericTargetCreate or (>= MilCommand.TargetSetRoot and <= MilCommand.TargetSetFlags) => target.ProcessCommand(this, command, packet),
             _ => Direct3D9Factory.UceMalformedPacketHResult
         };
     }
@@ -731,6 +771,13 @@ internal sealed class GeneratedProtocolChannelRegistry
     {
         ArgumentNullException.ThrowIfNull(table);
         return channel != 0 && _channels.TryAdd(channel, table);
+    }
+
+    internal int Count => _channels.Count;
+
+    internal void Remove(uint channel)
+    {
+        _channels.Remove(channel);
     }
 
     internal bool TryGet(uint channel, out GeneratedProtocolHandleTable? table)

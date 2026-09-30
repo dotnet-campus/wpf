@@ -23,6 +23,86 @@
 
 ## 最近验证基线
 
+- 最新执行（S-20260929-092）：矩形几何动画槽分离与裁剪当前值消费，绑定/更新/解绑准确像素通过。Release/win-x64发布1次，全量124/124，SHA256 `346B9AF85319CD5A6E3366130DEC4831CC8EE695DE91499B96A7FA0B0951D7BA`；见 `completed-work/S-20260929-092-RECTANGLE-ANIMATION.md`。完整模块仍未完成。
+
+- 最新执行（S-20260929-091）：DrawImageAnimate/PushOpacityAnimate当前值、更新、解绑与失败像素验收。Release/win-x64发布1次，全量124/124，SHA256 `B0FF0AC94E9D4E91F4C4EC08373595D814AC110542FB182BCB853A05BE960883`；见 `completed-work/S-20260929-091-ANIMATED-RENDER-DATA.md`。完整模块状态不变。
+
+- S-20260929-090补记：变换动画保留属性槽位并消费当前值，平移Y独立绑定及更新像素通过；发布1次，全量124/124，SHA256 `EA64B7D3AA6474D678DD68E478DB1EF16A63F501E182FD095AE7ABDF2C63D707`；见 `completed-work/S-20260929-090-ANIMATED-TRANSFORMS.md`，不是全部变换动画逐槽验收。
+
+- 最新执行（S-20260929-089）：矩形递归组合的子像素布尔裁剪及source-only公开包装→Composition联合验收通过。Release/win-x64发布1次，全量124/124；SHA256 `E5CFD28354C3620FCCE456B5CA9F902B94D0B29D96E5621945D9CAA8B60FBF95`；详见 `completed-work/S-20260929-089-COMBINED-CLIP-SOURCE.md`。不是完整曲线/路径几何，内部目标/上下文及活动Render重入未完成，阶段及替换资格不变。
+
+- 最新执行（S-20260929-088）：仿射DrawImage及非整数/变换矩形裁剪整组层组合验收；本轮Release/win-x64发布1次成功，全量124/124（扩展既有用例），SHA256 `9D5FBEAFB11935E3B93AA80B1615D65443C8E33EFBBB1A22BC11841A87ACD1FA`。详见 `completed-work/S-20260929-088-AFFINE-RECTANGLE-LAYERS.md`；内部目标/上下文、完整路径裁剪和活动Render重入未完成，阶段及替换资格不变。
+
+- 最新执行（S-20260929-087）：新增公开WIC源包装导出，支持位图QI及source-only的WIC NoCache路径；可写位图Composition及source-only独立像素/保活通过，后者联合Composition仍缺。Release/win-x64发布1次成功，全量124/124；SHA256 `98AE9E568567163FE9D63E41E222F1C3061A1E1B0B493A5B13F0757855C1D2F4`；详见 `completed-work/S-20260929-087-BITMAP-SOURCE-WRAPPER.md`。完整模块、阶段及替换资格不变。
+
+- 最新执行（S-20260929-086）：软件目标锁与消费者生命周期集中到SoftwareImageRenderSession；仅内部重构，不代表原生内部目标/上下文完成。Release/win-x64发布1次成功，全量121/121；SHA256 `0D021D7397B0A32E30406C6D7619B610654E5A54064C272ABBAE64CF32E506C9`；见 `completed-work/S-20260929-086-SOFTWARE-RENDER-SESSION.md`。阶段及替换资格不变。
+
+- S-20260929-085补记：整数轴对齐RectangleGeometry的Visual/PushClip裁剪已接入；准确像素覆盖及能力边界见 `completed-work/S-20260929-085-RECTANGULAR-CLIP.md`，不是通用几何裁剪。
+
+- 最新执行（S-20260929-084）：Visual轴对齐变换及PushTransform/Pop带类型状态栈接线，缩放/偏移、恢复和非对角失败像素验收通过。Release/win-x64发布1次，全量121/121；SHA256 `99B0FBF4AE8A5A6AC3DF63621C6632792F1AD6EF7BB2E2B2379B367D085C1ED1`；见 `completed-work/S-20260929-084-IMAGE-TRANSFORM-STACK.md`。通用仿射/覆盖率/裁剪及内部目标等未完成，阶段不变。
+
+- 最新执行（S-20260929-083）：轴对齐整数缩小分桶/Fant预滤波接通，预乘/BGRA32准确像素及源锁失败恢复通过。Release/win-x64发布1次成功，最终121/121；SHA256 `1F155094C5D6B1477698C6BF903BDA47EF74D5290C5D557A2C9B96845BAAE756`，见 `completed-work/S-20260929-083-MINIFICATION-PREFILTER.md`。通用变换/裁剪/内部目标及活动绘制重入未完成，阶段不变。
+
+- 最新执行（S-20260929-082）：系统IWICBitmap目标/包装后源接通，统一身份与MIL锁生命周期验证通过，外部位图创建从E_NOINTERFACE Red转Green。两次Release/win-x64发布成功，最终121/121；SHA256 `0287DFB5EF6CCAB31FE3224C2DE628166CB1FFA0BE8EE727A8F37999B6DD2E14`，流水见 `completed-work/S-20260929-082-WIC-BITMAP-ADAPTER.md`。通用目标ABI/变换/预滤波/复杂裁剪/活动绘制重入未完成，阶段不变。
+
+- 最新执行（S-20260929-081）：已有双接口位图创建目标接通，目标不再读取本库位图布局；Clear/引用保活及Composition消费者验收通过。Release/win-x64发布1次，全量120/120；SHA256 `C6F53B8B3742067FF32DAA65C79F58894A35E16E529A5CD8F8AD8907970523C3`，流水见 `completed-work/S-20260929-081-EXISTING-BITMAP-TARGET.md`。WIC-only包装与通用目标ABI等未闭合，完整模块和阶段状态不变。
+
+- 最新执行（S-20260929-080）：Visual/PushOpacity共享嵌套组透明层，End整组合成、Abort丢弃未结束层；重叠、嵌套、部分绘制失败不污染目标像素验收通过。两次Release/win-x64发布成功，全量116/116；SHA256 `6649BF835B45F55B7366D1BE448439DD6365B275221A28470A2E8BD114988D64`，见 `completed-work/S-20260929-080-OPACITY-LIFECYCLE.md`。通用目标ABI/CContextState等生产依赖未实现，完整模块不关闭，阶段不变。
+
+- 最新执行（S-20260929-079）：普通图像源接入WIC→PBGRA32转换，BGRA32准确预乘像素Red→Green及源锁失败重试/调用方释放通过。Release/win-x64发布1次成功，全量116/116；SHA256 `9517BD86E34F80A33497BD2024660D05A6B222ABFB83C3CBF3E0DF5D20E9CF10`。流水见 `completed-work/S-20260929-079-IMAGE-FORMAT-CONVERSION.md`。IWGX-only包装及完整通用绘制/Compose仍未完成，阶段不变。
+
+- 最新执行（S-20260929-078）：普通IWGX BitmapSource接入DrawImage，区分MIL/WIC格式ABI；绑定绘制Red→Green，源替换/锁失败重试/调用方释放像素回归通过。Release/win-x64发布1次成功，全量116/116；SHA256 `E5087DAC62E9A4701683B3DC6FB528C2E2B858F999805E5C13F1F3052A8C597B`。见 `completed-work/S-20260929-078-BITMAP-SOURCE-CONSUMER.md`。完整通用绘制/Compose未完成，阶段不变。
+
+- 最新执行（S-20260929-076）：无生产代码修改；真实目标重绑定释放回调重入生命周期及共享双目标锁失败/重试/删除保活新增验收直接Green。Release/win-x64发布1次成功，最终116通过/0失败/0跳过。SHA256 `90812A9279200F1A32B7E77550E838ADC8A4B1A4CD64502999A51259E7F545F9`；发布/TRX见 `completed-work/S-20260929-076-LIFECYCLE-VALIDATION.md`。Commit释放回调不能等同活动绘制重入，完整生产模块与阶段状态不变。
+
+- 最新执行（S-20260929-075）：软件管线支持整数边界双线性放大/Extend，水平放大裁剪与单行源垂直放大取得Red→Green，缩小/非整数拒绝和后续恢复通过。两次Release/win-x64发布成功，最终113通过/0失败/0跳过；SHA256 `90812A9279200F1A32B7E77550E838ADC8A4B1A4CD64502999A51259E7F545F9`。流水见 `completed-work/S-20260929-075-BILINEAR-MAGNIFICATION.md`。通用变换/缩小预滤波/组透明度/跨目标重入未闭合，完整模块和阶段状态不变。
+
+- 最新执行（S-20260929-074）：1:1图像消费者已接入既有软件目标DrawBitmap/SetupPipeline/OutputSpan真实扫描回调，增加图像列表快照与目标/根保活；半透明、偏移裁剪及Commit/Present时序像素断言在重构前后通过。Release/win-x64两次发布成功，最终全量113/113；SHA256 `B4669D001D4B4D5159A02B489F048222883FCD7A0BA964B7C27AEA1796B7A2D8`。详见 `completed-work/S-20260929-074-SOFTWARE-IMAGE-PIPELINE.md`。缩放/复杂状态/跨目标重入及完整Compose仍未完成，阶段不变。
+
+- 最新执行（S-20260929-073）：Present 改为仅从存活根通道触发，根通道删除/共享通道存活场景取得真实 DLL Red→Green。新 Release/win-x64 AOT 全量113通过/0失败/0跳过；SHA256 `C69A33ECE324372075EB873B35EC0F004CE156A39EAE5F2CADA023532A4197EF`。三次发布动作及TRX见 `completed-work/S-20260929-073-ROOT-CHANNEL-PRESENT.md`。通用软件扫描操作、内存适配与完整Compose仍未完成，阶段状态不变。
+
+- 最新执行（S-UNDATED-072）：Visual/render-data DrawImage/双缓冲前缓冲/真实位图目标及SameThreadPresent窄路径取得两帧局部脏区像素Green，含目标锁失败重试与输出位图保活。Release/win-x64 AOT发布1次，全量112通过/0失败/0跳过；不再缺Present导出。SHA256 `AEF3F994E7E21EEC5B52B4460A16DB77B4BB091069E48E8B0BDDE78EC2FA4F88`，发布/TRX见 `completed-work/S-UNDATED-072-VISUAL-IMAGE-CONSUMER.md`。通用内部目标接口、缩放/滤波/复杂状态、根通道时序/显示恢复和完整Compose未完成，阶段不变。
+
+- 最新执行（S-UNDATED-071）：共享分区目标注册引用子集已接线，重复注册后删除的保活用例通过。Release/win-x64 AOT发布1次，全量110项109通过/1失败/0跳过，唯一失败缺SameThreadPresent。SHA256 `4B5823EF3DF26859E6C0166A7024767622B725275C52C18ADEAE65CA8829FBCC`；发布流水/TRX见 `completed-work/S-UNDATED-071-TARGET-REGISTRY.md`。完整manager/消费者/Compose仍未完成，阶段不变。
+
+- 最新执行（S-UNDATED-070）：透明Clear导出改为原生QI/Clear/Release分发，新增3项真实COM错误/锁重试测试通过。Release/win-x64 AOT发布1次，全量109项108通过/1失败/0跳过，唯一失败缺SameThreadPresent。SHA256 `6EAEC55FEC1EBE8EFE0065E48CF0D09249D3B04469D88177386F9458499C9B92`；完整发布流水及TRX见 `completed-work/S-UNDATED-070-CLEAR-COM-DISPATCH.md`。消费者/Compose模块未完成，阶段不变。
+
+- 最新执行（S-UNDATED-069）：PBGRA32 COM颜色/裁剪Clear新增5项像素验收通过；PRGBA128Float普通Clear及Compose/前缓冲消费者仍未完成。新Release/win-x64 AOT全量106项105通过/1失败/0跳过，唯一失败缺SameThreadPresent。SHA256 `E01F105CF4BC211DC071C74084B986EF599C14DB9DC51E902A7AE26A99B32118`；TRX `Tests/WpfGfxShape.ComAcceptance/TestResults/com-acceptance.trx`。完整模块未完成、阶段不变，见 `completed-work/S-UNDATED-069-TARGET-COLOR-CLIP.md`。
+
+- 最新执行（S-UNDATED-068）：新增 factory/bitmap-target 四导出，真实位图分配/透明清除/引用保活已有验收；显示集、通用外部wrapper、普通Clear/3D/IRenderTargetInternal及Compose仍缺失，不代表完整目标绘制。新 Release/win-x64 AOT 全量101项100通过/1失败/0跳过，唯一失败仍缺 SameThreadPresent。SHA256 `225EB8F31417F44D8EEC857142B3D30C04DAB074EE8B55187BBC3D863CD6EABD`；TRX `Tests/WpfGfxShape.ComAcceptance/TestResults/com-acceptance.trx`。详见 `completed-work/S-UNDATED-068-BITMAP-TARGET-ABI-PARTIAL.md`，阶段不变。
+
+- 最新执行（S-UNDATED-067）：GenericTargetCreate 分发与目标引用生命周期已接线，不含 render-target manager 注册、DrawingContext 或 Compose。新发布 Release/win-x64 AOT 全量93项92通过/1失败/0跳过，唯一失败仍为缺 SameThreadPresent；新增6项引用/非法包测试通过。SHA256 `B796A920DC3F1E7EE29C96A24B62FC473F31BAA7FD47ADC23405AF2D9CD77F39`；TRX `Tests/WpfGfxShape.ComAcceptance/TestResults/com-acceptance.trx`。完整模块未完成、阶段不变；见 `completed-work/S-UNDATED-067-GENERIC-TARGET-OWNERSHIP.md`。
+
+- 最新执行（S-UNDATED-066）：已发布当前源码 Release/win-x64 Native AOT；修复分发器非法命令 HRESULT 与原生默认分支不一致。全量87项86通过/1失败/0跳过，唯一失败为缺 WgxConnection_SameThreadPresent。palette/packed/IWGX 及既有 UCE 用例已在新 DLL 通过，不再受旧产物缺导出阻挡。最终 SHA256 `21694B751E590025091CBEA472BAB85AE11AFD0EFF9D85F05711ABB8DA1A5FF0`；TRX `Tests/WpfGfxShape.ComAcceptance/TestResults/com-acceptance.trx`。前缓冲消费者/Compose/多帧像素闭环仍未完成，阶段不变。见 `completed-work/S-UNDATED-066-AOT-BASELINE-PACKET-HRESULT.md`。以下为历史执行记录，不代表最新产物状态。
+
+- 最新执行（S-20260929-065）：索引palette/子字节及IWGX独立接口源码已接入，Release/win-x64 build成功；未publish。旧DLL全量86项52通过/34失败/0跳过，新增6项缺创建导出前置失败，TRX `74be0433-1c62-4425-a717-fb0e4a3d566c`。尚无新源码行为Green，前缓冲消费者未闭环；见 `completed-work/S-20260929-065-PACKED-PALETTE-IWGX.md`。
+
+- 最新执行（S-20260929-064）：WPF WIC格式转换及字节对齐非索引格式已有源码，build成功，未publish。旧DLL全量80项52通过/28失败/0跳过，TRX `010350af-12d9-410a-9ffe-d277923c3615`。新增3项格式测试仍缺导出前置失败，无新源码行为Green；索引/子字节格式与前缓冲消费者仍未完成。见 `completed-work/S-20260929-064-WIC-CONVERSION.md`。
+
+- 最新执行（S-20260929-063）：双缓冲四导出、32位IWICBitmap/锁、脏区复制及UCE资源命令已有部分源码，未取得AOT行为Green。最终Release/win-x64增量build成功（本次增量0警告/0错误，不代表既有警告已消除）；旧DLL全量77项52通过/25失败/0跳过。TRX run `b32a929e-6ae3-49de-a0f9-f3daba0e6177`；未发布。非32位格式与前缓冲消费者仍缺失，模块未完成，见 `completed-work/S-20260929-063-DOUBLEBUFFER-IMPLEMENTATION.md`。
+
+- 最新执行（S-20260929-062）：修复通道COM释放重入和BitmapSource通知失败引用清理；Release/win-x64 build 0错误、833警告。未publish；旧DLL全量75项52通过/23失败/0跳过，9项UCE均缺连接导出前置失败。TRX run `4f984a7e-be3e-458f-8cce-b98eab0b0ff8`。无新源码行为Green，双缓冲仍未实现；见 `completed-work/S-20260929-062-UCE-REENTRANT-CLEANUP.md`。
+
+- 最新执行（S-20260929-061）：共享partition/duplicate及BitmapSource批次引用清理已有部分源码；Release/win-x64 build 0错误、833警告，未publish。旧DLL全量72项52通过/20失败/0跳过，6项UCE行为测试全部被缺WgxConnection_Create前置阻挡。SHA256仍为 `9A1248D757EAB6E3E44D00D75A0FDDBD53383605E75BA6BCD41025250F215148`，TRX run `0e4ca0a2-f16b-4c0c-a618-57623cfcfd60`。无新的AOT Green，双缓冲大模块及阶段状态未变；见 `completed-work/S-20260929-061-UCE-PARTITION-OWNERSHIP.md`。
+
+- 最新执行（S-20260929-060）：新增同线程 UCE 部分源码及2项行为测试，生产 Release/win-x64 build 成功，未发布新 AOT。旧 DLL 全量68项：52通过、16失败、0跳过；新增2项因缺 WgxConnection_Create 未执行行为断言。哈希仍为 `9A1248D757EAB6E3E44D00D75A0FDDBD53383605E75BA6BCD41025250F215148`，TRX run `8a3dd115-545d-4377-bb0e-c58c35f950ca`。新通道代码未取得生产DLL Green，双缓冲模块未完成；详见 `completed-work/S-20260929-060-UCE-PARTIAL.md`。以下全量66项为上一轮历史。
+
+- 当前执行结果（S-20260929-059）：双缓冲大模块因缺同线程UCE命令入口/前缓冲消费者通路受阻，未实现生产模块。当前源码Release/win-x64增量发布成功，全量66项中52通过、14生产导出前置失败、0跳过；当前套件是Red，不再报告全量52/52。哈希9A1248D757EAB6E3E44D00D75A0FDDBD53383605E75BA6BCD41025250F215148，TRX run5f57cc41-aa77-4526-8154-fd62534db996。详情见completed-work/S-20260929-059-DOUBLEBUFFER-DEPENDENCY-BLOCKER.md；阶段与替换资格未变化。
+
+- 最新 COM 基线（S-20260928-058）：双生产IStream CopyTo/真实Clone/读写定位/扩缩容/STATSTG无名称字段/最终释放新增7项直接Green，无生产修复。当前源码Release/win-x64增量发布成功，全量52/52，0失败/跳过。TRX run `13309c46-2a0c-4c19-a7e6-f2141a3a99c8` 重新确认SHA256 `9A1248D757EAB6E3E44D00D75A0FDDBD53383605E75BA6BCD41025250F215148`，与上一轮相同。仅测试内存流descriptor来源，不等于PresentationCore/WIC集成；详见 completed-work/S-20260928-058-STREAM-COPY-CLONE.md。
+
+- 最新 COM 基线（S-20260928-057）：ManagedStreamWrapper 创建、QI、全部委托槽、可空输出与最终释放已在真实生产 Native AOT DLL 验收。Release/win-x64 发布成功，流17项、唯一测试项目全量45/45通过，0失败/跳过。SHA256 `9A1248D757EAB6E3E44D00D75A0FDDBD53383605E75BA6BCD41025250F215148`，TRX run `74e05c2d-03ca-4a99-aba6-5b3b836b62b1`。真实双流复制/克隆及完整 STATSTG 内容留待下一闭环；阶段和替换资格不变。详见 completed-work/S-20260928-057-MANAGEDSTREAM-COM.md。
+
+- 最新有效 COM 基线（S-20260928-056）：受控并发非最终 Release 阻塞测试先 Red，修复为独立原子引用计数后，Release/win-x64 Native AOT 重新发布成功，定向 Green、全量 28/28 通过（0 失败/跳过）。标准 TRX 已留存路径与 SHA256：`E52D24672DC6C1146B5C37EB628A706F1C81DF485EEC97AC96CC8C4DEB07A86B`。覆盖 2/4/8 工作者持有引用、回调 QI 重入与最终 dispose；不代表跨 apartment、所有并发交错、进程退出或其他架构。详见 `completed-work/S-20260928-056-EVENTPROXY-CONCURRENT-LIFETIME.md`。
+
+- 当前有效 COM 基线（S-UNDATED-055）：当前源码 Release/win-x64 Native AOT Shared DLL 发布成功，随后唯一 `Tests/WpfGfxShape.ComAcceptance` 项目 24/24 通过、0 失败、0 跳过。EventProxy 创建/QI/引用/callback/最终释放及 callback QI 重入已在生产 DLL 验收。发布含 CA1416，未统计完整警告数；新哈希的 TestContext 输出未由摘要展开，未独立归档。历史 Red 仅来自旧产物，不补称当前源码实现前发布 Red。详见 `completed-work/S-UNDATED-055-EVENTPROXY-AOT-GREEN.md`。以下旧主测试/ABI 计数仅为历史，不是本轮执行结果；真实媒体创建、并发生命周期、原生差分、进程退出及其他架构未验收。
+
+- 最新事件子模块：共享 STA 消息泵、MediaEventProxy 和 MediaInstance 已贯通 notifier → 排队 → Stdcall callback → Shutdown/引用释放。定向 16/16、主测试 4227/4227、ABI 8/8，Debug 增量构建 0 警告 0 错误；归档 `completed-work/S-UNDATED-048-STA-MEDIA-EVENT-LIFECYCLE.md`。这些是上一轮已运行结果，本轮完成归档与台账同步。未验收低资源初始化失败注入、self-final-release gate 确定性释放、原生差分及进程退出 SEH。真实播放器/provider/sample 来源与生产 COM 导出仍未完成，E_NOTIMPL 保持，阶段 4 Active。
+
+- 最新：EventProxy 内部 descriptor 回调/Shutdown/引用释放生命周期，定向 7/7、主测试 4211/4211、ABI 8/8，Debug 增量构建 0 警告 0 错误；测试重新编译有警告。上一 VideoSlave/composition 切片为定向 19/19、主测试 4204/4204。详见 `completed-work/S-UNDATED-046-VIDEO-SLAVE-LIFECYCLE.md` 与 `completed-work/S-UNDATED-047-EVENT-PROXY-LIFETIME.md`。真实 STA 事件派发、MediaInstance、播放器/provider/sample 来源仍缺失，内部组件实现不等同媒体集成。E_NOTIMPL 保持，阶段 4 Active，替换资格不变。
+
+- 最新生产切片：纯 C# CompositionNotifier 注册—通知—注销方法族，定向 11/11、主测试 4185/4185、ABI 8/8，Debug 增量构建 0 警告 0 错误；测试重新编译仍有既有 MSTEST0044。用户已确认纯 C# / Native AOT，不引入原生桥。当前为通知组件 UnitVerified，真实 MediaInstance/event proxy、VideoSlave/composition owner、播放器及 sample 来源尚未接入，MediaPlayer E_NOTIMPL 保留。详见 `completed-work/S-UNDATED-045-MANAGED-COMPOSITION-NOTIFIER.md`，阶段状态和替换资格不变。
+
 - 最新工作为 CMilSlaveVideo 可行性静态探索，未修改生产代码、未运行构建或测试；不产生新验证计数。已确认旧 notifier 的非虚 C++ 调用不能由 COM 包装/GCHandle/普通子类覆写接管；推荐纯 C# 联动迁移 AV 创建及通知链，复用旧播放器的原生桥须先作架构决策。另确认 Begin/EndComposition 原生抑制媒体错误，硬件 BeginRender 仍有 CD3DDeviceLevel1 私有类型边界。详见 `completed-work/S-UNDATED-044-CMILSLAVEVIDEO-FEASIBILITY.md`。当前 E_NOTIMPL 保持，媒体生命周期未关闭，阶段状态不变。
 
 - 最新受阻切片：MediaPlayer 强类型协议接收与消费者引用边界，定向 11/11、主测试 4174/4174、ABI 8/8；Debug 增量构建 0 警告、0 错误，测试重新编译仍有既有 MSTEST0044 警告。详见 `completed-work/S-UNDATED-043-GENERATED-MEDIAPLAYER-RECEIVE-BOUNDARY.md`。真实 provider 要求 CMilSlaveVideo C++ 对象回调，当前无兼容 AV/composition 桥；QI 成功后明确 E_NOTIMPL 并释放传输与临时引用，不伪装注册成功。单一 source 注册、帧通知与 provider 注销生命周期仍未完成，下一任务保持完整 AV 注册—通知—析构闭环。阶段 4 保持 Active。

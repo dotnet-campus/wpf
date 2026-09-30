@@ -26,11 +26,16 @@ internal static partial class GeneratedProtocolPacketWriter
         => WriteDrawing(new MilMediaPlayerCommand(handle, media, notifyUceDirect));
 }
 
-internal sealed unsafe class GeneratedMediaPlayerResource : GeneratedProtocolResource
+internal sealed unsafe partial class GeneratedMediaPlayerResource : GeneratedProtocolResource
 {
     internal GeneratedMediaPlayerResource() : base(MilResourceType.MediaPlayer) { }
 
-    internal bool NotifyUceDirect { get; private set; }
+    private bool _notifyUceDirect;
+    internal bool NotifyUceDirect
+    {
+        get => Volatile.Read(ref _notifyUceDirect);
+        private set => Volatile.Write(ref _notifyUceDirect, value);
+    }
 
     internal int ProcessCommand(ReadOnlySpan<byte> packet)
     {

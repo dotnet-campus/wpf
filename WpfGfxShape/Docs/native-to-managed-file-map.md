@@ -9,6 +9,18 @@
 - `Not started`：当前生产项目中没有可确认的对应实现。
 - 本表没有 `Complete` 项；当前实现尚不能替换原 `wpfgfx_cor3.dll`。
 
+## 图像变换栈
+
+`core/uce/drawingcontext.cpp:2384-2404,4863-4892` → GeneratedImageTransform/GeneratedVisualRenderer：无动画正向轴对齐Visual变换/offset组合，PushTransform/Pop与透明层共用带类型状态栈。Matrix放大平移/Pop恢复像素验收通过；通用旋转斜切、负缩放、动画和覆盖率仍未支持，Partial。
+
+## 软件图像缩小预滤波
+
+`core/common/BaseMatrix.cpp:918-1054,1090-1195`与`core/sw/swlib/swbitmapcolorsource.cpp:162-205,490-590` → SoftwareImageRenderer.PrefilterSize/DrawPrefiltered及BitmapFormatConverter.CreateScaler。默认sqrt(2)分桶/Fant后格式转换与双线性重建，已接入真实普通/双缓冲图像消费者。Partial：仅轴对齐整数矩形，非整数覆盖率和任意变换尚缺，二维/桶边界验证不完整。
+
+## 已有位图目标
+
+`core/api/api_factory.cpp:344-390`、`exports.cpp:94-102` → BitmapRenderTargetExports.CreateForBitmap及同名生产导出：双IWIC/IWGX接口位图保活、现有缓冲绘制及释放闭环。Bounds/Clear经COM查询尺寸/格式，不依赖本库对象布局。`common/scanop/bitmapwrappers.cpp:724-877` → WicBitmapAdapter，普通IWICBitmap包装为MIL/WIC视图，工厂不再要求双接口；包装随目标保留，统一IUnknown、MIL锁格式及真实系统位图作为目标/包装后源已验收。Partial：BitmapSource-only/反向包装、原生缓存和内部目标ABI尚未完成。
+
 ## 当前总体状态
 
 - 当前生产代码集中在 `Code/WpfGfxShape/Core/`，NativeAOT ABI 探针位于 `Code/WpfGfxShape/Abi/NativeAotAbiProbe.cs`。
@@ -16,9 +28,49 @@
 - 所有已启动的原生职责均为 `Partial`。
 - 生产 ABI、UCE/资源协议、完整图元管线和 PresentationCore E2E 尚未完成。
 
+## 媒体 STA 事件闭环
+
+Partial，已实现并通过真实线程组件测试。文件映射：`core/av/StateThread.cpp` → `Core/Av/StateThread.cs`（共享事件线程分支，不含 WMP 可复用工作项）；`mediaeventproxy.cpp` → `MediaEventProxy.cs`；`MediaInstance.cpp` → `MediaInstance.cs`。验证合同 `MediaEventLifecycleTests`：真实 STA 消息泵/FIFO、共享线程、Unicode/golden bytes/4K、shutdown 与队列引用、失败清理。生产 COM 导出及真实播放器仍不在此闭环内。
+
+## 软件组透明层
+
+`core/common/InternalRT.h:114-172`、`core/uce/drawingcontext.cpp:2295-2315,3030-3134` → GeneratedVisualRenderer层边界快照、Direct3D9SoftwareImageRenderer嵌套中间缓冲。Visual Alpha与PushOpacity/Pop在层结束时整组应用，失败丢弃未结束层；重叠/嵌套及层内部分绘制失败像素已验收。Partial：全目标中间缓冲，未优化内容边界；几何mask/effect、动画透明度、原生通用目标ABI仍未完成。
+
+## 普通位图源绘制消费者
+
+`core/resources/bitmapres.h:80-97` → `GeneratedBitmapSourceResource.AcquireBitmapSource`，取得带引用IWGX源；GeneratedVisualRenderer纳入图像快照，SoftwareImageRenderer区分IWGX枚举/WIC GUID格式ABI，复用软件目标扫描管线。PBGRA32/BGR32普通源绑定、替换、写锁冲突重试和调用方释放后的像素验收通过。`core/sw/swlib/swbitmapcolorsource.cpp:490-590`对应SoftwareImageRenderer.DrawConverted复用BitmapFormatConverter；可QI WIC的非直接格式源转PBGRA32，BGRA32像素/锁失败重试已验收。Partial；IWGX-only源包装、全格式及外部回调重入完整验收仍缺失。
+
+## 同线程 UCE 生产通路
+
+`core/uce/apifunc.cpp` → `Abi/UceChannelExports.cs`；`connection.cpp/clientchannel.cpp/htmaster.cpp/samethreadcomposition.cpp` 的窄路径 → `Core/SameThreadChannel.cs` 与 `GeneratedProtocol.cs`。Partial：连接保活、共享partition通道、客户端资源计数、DuplicateHandle排队、关闭批次分发、partition首错及BitmapSource转移引用丢弃清理已有源码。`UceChannelTests` 已经新发布真实DLL行为验收。`core/uce/printtarget.cpp::ProcessCreate` → `GeneratedTargetResource`：GenericTargetCreate 精确包长和资源类型检查、执行时 AddRef、重绑定/解除绑定/最终释放已接线并有真实生产COM引用验收；已接入共享分区目标注册引用表。`connectioncontext.cpp:448-525` → `UceChannelExports.cs`：SameThreadPresent按存活根通道身份顺序选择partition（共享通道不独立触发），经目标快照调用GeneratedVisualRenderer，消费Visual/render-data DrawImage并绘制双缓冲图像至真实软件位图目标。GeneratedVisualRenderer先捕获矩形/偏移及持引用的图像源，GeneratedTargetResource保活目标和根；Direct3D9SoftwareImageRenderer将原生锁缓冲适配至既有SoftwareRenderTargetSurface.DrawBitmap→SetupPipeline→OutputSpan真实source-over扫描操作。已取得两帧、半透明、偏移/目标边界裁剪和未Commit批次不被Present执行的像素验收；内存适配每图元复制目标，尚未优化；通用IRenderTargetInternal、完整Compose、根通道/显示恢复时序、完整zombie/重入未闭合，不代表完整UCE实现。
+
+## 软件双缓冲位图生产模块
+
+`core/sw/swlib/doublebufferedbitmap.cpp`及四个MILSwDoubleBufferedBitmap导出 → `Abi/DoubleBufferedBitmapExports.cs`；`common/scanop/writeprotectedbitmap.cpp`及位图/锁窄路径 → `Abi/SoftwareBitmap.cs`；`core/resources/doublebufferedbitmapres.cpp` → `Core/GeneratedDoubleBufferedBitmapResource.cs`：Partial，现有位图/格式/引用测试已在新DLL验收，并有Visual/render-data DrawImage前缓冲两帧像素窄路径E2E。已有MIL范围字节对齐非索引格式分配、保护页、IWICBitmap/锁、五项脏区、CopyForward及资源引用/事件清理；Abi/BitmapFormatConverter.cs接入原生WPF WIC转换替代手写预乘。SoftwareBitmap.Mil.cs新增独立IWGXBitmapSource/Bitmap/Lock地址与统一IUnknown；palette副本、1/2/4位MSB复制及非对齐锁写回已接入。IWGX脏标记采用无原生缓存注册分支，不含原生缓存容器。前缓冲生产消费者具备整数平移1:1及整数边界双线性放大路径；`swrast.cpp:225-295`/`bilinearspan.cpp:407-454,790-848`对应SoftwareImageRenderer经SoftwareBilinearSpan完成像素中心16.16采样/Extend/插值。缩小预滤波、非整数覆盖率及复杂Visual状态仍未支持；全格式、源替换和完整失败生命周期E2E尚未完成。不能将窄路径像素验收等同完整翻译。
+
+## ManagedStreamWrapper 生产 COM 导出
+
+`core/api/exports.cpp:531-890` 的 CStreamDescriptor/CManagedStreamWrapper 和 MILIStreamWrite → `Abi/ManagedStreamExports.cs`。编码前已编写 ManagedStreamTests，真实 DLL 缺创建导出的共同前置 Red 后，已实现稳定对象/原子计数/16槽 vtable 与两个导出；新 Release/win-x64 AOT 上流17项、全量45项通过，EVID-MANAGEDSTREAM-COM Passed。双生产对象CopyTo四种输出组合/EOF、真实Clone存活、读写定位/扩缩容及STATSTG无名称字段已由测试内存流descriptor验收（流24项、全量52项）。不等于真实PresentationCore/WIC来源集成；错误来源/部分写入、名称分配释放等尚待验收，文件族仍Partial。保留 IManagedStream 两个扩展槽、QI E_INVALIDARG 和可空输出适配；不新增原生未支持的 ISequentialStream QI。
+
+## EventProxy 生产 COM 导出
+
+`core/api/exports.cpp::MILCreateEventProxy` 与 `core/av/eventproxy.cpp` 的 COM 方法 → `Abi/EventProxyExports.cs` + `Core/Av/EventProxy.cs`。编码前已定义直接 AOT 测试 24 项，包括回调 QI 重入。已实现稳定 unmanaged 对象头、四槽 Stdcall vtable、单一 EventProxy 引用计数。S-UNDATED-055 当前源码 Release/win-x64 Native AOT 发布成功，唯一 COM 验收项目 24/24 通过；EVID-EVENTPROXY-COM-EXPORT 在此范围 Passed。S-20260928-056 补齐受控并发引用生命周期：先复现非最终 Release 等待回调锁的行为 Red，再以独立原子计数修复；新 AOT DLL 全量 28/28，TRX 留存 SHA256。完整文件族仍为 Partial，不代表全部 ABI、跨 apartment、所有线程交错、原生差分或进程退出已验收。
+
+## EventProxy 回调生命周期
+
+`core/av/eventproxy.cpp/.h` → `Core/Av/EventProxy.cs`：内部 descriptor 回调所有者。编码前验证定义：`EventProxyTests` 验证 Stdcall 三指针布局、稳定 descriptor 地址、HRESULT、Shutdown、引用释放和释放后保护。已接入 MediaEventProxy/共享 STA 队列。IMILEventProxy COM 导出/QueryInterface 已由上述生产 AOT 验收覆盖；内部 Shutdown 不作为公开 COM 槽位，进程关闭 SEH 未验收。
+
+## AV 通知器迁移边界
+
+`core/av/CompositionNotifier.cpp` → `Core/Av/CompositionNotifier.cs`：Partial，纯 C# 方法族与组件单测已实现，注册/注销与通知共用锁、唯一列表保持头插顺序、UI 请求在锁外合并派发。编码前验证定义：`CompositionNotifierTests` 覆盖重复注册、注销、direct/UI 混合、无资源 pending UI、sample invalidation 和并发注销。内部 managed callback 合同不是新增 COM ABI；已接入 VideoSlave 分部方法族及 MediaInstance/MediaEventProxy/共享 STA 事件路径。真实媒体 provider/sample 来源与 partition scheduler 仍未接入，不构成完整媒体生命周期。
+
+## VideoSlave/composition 方法族
+
+`core/resources/videoslave.cpp` → `Core/Av/VideoSlave.cs`（GeneratedMediaPlayerResource partial）；`core/uce/composition.cpp` 的 RegisterVideo/UnregisterVideo/BeginProcessVideo/EndProcessVideo → `Core/Av/VideoComposition.cs`。编码前验证合同：`VideoSlaveTests` 覆盖完整单源注册、两级失败、sample Begin/End、消费者通知与最后释放。provider/renderer/scheduler 是尚未迁移的外部依赖合同；不得将组件验收标记为真实媒体播放或改变旧 COM 命令接收边界。
+
 ## MediaPlayer 已确认边界
 
-`include/Generated/wgx_commands.h`、`core/uce/generated_process_message.inl`、`core/resources/videoslave.cpp` → `GeneratedMediaPlayerResource.cs`、`GeneratedProtocol.cs`、`GeneratedValueResources.cs`：Partial。已有固定 UINT64 pMedia/BOOL 的 20 字节命令、强类型工厂和路由、可信同进程 COM QI/失败引用清理，VideoDrawing/render-data 依赖保留与释放已有回归。provider QI 成功后返回 E_NOTIMPL：RegisterResource 接收 CMilSlaveVideo*，CompositionNotifier 直接调用 C++ 对象成员，当前没有兼容 AV/composition 桥。未实现真实注册、单一 source identity、帧就绪通知及 provider 注销，不构成完整 media 生命周期。
+`include/Generated/wgx_commands.h`、`core/uce/generated_process_message.inl`、`core/resources/videoslave.cpp` → `GeneratedMediaPlayerResource.cs`、`GeneratedProtocol.cs`、`GeneratedValueResources.cs`：Partial。已有固定 UINT64 pMedia/BOOL 的 20 字节命令、强类型工厂和路由、可信同进程 COM QI/失败引用清理，VideoDrawing/render-data 依赖保留与释放已有回归。provider QI 成功后返回 E_NOTIMPL：RegisterResource 接收 CMilSlaveVideo*，CompositionNotifier 直接调用 C++ 对象成员，当前没有兼容 AV/composition 桥。原生 packet 路径未实现真实注册；托管 ProcessUpdate 与 VideoSlave 分部实现已有单一 source identity、帧就绪通知及 provider 注销方法族，handle table 可注入视频 owner。托管 provider/renderer 仍是外部依赖合同，不构成完整 media 生命周期。
 
 ## 当前文件映射
 

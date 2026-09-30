@@ -241,6 +241,7 @@ internal static class GeneratedResourceFactory
     {
         resource = resourceType switch
         {
+            MilResourceType.DoubleBufferedBitmap => new GeneratedDoubleBufferedBitmapResource(),
             MilResourceType.PixelShader => new GeneratedPixelShaderResource(),
             MilResourceType.ImplicitInputBrush => new GeneratedImplicitInputBrushResource(),
             MilResourceType.BlurEffect => new GeneratedBlurEffectResource(),

@@ -1060,7 +1060,7 @@ internal sealed class Direct3D9SoftwareRenderTargetSurface : IDisposable
         }
     }
 
-    private static uint ConvertToSrgb(MilColorF color, bool premultiply)
+    internal static uint ConvertToSrgb(MilColorF color, bool premultiply)
     {
         byte alpha = RoundToByte(color.Alpha);
         byte red = ConvertScRgbChannelToSrgbByte(color.Red);

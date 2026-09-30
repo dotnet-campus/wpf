@@ -1,3 +1,9 @@
+CoInitializeEx
+CoUninitialize
+PeekMessageW
+TranslateMessage
+DispatchMessageW
+MsgWaitForMultipleObjects
 CreateICW
 DeleteDC
 EnumDisplayDevices

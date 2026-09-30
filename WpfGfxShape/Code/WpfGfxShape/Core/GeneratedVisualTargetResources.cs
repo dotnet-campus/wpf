@@ -132,6 +132,8 @@ internal sealed class GeneratedVisualResource : GeneratedProtocolResource
     internal GeneratedVisualResource() : base(MilResourceType.Visual) { }
     internal MilPoint2D Offset { get; private set; }
     internal double Alpha { get; private set; } = 1;
+    internal uint? BitmapScalingMode { get; private set; }
+    internal MilCompositingMode? CompositingMode { get; private set; }
     internal GeneratedProtocolResource? Transform => _transform;
     internal GeneratedProtocolResource? Clip => _clip;
     internal GeneratedProtocolResource? Content => _content;
@@ -143,6 +145,7 @@ internal sealed class GeneratedVisualResource : GeneratedProtocolResource
         MilCommand.VisualCreate => packet.Length == 8 ? Direct3D9Factory.SuccessHResult : Direct3D9Factory.UceMalformedPacketHResult,
         MilCommand.VisualSetOffset => SetOffset(packet),
         MilCommand.VisualSetAlpha => SetAlpha(packet),
+        MilCommand.VisualSetRenderOptions => SetRenderOptions(packet),
         MilCommand.VisualSetTransform => SetDependency(table, packet, static type => type is >= MilResourceType.TransformGroup and <= MilResourceType.MatrixTransform, 0),
         MilCommand.VisualSetClip => SetDependency(table, packet, static type => type is >= MilResourceType.LineGeometry and <= MilResourceType.PathGeometry, 1),
         MilCommand.VisualSetContent => SetDependency(table, packet, static type => type is MilResourceType.RenderData or >= MilResourceType.GeometryDrawing and <= MilResourceType.DrawingGroup, 2),
@@ -152,6 +155,21 @@ internal sealed class GeneratedVisualResource : GeneratedProtocolResource
         MilCommand.VisualRemoveAllChildren => RemoveAll(packet),
         _ => Direct3D9Factory.UceUnknownPacketHResult
     };
+    private int SetRenderOptions(ReadOnlySpan<byte> packet)
+    {
+        if (packet.Length != 36) return Direct3D9Factory.UceMalformedPacketHResult;
+        uint flags = MemoryMarshal.Read<uint>(packet[8..]);
+        if ((flags & ~5u) != 0) return Direct3D9Factory.NotImplementedHResult;
+        uint compositing = MemoryMarshal.Read<uint>(packet[16..]);
+        if ((flags & 4) != 0 && compositing > 1) return Direct3D9Factory.NotImplementedHResult;
+        uint mode = MemoryMarshal.Read<uint>(packet[20..]);
+        if ((flags & 1) != 0 && mode > 3) return Direct3D9Factory.InvalidArgumentHResult;
+        BitmapScalingMode = (flags & 1) != 0 && mode != 0 ? mode : null;
+        CompositingMode = (flags & 4) != 0 ? (MilCompositingMode)compositing : null;
+        NotifyChanged();
+        return 0;
+    }
+
     private int SetOffset(ReadOnlySpan<byte> packet) { if (packet.Length != 24) return Direct3D9Factory.UceMalformedPacketHResult; Offset = new(MemoryMarshal.Read<double>(packet[8..]), MemoryMarshal.Read<double>(packet[16..])); NotifyChanged(); return 0; }
     private int SetAlpha(ReadOnlySpan<byte> packet) { if (packet.Length != 16) return Direct3D9Factory.UceMalformedPacketHResult; Alpha = MemoryMarshal.Read<double>(packet[8..]); NotifyChanged(); return 0; }
     private int SetDependency(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> packet, Func<MilResourceType, bool> accepts, int slot)
@@ -179,9 +197,24 @@ internal sealed class GeneratedVisualResource : GeneratedProtocolResource
     private void ReleaseDependency(ref GeneratedProtocolResource? dependency) { dependency?.RemoveListener(this); dependency = null; }
 }
 
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+internal readonly struct MilGenericTargetCreateCommand
+{
+    internal readonly MilCommand Type;
+    internal readonly uint Handle;
+    internal readonly ulong Window;
+    internal readonly ulong RenderTarget;
+    internal readonly uint Width;
+    internal readonly uint Height;
+    internal readonly uint Dummy;
+}
+
 internal sealed class GeneratedTargetResource : GeneratedProtocolResource
 {
     private GeneratedVisualResource? _root;
+    private nint _renderTarget;
+    internal uint Width { get; private set; }
+    internal uint Height { get; private set; }
     internal GeneratedTargetResource(MilResourceType type) : base(type) { }
     internal GeneratedVisualResource? Root => _root;
     internal MilColorF ClearColor { get; private set; }
@@ -190,6 +223,7 @@ internal sealed class GeneratedTargetResource : GeneratedProtocolResource
     internal MilRenderTargetInitializationFlags Flags { get; private set; }
     internal int ProcessCommand(GeneratedProtocolHandleTable table, MilCommand command, ReadOnlySpan<byte> packet) => command switch
     {
+        MilCommand.GenericTargetCreate => CreateGenericTarget(packet),
         MilCommand.TargetSetRoot => SetRoot(table, packet),
         MilCommand.TargetSetClearColor => SetClearColor(packet),
         MilCommand.TargetInvalidate => Invalidate(packet),
@@ -200,5 +234,45 @@ internal sealed class GeneratedTargetResource : GeneratedProtocolResource
     private int SetClearColor(ReadOnlySpan<byte> packet) { if (packet.Length != 24) return Direct3D9Factory.UceMalformedPacketHResult; ClearColor = MemoryMarshal.Read<MilColorF>(packet[8..]); NotifyChanged(); return 0; }
     private int Invalidate(ReadOnlySpan<byte> packet) { if (packet.Length != 24) return Direct3D9Factory.UceMalformedPacketHResult; InvalidatedRect = MemoryMarshal.Read<MilRectL>(packet[8..]); InvalidationCount++; NotifyChanged(); return 0; }
     private int SetFlags(ReadOnlySpan<byte> packet) { if (packet.Length != 12) return Direct3D9Factory.UceMalformedPacketHResult; MilRenderTargetInitializationFlags flags = MemoryMarshal.Read<MilRenderTargetInitializationFlags>(packet[8..]); const MilRenderTargetInitializationFlags allowed = MilRenderTargetInitializationFlags.TypeMask | MilRenderTargetInitializationFlags.UseRefRast | MilRenderTargetInitializationFlags.UseRgbRast | MilRenderTargetInitializationFlags.DisableDirtyRectangles; if ((flags & ~allowed) != 0) return Direct3D9Factory.InvalidArgumentHResult; Flags = flags; NotifyChanged(); return 0; }
-    protected override void OnFinalRelease() { _root?.RemoveListener(this); _root = null; }
+    private unsafe int CreateGenericTarget(ReadOnlySpan<byte> packet)
+    {
+        if (ResourceType != MilResourceType.GenericRenderTarget || packet.Length != Marshal.SizeOf<MilGenericTargetCreateCommand>())
+            return Direct3D9Factory.UceMalformedPacketHResult;
+        var command = MemoryMarshal.Read<MilGenericTargetCreateCommand>(packet);
+        nint next = (nint)command.RenderTarget;
+        Width = command.Width;
+        Height = command.Height;
+        // The command borrows its pointer; ProcessCreate acquires the resource's own reference.
+        if (next != 0)
+            ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)next)[1])(next);
+        nint previous = _renderTarget;
+        _renderTarget = next;
+        Direct3D9Factory.Release(previous);
+        return 0;
+    }
+
+    internal unsafe int Render()
+    {
+        nint target = _renderTarget;
+        GeneratedVisualResource? root = _root;
+        uint width = Width, height = Height;
+        if (target == 0 || root is null || width == 0 || height == 0) return 0;
+        root.AddRef();
+        ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)target)[1])(target);
+        try { return GeneratedVisualRenderer.Render(root, target, width, height); }
+        finally
+        {
+            Direct3D9Factory.Release(target);
+            root.Release();
+        }
+    }
+
+    protected override void OnFinalRelease()
+    {
+        nint renderTarget = _renderTarget;
+        _renderTarget = 0;
+        _root?.RemoveListener(this);
+        _root = null;
+        Direct3D9Factory.Release(renderTarget);
+    }
 }

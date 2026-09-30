@@ -222,6 +222,10 @@ internal sealed class GeneratedTranslateTransformResource : GeneratedDependencyR
 {
     internal GeneratedTranslateTransformResource() : base(MilResourceType.TranslateTransform) { }
     internal (double X, double Y) Value { get; private set; }
+    private GeneratedProtocolResource?[] _animationSlots = [];
+    internal (double X, double Y) CurrentValue => (
+        GeneratedImageTransform.ReadAnimated(_animationSlots, 0, Value.X),
+        GeneratedImageTransform.ReadAnimated(_animationSlots, 1, Value.Y));
     internal IReadOnlyList<GeneratedProtocolResource> Animations { get; private set; } = [];
 
     internal override int ProcessUpdate(GeneratedProtocolHandleTable handleTable, ReadOnlySpan<byte> value)
@@ -235,7 +239,7 @@ internal sealed class GeneratedTranslateTransformResource : GeneratedDependencyR
             || !TryResolve(handleTable, yHandle, MilResourceType.DoubleResource, out GeneratedProtocolResource? yAnimation))
             return Direct3D9Factory.UceMalformedPacketHResult;
         GeneratedProtocolResource?[] dependencies = [xAnimation, yAnimation];
-        return CommitDependencies(dependencies, () => { Value = (x, y); Animations = dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray(); });
+        return CommitDependencies(dependencies, () => { Value = (x, y); _animationSlots = dependencies; Animations = dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray(); });
     }
 }
 
@@ -243,6 +247,12 @@ internal abstract class GeneratedFourDoubleTransformResource : GeneratedDependen
 {
     protected GeneratedFourDoubleTransformResource(MilResourceType resourceType) : base(resourceType) { }
     internal (double First, double Second, double Third, double Fourth) Value { get; private set; }
+    private GeneratedProtocolResource?[] _animationSlots = [];
+    internal (double First, double Second, double Third, double Fourth) CurrentValue => (
+        GeneratedImageTransform.ReadAnimated(_animationSlots, 0, Value.First),
+        GeneratedImageTransform.ReadAnimated(_animationSlots, 1, Value.Second),
+        GeneratedImageTransform.ReadAnimated(_animationSlots, 2, Value.Third),
+        GeneratedImageTransform.ReadAnimated(_animationSlots, 3, Value.Fourth));
     internal IReadOnlyList<GeneratedProtocolResource> Animations { get; private set; } = [];
 
     internal override int ProcessUpdate(GeneratedProtocolHandleTable handleTable, ReadOnlySpan<byte> value)
@@ -259,7 +269,7 @@ internal abstract class GeneratedFourDoubleTransformResource : GeneratedDependen
             if (!TryResolve(handleTable, handle, MilResourceType.DoubleResource, out dependencies[i]))
                 return Direct3D9Factory.UceMalformedPacketHResult;
         }
-        return CommitDependencies(dependencies, () => { Value = (first, second, third, fourth); Animations = dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray(); });
+        return CommitDependencies(dependencies, () => { Value = (first, second, third, fourth); _animationSlots = dependencies; Animations = dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray(); });
     }
 }
 
@@ -277,6 +287,11 @@ internal sealed class GeneratedRotateTransformResource : GeneratedDependencyReso
 {
     internal GeneratedRotateTransformResource() : base(MilResourceType.RotateTransform) { }
     internal (double Angle, double CenterX, double CenterY) Value { get; private set; }
+    private GeneratedProtocolResource?[] _animationSlots = [];
+    internal (double Angle, double CenterX, double CenterY) CurrentValue => (
+        GeneratedImageTransform.ReadAnimated(_animationSlots, 0, Value.Angle),
+        GeneratedImageTransform.ReadAnimated(_animationSlots, 1, Value.CenterX),
+        GeneratedImageTransform.ReadAnimated(_animationSlots, 2, Value.CenterY));
     internal IReadOnlyList<GeneratedProtocolResource> Animations { get; private set; } = [];
 
     internal override int ProcessUpdate(GeneratedProtocolHandleTable handleTable, ReadOnlySpan<byte> value)
@@ -292,7 +307,7 @@ internal sealed class GeneratedRotateTransformResource : GeneratedDependencyReso
             if (!TryResolve(handleTable, handle, MilResourceType.DoubleResource, out dependencies[i]))
                 return Direct3D9Factory.UceMalformedPacketHResult;
         }
-        return CommitDependencies(dependencies, () => { Value = (angle, centerX, centerY); Animations = dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray(); });
+        return CommitDependencies(dependencies, () => { Value = (angle, centerX, centerY); _animationSlots = dependencies; Animations = dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray(); });
     }
 }
 

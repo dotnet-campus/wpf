@@ -52,6 +52,13 @@ internal sealed unsafe class GeneratedBitmapSourceResource : GeneratedProtocolRe
 
     internal nint Bitmap => _bitmap;
 
+    internal nint AcquireBitmapSource()
+    {
+        nint bitmap = _bitmap;
+        if (bitmap != 0) ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)bitmap)[1])(bitmap);
+        return bitmap;
+    }
+
     internal int ProcessCommand(MilCommand command, ReadOnlySpan<byte> packet)
     {
         if (IsReleased)
@@ -117,8 +124,14 @@ internal sealed unsafe class GeneratedBitmapSourceResource : GeneratedProtocolRe
         finally
         {
             Direct3D9Factory.Release(bitmap);
-            NotifyChanged();
-            Direct3D9Factory.Release(transportSource);
+            try
+            {
+                NotifyChanged();
+            }
+            finally
+            {
+                Direct3D9Factory.Release(transportSource);
+            }
         }
     }
 

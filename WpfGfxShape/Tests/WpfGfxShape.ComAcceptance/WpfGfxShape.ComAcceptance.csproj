@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RunSettingsFilePath>$(MSBuildThisFileDirectory)acceptance.runsettings</RunSettingsFilePath>
+    <AotRuntimeIdentifier Condition="'$(AotRuntimeIdentifier)' == ''">win-x64</AotRuntimeIdentifier>
+    <AotDllPath Condition="'$(AotDllPath)' == ''">$(WpfGfxShapePublishRoot)WpfGfxShape/Release/$(AotRuntimeIdentifier)/wpfgfx_cor3.dll</AotDllPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MSTest" Version="4.0.1" />
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+    <AssemblyMetadata Include="AotDllPath" Value="$([System.IO.Path]::GetFullPath('$(AotDllPath)'))" />
+  </ItemGroup>
+</Project>

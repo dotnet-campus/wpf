@@ -123,6 +123,9 @@ internal sealed class GeneratedSolidColorBrushResource : GeneratedBrushResource
 {
     internal GeneratedSolidColorBrushResource() : base(MilResourceType.SolidColorBrush) { }
     internal (double Opacity, MilColorF Color) Value { get; private set; }
+    private GeneratedValueResource<double>? _opacityAnimation;
+    private GeneratedValueResource<MilColorF>? _colorAnimation;
+    internal (double Opacity, MilColorF Color) CurrentValue => (_opacityAnimation?.Value ?? Value.Opacity, _colorAnimation?.Value ?? Value.Color);
     internal IReadOnlyList<GeneratedProtocolResource> Dependencies { get; private set; } = [];
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
     {
@@ -132,7 +135,13 @@ internal sealed class GeneratedSolidColorBrushResource : GeneratedBrushResource
             || !TryResolve(table, MemoryMarshal.Read<uint>(value[32..]), IsTransform, out GeneratedProtocolResource? relativeTransform)
             || !TryResolve(table, MemoryMarshal.Read<uint>(value[36..]), MilResourceType.ColorResource, out GeneratedProtocolResource? colorAnimation)) return Direct3D9Factory.UceMalformedPacketHResult;
         double opacity = MemoryMarshal.Read<double>(value); MilColorF color = MemoryMarshal.Read<MilColorF>(value[8..]); GeneratedProtocolResource?[] dependencies = [opacityAnimation, transform, relativeTransform, colorAnimation];
-        return CommitDependencies(dependencies, () => { Value = (opacity, color); Dependencies = Present(dependencies); });
+        return CommitDependencies(dependencies, () =>
+        {
+            Value = (opacity, color);
+            _opacityAnimation = opacityAnimation as GeneratedValueResource<double>;
+            _colorAnimation = colorAnimation as GeneratedValueResource<MilColorF>;
+            Dependencies = Present(dependencies);
+        });
     }
 }
 
@@ -191,6 +200,23 @@ internal abstract class GeneratedTileBrushResource : GeneratedBrushResource
     protected GeneratedTileBrushResource(MilResourceType type, Func<MilResourceType, bool> sourceType) : base(type) => _sourceType = sourceType;
     internal MilTileMode TileMode { get; private set; }
     internal GeneratedProtocolResource? Source { get; private set; }
+    internal GeneratedProtocolResource? Transform { get; private set; }
+    internal GeneratedProtocolResource? RelativeTransform { get; private set; }
+    internal MilBrushMappingMode ViewportUnits { get; private set; }
+    internal MilBrushMappingMode ViewboxUnits { get; private set; }
+    internal MilStretch Stretch { get; private set; }
+    internal MilHorizontalAlignment AlignmentX { get; private set; }
+    internal MilVerticalAlignment AlignmentY { get; private set; }
+    internal MilCachingHint CachingHint { get; private set; }
+    internal double CacheMinimum { get; private set; }
+    internal double CacheMaximum { get; private set; }
+    private double _opacity;
+    private MilRectD _viewport, _viewbox;
+    private GeneratedValueResource<double>? _opacityAnimation;
+    private GeneratedValueResource<MilRectD>? _viewportAnimation, _viewboxAnimation;
+    internal double CurrentOpacity => _opacityAnimation?.Value ?? _opacity;
+    internal MilRectD CurrentViewport => _viewportAnimation?.Value ?? _viewport;
+    internal MilRectD CurrentViewbox => _viewboxAnimation?.Value ?? _viewbox;
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
     {
         if (value.Length != 140) return Direct3D9Factory.UceMalformedPacketHResult;
@@ -199,7 +225,23 @@ internal abstract class GeneratedTileBrushResource : GeneratedBrushResource
         if (!Valid(viewportUnits) || !Valid(viewboxUnits) || !Valid(stretch) || !Valid(tileMode) || !Valid(x) || !Valid(y) || !Valid(caching)
             || !TryResolve(table, MemoryMarshal.Read<uint>(value[88..]), MilResourceType.DoubleResource, out dependencies[0]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[92..]), IsTransform, out dependencies[1]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[96..]), IsTransform, out dependencies[2])
             || !TryResolve(table, MemoryMarshal.Read<uint>(value[108..]), MilResourceType.RectResource, out dependencies[3]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[112..]), MilResourceType.RectResource, out dependencies[4]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[136..]), _sourceType, out dependencies[5])) return Direct3D9Factory.UceMalformedPacketHResult;
-        return CommitDependencies(dependencies, () => { TileMode = tileMode; Source = dependencies[5]; });
+        double opacity = MemoryMarshal.Read<double>(value);
+        MilRectD viewport = MemoryMarshal.Read<MilRectD>(value[8..]);
+        MilRectD viewbox = MemoryMarshal.Read<MilRectD>(value[40..]);
+        double minimum = MemoryMarshal.Read<double>(value[72..]);
+        double maximum = MemoryMarshal.Read<double>(value[80..]);
+        return CommitDependencies(dependencies, () =>
+        {
+            TileMode = tileMode; Source = dependencies[5];
+            Transform = dependencies[1]; RelativeTransform = dependencies[2];
+            ViewportUnits = viewportUnits; ViewboxUnits = viewboxUnits;
+            Stretch = stretch; AlignmentX = x; AlignmentY = y;
+            CachingHint = caching; CacheMinimum = minimum; CacheMaximum = maximum;
+            _opacity = opacity; _viewport = viewport; _viewbox = viewbox;
+            _opacityAnimation = dependencies[0] as GeneratedValueResource<double>;
+            _viewportAnimation = dependencies[3] as GeneratedValueResource<MilRectD>;
+            _viewboxAnimation = dependencies[4] as GeneratedValueResource<MilRectD>;
+        });
     }
 }
 

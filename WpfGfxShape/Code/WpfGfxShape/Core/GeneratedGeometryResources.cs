@@ -186,6 +186,7 @@ internal sealed class GeneratedLineGeometryResource : GeneratedGeometryResource
 {
     internal GeneratedLineGeometryResource() : base(MilResourceType.LineGeometry) { }
     internal (MilPoint2D StartPoint, MilPoint2D EndPoint) Value { get; private set; }
+    internal GeneratedProtocolResource? Transform { get; private set; }
     internal IReadOnlyList<GeneratedProtocolResource> Dependencies { get; private set; } = [];
 
     internal override int ProcessUpdate(GeneratedProtocolHandleTable handleTable, ReadOnlySpan<byte> value)
@@ -198,7 +199,7 @@ internal sealed class GeneratedLineGeometryResource : GeneratedGeometryResource
             || !TryResolve(handleTable, MemoryMarshal.Read<uint>(value[40..]), MilResourceType.PointResource, out GeneratedProtocolResource? endAnimation))
             return Direct3D9Factory.UceMalformedPacketHResult;
         GeneratedProtocolResource?[] dependencies = [transform, startAnimation, endAnimation];
-        return CommitDependencies(dependencies, () => { Value = (start, end); Dependencies = Present(dependencies); });
+        return CommitDependencies(dependencies, () => { Value = (start, end); Transform = transform; Dependencies = Present(dependencies); });
     }
 
     private static GeneratedProtocolResource[] Present(GeneratedProtocolResource?[] dependencies) => dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray();
@@ -208,6 +209,14 @@ internal sealed class GeneratedRectangleGeometryResource : GeneratedGeometryReso
 {
     internal GeneratedRectangleGeometryResource() : base(MilResourceType.RectangleGeometry) { }
     internal (double RadiusX, double RadiusY, MilRectD Rect) Value { get; private set; }
+    internal GeneratedProtocolResource? Transform { get; private set; }
+    private GeneratedValueResource<double>? _radiusXAnimation;
+    private GeneratedValueResource<double>? _radiusYAnimation;
+    private GeneratedValueResource<MilRectD>? _rectAnimation;
+    internal (double RadiusX, double RadiusY, MilRectD Rect) CurrentValue => (
+        _radiusXAnimation?.Value ?? Value.RadiusX,
+        _radiusYAnimation?.Value ?? Value.RadiusY,
+        _rectAnimation?.Value ?? Value.Rect);
     internal IReadOnlyList<GeneratedProtocolResource> Dependencies { get; private set; } = [];
 
     internal override int ProcessUpdate(GeneratedProtocolHandleTable handleTable, ReadOnlySpan<byte> value)
@@ -222,7 +231,15 @@ internal sealed class GeneratedRectangleGeometryResource : GeneratedGeometryReso
             || !TryResolve(handleTable, MemoryMarshal.Read<uint>(value[60..]), MilResourceType.RectResource, out GeneratedProtocolResource? rectAnimation))
             return Direct3D9Factory.UceMalformedPacketHResult;
         GeneratedProtocolResource?[] dependencies = [transform, radiusXAnimation, radiusYAnimation, rectAnimation];
-        return CommitDependencies(dependencies, () => { Value = (radiusX, radiusY, rect); Dependencies = Present(dependencies); });
+        return CommitDependencies(dependencies, () =>
+        {
+            Value = (radiusX, radiusY, rect);
+            Transform = transform;
+            _radiusXAnimation = radiusXAnimation as GeneratedValueResource<double>;
+            _radiusYAnimation = radiusYAnimation as GeneratedValueResource<double>;
+            _rectAnimation = rectAnimation as GeneratedValueResource<MilRectD>;
+            Dependencies = Present(dependencies);
+        });
     }
 
     private static GeneratedProtocolResource[] Present(GeneratedProtocolResource?[] dependencies) => dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray();
@@ -232,6 +249,14 @@ internal sealed class GeneratedEllipseGeometryResource : GeneratedGeometryResour
 {
     internal GeneratedEllipseGeometryResource() : base(MilResourceType.EllipseGeometry) { }
     internal (double RadiusX, double RadiusY, MilPoint2D Center) Value { get; private set; }
+    internal GeneratedProtocolResource? Transform { get; private set; }
+    private GeneratedValueResource<double>? _radiusXAnimation;
+    private GeneratedValueResource<double>? _radiusYAnimation;
+    private GeneratedValueResource<MilPoint2D>? _centerAnimation;
+    internal (double RadiusX, double RadiusY, MilPoint2D Center) CurrentValue => (
+        _radiusXAnimation?.Value ?? Value.RadiusX,
+        _radiusYAnimation?.Value ?? Value.RadiusY,
+        _centerAnimation?.Value ?? Value.Center);
     internal IReadOnlyList<GeneratedProtocolResource> Dependencies { get; private set; } = [];
 
     internal override int ProcessUpdate(GeneratedProtocolHandleTable handleTable, ReadOnlySpan<byte> value)
@@ -246,7 +271,15 @@ internal sealed class GeneratedEllipseGeometryResource : GeneratedGeometryResour
             || !TryResolve(handleTable, MemoryMarshal.Read<uint>(value[44..]), MilResourceType.PointResource, out GeneratedProtocolResource? centerAnimation))
             return Direct3D9Factory.UceMalformedPacketHResult;
         GeneratedProtocolResource?[] dependencies = [transform, radiusXAnimation, radiusYAnimation, centerAnimation];
-        return CommitDependencies(dependencies, () => { Value = (radiusX, radiusY, center); Dependencies = Present(dependencies); });
+        return CommitDependencies(dependencies, () =>
+        {
+            Value = (radiusX, radiusY, center);
+            Transform = transform;
+            _radiusXAnimation = radiusXAnimation as GeneratedValueResource<double>;
+            _radiusYAnimation = radiusYAnimation as GeneratedValueResource<double>;
+            _centerAnimation = centerAnimation as GeneratedValueResource<MilPoint2D>;
+            Dependencies = Present(dependencies);
+        });
     }
 
     private static GeneratedProtocolResource[] Present(GeneratedProtocolResource?[] dependencies) => dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray();
@@ -387,7 +420,7 @@ internal static class MilPathGeometryValidator
             MilSegmentType.Line => 32,
             MilSegmentType.Bezier => 64,
             MilSegmentType.QuadraticBezier => 48,
-            MilSegmentType.Arc => 56,
+            MilSegmentType.Arc => 64,
             MilSegmentType.PolyLine => GetPolySize(segment, isRegion ? 3u : null, 1),
             MilSegmentType.PolyBezier => GetPolySize(segment, null, 3),
             MilSegmentType.PolyQuadraticBezier => GetPolySize(segment, null, 2),
