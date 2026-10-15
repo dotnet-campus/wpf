@@ -5,6 +5,40 @@ namespace WpfGfxShape.Core;
 
 internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
 {
+    private int DrawSolidBrush(MilColorF color, SoftwareImageCoverage? coverage, SoftwareImageDrawingContext context)
+    {
+        nint bitmap = 0, bitmapLock = 0;
+        try
+        {
+            Guid format = _floating ? new("6fddc324-4e03-4bfe-b185-3d77768dc91a") : new("6fddc324-4e03-4bfe-b185-3d77768dc910");
+            int hr = SoftwareBitmap.Create(1, 1, 96, 96, format, out bitmap);
+            if (hr < 0) return hr;
+            hr = ((delegate* unmanaged[Stdcall]<nint, nint, uint, nint*, int>)(*(void***)bitmap)[8])(bitmap, 0, 2, &bitmapLock);
+            if (hr < 0) return hr;
+            uint size; byte* pixels;
+            hr = ((delegate* unmanaged[Stdcall]<nint, uint*, byte**, int>)(*(void***)bitmapLock)[5])(bitmapLock, &size, &pixels);
+            if (hr < 0) return hr;
+            if (pixels == null || size < BytesPerPixel) return Direct3D9Factory.InvalidArgumentHResult;
+            if (_floating)
+            {
+                float alpha = Math.Clamp(color.Alpha, 0, 1);
+                *(Vector4*)pixels = new(color.Red * alpha, color.Green * alpha, color.Blue * alpha, alpha);
+            }
+            else *(uint*)pixels = Direct3D9SoftwareRenderTargetSurface.ConvertToSrgb(color, true);
+            Direct3D9Factory.Release(bitmapLock); bitmapLock = 0;
+            // Extend a constant source through the existing coverage and compositing consumer.
+            return DrawTransformed(bitmap, new(0, 0, _width, _height),
+                context with { WorldToDevice = GeneratedImageTransform.Identity, SourceCoverage = null,
+                    BitmapScalingMode = 3, PrefilterEnabled = false, GeometryMask = coverage,
+                    WrapMode = MilBitmapWrapMode.Extend }, false);
+        }
+        finally
+        {
+            Direct3D9Factory.Release(bitmapLock);
+            Direct3D9Factory.Release(bitmap);
+        }
+    }
+
     private int AddSolidMask(nint effectList, float alpha)
     {
         nint bitmap = 0, bitmapLock = 0, milSource = 0;

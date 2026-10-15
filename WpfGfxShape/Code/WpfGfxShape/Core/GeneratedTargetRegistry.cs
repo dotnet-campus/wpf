@@ -33,7 +33,10 @@ internal sealed class GeneratedTargetRegistry
             }
             return 0;
         }
-        finally { foreach (GeneratedTargetResource target in targets) target.Release(); }
+        finally
+        {
+            for (int i = targets.Length - 1; i >= 0; i--) targets[i].Release();
+        }
     }
 
     internal void ReleaseAll()

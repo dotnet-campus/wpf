@@ -16,6 +16,10 @@ internal static unsafe partial class BitmapRenderTargetExports
         internal Instance* Owner;
         internal System.Numerics.Matrix4x4 DeviceTransform;
         internal byte ForceClearType;
+        internal NativeLayer* Layer;
+        internal nint SoftwarePrimitive;
+        internal nint SoftwareContext;
+        internal byte ConsumingSoftwarePrimitive;
     }
 
     private static class InternalTables
@@ -81,10 +85,37 @@ internal static unsafe partial class BitmapRenderTargetExports
         => ((delegate* unmanaged[Stdcall]<Instance*, uint>)self->Owner->Vtable[2])(self->Owner);
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static void InternalBounds(InternalView* self, float* bounds)
-        => ((delegate* unmanaged[Stdcall]<Instance*, float*, void>)self->Owner->Vtable[3])(self->Owner, bounds);
+    {
+        if (bounds == null) return;
+        if (self->Layer == null)
+            ((delegate* unmanaged[Stdcall]<Instance*, float*, void>)self->Owner->Vtable[3])(self->Owner, bounds);
+        else
+        {
+            bounds[0] = self->Layer->Left;
+            bounds[1] = self->Layer->Top;
+            bounds[2] = self->Layer->Right;
+            bounds[3] = self->Layer->Bottom;
+        }
+    }
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static int InternalClear(InternalView* self, float* color, nint clip)
-        => ((delegate* unmanaged[Stdcall]<Instance*, float*, nint, int>)self->Owner->Vtable[4])(self->Owner, color, clip);
+    {
+        if (self->Layer == null)
+            return ((delegate* unmanaged[Stdcall]<Instance*, float*, nint, int>)self->Owner->Vtable[4])(self->Owner, color, clip);
+        NativeLayer layer = *self->Layer;
+        if (layer.Right <= layer.Left || layer.Bottom <= layer.Top) return 0;
+        NativeAliasedClip effective = new() { Left = layer.Left, Top = layer.Top, Right = layer.Right, Bottom = layer.Bottom };
+        if (clip != 0 && ((NativeAliasedClip*)clip)->IsNull == 0)
+        {
+            NativeAliasedClip requested = *(NativeAliasedClip*)clip;
+            effective.Left = Math.Max(effective.Left, requested.Left);
+            effective.Top = Math.Max(effective.Top, requested.Top);
+            effective.Right = Math.Min(effective.Right, requested.Right);
+            effective.Bottom = Math.Min(effective.Bottom, requested.Bottom);
+        }
+        if (effective.Right <= effective.Left || effective.Bottom <= effective.Top) return 0;
+        return ((delegate* unmanaged[Stdcall]<Instance*, float*, nint, int>)self->Owner->Vtable[4])(self->Owner, color, (nint)(&effective));
+    }
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static int InternalBegin3D(InternalView* self, nint bounds, uint mode, byte useZ, float z) => NotImplemented;
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
@@ -101,11 +132,21 @@ internal static unsafe partial class BitmapRenderTargetExports
         catch (OverflowException) { return InvalidArgument; }
     }
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
-    private static int InternalInfinitePath(InternalView* self, nint context, nint brushContext, nint brush) => NotImplemented;
+    private static int InternalInfinitePath(InternalView* self, nint context, nint brushContext, nint brush)
+    {
+        try { return DrawInternalPath(self, context, brushContext, 0, 0, 0, brush); }
+        catch (OutOfMemoryException) { return unchecked((int)0x8007000E); }
+        catch (OverflowException) { return InvalidArgument; }
+    }
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static int InternalMesh(InternalView* self, nint context, nint brush, nint mesh, nint shader, nint effects) => NotImplemented;
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
-    private static int InternalPath(InternalView* self, nint context, nint brushContext, nint path, nint pen, nint stroke, nint fill) => NotImplemented;
+    private static int InternalPath(InternalView* self, nint context, nint brushContext, nint path, nint pen, nint stroke, nint fill)
+    {
+        try { return DrawInternalPath(self, context, brushContext, path, pen, stroke, fill); }
+        catch (OutOfMemoryException) { return unchecked((int)0x8007000E); }
+        catch (OverflowException) { return InvalidArgument; }
+    }
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static int InternalEffect(InternalView* self, nint context, nint scale, nint effect, uint width, uint height, nint input) => NotImplemented;
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
@@ -113,11 +154,22 @@ internal static unsafe partial class BitmapRenderTargetExports
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static int InternalVideo(InternalView* self, nint context, nint renderer, nint source, nint effects) => NotImplemented;
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
-    private static int InternalBeginLayer(InternalView* self, nint bounds, uint mode, nint mask, nint matrix, float alpha, nint brush) => NotImplemented;
+    private static int InternalBeginLayer(InternalView* self, nint bounds, uint mode, nint mask, nint matrix, float alpha, nint brush)
+    {
+        try { return BeginNativeLayer(self, bounds, mode, mask, alpha, brush); }
+        catch (OutOfMemoryException) { return unchecked((int)0x8007000E); }
+    }
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
-    private static int InternalEndLayer(InternalView* self) => WpfGfxShape.Core.Direct3D9Factory.WgxInvalidCallHResult;
+    private static int InternalEndLayer(InternalView* self)
+    {
+        NativeLayer* layer = self->Layer;
+        if (layer == null) return WpfGfxShape.Core.Direct3D9Factory.WgxInvalidCallHResult;
+        self->Layer = layer->Previous;
+        NativeMemory.Free(layer);
+        return 0;
+    }
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
-    private static void InternalAbortLayers(InternalView* self) { }
+    private static void InternalAbortLayers(InternalView* self) => DiscardNativeLayers(self);
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static int InternalType(InternalView* self, uint* type)
     {

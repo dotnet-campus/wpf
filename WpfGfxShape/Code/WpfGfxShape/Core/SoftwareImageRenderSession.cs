@@ -11,6 +11,8 @@ internal sealed unsafe class SoftwareImageRenderSession : IDisposable
     private nint _bitmap;
     private nint _bitmapLock;
     private Direct3D9SoftwareImageRenderer? _renderer;
+    private uint _width, _height;
+    private bool _drawingPath;
 
     internal static int Open(nint target, uint width, uint height, out SoftwareImageRenderSession? session)
     {
@@ -57,7 +59,9 @@ internal sealed unsafe class SoftwareImageRenderSession : IDisposable
         if (hr < 0) return hr;
         hr = ((delegate* unmanaged[Stdcall]<nint, uint*, byte**, int>)(*(void***)_bitmapLock)[5])(_bitmapLock, &size, &pixels);
         if (hr < 0) return hr;
-        _renderer = new(pixels, size, stride, Math.Min(w, width), Math.Min(h, height), floating);
+        _width = Math.Min(w, width);
+        _height = Math.Min(h, height);
+        _renderer = new(pixels, size, stride, _width, _height, floating);
         return 0;
     }
 
@@ -68,7 +72,62 @@ internal sealed unsafe class SoftwareImageRenderSession : IDisposable
     }
 
     internal int BeginLayer(double opacity, SoftwareImageCoverage? mask = null, float? alphaMask = null, GeneratedImageMask? imageMask = null) => _renderer?.BeginOpacityLayer(opacity, mask, alphaMask, imageMask) ?? Direct3D9Factory.WgxInvalidCallHResult;
+    internal int RealizeBrush(GeneratedImageMask brush, out nint realization)
+    {
+        realization = 0;
+        return _renderer is null ? Direct3D9Factory.WgxInvalidCallHResult
+            : _renderer.RealizeBrush(brush, out realization);
+    }
+
+    internal int DrawPath(SoftwareBrushRealization? fill, SoftwareImageCoverage? fillCoverage,
+        SoftwareBrushRealization? stroke, SoftwareImageCoverage? strokeCoverage, MilRectD? bounds,
+        SoftwareImageDrawingContext context, GeneratedNativeStroke? nativeStroke = null)
+    {
+        if (_renderer is null || _drawingPath) return Direct3D9Factory.WgxInvalidCallHResult;
+        var requested = context.AliasedClip ?? new Direct3D9SurfaceRect(0, 0, int.MaxValue, int.MaxValue);
+        var clip = new Direct3D9SurfaceRect(Math.Max(0, requested.Left), Math.Max(0, requested.Top),
+            Math.Min(checked((int)_width), requested.Right), Math.Min(checked((int)_height), requested.Bottom));
+        if (bounds is { } area && (area.Width <= 0 || area.Height <= 0
+            || area.X + area.Width <= clip.Left || area.Y + area.Height <= clip.Top
+            || area.X >= clip.Right || area.Y >= clip.Bottom)) return 0;
+        context = context with { AliasedClip = clip };
+        if (clip.Right <= clip.Left || clip.Bottom <= clip.Top) return 0;
+        _drawingPath = true;
+        nint fillRealizer = 0, strokeRealizer = 0;
+        bool fillStarted = false, strokeStarted = false;
+        var fillContext = context;
+        var strokeContext = context;
+        try
+        {
+            if (fill is not null)
+            {
+                int hr = fill.BeginPrimitive(this, ref fillContext, out fillRealizer);
+                if (hr < 0) return hr;
+                fillStarted = true;
+            }
+            if (stroke is not null)
+            {
+                int hr = stroke.BeginPrimitive(this, ref strokeContext, out strokeRealizer);
+                if (hr < 0) return hr;
+                strokeStarted = true;
+            }
+            return WpfGfxShape.Abi.BitmapRenderTargetExports.DrawSoftwarePath(_targetBitmap, _renderer,
+                fillRealizer, fillCoverage, fillContext, strokeRealizer, strokeCoverage, strokeContext, nativeStroke);
+        }
+        finally
+        {
+            try
+            {
+                try { if (strokeStarted) stroke!.EndPrimitive(strokeRealizer); }
+                finally { if (fillStarted) fill!.EndPrimitive(fillRealizer); }
+            }
+            finally { _drawingPath = false; }
+        }
+    }
+
     internal int EndLayer() => _renderer?.EndOpacityLayer() ?? Direct3D9Factory.WgxInvalidCallHResult;
+
+    internal void AbortLayers() => _renderer?.AbortOpacityLayers();
 
     public void Dispose()
     {

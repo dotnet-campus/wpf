@@ -10,7 +10,7 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
 
     private int RealizeFloat(nint source, MilRectD rectangle, GeneratedImageTransform transform, bool isMilSource)
     {
-        if (!SoftwareImageCoverage.TryCreate(_context.SourceCoverage ?? rectangle, transform, out var coverage))
+        if (!TryCreateDrawCoverage(rectangle, transform, out var coverage))
             return Direct3D9Factory.NotImplementedHResult;
         if (!transform.TryInvert(out _)) return 0;
         nint wic = 0, scaler = 0, converter = 0;
@@ -76,19 +76,27 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
         for (uint i = 0; i < count; i++, offset += 16)
         {
             int coverage = _context.Antialias ? _coverage!.GetCoverage(x + (int)i, y) : _coverage!.GetAliasedCoverage(x + (int)i, y);
+            if (_context.GeometryMask is { } mask)
+                coverage = (coverage * (_context.Antialias ? mask.GetCoverage(x + (int)i, y)
+                    : mask.GetAliasedCoverage(x + (int)i, y)) + 32) >> 6;
             if (coverage == 0) continue;
-            var point = _deviceToSource.Apply(x + i + 0.5, y + 0.5);
+            var point = SamplePoint(x + i + 0.5, y + 0.5);
             Vector4 sample;
             if (ScalingMode == 3)
-                sample = FloatPixel((int)Math.Clamp(Math.Floor(point.X), 0, _sourceWidth - 1), (int)Math.Clamp(Math.Floor(point.Y), 0, _sourceHeight - 1));
+            {
+                var nearest = Direct3D9SoftwareBilinearSpan.Select64BitFallbackTexels(
+                    (long)Math.Floor(point.X) * 65536, (long)Math.Floor(point.Y) * 65536, _sourceWidth, _sourceHeight, _context.WrapMode);
+                sample = FloatPixel(nearest.X1, nearest.Y1);
+            }
             else
             {
-                double u = Math.Clamp(point.X - 0.5, 0, _sourceWidth - 1), v = Math.Clamp(point.Y - 0.5, 0, _sourceHeight - 1);
-                int left = (int)Math.Floor(u), top = (int)Math.Floor(v);
-                int right = Math.Min(left + 1, (int)_sourceWidth - 1), bottom = Math.Min(top + 1, (int)_sourceHeight - 1);
-                sample = Vector4.Lerp(Vector4.Lerp(FloatPixel(left, top), FloatPixel(right, top), (float)(u - left)),
-                    Vector4.Lerp(FloatPixel(left, bottom), FloatPixel(right, bottom), (float)(u - left)), (float)(v - top));
+                double u = point.X - 0.5, v = point.Y - 0.5;
+                var texels = Direct3D9SoftwareBilinearSpan.Select64BitFallbackTexels(
+                    (long)Math.Floor(u) * 65536, (long)Math.Floor(v) * 65536, _sourceWidth, _sourceHeight, _context.WrapMode);
+                sample = Vector4.Lerp(Vector4.Lerp(FloatPixel(texels.X1, texels.Y1), FloatPixel(texels.X2, texels.Y1), (float)(u - Math.Floor(u))),
+                    Vector4.Lerp(FloatPixel(texels.X1, texels.Y2), FloatPixel(texels.X2, texels.Y2), (float)(u - Math.Floor(u))), (float)(v - Math.Floor(v)));
             }
+            sample *= _context.AlphaScale;
             if (_context.Effects is { } effects) sample = effects.Apply(sample, x + (int)i, y);
             sample *= coverage / 64f;
             var span = destination.AsSpan(offset, 16);
@@ -98,19 +106,12 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
         }
     }
 
-    private Vector4 FloatPixel(int x, int y) => _floatSource[checked(y * (int)_sourceWidth + x)];
-
-    private int CompositeFloatLayer(byte[] source, byte[] destination, SoftwareBitmapEffects effects, SoftwareImageCoverage? mask)
+    private Vector4 FloatPixel(int x, int y)
     {
-        var input = MemoryMarshal.Cast<byte, Vector4>(source);
-        var output = MemoryMarshal.Cast<byte, Vector4>(destination.AsSpan());
-        for (int i = 0; i < input.Length; i++)
-        {
-            int x = i % (int)_width, y = i / (int)_width;
-            Vector4 sample = effects.Apply(input[i], x, y);
-            if (mask is not null) sample *= mask.GetCoverage(x, y) / 64f;
-            output[i] = sample + output[i] * (1 - sample.W);
-        }
-        return 0;
+        if ((uint)x < _sourceWidth && (uint)y < _sourceHeight)
+            return _floatSource[checked(y * (int)_sourceWidth + x)];
+        var color = _context.BorderColor;
+        return new Vector4(color.Red * color.Alpha, color.Green * color.Alpha, color.Blue * color.Alpha, color.Alpha);
     }
+
 }

@@ -92,6 +92,16 @@ internal static unsafe partial class BitmapRenderTargetExports
         return CreateBitmapTarget(width, height, format, dpiX, dpiY, output);
     }
 
+    internal static int CreateDrawingIntermediate(uint width, uint height, out nint target, out nint bitmap)
+    {
+        nint value = 0;
+        int hr = CreateBitmapTarget(width, height, 16, 96, 96, &value);
+        target = value;
+        bitmap = hr >= 0 ? ((Instance*)value)->Bitmap : 0;
+        if (bitmap != 0) Direct3D9Factory.AddRef(bitmap);
+        return hr;
+    }
+
     private static int CreateBitmapTarget(uint width, uint height, uint format, float dpiX, float dpiY, nint* output)
     {
         *output = 0;
@@ -143,6 +153,7 @@ internal static unsafe partial class BitmapRenderTargetExports
         int count = Interlocked.Decrement(ref self->References);
         if (count == 0)
         {
+            DiscardNativeLayers(&self->Internal);
             Direct3D9Factory.Release(self->Bitmap);
             NativeMemory.Free(self);
         }
@@ -242,7 +253,8 @@ internal static unsafe partial class BitmapRenderTargetExports
         result = ((delegate* unmanaged[Stdcall]<nint, uint*, uint*, int>)(*(void***)bitmap)[3])(bitmap, &width, &height);
         if (result < 0) return result;
         if (width > int.MaxValue || height > int.MaxValue) return InvalidArgument;
-        if (SoftwareBitmap.FormatCode(format) != 16)
+        int formatCode = SoftwareBitmap.FormatCode(format);
+        if (formatCode is not (16 or 26))
         {
             if ((clip == 0 || ((NativeAliasedClip*)clip)->IsNull != 0) && color[0] == 0 && color[1] == 0 && color[2] == 0 && color[3] == 0)
                 return ClearPixels(self);
@@ -270,8 +282,25 @@ internal static unsafe partial class BitmapRenderTargetExports
             if (result < 0) return result;
             result = ((delegate* unmanaged[Stdcall]<nint, uint*, int>)(*(void***)bitmapLock)[4])(bitmapLock, &stride);
             if (result < 0) return result;
-            if (data == null || stride < (ulong)width * 4 || (height != 0 && (ulong)(height - 1) * stride + (ulong)width * 4 > size))
+            uint bytesPerPixel = formatCode == 26 ? 16u : 4u;
+            if (data == null || stride < (ulong)width * bytesPerPixel || (height != 0 && (ulong)(height - 1) * stride + (ulong)width * bytesPerPixel > size))
                 return InvalidArgument;
+            if (formatCode == 26)
+            {
+                float alpha = Math.Clamp(color[3], 0, 1);
+                for (int y = top; y < bottom; y++)
+                {
+                    float* row = (float*)(data + (nuint)y * stride);
+                    for (int x = left; x < right; x++)
+                    {
+                        row[x * 4] = color[0] * alpha;
+                        row[x * 4 + 1] = color[1] * alpha;
+                        row[x * 4 + 2] = color[2] * alpha;
+                        row[x * 4 + 3] = alpha;
+                    }
+                }
+                return 0;
+            }
             // Native MilColorF is RGBA; the managed color value is constructed ARGB.
             uint pixel = Direct3D9SoftwareRenderTargetSurface.ConvertToSrgb(new MilColorF(color[3], color[0], color[1], color[2]), true);
             for (int y = top; y < bottom; y++)

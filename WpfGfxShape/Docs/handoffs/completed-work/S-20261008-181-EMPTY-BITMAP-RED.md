@@ -1,0 +1,9 @@
+# S-20261008-181：非空资源空BitmapSource验收Red
+
+使用S-180发布#1生产DLL，SHA256 A83BA3EF26B7CBF289B2674AF2E9A16D06662C40DD7B03746F65F76EF01C4BB7。在既有clearSource恢复链中创建真实TYPE_BITMAPSOURCE资源但不发送BitmapSource内容更新，绑定ImageBrush、提交、Present并检查透明，随后恢复已有源和像素。
+
+定向过滤FullyQualifiedName~WhenImageMaskSourceIsLockedThenLayerIsDiscardedAndRetryPreservesMapping：77通过/3失败、0跳过、111ms。三个失败均在新增空资源Present期望S_OK却得到E_NOTIMPL（0x80004001），涉及绝对映射、相对映射及192DPI作用域几何填充。TRX bed53f1c-cdb2-417b-8a4d-317fcaad7e01，开始2026-10-08T19:32:49.5495836+08:00。可见既有MSTEST0044/MSTEST0037警告。
+
+原生证据：core/resources/imagebrush.cpp:130-141 DoesContainContent检查ImageSource及HasContent；core/resources/bitmapres.h:43-46 HasContent检查m_pIBitmap非NULL；GetBitmap/GetBitmapSource返回可空且由调用者释放的引用。生产GeneratedImageMask此前只检查Source资源空值，未检查BitmapSource内部内容。
+
+在后续测试覆盖前保存此摘要；不是完整原始TRX/日志副本。完整模块未关闭。

@@ -1,0 +1,10 @@
+发布 #2：dotnet publish WpfGfxShape/Code/WpfGfxShape/WpfGfxShape.csproj -c Release -r win-x64
+退出码 0；成功。日志共59行；工具仅保留409681字符输出的末尾20000字符，前389681字符不可见。已读取前12行，可见既有CA1416诊断；未独立保存完整发布输出。
+目标：WpfGfxShape/Code/WpfGfxShape/WpfGfxShape.csproj，Release，win-x64。
+产物：WpfGfxShape/artifacts/publish/WpfGfxShape/Release/win-x64/wpfgfx_cor3.dll。
+定向：FullyQualifiedName~WhenImageMaskSourceIsLockedThenLayerIsDiscardedAndRetryPreservesMapping
+退出码0；71通过，0失败，0跳过，72ms。
+TRX身份：c79d5fc6-e9ab-402d-a3ee-6b7a45f8a685；start=2026-10-08T18:38:58.9943341+08:00。
+本文件是工具结果摘要，不是完整TRX或发布日志副本。定向完整TRX未独立复制，下一次测试将覆盖默认结果路径。
+Red：修改验收断言但未修改生产DLL，71失败/0通过，90ms；Present返回-2147467263（E_NOTIMPL），验收源码line252。
+开始基线：发布#1成功，工具报告11行发布日志；随后279通过/0失败/0跳过，267ms，TRX=d3326709-85d2-41c5-84b7-f478a602737e，start=2026-10-08T18:35:34.5904853+08:00。发布#1日志未在测试前独立读取；基线完整TRX已被Red覆盖。

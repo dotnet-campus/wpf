@@ -10,7 +10,8 @@ internal static class SoftwareBezierFlattener
         internal double Norm => Math.Max(Math.Abs(X), Math.Abs(Y));
     }
 
-    internal static IEnumerable<Point> Flatten(Point start, Point first, Point second, Point end)
+    internal static IEnumerable<Point> Flatten(Point start, Point first, Point second, Point end,
+        GeneratedImageTransform? deviceTransform = null)
     {
         Point chord = end - start;
         bool OnChord(Point point)
@@ -26,6 +27,12 @@ internal static class SoftwareBezierFlattener
             yield return end;
             yield break;
         }
+        double Error(Point value)
+        {
+            if (deviceTransform is not { } matrix) return value.Norm;
+            return Math.Max(Math.Abs(value.X * matrix.ScaleX + value.Y * matrix.M21),
+                Math.Abs(value.X * matrix.M12 + value.Y * matrix.ScaleY));
+        }
         const double tolerance = 0.25 * 6;
         Point e0 = start, e1 = end - start;
         Point e2 = (first - second * 2 + end) * 6;
@@ -40,7 +47,7 @@ internal static class SoftwareBezierFlattener
             steps *= 2;
             stepSize *= 0.5;
         }
-        while ((e2.Norm > tolerance || e3.Norm > tolerance) && stepSize > 1e-3) Halve();
+        while ((Error(e2) > tolerance || Error(e3) > tolerance) && stepSize > 1e-3) Halve();
         while (steps > 1)
         {
             e0 += e1;
@@ -50,13 +57,13 @@ internal static class SoftwareBezierFlattener
             e3 = previous;
             steps--;
             yield return e0;
-            if (e2.Norm > tolerance && stepSize > 1e-3) Halve();
+            if (Error(e2) > tolerance && stepSize > 1e-3) Halve();
             else
             {
                 while ((steps & 1) == 0)
                 {
                     Point doubled = e2 * 2 - e3;
-                    if (e3.Norm > tolerance * 0.25 || doubled.Norm > tolerance * 0.25) break;
+                    if (Error(e3) > tolerance * 0.25 || Error(doubled) > tolerance * 0.25) break;
                     e1 = e1 * 2 + e2;
                     e3 *= 4;
                     e2 = doubled * 4;

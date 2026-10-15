@@ -1,0 +1,8 @@
+S-20261008-166 验证摘要（不是完整原始日志）
+发布1：dotnet publish WpfGfxShape/Code/WpfGfxShape/WpfGfxShape.csproj -c Release -r win-x64；成功，工具报告11行，未在测试覆盖前读取或独立保存。
+基线：279通过，0失败/跳过，285ms；TRX 5900a836-3112-4e01-9a27-19a0ac810ebe，开始2026-10-08T18:42:43.2953442+08:00。首个测试目标使用目录被拒绝，随后使用csproj成功。
+测试修改首次编译CS1686：不能捕获取址的target局部变量；转交独立回调引用后修复。
+发布1定向：16通过，0失败/跳过，44ms；可见MSTEST0037、MSTEST0044；不是生产Red。
+发布2：dotnet publish WpfGfxShape/Code/WpfGfxShape/WpfGfxShape.csproj -c Release -r win-x64；退出码0，成功。工具保存61行；输出409681字符，仅末尾20000字符可读。已读取1-15与52-61行，可见CA1416，Generating native code和产物输出。
+产物：WpfGfxShape/artifacts/publish/WpfGfxShape/Release/win-x64/wpfgfx_cor3.dll。
+发布日志前389681字符不可取得；本文件仅保存核实摘要，不声称原始完整副本。

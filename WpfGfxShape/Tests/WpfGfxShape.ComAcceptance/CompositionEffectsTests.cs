@@ -14,7 +14,9 @@ public sealed unsafe partial class CompositionEffectsTests
     [DataRow(16u, 0.00196851, 0xff0000feu, -1f)]
     [DataRow(16u, 0.75, 0x02020202u, 0.007843138f)]
     [DataRow(26u, 0.5, 0u, 0.5f)]
-    public void WhenOpacityLayerEndsThenProductionEffectScalesWholeGroup(uint format, double opacity, uint expected, float maskAlpha)
+    [DataRow(16u, 0.5, 0xff4000bfu, -1f, 0.5)]
+    [DataRow(26u, 0.5, 0u, -1f, 0.5)]
+    public void WhenOpacityLayerEndsThenProductionEffectScalesWholeGroup(uint format, double opacity, uint expected, float maskAlpha, double outerOpacity = 1)
     {
         string path = typeof(CompositionEffectsTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!;
         nint module = NativeLibrary.Load(path);
@@ -59,7 +61,12 @@ public sealed unsafe partial class CompositionEffectsTests
             *(double*)(packet + 52) = 1; *(double*)(packet + 60) = 1; *(uint*)(packet + 68) = image;
             new ReadOnlySpan<byte>(packet + 28, 48).CopyTo(new Span<byte>(packet + 76, 48));
             *(uint*)(packet + 124) = 8; *(uint*)(packet + 128) = 0x56;
-            Assert.AreEqual(0, send(packet, 132, 0, channel));
+            byte* nested = stackalloc byte[156]; new Span<byte>(nested, 156).Clear();
+            *(uint*)nested = 0x18; *(uint*)(nested + 4) = data; *(uint*)(nested + 8) = 144;
+            *(uint*)(nested + 12) = 16; *(uint*)(nested + 16) = 0x4f; *(double*)(nested + 20) = outerOpacity;
+            new ReadOnlySpan<byte>(packet + 12, 120).CopyTo(new Span<byte>(nested + 28, 120));
+            *(uint*)(nested + 148) = 8; *(uint*)(nested + 152) = 0x56;
+            Assert.AreEqual(0, send(nested, 156, 0, channel));
             uint* bind = stackalloc uint[] { 0x22, visual, data };
             Assert.AreEqual(0, send(bind, 12, 0, channel));
             byte* targetPacket = stackalloc byte[36]; new Span<byte>(targetPacket, 36).Clear();
@@ -95,7 +102,7 @@ public sealed unsafe partial class CompositionEffectsTests
             {
                 Vector4 pixel;
                 Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, uint, uint, byte*, int>)(*(void***)output)[7])(output, 0, 16, 16, (byte*)&pixel));
-                float factor = (float)opacity * (maskAlpha >= 0 ? maskAlpha : 1);
+                float factor = (float)(opacity * outerOpacity) * (maskAlpha >= 0 ? maskAlpha : 1);
                 Vector4 value = new Vector4(1.25f, -0.25f, 0.1234567f, 1) * factor + new Vector4(0, 0, 1, 1) * (1 - factor);
                 Assert.IsTrue(Vector4.Distance(value, pixel) < 0.0000001f);
             }

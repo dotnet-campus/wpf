@@ -4,6 +4,38 @@
 
 在既有内部DrawBitmap→软件目标DrawPath→扫描输出链实现IMILEffectList消费及PRGBA128Float目标，不增加测试专用导出、不调用原wpfgfx、不降低为8位中转。本文是设计和执行状态，不是完成声明。
 
+## 当前续接（S-20261008-161）
+
+接通无笔画 SolidColorBrush 几何填充值快照，常量位图 Extend 复用现有覆盖/合成/层扫描；修正新增测试协议命令及新 handle，确认旧 DLL Present E_NOTIMPL 后实现。正常 AOT 发布后定向 63/63、全量 271/271；完整模块仍未关闭，实色浮点专门验证仍待完成。发布、SHA/TRX、采样模型修正与证据边界见 `handoffs/completed-work/S-20261008-161-SOLID-GEOMETRY-CONSUMER.md`。下一轮同链合并真实非空形状/画刷/笔画 ABI、层与 Compose 生命周期、重入/回调保活及差分验收，以 `handoffs/current-work-item.md` 为唯一计划，不另立实色补测轮。
+
+## 前次续接（S-20261008-160）
+
+修复直接矩形操作数轴交换与递归节点 bounds 合同不一致，四种布尔模式在真实相对 mask/clip/Pop 与来源失败恢复链取得同断言 E_NOTIMPL Red→Green。正常 AOT 发布后定向 60/60、全量 268/268；发布/SHA/TRX 与证据边界见 `handoffs/completed-work/S-20261008-160-RECTANGLE-OPERAND-AXIS-SWAP.md`。不关闭完整模块；下一轮仍合并非空私有形状/画刷/笔画生产创建和扫描、层生命周期与 Compose 验收，唯一计划见 `handoffs/current-work-item.md`。
+
+## 前次续接（S-20261008-159）
+
+前次无笔画 ImageBrush 几何填充已恢复发布并通过全量验收。真实 DrawGeometry + 相对 PushOpacityMask + 嵌套 opacity/Pop 联合消费、半透明来源、DPI/FlipXY/来源清空恢复已加入验收；定向 56/56，最终正常 AOT 发布后全量 264/264。仅修改验收源码，不宣称生产 Red→Green；发布/SHA/TRX及历史证据限制见 `handoffs/completed-work/S-20261008-159-GEOMETRY-IMAGE-BRUSH-SCOPE.md`。完整模块仍未关闭；下一轮继续合并非空原生形状/画刷/笔画 ABI、层生命周期与 Compose 消费者，不另立补测轮，唯一计划见 `handoffs/current-work-item.md`。
+
+## 前次续接（S-20261008-158）
+
+递归矩形真实区域及轴保持/轴交换操作数已恢复，不重复领取。按imagebrush.cpp:120-177修复ImageSource未设置时的透明遮罩捕获，绝对/相对单位两项真实通道清空来源/恢复用例最终同断言Red→Green；AOT发布后遮罩50/50、全量258/258通过。发布、SHA/TRX和证据限制见handoffs/completed-work/S-20261008-158-EMPTY-IMAGE-MASK-SOURCE.md。完整模块未关闭；下一轮合并真实非空形状/画刷ABI消费者、层生命周期与Compose联合验收，唯一执行计划见current-work-item.md，不将空分支修复另立为模块交付。
+
+## 前次续接（S-20261008-156）
+
+矩形CombinedGeometry内容bounds已恢复核实，本轮修复局部布尔组合后外层仿射的边界顺序；同一真实scope mask/clip/Pop生产链定向36/36、全量244/244通过。初始剪切像素预期模型有误，最终使用轴交换及布尔恒等式，不宣称最终四项同断言Red→Green。发布/SHA/TRX及前轮证据缺口见handoffs/completed-work/S-20261008-156-COMBINED-BOUNDS-AFFINE.md。完整模块未关闭，非空原生形状/画刷/层ABI及一般曲线组合等联合缺口继续按current-work-item合并实施。
+
+## 前次续接（S-20261008-155）
+
+共同位图空裁剪已恢复验证；有限/无限路径在非空裁剪下共用Read|Write目标锁，无有效画刷时成功，失败或成功均释放锁，有画刷路径仍E_NOTIMPL。八项真实AOT用例Red→Green，内部55/55、全量230/230。发布/SHA/TRX和前次未归档证据边界见handoffs/completed-work/S-20261008-155-PATH-LOCK-AND-RECOVERY.md。原生alpha软件目标拒绝需要修正的内部层，不得与generated opacity中间层混为一谈。完整模块仍未关闭；下一轮计划以current-work-item为准。
+
+## 前次续接（S-20261008-154）
+
+恢复源码已有基础原生层栈、NaN空层与PRGBA128Float裁剪Clear。本轮两个内部路径槽接入共同空裁剪消费者：无输出时跳过形状/画刷/目标锁，非空路径仍E_NOTIMPL。8项旧DLL Red→Green；正常发布后内部目标41/41、全量216/216通过。逐次命令、SHA256、TRX及历史证据缺失边界见handoffs/completed-work/S-20261008-154-INTERNAL-PATH-EMPTY-CLIP.md。完整模块计划以current-work-item为准，非空原生形状/画刷/层合同仍须合并完成，不以空裁剪支持关闭模块。
+
+## 前次续接（S-20261008-151）
+
+内部DrawBitmap已修复原生UpdateCurrentClip无目标交集时提前成功，不再触发目标写锁冲突；目标/源引用提前到效果列表回调之前持有。六项生产COM Red→Green，重新AOT发布后内部目标16/16、全量191/191通过。完整发布证据见handoffs/completed-work/S-20261008-151-INTERNAL-BITMAP-CLIP-LIFETIME.md。完整模块未关闭；下一轮保持current-work-item.md的大模块粒度，优先真实内部形状/画刷/层ABI与联合生命周期消费者，不能把此修复或新增测试数视为完成声明。
+
 ## 原生依据
 
 - wgx_render.h IMILEffectList：IUnknown后Add/AddWithResources/Clear/GetCount/GetCLSID/GetParameterSize/GetParameters/GetResourceCount/GetResources等槽。
@@ -91,6 +123,26 @@ C. **首个子集已接通（S-133）**：TileBrush完整保存映射及动画�
 D. 发布新AOT，记录哈希/TRX及准确未覆盖项。必须同时证明生产构造代码可达、软件消费者无旁路、预期像素和释放行为；仅COM表可查询或全量旧用例Green不能关闭。
 
 **方案A和B的核心非空效果生产链已实现；B剩余失败/更新验收、C及完整DrawLayer位图接线尚未完成。不是外部环境阻塞。** 新增内部效果列表创建并不自动补齐GenericTarget→原生内部DrawPath的另一项门禁。
+
+## 当前续接差集（S-150）
+
+本节覆盖下方S-145的过期缺项：GeneratedGeometryBounds已接入路径、曲线、椭圆、圆角和组内容bounds；真实IStream/WIC读取的六项生命周期测试已存在并全量通过。本轮新增二次及多段曲线协议用例，先发布全量182通过，定向22通过，再发布全量185通过。生产源码未在本轮修改，不宣称新Red→Green；流水见handoffs/completed-work/S-20261008-150-MASK-GEOMETRY-REGRESSION.md。
+
+完整五步仍未关闭：CombinedGeometry和曲线边缘原生差分、平铺8位/浮点与DPI/仿射/预滤联合矩阵、嵌套层和真实回调联合失败恢复、原生内部目标上下文/形状/画刷消费者及统一模块收口。已实现能力不重复领取，未完成条件不得拆成默认独立补测轮。
+
+## 历史五步闭环进度（S-145）
+
+S-145新增层位图共同消费及Tile/Flip方法族，发布4次成功，最终全量174/174通过。SHA256/逐次发布/TRX见handoffs/completed-work/S-20261008-145-TILED-MASK-LAYER-PIPELINE.md。完整模块仍开放，下面按实际差集推进，不把既有接线重新作为下一轮任务。
+
+S-20261008-144恢复后先发布并全量164/164验证当前源码。旋转裁剪几何自身变换新增真实DLL断言取得2项E_NOTIMPL Red；去除TryClip的轴对齐前置限制，复用四角保守包围矩形后定向9/9、全量164/164通过，准确像素保持。S-144当时复杂几何bounds仍缺，步骤1不关闭且步骤2至4未完成；当前步骤2和4的接线进展以下列S-145状态为准，完整模块仍开放。下一轮合并完成以下整个模块，不再把每个边界分支连续拆成一轮。完整流水见handoffs/completed-work/S-20261008-144-ROTATED-CLIP-BOUNDS.md。
+
+1. **统一边界与映射：进行中。** S-137已接PushOpacityMask匹配Pop作用域边界；S-138处理已知空边界/空viewport；S-139验证内容原点非零时RelativeTransform水平翻转后叠加绝对平移，Visual及PushOpacityMask两入口像素正确。S-140合并两种render-data边界遍历，支持轴对齐矩形PushClip及Pop恢复；遮罩内部原图宽2、裁剪后宽1的准确像素通过。S-141按GetVisualInnerBounds区分自身内边界与子节点外边界：自身Clip不缩小自身mask定位边界，子节点先累计内边界、应用矩形Clip再变换参与父级。自身Clip像素验收通过；S-142新增仅子节点内容、clip[1,2]→缩放2→子offset -3→父容器offset +1的准确像素验收，确认父mask边界为[0,2]，而非未裁剪[-2,2]。S-143按boundsrt.cpp:AddBounds保守边界求交取消旋转图元+clip的过严拒绝，90度旋转及嵌套Pop准确像素通过。此处不是精确光栅裁剪，之前要求精确几何交集作为边界计算前置不正确。S-144已接入旋转矩形裁剪本身的保守边界并验证准确像素；复杂几何边界仍待接入。
+2. **平铺方法族：实现已接通，完整验收未关闭。** Tile/FlipX/FlipY/FlipXY采用viewport基础tile物化→wrap扫描，负坐标及二维alpha图案、源锁失败/恢复/释放后保活通过。仍需浮点平铺、DPI、非整数/仿射变换和预滤边界联合差分；Extend保持不支持。
+3. **失败/重入/释放：部分已有证据。** 源锁失败、恢复及调用方释放后保活通过；遮罩读取期间真实回调和最终释放计数仍缺。
+4. **层位图共同消费已接通，完整原生合同未关闭。** EndOpacityLayer物化SoftwareBitmap，经DrawTransformed→DrawPath→扫描消费效果与几何遮罩，直接8位/浮点合成旁路已删除；嵌套8位/浮点opacity及既有mask/clip/失败恢复通过。不等于原生CContextState/形状/画刷ABI，完整内部目标消费者仍缺。
+5. **统一收口：未完成。** S-145已发布并全量174/174通过，发布流水和当前差集已归档；回归通过不能替代上述缺项。
+
+S-139用例显式NearestNeighbor隔离映射顺序。初始默认预滤产生0x60600000是缩小预滤后的覆盖结果，不计为生产缺陷；最近邻下期望0xbfbf0000并通过。没有将实际值直接抄为新预期。
 
 ## 当前执行状态
 

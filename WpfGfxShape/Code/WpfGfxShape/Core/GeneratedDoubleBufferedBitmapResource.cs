@@ -25,6 +25,8 @@ internal sealed partial class GeneratedDoubleBufferedBitmapResource() : Generate
     private nint _bitmap;
     private bool _useBackBuffer;
 
+    internal bool HasContent => _bitmap != 0;
+
     internal nint AcquireBitmapSource() => _bitmap == 0 ? 0 : DoubleBufferedBitmapExports.AcquireBitmapSource(_bitmap, _useBackBuffer);
 
     [LibraryImport("kernel32.dll", SetLastError = true)]

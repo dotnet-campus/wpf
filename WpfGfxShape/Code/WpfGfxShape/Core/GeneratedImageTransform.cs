@@ -16,9 +16,18 @@ internal readonly record struct GeneratedImageTransform(double ScaleX, double Sc
     internal (double X, double Y) Apply(double x, double y) =>
         (x * ScaleX + y * M21 + X, x * M12 + y * ScaleY + Y);
 
-    internal MilRectD Apply(MilRectD rectangle) => new(
-        rectangle.X * ScaleX + X, rectangle.Y * ScaleY + Y,
-        rectangle.Width * ScaleX, rectangle.Height * ScaleY);
+    internal MilRectD Apply(MilRectD rectangle)
+    {
+        var a = Apply(rectangle.X, rectangle.Y);
+        var b = Apply(rectangle.X + rectangle.Width, rectangle.Y);
+        var c = Apply(rectangle.X, rectangle.Y + rectangle.Height);
+        var d = Apply(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height);
+        double left = Math.Min(Math.Min(a.X, b.X), Math.Min(c.X, d.X));
+        double top = Math.Min(Math.Min(a.Y, b.Y), Math.Min(c.Y, d.Y));
+        return new(left, top,
+            Math.Max(Math.Max(a.X, b.X), Math.Max(c.X, d.X)) - left,
+            Math.Max(Math.Max(a.Y, b.Y), Math.Max(c.Y, d.Y)) - top);
+    }
 
     internal bool TryInvert(out GeneratedImageTransform inverse)
     {

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace WpfGfxShape.Core;
 
 internal enum MilPenCap : uint { Flat, Square, Round, Triangle }
-internal enum MilPenJoin : uint { Miter, Bevel, Round }
+internal enum MilPenJoin : uint { Miter, Bevel, Round, MiterClipped }
 internal enum MilEdgeMode : uint { Unspecified, Aliased }
 internal enum MilBitmapScalingMode : uint { Unspecified, LowQuality, HighQuality, NearestNeighbor }
 internal enum MilClearTypeHint : uint { Auto, Enabled }
@@ -89,6 +89,17 @@ internal static partial class GeneratedProtocolPacketWriter
 internal abstract class GeneratedDrawingDependencyResource : GeneratedDependencyResource
 {
     protected GeneratedDrawingDependencyResource(MilResourceType type) : base(type) { }
+    internal IReadOnlyList<GeneratedProtocolResource?> Slots { get; private set; } = [];
+    protected new int CommitDependencies(ReadOnlySpan<GeneratedProtocolResource?> dependencies, Action commit)
+    {
+        var slots = dependencies.ToArray();
+        return base.CommitDependencies(dependencies, () => { commit(); Slots = slots; });
+    }
+    protected override void OnFinalRelease()
+    {
+        Slots = [];
+        base.OnFinalRelease();
+    }
     protected static bool IsBrush(MilResourceType type) => GeneratedEffectResource.IsBrush(type);
     protected static bool IsGeometry(MilResourceType type) => type is >= MilResourceType.LineGeometry and <= MilResourceType.PathGeometry;
     protected static bool IsTransform(MilResourceType type) => type is >= MilResourceType.TransformGroup and <= MilResourceType.MatrixTransform;
@@ -101,22 +112,56 @@ internal abstract class GeneratedDrawingDependencyResource : GeneratedDependency
 internal sealed class GeneratedDashStyleResource : GeneratedDrawingDependencyResource
 {
     internal GeneratedDashStyleResource() : base(MilResourceType.DashStyle) { } internal double Offset { get; private set; } internal double[] Dashes { get; private set; } = [];
+    internal GeneratedDashStyleResource(float offset, double[] dashes) : this()
+    {
+        Offset = offset; Dashes = dashes;
+    }
+    internal GeneratedValueResource<double>? OffsetAnimation { get; private set; }
+    internal double CurrentOffset => OffsetAnimation?.Value ?? Offset;
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
     {
         if (value.Length < 16) return Direct3D9Factory.UceMalformedPacketHResult; double offset = MemoryMarshal.Read<double>(value); uint size = MemoryMarshal.Read<uint>(value[12..]); ReadOnlySpan<byte> payload = value[16..];
         if (size != payload.Length || payload.Length % sizeof(double) != 0 || !TryResolve(table, MemoryMarshal.Read<uint>(value[8..]), MilResourceType.DoubleResource, out GeneratedProtocolResource? animation)) return Direct3D9Factory.UceMalformedPacketHResult;
-        double[] dashes = MemoryMarshal.Cast<byte, double>(payload).ToArray(); GeneratedProtocolResource?[] dependencies = [animation]; return CommitDependencies(dependencies, () => { Offset = offset; Dashes = dashes; });
+        double[] dashes = MemoryMarshal.Cast<byte, double>(payload).ToArray(); GeneratedProtocolResource?[] dependencies = [animation]; return CommitDependencies(dependencies, () => { Offset = offset; Dashes = dashes; OffsetAnimation = animation as GeneratedValueResource<double>; });
     }
 }
 
 internal sealed class GeneratedPenResource : GeneratedDrawingDependencyResource
 {
-    internal GeneratedPenResource() : base(MilResourceType.Pen) { } internal MilPenCap StartLineCap { get; private set; } internal MilPenJoin LineJoin { get; private set; }
+    internal GeneratedPenResource() : base(MilResourceType.Pen) { }
+    internal GeneratedPenResource(float thickness, float miterLimit, MilPenCap start,
+        MilPenCap end, MilPenCap dash, MilPenJoin join, GeneratedDashStyleResource? dashStyle = null) : this()
+    {
+        Thickness = thickness; MiterLimit = miterLimit;
+        StartLineCap = start; EndLineCap = end; DashCap = dash; LineJoin = join;
+        DashStyle = dashStyle;
+    }
+    internal double Thickness { get; private set; }
+    internal double MiterLimit { get; private set; }
+    internal MilPenCap StartLineCap { get; private set; }
+    internal MilPenCap EndLineCap { get; private set; }
+    internal MilPenCap DashCap { get; private set; }
+    internal MilPenJoin LineJoin { get; private set; }
+    internal GeneratedProtocolResource? Brush { get; private set; }
+    internal GeneratedValueResource<double>? ThicknessAnimation { get; private set; }
+    internal GeneratedDashStyleResource? DashStyle { get; private set; }
+    internal double CurrentThickness => ThicknessAnimation?.Value ?? Thickness;
+    // Native GetPen narrows thickness to REAL before Widen tests for an empty pen.
+    internal bool HasNonEmptyStroke => Brush is not null && (float)CurrentThickness != 0;
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
     {
         if (value.Length != 44) return Direct3D9Factory.UceMalformedPacketHResult; MilPenCap start = MemoryMarshal.Read<MilPenCap>(value[24..]); MilPenCap end = MemoryMarshal.Read<MilPenCap>(value[28..]); MilPenCap dash = MemoryMarshal.Read<MilPenCap>(value[32..]); MilPenJoin join = MemoryMarshal.Read<MilPenJoin>(value[36..]); GeneratedProtocolResource?[] dependencies = new GeneratedProtocolResource?[3];
         if (!Valid(start) || !Valid(end) || !Valid(dash) || !Valid(join) || !TryResolve(table, MemoryMarshal.Read<uint>(value[16..]), IsBrush, out dependencies[0]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[20..]), MilResourceType.DoubleResource, out dependencies[1]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[40..]), MilResourceType.DashStyle, out dependencies[2])) return Direct3D9Factory.UceMalformedPacketHResult;
-        return CommitDependencies(dependencies, () => { StartLineCap = start; LineJoin = join; });
+        double thickness = MemoryMarshal.Read<double>(value);
+        double miterLimit = MemoryMarshal.Read<double>(value[8..]);
+        return CommitDependencies(dependencies, () =>
+        {
+            Thickness = thickness; MiterLimit = miterLimit;
+            StartLineCap = start; EndLineCap = end; DashCap = dash; LineJoin = join;
+            Brush = dependencies[0];
+            ThicknessAnimation = dependencies[1] as GeneratedValueResource<double>;
+            DashStyle = dependencies[2] as GeneratedDashStyleResource;
+        });
     }
 }
 
@@ -151,6 +196,9 @@ internal sealed class GeneratedVideoDrawingResource : GeneratedDrawingDependency
 
 internal sealed class GeneratedDrawingGroupResource : GeneratedDrawingDependencyResource
 {
+    internal double Opacity { get; private set; } = 1;
+    internal MilBitmapScalingMode BitmapScalingMode { get; private set; }
+    internal MilClearTypeHint ClearTypeHint { get; private set; }
     internal GeneratedDrawingGroupResource() : base(MilResourceType.DrawingGroup) { } internal IReadOnlyList<GeneratedProtocolResource> Children { get; private set; } = []; internal MilEdgeMode EdgeMode { get; private set; }
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
     {
@@ -158,6 +206,7 @@ internal sealed class GeneratedDrawingGroupResource : GeneratedDrawingDependency
         if (size != payload.Length || size % sizeof(uint) != 0 || !Valid(edge) || !Valid(scaling) || !Valid(clearType)) return Direct3D9Factory.UceMalformedPacketHResult; ReadOnlySpan<uint> handles = MemoryMarshal.Cast<byte, uint>(payload); GeneratedProtocolResource?[] d = new GeneratedProtocolResource?[handles.Length + 5];
         if (!TryResolve(table, MemoryMarshal.Read<uint>(value[12..]), IsGeometry, out d[0]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[16..]), MilResourceType.DoubleResource, out d[1]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[20..]), IsBrush, out d[2]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[24..]), IsTransform, out d[3]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[28..]), MilResourceType.GuidelineSet, out d[4])) return Direct3D9Factory.UceMalformedPacketHResult;
         for (int i = 0; i < handles.Length; i++) { if (handles[i] == 0 || !TryResolve(table, handles[i], IsDrawing, out d[i + 5])) return Direct3D9Factory.UceMalformedPacketHResult; }
-        return CommitDependencies(d, () => { EdgeMode = edge; Children = d[5..].Cast<GeneratedProtocolResource>().ToArray(); });
+        double opacity = MemoryMarshal.Read<double>(value);
+        return CommitDependencies(d, () => { Opacity = opacity; EdgeMode = edge; BitmapScalingMode = scaling; ClearTypeHint = clearType; Children = d[5..].Cast<GeneratedProtocolResource>().ToArray(); });
     }
 }

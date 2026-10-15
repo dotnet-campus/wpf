@@ -186,6 +186,10 @@ internal sealed class GeneratedLineGeometryResource : GeneratedGeometryResource
 {
     internal GeneratedLineGeometryResource() : base(MilResourceType.LineGeometry) { }
     internal (MilPoint2D StartPoint, MilPoint2D EndPoint) Value { get; private set; }
+    private GeneratedValueResource<MilPoint2D>? _startAnimation;
+    private GeneratedValueResource<MilPoint2D>? _endAnimation;
+    internal (MilPoint2D StartPoint, MilPoint2D EndPoint) CurrentValue => (
+        _startAnimation?.Value ?? Value.StartPoint, _endAnimation?.Value ?? Value.EndPoint);
     internal GeneratedProtocolResource? Transform { get; private set; }
     internal IReadOnlyList<GeneratedProtocolResource> Dependencies { get; private set; } = [];
 
@@ -199,7 +203,12 @@ internal sealed class GeneratedLineGeometryResource : GeneratedGeometryResource
             || !TryResolve(handleTable, MemoryMarshal.Read<uint>(value[40..]), MilResourceType.PointResource, out GeneratedProtocolResource? endAnimation))
             return Direct3D9Factory.UceMalformedPacketHResult;
         GeneratedProtocolResource?[] dependencies = [transform, startAnimation, endAnimation];
-        return CommitDependencies(dependencies, () => { Value = (start, end); Transform = transform; Dependencies = Present(dependencies); });
+        return CommitDependencies(dependencies, () =>
+        {
+            Value = (start, end); Transform = transform; Dependencies = Present(dependencies);
+            _startAnimation = startAnimation as GeneratedValueResource<MilPoint2D>;
+            _endAnimation = endAnimation as GeneratedValueResource<MilPoint2D>;
+        });
     }
 
     private static GeneratedProtocolResource[] Present(GeneratedProtocolResource?[] dependencies) => dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray();

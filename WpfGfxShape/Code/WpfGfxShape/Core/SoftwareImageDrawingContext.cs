@@ -10,4 +10,9 @@ internal readonly record struct SoftwareImageDrawingContext(
     float? PrefilterThreshold = null,
     bool Antialias = true,
     bool? PrefilterEnabled = null,
-    SoftwareBitmapEffects? Effects = null);
+    SoftwareBitmapEffects? Effects = null,
+    SoftwareImageCoverage? GeometryMask = null,
+    MilBitmapWrapMode WrapMode = MilBitmapWrapMode.Extend,
+    bool ExtendThroughGeometry = false,
+    float AlphaScale = 1,
+    MilColorF BorderColor = default);

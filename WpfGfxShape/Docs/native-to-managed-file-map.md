@@ -9,6 +9,44 @@
 - `Not started`：当前生产项目中没有可确认的对应实现。
 - 本表没有 `Complete` 项；当前实现尚不能替换原 `wpfgfx_cor3.dll`。
 
+## ImageBrush 空内容与区域边界（Partial）
+
+`core/resources/TileBrushUtils.cpp:110-165,180-255`、`core/common/basetypes.h:130-169` → `Core/GeneratedImageMask.cs`：NaN Viewbox/Viewport、相对内容bounds和调整后的viewport作为空画刷捕获，避免来源Acquire与相对变换求逆；直接生产AOT消费者已验证八分量透明输出和恢复。保持零尺寸空画刷既有行为；无限值仍不宣称完整支持，不能以非有限值统一空化冒充原生合同。
+
+`core/resources/imagebrush.cpp:120-141` → `Core/GeneratedImageMask.cs`：未设置ImageSource时按DoesContainContent无内容合同捕获为空遮罩，由generated层消费者输出透明，支持通道清空来源后下一帧恢复；不改变未知来源类型的失败合同。
+
+`Core/GeneratedGeometryBounds.cs` 已保留递归矩形组合的真实区域而非子组合包围框，四种布尔组合在局部空间计算后作用外层仿射，递归组合节点和直接矩形操作数均支持轴保持/轴交换变换并限制深度。无笔画 LineGeometry 作为组合填充操作数按空区域消费，与直接填充 bounds 合同一致，四种布尔模式接入相对遮罩与失败恢复链；不影响线的笔画语义。一般曲线组合及非轴保持操作数仍不支持；不等同于完整原生形状/画刷扫描消费者。
+
+## generated 几何实色填充（Partial）
+
+`core/resources/solidcolorbrush.cpp:20-72` → `Core/GeneratedVisualRenderer.cs`：按当前动画颜色与 opacity 捕获无笔画 SolidColorBrush 几何填充值快照，仅将 opacity 乘到 alpha。`Core/SoftwareImageRenderSession.cs`、`Core/Direct3D9SoftwareImageRenderer.ImageMask.cs/SolidMask.cs` 通过常量 1×1 位图 Extend 复用覆盖、裁剪、合成和层消费者；8 位复用 scRGB→sRGB 预乘转换，浮点分支直接写预乘浮点值。真实相对遮罩、嵌套 opacity/Pop、源锁首错与丢弃/恢复已有联合验收；浮点实色专门验收与原生边缘差分未完成。不等同于原生私有形状/画刷/笔画 ABI，非空笔画仍缺。
+
+## generated 几何 ImageBrush 填充（Partial）
+
+`core/uce/drawingcontext.cpp:878-952` 的 DrawGeometry → 当前形状 → DrawShape 调用链，在 generated 承载面由 `Core/GeneratedVisualRenderer.cs` 捕获无笔画 ImageBrush 填充、局部内容 bounds、设备几何覆盖与来源快照；`Core/GeneratedImageContentBounds.cs` 消费几何 bounds，`Core/SoftwareImageRenderSession.cs` 和 `Core/Direct3D9SoftwareImageRenderer.ImageMask.cs` 复用普通/tile 映射物化的完整 RGBA。真实作用域相对遮罩、嵌套 opacity/Pop、源锁首错与恢复、透明来源/零 viewport 恢复已有联合验收。该内部 managed 消费边界不等同于原生 IShapeData/CBrushRealizer 私有 ABI，非空笔画和一般组合 bounds 仍缺。
+
+## 原生内部层与路径消费者（Partial）
+
+私有 ABI 边界：`common/shared/RefCountBase.h:18-63` 明确 IMILRefCount/CMILRefCountBase 不继承 IUnknown；`core/geometry/ShapeData.h:25-105`、`ShapeBase.h:40-95` 明确 IShapeData 是带虚析构的 CShapeBase，IFigureData 亦为 C++ 虚对象。`core/resources/brush.cpp:40-63` 和 `BrushRealizer.cpp:97-166` 的真实创建者创建后 AddRef、缓存并转移/返回引用；`core/sw/swlib/swrast.cpp:533-596` 消费软件 EnsureRealization 后借用的 brush/effects，空 realized brush 不绘制。当前 `Internal.cs` 将路径参数折叠为 bool，委托式 `Direct3D9ImmediateBrushRealizer` 不实现该私有对象 ABI；实际布局、创建者、有限/无限 fill/stroke 和借用生命周期尚未接通。不得将这些指针当 IUnknown 或 generated 资源 handle，不能套用通用 COM 三槽释放。
+
+`core/targets/BaseSurfRT.cpp:43-202`、`core/targets/BaseRT.h:79-100` → `Abi/BitmapRenderTargetExports.Layers.cs/Internal.cs`：基础链式层栈、父层交集、格式相关透明度阈值、NaN空层、End/Abort/最终Release清理；Bounds/DrawBitmap/Clear消费层边界。`Abi/BitmapRenderTargetExports.cs`包含PRGBA128Float裁剪Clear，直接写预乘浮点RGBA，不经8位转换。非空alpha修正和形状/画刷mask仍未接通。
+
+`core/sw/swlib/swsurfrt.cpp:790-957`、`core/common/rtutils.cpp:44-132` → `Abi/BitmapRenderTargetExports.Drawing.cs/Internal.cs`：真实DrawPath/DrawInfinitePath COM槽共用当前层/目标与CContextState.AliasedClip相交判定；空交集在形状/画刷及目标锁之前成功返回。非空裁剪共用目标Read|Write锁，首错传播并确定性释放；无fill且无pen+stroke时成功，不消费未使用形状/画刷。有有效画刷路径保持E_NOTIMPL，完整IShapeData/CBrushRealizer/CPlainPen消费者仍缺；不能将无输出分支标为Complete。原生swsurfrt.cpp:1182-1204拒绝alpha目标的修正层，必须与generated opacity中间层区分。
+
+## 内部位图裁剪与回调生命周期
+
+`core/sw/swlib/swsurfrt.cpp:635-687`、`core/api/api_rendercontext.h:20-106` → `Abi/BitmapRenderTargetExports.Drawing.cs`：读取Release上下文前缀，目标尺寸与当前裁剪无交集时在效果捕获、源读取和目标锁之前成功退出；目标和源引用在效果列表回调前持有，失败及成功均逆序释放。Partial：尚无专门效果回调释放调用者引用验收；完整IShapeData/画刷/DrawPath及内部层指针ABI消费者未闭合，不以托管SoftwareImageRenderSession代替原生合同。
+
+## 平铺遮罩与层位图共同消费
+
+`core/resources/ViewportAlignedIntermediateRealizer.cpp:480-735`、`core/sw/swlib/bilinearspan.cpp:10-55`、`core/common/typeconvert.inl:38-80` → GeneratedImageMask与SoftwareImageRenderer.ImageMask/Affine/Float：Tile/FlipX/FlipY/FlipXY保存快照、物化viewport基础tile并通过既有texel选择/软件扫描重复和翻转。Partial：完整浮点/DPI/仿射/预滤差分仍缺，Extend未接通。真实IStream/系统WIC遮罩读取的重入、通道/连接销毁、删除、替换、帧快照及最终释放已有代表性验收，不等于完整联合生命周期合同。
+
+`core/uce/drawingcontext.cpp:3890-4040` → SoftwareImageRenderer.EndOpacityLayer：真实SoftwareBitmap物化层内容，释放写锁后以单位变换、最近邻、禁用再次预滤经DrawTransformed→DrawPath→scan pipeline合成，效果/几何遮罩进入共同上下文；无几何遮罩时关闭边缘抗锯齿。直接8位及浮点缓冲合成旁路已删除。Partial：不等于原生CContextState、IShapeData或画刷指针ABI及完整内部目标合同。
+
+## 软件遮罩内容边界
+
+`core/sw/swlib/boundsrt.cpp:700-758` → `Core/GeneratedImageContentBounds.cs`：DrawImage变换后四角包围矩形与PushClip保守矩形求交，Visual自身内边界和子节点外边界分离；矩形裁剪包含几何自身仿射变换，不再要求轴对齐。实际裁剪仍由GeneratedImageClip/SoftwareImageCoverage负责，边界计算不执行精确光栅交集。`core/geometry/utils.cpp:769-825,903-1048` → `Core/GeneratedGeometryBounds.cs`：端点及三次曲线导数极值累计，二次曲线等价转换，Arc复用SoftwareArcConverter；圆角矩形、椭圆、填充路径及组边界已接入TryClip。`core/resources/combinedgeometry.cpp:45-135` → 同文件矩形CombinedGeometry边界：Union/Intersect/Xor/Exclude按局部空间边界单元求剩余区域，之后变换每个区域四角，支持空操作数、重叠空结果、负尺度和外层仿射；真实遮罩scope消费者已验收。Partial：操作数自身须为轴对齐非圆角矩形，一般曲线/递归组合及非退化曲线边缘完整原生精度差分未完成；不代表完整原生bounder。
+
 ## 图像变换栈
 
 `core/uce/drawingcontext.cpp:2384-2404,4863-4892` → GeneratedImageTransform/GeneratedVisualRenderer：无动画正向轴对齐Visual变换/offset组合，PushTransform/Pop与透明层共用带类型状态栈。Matrix放大平移/Pop恢复像素验收通过；通用旋转斜切、负缩放、动画和覆盖率仍未支持，Partial。

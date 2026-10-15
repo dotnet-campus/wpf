@@ -57,6 +57,21 @@ internal sealed class SoftwareImageCoverage
 
     internal int GetAliasedCoverage(int x, int y)
     {
+        if (_path is not null) return _path.GetAliasedCoverage(x, y);
+        if (_points.Length == 0)
+        {
+            bool first = _first?.GetAliasedCoverage(x, y) == 64;
+            bool second = _second?.GetAliasedCoverage(x, y) == 64;
+            bool inside = _mode switch
+            {
+                MilCombineMode.Union => first || second,
+                MilCombineMode.Intersect => first && second,
+                MilCombineMode.Xor => first != second,
+                MilCombineMode.Exclude => first && !second,
+                _ => false
+            };
+            return inside ? 64 : 0;
+        }
         if (_points.Length != 4) return 0;
         long scanY = (long)y * 16;
         long left = long.MaxValue, right = long.MinValue;

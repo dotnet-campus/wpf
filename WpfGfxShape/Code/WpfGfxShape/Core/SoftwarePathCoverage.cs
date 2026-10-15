@@ -9,6 +9,45 @@ internal sealed class SoftwarePathCoverage
 
     private SoftwarePathCoverage(MilFillMode fillRule) => _fillRule = fillRule;
 
+    internal static bool TryCreateFigures(IEnumerable<MilPoint2D[]> figures, MilFillMode fillRule, out SoftwarePathCoverage? result)
+    {
+        result = null;
+        var coverage = new SoftwarePathCoverage(fillRule);
+        foreach (var points in figures)
+        {
+            if (points.Length == 0) continue;
+            if (!Quantize(points[0].X, points[0].Y, out var start)) return false;
+            var previous = start;
+            for (int i = 1; i < points.Length; i++)
+            {
+                if (!Quantize(points[i].X, points[i].Y, out var next)) return false;
+                coverage._edges.Add((previous, next));
+                previous = next;
+            }
+            coverage._edges.Add((previous, start));
+        }
+        result = coverage;
+        return true;
+    }
+
+    internal static bool TryCreatePolygon(ReadOnlySpan<MilPoint2D> points, GeneratedImageTransform transform,
+        out SoftwarePathCoverage? result)
+    {
+        result = null;
+        var coverage = new SoftwarePathCoverage(MilFillMode.Winding);
+        if (points.Length < 3) { result = coverage; return true; }
+        var converted = new (long X, long Y)[points.Length];
+        for (int i = 0; i < points.Length; i++)
+        {
+            var point = transform.Apply(points[i].X, points[i].Y);
+            if (!Quantize(point.X, point.Y, out converted[i])) return false;
+        }
+        for (int i = 0; i < converted.Length; i++)
+            coverage._edges.Add((converted[i], converted[(i + 1) % converted.Length]));
+        result = coverage;
+        return true;
+    }
+
     internal static bool TryCreate(GeneratedPathGeometryResource path, GeneratedImageTransform parent, out SoftwarePathCoverage? result)
     {
         result = null;
@@ -291,6 +330,26 @@ internal sealed class SoftwarePathCoverage
         if (!double.IsFinite(x) || !double.IsFinite(y) || Math.Abs(x) > 8388608 || Math.Abs(y) > 8388608) return false;
         point = (((long)Math.Round(x) + 8) * 8, ((long)Math.Round(y) + 8) * 8);
         return true;
+    }
+
+    internal int GetAliasedCoverage(int x, int y)
+    {
+        int winding = 0;
+        long scanY = (long)y * 16;
+        foreach (var edge in _edges)
+        {
+            var a = (X: edge.A.X / 8 - 8, Y: edge.A.Y / 8 - 8);
+            var b = (X: edge.B.X / 8 - 8, Y: edge.B.Y / 8 - 8);
+            int direction = 1;
+            if (a.Y > b.Y) { (a, b) = (b, a); direction = -1; }
+            if (scanY < a.Y || scanY >= b.Y) continue;
+            long denominator = (b.Y - a.Y) * 16;
+            long numerator = a.X * (b.Y - a.Y) + (scanY - a.Y) * (b.X - a.X);
+            long intersection = numerator / denominator;
+            if (numerator % denominator > 0) intersection++;
+            if (x >= intersection) winding += direction;
+        }
+        return (_fillRule == MilFillMode.Alternate ? (winding & 1) != 0 : winding != 0) ? 64 : 0;
     }
 
     internal ulong GetSamples(int x, int y)

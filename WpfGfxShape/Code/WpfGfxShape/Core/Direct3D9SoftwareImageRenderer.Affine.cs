@@ -24,15 +24,35 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
         finally { _realizeBitmap = null; _drawClip = default; _context = default; }
     }
 
+    private bool TryCreateDrawCoverage(MilRectD rectangle, GeneratedImageTransform transform, out SoftwareImageCoverage? coverage)
+        => _context.WrapMode == MilBitmapWrapMode.Extend && !_context.ExtendThroughGeometry
+            ? SoftwareImageCoverage.TryCreate(_context.SourceCoverage ?? rectangle, transform, out coverage)
+            : SoftwareImageCoverage.TryCreate(new(0, 0, _width, _height), GeneratedImageTransform.Identity, out coverage);
+
+    private double NormalizeSample(double coordinate, uint size, bool flip)
+    {
+        if (_context.WrapMode == MilBitmapWrapMode.Extend) return Math.Clamp(coordinate, 0, size);
+        if (_context.WrapMode == MilBitmapWrapMode.Border) return Math.Clamp(coordinate, -1, (double)size + 1);
+        double period = size * (flip ? 2d : 1d);
+        return coordinate - Math.Floor(coordinate / period) * period;
+    }
+
+    private (double X, double Y) SamplePoint(double x, double y)
+    {
+        var point = _deviceToSource.Apply(x, y);
+        return (NormalizeSample(point.X, _sourceWidth, _context.WrapMode is MilBitmapWrapMode.FlipX or MilBitmapWrapMode.FlipXY),
+            NormalizeSample(point.Y, _sourceHeight, _context.WrapMode is MilBitmapWrapMode.FlipY or MilBitmapWrapMode.FlipXY));
+    }
+
     private int RealizeTransformed(nint source, MilRectD rectangle, GeneratedImageTransform transform, bool isMilSource)
     {
         if (_floating) return RealizeFloat(source, rectangle, transform, isMilSource);
         MilRectD bounds = transform.Apply(rectangle);
-        if (_context.SourceCoverage is null && ScalingMode != 3 && transform.IsPositiveAxisAligned && bounds.X == Math.Truncate(bounds.X)
+        if (_context.WrapMode == MilBitmapWrapMode.Extend && _context.GeometryMask is null && _context.SourceCoverage is null && ScalingMode != 3 && transform.IsPositiveAxisAligned && bounds.X == Math.Truncate(bounds.X)
             && bounds.Y == Math.Truncate(bounds.Y) && bounds.Width == Math.Truncate(bounds.Width)
             && bounds.Height == Math.Truncate(bounds.Height))
             return Draw(source, bounds, 0, 0, isMilSource);
-        if (!SoftwareImageCoverage.TryCreate(_context.SourceCoverage ?? rectangle, transform, out var coverage))
+        if (!TryCreateDrawCoverage(rectangle, transform, out var coverage))
             return Direct3D9Factory.NotImplementedHResult;
         if (!transform.TryInvert(out _)) return 0;
         uint width, height;
@@ -102,17 +122,30 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
         {
             int coverage = _context.Antialias ? _coverage!.GetCoverage(x + (int)i, y)
                 : _coverage!.GetAliasedCoverage(x + (int)i, y);
+            if (_context.GeometryMask is { } mask)
+                coverage = (coverage * (_context.Antialias ? mask.GetCoverage(x + (int)i, y)
+                    : mask.GetAliasedCoverage(x + (int)i, y)) + 32) >> 6;
             if (coverage == 0) continue;
-            var point = _deviceToSource.Apply(x + i + 0.5, y + 0.5);
-            long u = (long)Math.Round(Math.Clamp(point.X - 0.5, -1, _sourceWidth) * 65536);
-            long v = (long)Math.Round(Math.Clamp(point.Y - 0.5, -1, _sourceHeight) * 65536);
-            var texels = Direct3D9SoftwareBilinearSpan.Select64BitFallbackTexels(u, v, _sourceWidth, _sourceHeight, MilBitmapWrapMode.Extend);
+            var point = SamplePoint(x + i + 0.5, y + 0.5);
+            long u = (long)Math.Round((point.X - 0.5) * 65536);
+            long v = (long)Math.Round((point.Y - 0.5) * 65536);
+            var texels = Direct3D9SoftwareBilinearSpan.Select64BitFallbackTexels(u, v, _sourceWidth, _sourceHeight, _context.WrapMode);
             uint sample = Direct3D9SoftwareBilinearSpan.InterpolateBilinearArgb(
                 ReadAffinePixel(texels.X1, texels.Y1), ReadAffinePixel(texels.X2, texels.Y1),
                 ReadAffinePixel(texels.X1, texels.Y2), ReadAffinePixel(texels.X2, texels.Y2), texels.XFraction, texels.YFraction);
             if (ScalingMode == 3)
-                sample = ReadAffinePixel((int)Math.Clamp(Math.Floor(point.X), 0, _sourceWidth - 1),
-                    (int)Math.Clamp(Math.Floor(point.Y), 0, _sourceHeight - 1));
+            {
+                var nearest = Direct3D9SoftwareBilinearSpan.Select64BitFallbackTexels(
+                    (long)Math.Floor(point.X) * 65536, (long)Math.Floor(point.Y) * 65536, _sourceWidth, _sourceHeight, _context.WrapMode);
+                sample = ReadAffinePixel(nearest.X1, nearest.Y1);
+            }
+            if (_context.AlphaScale != 1)
+            {
+                uint scaled = 0;
+                for (int component = 0; component < 4; component++)
+                    scaled |= (uint)MathF.Round((byte)(sample >> (component * 8)) * _context.AlphaScale) << (component * 8);
+                sample = scaled;
+            }
             if (_context.Effects is { } effects) sample = effects.Apply(sample, x + (int)i, y);
             int alpha = ((byte)(sample >> 24) * coverage + 32) >> 6;
             for (int component = 0; component < 4; component++)
@@ -127,6 +160,8 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
 
     private uint ReadAffinePixel(int x, int y)
     {
+        if ((uint)x >= _sourceWidth || (uint)y >= _sourceHeight)
+            return Direct3D9SoftwareRenderTargetSurface.ConvertToSrgb(_context.BorderColor, true);
         uint value = MemoryMarshal.Read<uint>(_affinePixels.AsSpan(checked(((int)_sourceWidth * y + x) * 4), 4));
         return _opaque ? value | 0xff000000 : value;
     }
