@@ -147,6 +147,8 @@ internal static partial class GeneratedProtocolPacketWriter
 internal sealed class GeneratedRenderDataResource : GeneratedDependencyResource
 {
     internal GeneratedRenderDataResource() : base(MilResourceType.RenderData) { }
+    internal static GeneratedRenderDataResource CreateStatic(IReadOnlyList<GeneratedRenderDataInstruction> instructions)
+        => new() { Instructions = instructions };
     internal IReadOnlyList<GeneratedRenderDataInstruction> Instructions { get; private set; } = [];
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
     {

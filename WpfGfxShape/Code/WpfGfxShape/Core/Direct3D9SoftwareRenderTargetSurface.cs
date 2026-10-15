@@ -88,6 +88,7 @@ internal delegate int Direct3D9WrapSoftwareRenderTargetBitmap(
 internal sealed class Direct3D9SoftwareRenderTargetSurface : IDisposable
 {
     private Direct3D9SoftwareRenderTargetState _state;
+    private readonly Func<Direct3D9SurfaceRect>? _lockedBounds;
     private Matrix3x2 _deviceTransform;
     private Direct3D9SurfaceRect _currentClip;
     private uint _resizeUniqueness = 1;
@@ -152,7 +153,8 @@ internal sealed class Direct3D9SoftwareRenderTargetSurface : IDisposable
         uint? associatedDisplayIndex = null,
         Direct3D9AcquireCurrentDisplaySet? acquireCurrentDisplaySet = null,
         Action<Direct3D9DisplaySet>? releaseDisplaySet = null,
-        Direct3D9SoftwareScanPipelineCallbacks? scanPipelineCallbacks = null)
+        Direct3D9SoftwareScanPipelineCallbacks? scanPipelineCallbacks = null,
+        Func<Direct3D9SurfaceRect>? lockedBounds = null)
     {
         ArgumentNullException.ThrowIfNull(lockTarget);
         ArgumentNullException.ThrowIfNull(unlockTarget);
@@ -169,6 +171,7 @@ internal sealed class Direct3D9SoftwareRenderTargetSurface : IDisposable
         }
 
         _deviceTransform = CreateDeviceTransform(_state);
+        _lockedBounds = lockedBounds;
         _lockTarget = lockTarget;
         _unlockTarget = unlockTarget;
         _stagedLockTarget = stagedLockTarget;
@@ -330,7 +333,10 @@ internal sealed class Direct3D9SoftwareRenderTargetSurface : IDisposable
 
         try
         {
-            int destinationOffset = checked((y * _targetStride) + (xMin * checked((int) _state.BytesPerPixel)));
+            var bounds = _lockedBounds?.Invoke() ?? new Direct3D9SurfaceRect(0, 0, (int)_state.Width, (int)_state.Height);
+            if (y < bounds.Top || y >= bounds.Bottom || xMin < bounds.Left || xMax > bounds.Right)
+                return Direct3D9Factory.InvalidArgumentHResult;
+            int destinationOffset = checked(((y - bounds.Top) * _targetStride) + ((xMin - bounds.Left) * checked((int) _state.BytesPerPixel)));
             int byteCount = checked((xMax - xMin) * checked((int) _state.BytesPerPixel));
             if (destinationOffset < 0 || destinationOffset > _targetPixels.Length - byteCount)
             {
@@ -1185,7 +1191,7 @@ internal sealed class Direct3D9SoftwareRenderTargetSurface : IDisposable
         return Direct3D9Factory.WinCodecInternalErrorHResult;
     }
 
-    private static int ValidateLockedTarget(
+    private int ValidateLockedTarget(
         byte[] targetPixels,
         int targetStride,
         Direct3D9SoftwareRenderTargetState state)
@@ -1197,8 +1203,9 @@ internal sealed class Direct3D9SoftwareRenderTargetSurface : IDisposable
 
         try
         {
-            int rowBytes = checked((int) state.Width * (int) state.BytesPerPixel);
-            int height = checked((int) state.Height);
+            var bounds = _lockedBounds?.Invoke() ?? new Direct3D9SurfaceRect(0, 0, (int)state.Width, (int)state.Height);
+            int rowBytes = checked((bounds.Right - bounds.Left) * (int)state.BytesPerPixel);
+            int height = checked(bounds.Bottom - bounds.Top);
             int requiredSize = height == 0
                 ? 0
                 : checked((height - 1) * targetStride + rowBytes);

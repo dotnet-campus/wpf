@@ -5,7 +5,12 @@ using Silk.NET.Direct3D9;
 
 namespace WpfGfxShape.Core;
 
-internal readonly record struct MilColorF(float Alpha, float Red, float Green, float Blue);
+[StructLayout(LayoutKind.Explicit, Size = 16)]
+internal readonly record struct MilColorF(
+    [field: FieldOffset(12)] float Alpha,
+    [field: FieldOffset(0)] float Red,
+    [field: FieldOffset(4)] float Green,
+    [field: FieldOffset(8)] float Blue);
 
 internal readonly record struct MilRectF(float Left, float Top, float Right, float Bottom);
 
@@ -912,6 +917,71 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
     }
 
     internal int DrawBitmap(Func<int> drawBitmap) => ExecuteDisplayDrawing(drawBitmap);
+
+    internal int ProductionDrawBitmap(Direct3D9PipelineColorSource source, MilRectD rectangle,
+        GeneratedImageTransform transform, Direct3D9SurfaceRect? clip, MilCompositingMode compositing)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        ArgumentNullException.ThrowIfNull(source);
+        if (compositing is not (MilCompositingMode.SourceOver or MilCompositingMode.SourceCopy))
+            return Direct3D9Factory.NotImplementedHResult;
+        using Direct3D9DeviceEntryGuard entry = new(_device);
+        using Direct3D9UseContextGuard use = new(_device);
+        var state = new Direct3D9ContextState(Matrix4x4.Identity, Matrix4x4.Identity,
+            Matrix4x4.Identity, Matrix4x4.Identity, Cull.None, Cmpfunc.Always, false, AliasedClip: clip);
+        int hr = EnsureState(state);
+        if (hr == Direct3D9Factory.ClippedToEmptyHResult) return 0;
+        if (hr < 0) return hr;
+        hr = source.Realize();
+        if (hr < 0) return hr;
+        hr = source.SendDeviceStates?.Invoke(0, 0) ?? Direct3D9Factory.NotImplementedHResult;
+        if (hr < 0) return hr;
+        IDirect3DDevice9* native = _device.Device;
+        hr = _device.SetVertexShader(null);
+        if (hr >= 0) hr = _device.SetPixelShader(null);
+        if (hr >= 0) hr = _device.SetFlexibleVertexFormat(0x104);
+        if (hr >= 0) hr = _device.SetRenderState((Renderstatetype)27, compositing == MilCompositingMode.SourceOver ? 1u : 0u);
+        if (hr >= 0) hr = _device.SetRenderState((Renderstatetype)19, 2);
+        if (hr >= 0) hr = _device.SetRenderState((Renderstatetype)20, 6);
+        if (hr >= 0) hr = _device.SetTextureStageState(0, Texturestagestatetype.Colorop, 2);
+        if (hr >= 0) hr = _device.SetTextureStageState(0, Texturestagestatetype.Colorarg1, 2);
+        if (hr >= 0) hr = _device.SetTextureStageState(0, Texturestagestatetype.Alphaop, 2);
+        if (hr >= 0) hr = _device.SetTextureStageState(0, Texturestagestatetype.Alphaarg1, 2);
+        if (hr >= 0) hr = _device.DisableTextureStage(1);
+        if (hr < 0) return hr;
+        Span<float> vertices = stackalloc float[36];
+        int[] corners = [0, 1, 2, 2, 1, 3];
+        for (int i = 0; i < corners.Length; i++)
+        {
+            float u = (corners[i] & 1) != 0 ? 1 : 0;
+            float v = (corners[i] & 2) != 0 ? 1 : 0;
+            var point = transform.Apply(rectangle.X + u * rectangle.Width, rectangle.Y + v * rectangle.Height);
+            int offset = i * 6;
+            vertices[offset] = (float)point.X - 0.5f;
+            vertices[offset + 1] = (float)point.Y - 0.5f;
+            vertices[offset + 2] = 0; vertices[offset + 3] = 1;
+            vertices[offset + 4] = u; vertices[offset + 5] = v;
+        }
+        bool ownsScene = !_device.IsInScene;
+        if (ownsScene) hr = _device.BeginScene();
+        if (hr < 0) return hr;
+        try
+        {
+            fixed (float* data = vertices)
+                hr = _device.DrawPrimitiveUp(Primitivetype.Trianglelist, 2, data, 24);
+        }
+        finally
+        {
+            if (ownsScene)
+            {
+                int end = _device.EndScene();
+                if (hr >= 0) hr = end;
+            }
+            int unbind = _device.SetTexture(0, null);
+            if (hr >= 0) hr = unbind;
+        }
+        return CompleteDisplayDrawing(hr);
+    }
 
     internal int ProductionDrawBitmap(
         Direct3D9BitmapDrawState drawState,
@@ -3755,6 +3825,7 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
             : new Direct3D9PresentRequest(null, null, null, _presentFlags, _presentParameters.HDeviceWindow);
         Direct3D9DeviceState state = _device.Present(_swapChain, request);
         int result = state.HResult;
+
         if (state.PresentProcessed && _presentParameters.SwapEffect == Swapeffect.Discard)
         {
             _hasValidContents = false;
@@ -4424,6 +4495,7 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
     {
         MilPixelFormat.Pbgra32Bpp => Format.A8R8G8B8,
         MilPixelFormat.Bgr32Bpp101010 => Format.A2R10G10B10,
+        MilPixelFormat.Prgba128BppFloat => Format.A32B32G32R32f,
         _ => Format.X8R8G8B8
     };
 
@@ -4431,6 +4503,7 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
     {
         Format.A8R8G8B8 => MilPixelFormat.Pbgra32Bpp,
         Format.A2R10G10B10 => MilPixelFormat.Bgr32Bpp101010,
+        Format.A32B32G32R32f => MilPixelFormat.Prgba128BppFloat,
         _ => MilPixelFormat.Bgr32Bpp
     };
 

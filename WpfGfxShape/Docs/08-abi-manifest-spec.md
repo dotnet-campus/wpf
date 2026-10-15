@@ -1,7 +1,7 @@
 # wpfgfx ABI Manifest 规范
 
 > 文档身份：ABI manifest 的权威 schema；不维护生产 ABI 实现进度或当前导出完成度。  
-> 当前只有探针级 ABI 承载，不能替代生产 manifest；机器 ABI 清单仍是明确缺口。  
+> probe 只证明机制，不能替代生产 manifest；生产实测状态只见[状态源](handoffs/current-stable-baseline.md)。  
 > ABI 工件尚未完整建立；本文直接定义目标结构、状态和验收规则，不从旧工作包选择当前动作。  
 > 上位事实：[`02-abi-and-managed-callers.md`](02-abi-and-managed-callers.md)；测试规则：[`06-testing-strategy.md`](06-testing-strategy.md)。
 
@@ -173,7 +173,7 @@ ID 保留精确大小写名称；文件系统不安全字符只在路径别名�
 - CoreCLR token 是否只作不透明往返；
 - detach 顺序：阻止新进入、等待在途、释放 context；
 - callback 内异常策略；
-- process-exit/unload 行为；
+- process-exit、资源/线程/callback 静止行为；生产 DLL unload/reload/热替换依 DEC-0004 不适用；
 - x86 栈平衡与各架构运行证据。
 
 强制四类：stream、event proxy、geometry、D3DImage。后续发现的新 callback 先建 manifest，再编码。
@@ -247,6 +247,6 @@ ID 保留精确大小写名称；文件系统不安全字符只在路径别名�
 8. 参与的最高已就绪 E2E；
 9. 无未决 8/7 或其它差异。
 
-## 14. 当前未验证
+## 14. 证据适用范围
 
-本规划轮次未预处理 `.def`、未构建原 DLL或候选 DLL、未枚举 PE、未执行布局、caller、COM、callback 或 unload 测试。本文只定义后续事实的存储和验收方式。
+本文定义存储和验收 schema，不陈述最新执行结果。原规划轮次的未执行项不是当前全仓库状态。每条记录须绑定实际产物、架构与原始证据；最新执行范围只见[状态源](handoffs/current-stable-baseline.md)。生产模块卸载按[DEC-0004](decisions/DEC-0004-process-lifetime-module.md)登记不适用，不把历史 false 改成通过。

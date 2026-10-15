@@ -1,0 +1,16 @@
+# 原版校准：直接Pbgra32排除投影误差
+
+对sourceMode17/18不透明线性红的180组输入，新增生产bitmap lock直接Pbgra32全图读回；保留原有浮点输出投影，报告两条实验的全部字节和逐fixture判定。HDR sourceMode22–27未切换到非floating，因为现有fixture以floating决定源色1.25，不能用不同源色作同格式比较。
+
+验证180组直接Pbgra32：94组一致、86组不同。450组浮点投影仍364一致86不同。逐fixture FormatVerdictDifferences=0，确认失败集合相同，不仅计数相同。这排除了以客户端float→sRGB投影误差单独解释剩余差异，但不证明两格式所有像素数值相同，也未定位具体生产根因。
+
+原生证据：core/sw/swlib/swrast.cpp 855–882 bitmap brush按RenderState InterpolationMode采样；core/sw/swlib/renderingbuilder.cpp 168–227 mask在Pbgra32和float两条分支均使用相同RenderState InterpolationMode。没有将DrawingImage强制Linear的证据，因此未应用此猜测。
+
+修改仅测试：CompositionTests.BooleanContours.cs新增observeBgraSurface逐stride复制和长度验证；CompositionTests.ReferenceCalibration.cs加入独立直接输出及FormatVerdictDifferences统计，直接Pbgra32不匹配也使严格校准断言失败，不skip/放宽。
+
+最终COM全量890通过1失败0跳过，总891，2秒。TRX Run ID da5587aa-97bf-41d3-964d-d014103b76bb，路径Tests/WpfGfxShape.ComAcceptance/TestResults/com-acceptance.trx。
+报告Tests/WpfGfxShape.ComAcceptance/TestResults/wpf-calibration-e221d46437db4865b82d66a7908778fd.json。
+原版输入仍9b086acaacdb4ddd9fb6835903993cf3，SHA256 3AD4DB6DA417053DF556BE6F3DC201F7AA7BFCE0B46C551F1B59468DBD4F975F。
+本轮未发布、未改生产，使用AOT SHA256 3A5A375270B9DD5AEFE7F8F85550CDC41ADA3C843E3496E38D72DF880106C54C；原版DLL SHA256 501A1CD67D51BB1663870B12AF0F8C0BA29B3D37B8B509BE896D2AAF32DB214A。不是新稳定基线。
+
+下一闭环仍为隔离目标扫描覆盖与源中间面映射/过滤：用同参数实色目标对照明确覆盖贡献，再核对tile realization及固定点采样公式，联合生产消费者/生命周期修复并发布验收。本轮尚未完成生产修复，不将诊断实验称为模块关闭。

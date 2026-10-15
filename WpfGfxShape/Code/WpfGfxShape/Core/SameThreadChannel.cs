@@ -8,8 +8,46 @@ internal sealed class SameThreadPartition
     internal readonly GeneratedProtocolChannelRegistry Channels = new();
     internal readonly GeneratedTargetRegistry Targets = new();
     internal int Failure;
-    private uint _nextChannel;
+    internal readonly Av.VideoComposition? Videos;
 
+    internal SameThreadPartition(PartitionScheduler? scheduler = null)
+    {
+        if (scheduler is not null) Videos = new Av.VideoComposition(() => scheduler.ScheduleCompositionPass(this));
+    }
+
+    internal int Compose()
+    {
+        if (Failure < 0) return Failure;
+        int result = Videos?.BeginProcessVideo(false) ?? 0;
+        try
+        {
+            if (result >= 0) result = Targets.Render();
+            if (result < 0 && Failure >= 0) Failure = result;
+            return result;
+        }
+        finally
+        {
+            Videos?.EndProcessVideo();
+            FlushPendingBadShaderNotifications();
+        }
+    }
+
+    private uint _nextChannel;
+    private readonly HashSet<SameThreadChannel> _notifications = [];
+    private bool _pendingBadShader;
+
+    internal void SetPendingBadShaderNotification() => _pendingBadShader = true;
+    internal void RegisterNotifications(SameThreadChannel channel, bool enable)
+    {
+        if (!enable) { _notifications.Remove(channel); return; }
+        if (_notifications.Add(channel)) channel.PostMessage(0x05);
+    }
+    internal void FlushPendingBadShaderNotifications()
+    {
+        if (!_pendingBadShader) return;
+        _pendingBadShader = false;
+        foreach (var channel in _notifications) channel.PostMessage(0x10);
+    }
     internal uint AllocateChannel() => checked(++_nextChannel);
 }
 
@@ -24,19 +62,168 @@ internal sealed class SameThreadChannel
     private readonly Dictionary<uint, Entry> _handles = [];
     private readonly GeneratedProtocolHandleTable _resources;
     private readonly GeneratedProtocolRouter _router;
-    private readonly Queue<List<byte[]>> _closed = [];
+    private Queue<List<byte[]>> _closed = [];
     private List<byte[]> _open = [];
+    internal const int MissingEndCommand = unchecked((int)0x88980411);
+    internal const int MissingBeginCommand = unchecked((int)0x88980412);
+    private byte[]? _command;
+    private int _commandLength;
+    private uint _blockRemaining = 0x1000;
+    private ulong _totalAllocations = 0x1000;
     private uint _nextHandle;
+
+    private int Reserve(uint size)
+    {
+        ulong required = ((ulong)size + 7) & ~3UL;
+        if (required > uint.MaxValue) return unchecked((int)0x80070216);
+        if (_blockRemaining < required)
+        {
+            ulong allocation = required + Math.Min(_totalAllocations, 0x10000UL);
+            if (allocation > uint.MaxValue) return unchecked((int)0x80070216);
+            _blockRemaining = (uint)allocation;
+            _totalAllocations += allocation;
+        }
+        return 0;
+    }
+
+    internal int BeginCommand(ReadOnlySpan<byte> header, uint extra)
+    {
+        if (_command is not null) return MissingEndCommand;
+        ulong total = (ulong)header.Length + extra;
+        if (total > uint.MaxValue) return unchecked((int)0x80070216);
+        int result = Reserve((uint)total);
+        if (result < 0) return result;
+        if (_blockRemaining - 4 > Array.MaxLength) return unchecked((int)0x8007000E);
+        byte[] command = new byte[(int)_blockRemaining - 4];
+        header.CopyTo(command);
+        _command = command;
+        _commandLength = header.Length;
+        return 0;
+    }
+
+    internal int AppendCommandData(ReadOnlySpan<byte> data)
+    {
+        if (_command is null) return MissingBeginCommand;
+        if (data.Length > _command.Length - _commandLength) return unchecked((int)0x8000FFFF);
+        data.CopyTo(_command.AsSpan(_commandLength));
+        _commandLength += data.Length;
+        return 0;
+    }
+
+    internal int EndCommand()
+    {
+        if (_command is null) return MissingBeginCommand;
+        byte[] packet = _command.AsSpan(0, _commandLength).ToArray();
+        _open.Add(packet);
+        _blockRemaining -= (uint)((_commandLength + 7L) & ~3L);
+        _command = null;
+        _commandLength = 0;
+        return 0;
+    }
+
+    internal int GetRefCount(uint handle, out uint references)
+    {
+        references = 0;
+        if (_command is not null) return MissingEndCommand;
+        if (!_handles.TryGetValue(handle, out Entry? entry)) return unchecked((int)0x8000FFFF);
+        references = entry.References;
+        return 0;
+    }
+
+    private void RecordPacket(byte[] packet)
+    {
+        int result = Reserve((uint)packet.Length);
+        if (result < 0) Marshal.ThrowExceptionForHR(result);
+        _open.Add(packet);
+        _blockRemaining -= (uint)((packet.Length + 7L) & ~3L);
+    }
     private bool _committing;
     private bool _destroyRequested;
     private bool _destroyed;
+    private readonly Queue<byte[]> _messages = [];
     internal SameThreadPartition Partition { get; }
+
+    private readonly EventWaitHandle _messageEvent = new(false, EventResetMode.AutoReset);
+    private nint _notificationWindow;
+    private uint _notificationMessage;
+    internal bool ReceiveBroadcastMessages;
+
+    internal void SetNotificationWindow(nint window, uint message)
+    {
+        lock (_messages)
+        {
+            _notificationWindow = window;
+            _notificationMessage = message;
+        }
+    }
+
+    internal void PostMessage(uint type)
+    {
+        byte[] message = new byte[64];
+        BinaryPrimitives.WriteUInt32LittleEndian(message, type);
+        lock (_messages)
+        {
+            if (_destroyed) return;
+            bool notify = _messages.Count == 0 && _notificationWindow != 0;
+            _messages.Enqueue(message);
+            if (notify) _ = PostMessageW(_notificationWindow, _notificationMessage, 0, 0);
+            _messageEvent.Set();
+        }
+    }
+
+    internal void WakeMessageWaiters()
+    {
+        lock (_messages) _messageEvent.Set();
+    }
+
+    internal unsafe int WaitForMessage(uint count, nint* handles, bool waitAll, uint timeout, uint* output)
+    {
+        nint* nativeHandles = stackalloc nint[64];
+        for (uint i = 0; i < count; i++) nativeHandles[i] = handles[i];
+        bool added = false;
+        var queueHandle = _messageEvent.SafeWaitHandle;
+        try
+        {
+            lock (_messages)
+            {
+                if (_destroyed) return unchecked((int)0x80070006);
+                if (Partition.Failure < 0) return Partition.Failure;
+                if (_messages.Count != 0) { *output = count; return 0; }
+                _messageEvent.Reset();
+                queueHandle.DangerousAddRef(ref added);
+                nativeHandles[count] = queueHandle.DangerousGetHandle();
+            }
+            uint result = WaitForMultipleObjects(count + 1, nativeHandles, waitAll ? 1 : 0, timeout);
+            *output = result;
+            if (result == uint.MaxValue) return Marshal.GetHRForLastWin32Error();
+            lock (_messages)
+            {
+                if (_destroyed) return unchecked((int)0x80070006);
+                return Partition.Failure < 0 ? Partition.Failure : 0;
+            }
+        }
+        finally { if (added) queueHandle.DangerousRelease(); }
+    }
+
+    [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
+    private static extern unsafe uint WaitForMultipleObjects(uint count, nint* handles, int waitAll, uint timeout);
+    [DllImport("user32.dll", ExactSpelling = true)]
+    private static extern int PostMessageW(nint window, uint message, nuint wParam, nint lParam);
+    internal bool PeekMessage(Span<byte> destination)
+    {
+        lock (_messages)
+        {
+            if (!_messages.TryDequeue(out byte[]? message)) { destination.Clear(); return false; }
+            message.AsSpan(0, destination.Length).CopyTo(destination);
+            return true;
+        }
+    }
     private readonly uint _channel;
 
     internal SameThreadChannel(SameThreadPartition partition)
     {
         Partition = partition;
-        _resources = new GeneratedProtocolHandleTable(targets: partition.Targets);
+        _resources = new GeneratedProtocolHandleTable(partition.Videos, targets: partition.Targets) { BadShaderNotification = partition.SetPendingBadShaderNotification };
         _channel = partition.AllocateChannel();
         _router = new GeneratedProtocolProductionContext(_channel, partition.Channels).CreateRouter();
     }
@@ -46,6 +233,7 @@ internal sealed class SameThreadChannel
     internal int DuplicateTo(uint original, SameThreadChannel target, out uint duplicate)
     {
         duplicate = 0;
+        if (_command is not null || target._command is not null) return MissingEndCommand;
         if (!ReferenceEquals(Partition, target.Partition)) return unchecked((int)0x80070057);
         if (!_handles.TryGetValue(original, out Entry? entry)) return unchecked((int)0x80070006);
         if (target._nextHandle == uint.MaxValue) return unchecked((int)0x8007000E);
@@ -62,6 +250,7 @@ internal sealed class SameThreadChannel
 
     internal int CreateOrAddRef(MilResourceType type, ref uint handle)
     {
+        if (_command is not null) return MissingEndCommand;
         if (handle != 0)
         {
             if (!_handles.TryGetValue(handle, out Entry? existing)) return unchecked((int)0x80070006);
@@ -76,7 +265,7 @@ internal sealed class SameThreadChannel
         byte[] packet = GeneratedProtocolPacketWriter.WriteChannelCreateResource(candidate, type);
         var entry = new Entry(type);
         _handles.EnsureCapacity(_handles.Count + 1);
-        _open.Add(packet);
+        RecordPacket(packet);
         _handles.Add(candidate, entry);
         _nextHandle = candidate;
         handle = candidate;
@@ -86,10 +275,11 @@ internal sealed class SameThreadChannel
     internal int Release(uint handle, out bool deleted)
     {
         deleted = false;
+        if (_command is not null) return MissingEndCommand;
         if (!_handles.TryGetValue(handle, out Entry? entry)) return unchecked((int)0x8000FFFF);
         if (entry.References == 1)
         {
-            _open.Add(GeneratedProtocolPacketWriter.WriteChannelDeleteResource(handle, entry.Type));
+            RecordPacket(GeneratedProtocolPacketWriter.WriteChannelDeleteResource(handle, entry.Type));
             _handles.Remove(handle);
             deleted = true;
         }
@@ -97,19 +287,25 @@ internal sealed class SameThreadChannel
         return 0;
     }
 
-    internal void Send(ReadOnlySpan<byte> packet, bool separate)
+    internal int Send(ReadOnlySpan<byte> packet, bool separate)
     {
+        if (!separate && _command is not null) return MissingEndCommand;
         byte[] copy = packet.ToArray();
         if (separate) _closed.Enqueue([copy]);
-        else _open.Add(copy);
+        else RecordPacket(copy);
+        return 0;
     }
 
-    internal void CloseBatch()
+    internal int CloseBatch()
     {
-        if (_open.Count == 0) return;
+        if (_command is not null) return MissingEndCommand;
+        if (_open.Count == 0) return 0;
         List<byte[]> next = [];
         _closed.Enqueue(_open);
         _open = next;
+        _blockRemaining = 0x1000;
+        _totalAllocations = 0x1000;
+        return 0;
     }
 
     internal int Commit()
@@ -128,9 +324,31 @@ internal sealed class SameThreadChannel
         }
     }
 
-    private int CommitBatches()
+    internal Queue<List<byte[]>> DetachBatches()
     {
-        while (_closed.TryDequeue(out List<byte[]>? batch))
+        Queue<List<byte[]>> replacement = [];
+        Queue<List<byte[]>> batches = _closed;
+        _closed = replacement;
+        return batches;
+    }
+
+    internal int CommitSubmitted(Queue<List<byte[]>> batches)
+    {
+        if (_committing) return unchecked((int)0x8000FFFF);
+        _committing = true;
+        try { return CommitBatches(batches); }
+        finally
+        {
+            _committing = false;
+            if (_destroyRequested) ReleaseResources();
+        }
+    }
+
+    private int CommitBatches() => CommitBatches(_closed);
+
+    private int CommitBatches(Queue<List<byte[]>> batches)
+    {
+        while (batches.TryDequeue(out List<byte[]>? batch))
         {
             foreach (byte[] packet in batch)
             {
@@ -144,17 +362,46 @@ internal sealed class SameThreadChannel
                             transferred = _resources.TryGetResource(bitmap.Handle, out GeneratedProtocolResource? resource)
                                 && resource is GeneratedBitmapSourceResource && !resource.IsReleased;
                         MilCommand command = (MilCommand)BinaryPrimitives.ReadUInt32LittleEndian(packet);
+                        if (command == MilCommand.GlyphRunCreate && packet.Length >= 76)
+                        {
+                            uint handle = BinaryPrimitives.ReadUInt32LittleEndian(packet.AsSpan(4));
+                            if (handle != 0 && !_resources.TryGetResource(handle, out _))
+                            {
+                                int created = _resources.Create(handle, MilResourceType.GlyphRun);
+                                if (created < 0)
+                                {
+                                    Partition.Failure = created;
+                                    continue;
+                                }
+                            }
+                            transferred = _resources.TryGetResource(handle, out GeneratedProtocolResource? glyph)
+                                && glyph is GeneratedGlyphRunResource && !glyph.IsReleased;
+                        }
                         if (command is MilCommand.DoubleBufferedBitmap or MilCommand.DoubleBufferedBitmapCopyForward)
                             transferred = _resources.TryGetResource(BinaryPrimitives.ReadUInt32LittleEndian(packet.AsSpan(4)), out GeneratedProtocolResource? target)
                                 && target is GeneratedDoubleBufferedBitmapResource && !target.IsReleased;
-                        int result = _router.ProcessPacket(packet);
+                        if ((command == MilCommand.D3DImage && packet.Length == Marshal.SizeOf<MilD3DImageCommand>())
+                            || (command == MilCommand.D3DImagePresent && packet.Length == Marshal.SizeOf<MilD3DImagePresentCommand>()))
+                            transferred = _resources.TryGetResource(BinaryPrimitives.ReadUInt32LittleEndian(packet.AsSpan(4)), out GeneratedProtocolResource? image)
+                                && image is GeneratedD3DImageResource && !image.IsReleased;
+                        if (command == MilCommand.MediaPlayer && packet.Length == Marshal.SizeOf<MilMediaPlayerCommand>())
+                            transferred = _resources.TryGetResource(BinaryPrimitives.ReadUInt32LittleEndian(packet.AsSpan(4)), out GeneratedProtocolResource? media)
+                                && media is GeneratedMediaPlayerResource && !media.IsReleased;
+                        int result;
+                        if ((uint)command == 3)
+                        {
+                            result = packet.Length == 8 ? 0 : Direct3D9Factory.UceMalformedPacketHResult;
+                            if (result >= 0) Partition.RegisterNotifications(this, BinaryPrimitives.ReadInt32LittleEndian(packet.AsSpan(4)) != 0);
+                        }
+                        else result = _router.ProcessPacket(packet);
                         if (Partition.Failure >= 0) Partition.Failure = result;
                     }
                 }
-                catch (OutOfMemoryException)
-                {
-                    if (Partition.Failure >= 0) Partition.Failure = unchecked((int)0x8007000E);
-                }
+                catch (OutOfMemoryException error) { PreserveFailure(error); }
+                catch (ArgumentException error) { PreserveFailure(error); }
+                catch (InvalidOperationException error) { PreserveFailure(error); }
+                catch (ExternalException error) { PreserveFailure(error); }
+                catch (OverflowException error) { PreserveFailure(error); }
                 finally
                 {
                     if (!transferred) ReleasePacket(packet);
@@ -162,6 +409,12 @@ internal sealed class SameThreadChannel
             }
         }
         return Partition.Failure;
+    }
+
+    private void PreserveFailure(Exception error)
+    {
+        int result = PartitionScheduler.RecordFailure(error);
+        if (Partition.Failure >= 0) Partition.Failure = result;
     }
 
     private static bool TryGetBitmapPacket(byte[] packet, out MilBitmapSourceCommand command)
@@ -179,6 +432,18 @@ internal sealed class SameThreadChannel
     private static void ReleasePacket(byte[] packet)
     {
         MilCommand command = (MilCommand)BinaryPrimitives.ReadUInt32LittleEndian(packet);
+        if (command == MilCommand.MediaPlayer && packet.Length == Marshal.SizeOf<MilMediaPlayerCommand>())
+        {
+            nint media = (nint)MemoryMarshal.Read<MilMediaPlayerCommand>(packet).Media;
+            packet.AsSpan(8, 8).Clear();
+            Direct3D9Factory.Release(media);
+        }
+        if (command == MilCommand.GlyphRunCreate && packet.Length >= 76)
+        {
+            nint font = (nint)BinaryPrimitives.ReadUInt64LittleEndian(packet.AsSpan(8));
+            packet.AsSpan(8, 8).Clear();
+            Direct3D9Factory.Release(font);
+        }
         if (command == MilCommand.DoubleBufferedBitmap && packet.Length == Marshal.SizeOf<MilDoubleBufferedBitmapCommand>())
         {
             nint doubleBitmap = (nint)MemoryMarshal.Read<MilDoubleBufferedBitmapCommand>(packet).Bitmap;
@@ -189,6 +454,19 @@ internal sealed class SameThreadChannel
         {
             nint handle = (nint)MemoryMarshal.Read<MilDoubleBufferedBitmapCopyCommand>(packet).Event;
             packet.AsSpan(8, 8).Clear();
+            GeneratedDoubleBufferedBitmapResource.Complete(handle);
+        }
+        if (command == MilCommand.D3DImage && packet.Length == Marshal.SizeOf<MilD3DImageCommand>())
+        {
+            var image = MemoryMarshal.Read<MilD3DImageCommand>(packet);
+            packet.AsSpan(8).Clear();
+            Direct3D9Factory.Release((nint)image.SoftwareBitmap);
+            Direct3D9Factory.Release((nint)image.InteropBitmap);
+        }
+        if (command == MilCommand.D3DImagePresent && packet.Length == Marshal.SizeOf<MilD3DImagePresentCommand>())
+        {
+            nint handle = (nint)MemoryMarshal.Read<MilD3DImagePresentCommand>(packet).Event;
+            packet.AsSpan(8).Clear();
             GeneratedDoubleBufferedBitmapResource.Complete(handle);
         }
         if (TryGetBitmapPacket(packet, out MilBitmapSourceCommand bitmap))
@@ -223,6 +501,15 @@ internal sealed class SameThreadChannel
     {
         if (_destroyed) return;
         _destroyed = true;
+        _command = null;
+        _commandLength = 0;
+        Partition.RegisterNotifications(this, false);
+        lock (_messages)
+        {
+            _notificationWindow = 0;
+            _messages.Clear();
+            _messageEvent.Set();
+        }
         Partition.Channels.Remove(_channel);
         while (_open.Count != 0)
         {

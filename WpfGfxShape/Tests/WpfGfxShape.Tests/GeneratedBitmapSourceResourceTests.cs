@@ -162,6 +162,136 @@ public sealed unsafe class GeneratedBitmapSourceResourceTests
         Assert.AreEqual((Direct3D9Factory.UceMalformedPacketHResult, 1), (result, bitmap.State->References));
     }
 
+    [TestMethod]
+    public void WhenSourceIsPinnedThenNoExternalReferenceIsAdded()
+    {
+        using BitmapStub bitmap = new();
+        var (table, router) = Context();
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteBitmapSource(1, bitmap.Instance));
+        using FrozenBitmapLease? lease = Get(table).PinBitmapSource();
+        int references = bitmap.State->References;
+        _ = table.Delete(1, MilResourceType.BitmapSource);
+        Assert.AreEqual(1, references);
+    }
+
+    [TestMethod]
+    public void WhenPinnedSourceIsReplacedThenOldIdentityRemainsAlive()
+    {
+        using BitmapStub first = new();
+        using BitmapStub second = new();
+        var (table, router) = Context();
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteBitmapSource(1, first.Instance));
+        using FrozenBitmapLease? lease = Get(table).PinBitmapSource();
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteBitmapSource(1, second.Instance));
+        var actual = (lease?.Pointer, first.State->References, Get(table).Bitmap);
+        _ = table.Delete(1, MilResourceType.BitmapSource);
+        Assert.AreEqual(((nint?)first.Instance, 1, second.Instance), actual);
+    }
+
+    [TestMethod]
+    public void WhenPinnedSourceHandleIsDeletedThenLeaseCanAcquireOldSource()
+    {
+        using BitmapStub bitmap = new();
+        var (table, router) = Context();
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteBitmapSource(1, bitmap.Instance));
+        using FrozenBitmapLease? lease = Get(table).PinBitmapSource();
+        _ = table.Delete(1, MilResourceType.BitmapSource);
+        nint acquired = lease!.Acquire();
+        var actual = (acquired, bitmap.State->References);
+        Direct3D9Factory.Release(acquired);
+        Assert.AreEqual((bitmap.Instance, 2), actual);
+    }
+
+    [TestMethod]
+    public void WhenLastRetiredPinIsDisposedTwiceThenOwnedReferenceReleasesOnce()
+    {
+        using BitmapStub bitmap = new();
+        var (table, router) = Context();
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteBitmapSource(1, bitmap.Instance));
+        FrozenBitmapLease? lease = Get(table).PinBitmapSource();
+        _ = table.Delete(1, MilResourceType.BitmapSource);
+        lease!.Dispose();
+        lease.Dispose();
+        Assert.AreEqual(0, bitmap.State->References);
+    }
+
+    [TestMethod]
+    public void WhenOneOfTwoRetiredPinsIsDisposedThenSourceRemainsAlive()
+    {
+        using BitmapStub bitmap = new();
+        var (table, router) = Context();
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteBitmapSource(1, bitmap.Instance));
+        using FrozenBitmapLease? first = Get(table).PinBitmapSource();
+        using FrozenBitmapLease? second = Get(table).PinBitmapSource();
+        _ = table.Delete(1, MilResourceType.BitmapSource);
+        first!.Dispose();
+        Assert.AreEqual(1, bitmap.State->References);
+    }
+
+    [TestMethod]
+    public void WhenAllRetiredPinsAreDisposedThenSourceIsReleased()
+    {
+        using BitmapStub bitmap = new();
+        var (table, router) = Context();
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteBitmapSource(1, bitmap.Instance));
+        using FrozenBitmapLease? first = Get(table).PinBitmapSource();
+        using FrozenBitmapLease? second = Get(table).PinBitmapSource();
+        _ = table.Delete(1, MilResourceType.BitmapSource);
+        first!.Dispose();
+        second!.Dispose();
+        Assert.AreEqual(0, bitmap.State->References);
+    }
+
+    [TestMethod]
+    public void WhenActivePinIsDisposedThenOwnerReferenceRemains()
+    {
+        using BitmapStub bitmap = new();
+        var (table, router) = Context();
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteBitmapSource(1, bitmap.Instance));
+        using FrozenBitmapLease? lease = Get(table).PinBitmapSource();
+        lease!.Dispose();
+        int references = bitmap.State->References;
+        _ = table.Delete(1, MilResourceType.BitmapSource);
+        Assert.AreEqual(1, references);
+    }
+
+    [TestMethod]
+    public void WhenDisposedPinAcquiresThenItRejectsTheOperation()
+    {
+        using BitmapStub bitmap = new();
+        var (table, router) = Context();
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteBitmapSource(1, bitmap.Instance));
+        using FrozenBitmapLease? lease = Get(table).PinBitmapSource();
+        lease!.Dispose();
+        _ = table.Delete(1, MilResourceType.BitmapSource);
+        Assert.ThrowsExactly<ObjectDisposedException>(() => lease.Acquire());
+    }
+
+    [TestMethod]
+    public void WhenAcquireAddRefRebindsThenOldSourceSurvivesUntilAddRefCompletes()
+    {
+        using BitmapStub first = new();
+        using BitmapStub second = new();
+        var (table, router) = Context();
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteBitmapSource(1, first.Instance));
+        int duringCallback = -1;
+        GCHandle callback = GCHandle.Alloc((Action)(() =>
+        {
+            _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteBitmapSource(1, second.Instance));
+            duringCallback = first.State->References;
+        }));
+        try
+        {
+            first.State->AddRefCallback = GCHandle.ToIntPtr(callback);
+            nint acquired = Get(table).AcquireBitmapSource();
+            var actual = (acquired, duringCallback, first.State->References);
+            Direct3D9Factory.Release(acquired);
+            _ = table.Delete(1, MilResourceType.BitmapSource);
+            Assert.AreEqual((first.Instance, 1, 1), actual);
+        }
+        finally { callback.Free(); }
+    }
+
     private static byte[] Create(uint handle, MilResourceType type) => GeneratedProtocolPacketWriter.WriteChannelCreateResource(handle, type);
     private static GeneratedProtocolResource Resource(GeneratedProtocolHandleTable table, uint handle) { Assert.IsTrue(table.TryGetResource(handle, out GeneratedProtocolResource? value)); return value!; }
     private static GeneratedBitmapSourceResource Get(GeneratedProtocolHandleTable table) => (GeneratedBitmapSourceResource)Resource(table, 1);
@@ -171,6 +301,7 @@ public sealed unsafe class GeneratedBitmapSourceResourceTests
     {
         internal void** Vtable;
         internal int References;
+        internal nint AddRefCallback;
         internal int QueryResult;
         internal BitmapState* QueryOutput;
         internal int DirtyResult;
@@ -205,7 +336,13 @@ public sealed unsafe class GeneratedBitmapSourceResourceTests
         result->References++; *output = (nint)result; return state->QueryResult;
     }
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
-    private static uint AddRef(BitmapState* state) => (uint)++state->References;
+    private static uint AddRef(BitmapState* state)
+    {
+        nint callback = state->AddRefCallback;
+        state->AddRefCallback = 0;
+        if (callback != 0) ((Action)GCHandle.FromIntPtr(callback).Target!).Invoke();
+        return (uint)++state->References;
+    }
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static uint Release(BitmapState* state) => (uint)--state->References;
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]

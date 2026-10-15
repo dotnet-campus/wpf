@@ -110,6 +110,8 @@ internal sealed class GeneratedBitmapCacheResource : GeneratedDependencyResource
 {
     internal GeneratedBitmapCacheResource() : base(MilResourceType.BitmapCache) { }
     internal double RenderAtScale { get; private set; }
+    internal double CurrentRenderAtScale => Math.Max(0,
+        RenderAtScaleAnimation is GeneratedValueResource<double> animation ? animation.Value : RenderAtScale);
     internal GeneratedProtocolResource? RenderAtScaleAnimation { get; private set; }
     internal bool SnapsToDevicePixels { get; private set; }
     internal bool EnableClearType { get; private set; }
@@ -129,7 +131,13 @@ internal sealed class GeneratedVisualResource : GeneratedProtocolResource
     private GeneratedProtocolResource? _clip;
     private GeneratedProtocolResource? _content;
     private GeneratedProtocolResource? _alphaMask;
+    private GeneratedProtocolResource? _effect;
     internal GeneratedVisualResource() : base(MilResourceType.Visual) { }
+    internal static GeneratedVisualResource CreateStatic(GeneratedProtocolResource content)
+    {
+        content.AddRef();
+        return new() { _content = content };
+    }
     internal MilPoint2D Offset { get; private set; }
     internal double Alpha { get; private set; } = 1;
     internal uint? BitmapScalingMode { get; private set; }
@@ -138,6 +146,7 @@ internal sealed class GeneratedVisualResource : GeneratedProtocolResource
     internal GeneratedProtocolResource? Clip => _clip;
     internal GeneratedProtocolResource? Content => _content;
     internal GeneratedProtocolResource? AlphaMask => _alphaMask;
+    internal GeneratedProtocolResource? Effect => _effect;
     internal GeneratedVisualResource? Parent { get; private set; }
     internal IReadOnlyList<GeneratedVisualResource> Children => _children;
     internal int ProcessCommand(GeneratedProtocolHandleTable table, MilCommand command, ReadOnlySpan<byte> packet) => command switch
@@ -150,6 +159,7 @@ internal sealed class GeneratedVisualResource : GeneratedProtocolResource
         MilCommand.VisualSetClip => SetDependency(table, packet, static type => type is >= MilResourceType.LineGeometry and <= MilResourceType.PathGeometry, 1),
         MilCommand.VisualSetContent => SetDependency(table, packet, static type => type is MilResourceType.RenderData or >= MilResourceType.GeometryDrawing and <= MilResourceType.DrawingGroup, 2),
         MilCommand.VisualSetAlphaMask => SetDependency(table, packet, GeneratedEffectResource.IsBrush, 3),
+        MilCommand.VisualSetEffect => SetDependency(table, packet, static type => type is MilResourceType.ShaderEffect or MilResourceType.BlurEffect or MilResourceType.DropShadowEffect, 4),
         MilCommand.VisualInsertChildAt => InsertChild(table, packet),
         MilCommand.VisualRemoveChild => RemoveChild(table, packet),
         MilCommand.VisualRemoveAllChildren => RemoveAll(packet),
@@ -176,8 +186,8 @@ internal sealed class GeneratedVisualResource : GeneratedProtocolResource
     {
         if (packet.Length != 12) return Direct3D9Factory.UceMalformedPacketHResult; uint handle = MemoryMarshal.Read<uint>(packet[8..]); GeneratedProtocolResource? next = null;
         if (handle != 0 && (!table.TryGetResource(handle, out next) || next is null || !accepts(next.ResourceType))) return Direct3D9Factory.UceMalformedPacketHResult;
-        GeneratedProtocolResource? previous = slot switch { 0 => _transform, 1 => _clip, 2 => _content, _ => _alphaMask }; if (ReferenceEquals(previous, next)) return 0;
-        next?.AddListener(this); if (slot == 0) _transform = next; else if (slot == 1) _clip = next; else if (slot == 2) _content = next; else _alphaMask = next; previous?.RemoveListener(this); NotifyChanged(); return 0;
+        GeneratedProtocolResource? previous = slot switch { 0 => _transform, 1 => _clip, 2 => _content, 3 => _alphaMask, _ => _effect }; if (ReferenceEquals(previous, next)) return 0;
+        next?.AddListener(this); if (slot == 0) _transform = next; else if (slot == 1) _clip = next; else if (slot == 2) _content = next; else if (slot == 3) _alphaMask = next; else _effect = next; previous?.RemoveListener(this); NotifyChanged(); return 0;
     }
     private int InsertChild(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> packet)
     {
@@ -193,7 +203,7 @@ internal sealed class GeneratedVisualResource : GeneratedProtocolResource
         _children.Remove(child); child.Parent = null; child.RemoveListener(this); NotifyChanged(); return 0;
     }
     private int RemoveAll(ReadOnlySpan<byte> packet) { if (packet.Length != 8) return Direct3D9Factory.UceMalformedPacketHResult; foreach (GeneratedVisualResource child in _children) { child.Parent = null; child.RemoveListener(this); } _children.Clear(); NotifyChanged(); return 0; }
-    protected override void OnFinalRelease() { foreach (GeneratedVisualResource child in _children) { child.Parent = null; child.RemoveListener(this); } _children.Clear(); ReleaseDependency(ref _transform); ReleaseDependency(ref _clip); ReleaseDependency(ref _content); ReleaseDependency(ref _alphaMask); }
+    protected override void OnFinalRelease() { foreach (GeneratedVisualResource child in _children) { child.Parent = null; child.RemoveListener(this); } _children.Clear(); ReleaseDependency(ref _transform); ReleaseDependency(ref _clip); ReleaseDependency(ref _content); ReleaseDependency(ref _alphaMask); ReleaseDependency(ref _effect); }
     private void ReleaseDependency(ref GeneratedProtocolResource? dependency) { dependency?.RemoveListener(this); dependency = null; }
 }
 
@@ -213,6 +223,9 @@ internal sealed class GeneratedTargetResource : GeneratedProtocolResource
 {
     private GeneratedVisualResource? _root;
     private nint _renderTarget;
+    private nint _window;
+    private bool _renderingEnabled = true;
+    private uint _disableCookie;
     internal uint Width { get; private set; }
     internal uint Height { get; private set; }
     internal GeneratedTargetResource(MilResourceType type) : base(type) { }
@@ -223,6 +236,8 @@ internal sealed class GeneratedTargetResource : GeneratedProtocolResource
     internal MilRenderTargetInitializationFlags Flags { get; private set; }
     internal int ProcessCommand(GeneratedProtocolHandleTable table, MilCommand command, ReadOnlySpan<byte> packet) => command switch
     {
+        MilCommand.HwndTargetCreate => CreateHwndTarget(packet),
+        MilCommand.TargetUpdateWindowSettings => UpdateWindowSettings(packet),
         MilCommand.GenericTargetCreate => CreateGenericTarget(packet),
         MilCommand.TargetSetRoot => SetRoot(table, packet),
         MilCommand.TargetSetClearColor => SetClearColor(packet),
@@ -234,6 +249,61 @@ internal sealed class GeneratedTargetResource : GeneratedProtocolResource
     private int SetClearColor(ReadOnlySpan<byte> packet) { if (packet.Length != 24) return Direct3D9Factory.UceMalformedPacketHResult; ClearColor = MemoryMarshal.Read<MilColorF>(packet[8..]); NotifyChanged(); return 0; }
     private int Invalidate(ReadOnlySpan<byte> packet) { if (packet.Length != 24) return Direct3D9Factory.UceMalformedPacketHResult; InvalidatedRect = MemoryMarshal.Read<MilRectL>(packet[8..]); InvalidationCount++; NotifyChanged(); return 0; }
     private int SetFlags(ReadOnlySpan<byte> packet) { if (packet.Length != 12) return Direct3D9Factory.UceMalformedPacketHResult; MilRenderTargetInitializationFlags flags = MemoryMarshal.Read<MilRenderTargetInitializationFlags>(packet[8..]); const MilRenderTargetInitializationFlags allowed = MilRenderTargetInitializationFlags.TypeMask | MilRenderTargetInitializationFlags.UseRefRast | MilRenderTargetInitializationFlags.UseRgbRast | MilRenderTargetInitializationFlags.DisableDirtyRectangles; if ((flags & ~allowed) != 0) return Direct3D9Factory.InvalidArgumentHResult; Flags = flags; NotifyChanged(); return 0; }
+    private int CreateHwndTarget(ReadOnlySpan<byte> packet)
+    {
+        if (ResourceType != MilResourceType.HwndRenderTarget || packet.Length != 92)
+            return Direct3D9Factory.UceMalformedPacketHResult;
+        nint window = (nint)MemoryMarshal.Read<ulong>(packet[8..]);
+        uint width = MemoryMarshal.Read<uint>(packet[32..]);
+        uint height = MemoryMarshal.Read<uint>(packet[36..]);
+        var flags = (MilRenderTargetInitializationFlags)MemoryMarshal.Read<uint>(packet[56..]);
+        if ((flags & MilRenderTargetInitializationFlags.TypeMask) is MilRenderTargetInitializationFlags.SoftwareOnly
+            or MilRenderTargetInitializationFlags.Null)
+            return Direct3D9Factory.NotImplementedHResult;
+        int hr = WpfGfxShape.Abi.HardwareRenderTargetExports.Create(window, width, height, out nint next);
+        if (hr < 0) return hr;
+        nint previous = _renderTarget;
+        _renderTarget = next; _window = window; Width = width; Height = height; Flags = flags;
+        ClearColor = MemoryMarshal.Read<MilColorF>(packet[40..]);
+        Direct3D9Factory.Release(previous);
+        return 0;
+    }
+
+    private int UpdateWindowSettings(ReadOnlySpan<byte> packet)
+    {
+        if (ResourceType != MilResourceType.HwndRenderTarget || packet.Length != 72)
+            return Direct3D9Factory.UceMalformedPacketHResult;
+        uint layer = MemoryMarshal.Read<uint>(packet[24..]);
+        uint transparency = MemoryMarshal.Read<uint>(packet[28..]);
+        if (layer > 2 || (transparency & ~7u) != 0)
+            return Direct3D9Factory.UceMalformedPacketHResult;
+        bool child = MemoryMarshal.Read<int>(packet[36..]) != 0;
+        bool enabled = MemoryMarshal.Read<int>(packet[44..]) != 0;
+        uint cookie = MemoryMarshal.Read<uint>(packet[64..]);
+        if (!child && enabled && cookie != _disableCookie) return 0;
+        if (!child && !enabled) _disableCookie = cookie;
+        _renderingEnabled = child || enabled;
+        if (!child || layer == 2)
+        {
+            long width = (long)MemoryMarshal.Read<int>(packet[16..]) - MemoryMarshal.Read<int>(packet[8..]);
+            long height = (long)MemoryMarshal.Read<int>(packet[20..]) - MemoryMarshal.Read<int>(packet[12..]);
+            uint nextWidth = (uint)Math.Clamp(width, 0, int.MaxValue);
+            uint nextHeight = (uint)Math.Clamp(height, 0, int.MaxValue);
+            if (nextWidth != 0 && nextHeight != 0 && (nextWidth != Width || nextHeight != Height))
+            {
+                int result = WpfGfxShape.Abi.HardwareRenderTargetExports.Create(_window, nextWidth, nextHeight, out nint next);
+                if (result < 0) return result;
+                nint previous = _renderTarget;
+                _renderTarget = next;
+                Direct3D9Factory.Release(previous);
+            }
+            Width = nextWidth;
+            Height = nextHeight;
+        }
+        NotifyChanged();
+        return 0;
+    }
+
     private unsafe int CreateGenericTarget(ReadOnlySpan<byte> packet)
     {
         if (ResourceType != MilResourceType.GenericRenderTarget || packet.Length != Marshal.SizeOf<MilGenericTargetCreateCommand>())
@@ -251,19 +321,24 @@ internal sealed class GeneratedTargetResource : GeneratedProtocolResource
         return 0;
     }
 
-    internal unsafe int Render()
+    internal unsafe int Render(bool signalPresent = true)
     {
         nint target = _renderTarget;
         GeneratedVisualResource? root = _root;
         uint width = Width, height = Height;
-        if (target == 0 || root is null || width == 0 || height == 0) return 0;
-        root.AddRef();
+        if (!_renderingEnabled || target == 0 || width == 0 || height == 0) return 0;
+        root?.AddRef();
         ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)target)[1])(target);
-        try { return GeneratedVisualRenderer.Render(root, target, width, height); }
+        try
+        {
+            return WpfGfxShape.Abi.HardwareRenderTargetExports.IsHardware(target)
+                ? WpfGfxShape.Abi.HardwareRenderTargetExports.Render(target, root, ClearColor, signalPresent)
+                : root is null ? 0 : GeneratedVisualRenderer.Render(root, target, width, height);
+        }
         finally
         {
             Direct3D9Factory.Release(target);
-            root.Release();
+            root?.Release();
         }
     }
 

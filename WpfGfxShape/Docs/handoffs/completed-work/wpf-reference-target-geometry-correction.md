@@ -1,0 +1,17 @@
+# 原版校准：目标几何输入校正
+
+复查COM fixture确认sourceMode18在consumer专用矩形之后覆盖targetRect为(-10,-10,20,20)，stroke厚度仍2。上一轮WPF实验使用4×4填充或1×1描边，与实际输入不一致；旧969d样本不得继续用于校准，不把误报归因于生产算法。
+
+本轮统一原版各consumer目标矩形及映射bounds，显式记录TargetGeometry/PenThickness；COM校准测试在渲染前断言目标几何与厚度一致，避免输入不一致被当成像素差异。
+
+原版2/2通过，固定文件Tests/WpfGfxShape.WpfReference/TestResults/original-wpf-9b086acaacdb4ddd9fb6835903993cf3.json，SHA256 3AD4DB6DA417053DF556BE6F3DC201F7AA7BFCE0B46C551F1B59468DBD4F975F。
+
+450组全图中364一致、86不同：17无旋转3/45，17旋转45/45，18无旋转8/45，18旋转30/45。此前116降至86是纠正实验输入，不是生产修复。原22–27的270组仍全过。
+
+报告Tests/WpfGfxShape.ComAcceptance/TestResults/wpf-calibration-bcf97b10de824f288f49e57e94235816.json。COM全量890通过1失败、0跳过、总891、2秒；严格差异测试仍失败，没有放宽或skip。TRX Run ID 2d48ce6d-5840-47cb-84d2-5bf6a925c9f3，Tests/WpfGfxShape.ComAcceptance/TestResults/com-acceptance.trx。
+
+本轮未修改生产源码、未发布，使用AOT SHA256 3A5A375270B9DD5AEFE7F8F85550CDC41ADA3C843E3496E38D72DF880106C54C。原版DLL SHA256 501A1CD67D51BB1663870B12AF0F8C0BA29B3D37B8B509BE896D2AAF32DB214A。不是新的稳定基线。
+
+读取原生drawingcontext.cpp 4185–4215确认Visual bitmap scaling的模式1/2为Linear，模式3为NearestNeighbor。尚无充分证据认定DrawingImage intermediate最终采样必须强制Linear，故未应用此猜测。旋转差异含小幅覆盖/量化差及nearest较大差异，必须分别定位，不直接回填AOT值或放宽精度。
+
+下一闭环仍为：实色/同刷子对照隔离目标扫描覆盖与源surface过滤，核对原生DrawingImage realization模式和映射顺序，联合修正真实生产差异及fill/stroke/mask生命周期后发布验收。完整intermediate合同尚未关闭。

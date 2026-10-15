@@ -20,13 +20,14 @@ public sealed unsafe class GeneratedMediaPlayerResourceTests
     }
 
     [TestMethod]
-    public void WhenProviderNeedsNativeBridgeThenFailureReleasesBothReferencesWithoutNotification()
+    public void WhenProviderIsAcceptedThenResourceRetainsMediaUntilDeleted()
     {
         using MediaStub media = new();
         var (table, router, resource) = Context();
         int result = router.ProcessPacket(Packet(media, -1));
+        var retained = (media.State->References, media.State->Releases);
         _ = table.Delete(1, MilResourceType.MediaPlayer);
-        Assert.AreEqual((unchecked((int)0x80004001), 0, 2, true, 0), (result, media.State->References, media.State->Releases, resource.NotifyUceDirect, resource.ChangeCount));
+        Assert.AreEqual((0, (1, 1), 0, 2, true, 1), (result, retained, media.State->References, media.State->Releases, resource.NotifyUceDirect, resource.ChangeCount));
     }
 
     [TestMethod]
@@ -85,8 +86,9 @@ public sealed unsafe class GeneratedMediaPlayerResourceTests
     public void WhenBatchFailsThenUnexecutedPacketReferenceRemainsWithCaller()
     {
         using MediaStub first = new(); using MediaStub second = new(); var (_, router, _) = Context();
+        first.State->QueryResult = Direct3D9Factory.NoInterfaceHResult;
         int result = router.ProcessPackets([Packet(first), Packet(second)]);
-        Assert.AreEqual((unchecked((int)0x80004001), 0, 1), (result, first.State->References, second.State->References));
+        Assert.AreEqual((Direct3D9Factory.NoInterfaceHResult, 0, 2, 1, 0), (result, first.State->References, first.State->Releases, second.State->References, second.State->Releases));
     }
 
     [TestMethod]

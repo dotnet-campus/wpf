@@ -27,6 +27,7 @@ internal static class GeneratedDrawingInstructions
         HashSet<GeneratedProtocolResource> active)
     {
         if (drawing is null) return true;
+        if (drawing is GeneratedRenderDataResource frozen) { output.AddRange(frozen.Instructions); return true; }
         if (!active.Add(drawing) || active.Count > 256) return false;
         try
         {
@@ -36,12 +37,26 @@ internal static class GeneratedDrawingInstructions
                 output.Add(Instruction(GeneratedRenderDataKind.DrawGeometry, geometry.Slots.ToArray()));
                 return true;
             }
+            if (drawing is GeneratedGlyphRunDrawingResource glyphDrawing)
+            {
+                if (glyphDrawing.Slots.Count == 0) return true;
+                output.Add(Instruction(GeneratedRenderDataKind.DrawGlyphRun, [glyphDrawing.Slots[1], glyphDrawing.Slots[0]]));
+                return true;
+            }
             if (drawing is GeneratedImageDrawingResource imageDrawing)
             {
                 if (imageDrawing.Slots.Count == 0) return true;
                 var rectangle = imageDrawing.Slots[1] is GeneratedValueResource<MilRectD> animatedRect
                     ? animatedRect.Value : imageDrawing.Rect;
                 output.Add(Instruction(GeneratedRenderDataKind.DrawImage, [imageDrawing.Slots[0]], Bytes(rectangle)));
+                return true;
+            }
+            if (drawing is GeneratedVideoDrawingResource videoDrawing)
+            {
+                if (videoDrawing.Slots.Count == 0) return true;
+                var rectangle = videoDrawing.Slots[1] is GeneratedValueResource<MilRectD> animatedRect
+                    ? animatedRect.Value : videoDrawing.Rect;
+                output.Add(Instruction(GeneratedRenderDataKind.DrawVideo, [videoDrawing.Slots[0]], Bytes(rectangle)));
                 return true;
             }
             if (drawing is not GeneratedDrawingGroupResource group) return false;

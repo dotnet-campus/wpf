@@ -231,7 +231,7 @@ internal static unsafe partial class BitmapRenderTargetExports
                 if (coverage is null && shape != 0)
                 {
                     int result = NativeShapeReader.Capture(shape,
-                        ToImageTransform(((NativeContextPrefix*)context)->WorldToDevice), out coverage);
+                        ToImageTransform(((NativeContextPrefix*)context)->WorldToDevice), out coverage, clip);
                     if (result < 0) return result;
                 }
                 return ConsumeSoftwareRealization(primitive.Renderer, realizer, brushContext, context, creator,
@@ -243,7 +243,8 @@ internal static unsafe partial class BitmapRenderTargetExports
                 var coverage = primitive.StrokeCoverage;
                 if (shape != 0 && pen != 0)
                 {
-                    int result = NativeStrokeReader.Widen(shape, pen, ((NativeContextPrefix*)context)->WorldToDevice, out coverage);
+                    int result = NativeStrokeReader.Widen(shape, pen, ((NativeContextPrefix*)context)->WorldToDevice,
+                        out coverage, out _, clip: clip);
                     if (result < 0) return result;
                 }
                 return ConsumeSoftwareRealization(primitive.Renderer, realizer, brushContext, context, creator,
@@ -284,7 +285,7 @@ internal static unsafe partial class BitmapRenderTargetExports
         var coverage = strokeCoverage;
         if (coverage is null)
         {
-            result = NativeShapeReader.Capture(shape, transform, out coverage);
+            result = NativeShapeReader.Capture(shape, transform, out coverage, clip);
             if (result < 0) return result;
         }
         var drawing = drawingContext ?? new SoftwareImageDrawingContext(GeneratedImageTransform.Identity, clip, 3, state.Compositing,
@@ -322,7 +323,9 @@ internal static unsafe partial class BitmapRenderTargetExports
         if (matrix.M13 != 0 || matrix.M14 != 0 || matrix.M23 != 0 || matrix.M24 != 0
             || matrix.M31 != 0 || matrix.M32 != 0 || matrix.M33 != 1 || matrix.M34 != 0
             || matrix.M43 != 0 || matrix.M44 != 1) return NotImplemented;
-        var mapping = new GeneratedImageTransform(matrix.M11, matrix.M22, matrix.M41, matrix.M42, matrix.M12, matrix.M21);
+        var mapping = NativeImmediateSolidRealization.TryGetExactMapping(brush, out var exactMapping)
+            ? exactMapping
+            : new GeneratedImageTransform(matrix.M11, matrix.M22, matrix.M41, matrix.M42, matrix.M12, matrix.M21);
         if (space == 1) mapping = worldToDevice.Prepend(mapping);
         if (!mapping.TryInvert(out _)) return 0;
         if (*(int*)(brush + 200) != 0)
@@ -330,15 +333,48 @@ internal static unsafe partial class BitmapRenderTargetExports
             Vector2* points = (Vector2*)(brush + 160);
             var clipTransform = space == 1 ? worldToDevice : GeneratedImageTransform.Identity;
             var polygon = new MilPoint2D[4];
-            for (int i = 0; i < polygon.Length; i++)
+            if (NativeImmediateSolidRealization.TryGetExactSourceClip(brush, out var rectangle))
             {
-                var point = clipTransform.Apply(points[i].X, points[i].Y);
-                polygon[i] = new(point.X, point.Y);
+                var exactClip = NativeImmediateSolidRealization.TryGetExactClipMapping(brush, out var independentClip)
+                    ? space == 1 ? worldToDevice.Prepend(independentClip) : independentClip
+                    : mapping;
+                var p0 = exactClip.Apply(rectangle.X, rectangle.Y);
+                var p1 = exactClip.Apply(rectangle.X + rectangle.Width, rectangle.Y);
+                var p2 = exactClip.Apply(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height);
+                var p3 = exactClip.Apply(rectangle.X, rectangle.Y + rectangle.Height);
+                polygon[0] = new(p0.X, p0.Y);
+                polygon[1] = new(p1.X, p1.Y);
+                polygon[2] = new(p2.X, p2.Y);
+                polygon[3] = new(p3.X, p3.Y);
             }
-            if (!SoftwarePathCoverage.TryCreateFigures([polygon], MilFillMode.Winding, out var path)) return InvalidArgument;
-            if (path is null) return Direct3D9Factory.UnexpectedHResult;
-            var sourceClip = new SoftwareImageCoverage(path);
-            coverage = coverage is null ? sourceClip : SoftwareImageCoverage.Combine(coverage, sourceClip, MilCombineMode.Intersect);
+            else
+            {
+                for (int i = 0; i < polygon.Length; i++)
+                {
+                    var point = clipTransform.Apply(points[i].X, points[i].Y);
+                    polygon[i] = new(point.X, point.Y);
+                }
+            }
+            if (NativeImmediateSolidRealization.TryGetExactClipMapping(brush, out var viewportMapping)
+                && NativeImmediateSolidRealization.TryGetExactSourceClip(brush, out var viewport))
+            {
+                if (space == 1) viewportMapping = worldToDevice.Prepend(viewportMapping);
+                if (!SoftwareImageCoverage.TryCreate(viewport, viewportMapping, out var viewportCoverage, renderer.TargetBounds))
+                    return InvalidArgument;
+                if (coverage is null) coverage = viewportCoverage;
+                else if (polygon.All(point => Math.Abs(point.X) < 524288 && Math.Abs(point.Y) < 524288)
+                    && coverage.TryClipParallelogram(polygon, out var clippedCoverage))
+                    coverage = clippedCoverage;
+                else coverage = SoftwareImageCoverage.Combine(coverage, viewportCoverage, MilCombineMode.Intersect);
+            }
+            else
+            {
+                if (!SoftwarePathCoverage.TryCreateFigures([polygon], MilFillMode.Winding, out var path)) return InvalidArgument;
+                if (path is null) return Direct3D9Factory.UnexpectedHResult;
+                var sourceClip = new SoftwareImageCoverage(path);
+                if (coverage is null) coverage = sourceClip;
+                else if (!coverage.TryClipParallelogram(polygon, out coverage)) return NotImplemented;
+            }
         }
         ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)source)[1])(source);
         try
@@ -352,6 +388,7 @@ internal static unsafe partial class BitmapRenderTargetExports
             return renderer.DrawTransformed(source, new(0, 0, width, height), drawing with
             {
                 WorldToDevice = mapping,
+                WorkingFormat = NativeImmediateSolidRealization.GetWorkingFormat(brush),
                 GeometryMask = coverage,
                 WrapMode = wrapMode,
                 BorderColor = new MilColorF(border.W, border.X, border.Y, border.Z),

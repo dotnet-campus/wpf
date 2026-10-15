@@ -129,10 +129,10 @@ public sealed unsafe partial class ManagedStreamTests
         return bytes;
     }
 
-    internal static nint CreateCallbackStream(nint module, byte[] bytes, Action beforeRead, Action? disposed = null)
+    internal static nint CreateCallbackStream(nint module, byte[] bytes, Action beforeRead, Action? disposed = null, Func<int>? readResult = null)
     {
         var create = (delegate* unmanaged[Stdcall]<Descriptor*, nint*, int>)NativeLibrary.GetExport(module, "MILCreateStreamFromStreamDescriptor");
-        var source = new MemorySource(create) { BeforeRead = beforeRead, Disposed = disposed };
+        var source = new MemorySource(create) { BeforeRead = beforeRead, Disposed = disposed, ReadResult = readResult };
         source.Stream.Write(bytes);
         source.Stream.Position = 0;
         Marshal.ThrowExceptionForHR(source.Create(out nint stream));
@@ -152,6 +152,7 @@ public sealed unsafe partial class ManagedStreamTests
         internal readonly MemoryStream Stream = new();
         internal int Disposals;
         internal Action? BeforeRead;
+        internal Func<int>? ReadResult;
         internal Action? Disposed;
         internal MemorySource? CloneSource;
         private readonly delegate* unmanaged[Stdcall]<Descriptor*, nint*, int> _create = create;
@@ -230,6 +231,12 @@ public sealed unsafe partial class ManagedStreamTests
         try
         {
             Memory(d).BeforeRead?.Invoke();
+            int result = Memory(d).ReadResult?.Invoke() ?? 0;
+            if (result < 0)
+            {
+                if (read != null) *read = 0;
+                return result;
+            }
             int actual = Memory(d).Stream.Read(new Span<byte>(data, checked((int)count)));
             if (read != null) *read = (uint)actual;
             return actual == count ? 0 : 1;

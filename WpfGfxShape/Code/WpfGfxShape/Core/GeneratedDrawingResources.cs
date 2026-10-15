@@ -116,6 +116,7 @@ internal sealed class GeneratedDashStyleResource : GeneratedDrawingDependencyRes
     {
         Offset = offset; Dashes = dashes;
     }
+    internal GeneratedDashStyleResource CaptureValue() => new() { Offset = CurrentOffset, Dashes = Dashes.ToArray() };
     internal GeneratedValueResource<double>? OffsetAnimation { get; private set; }
     internal double CurrentOffset => OffsetAnimation?.Value ?? Offset;
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
@@ -136,6 +137,9 @@ internal sealed class GeneratedPenResource : GeneratedDrawingDependencyResource
         StartLineCap = start; EndLineCap = end; DashCap = dash; LineJoin = join;
         DashStyle = dashStyle;
     }
+    internal GeneratedPenResource CaptureValue(GeneratedProtocolResource? brush, GeneratedDashStyleResource? dash)
+        => new() { Thickness = CurrentThickness, MiterLimit = MiterLimit, StartLineCap = StartLineCap,
+            EndLineCap = EndLineCap, DashCap = DashCap, LineJoin = LineJoin, Brush = brush, DashStyle = dash };
     internal double Thickness { get; private set; }
     internal double MiterLimit { get; private set; }
     internal MilPenCap StartLineCap { get; private set; }
@@ -190,8 +194,9 @@ internal sealed class GeneratedImageDrawingResource : GeneratedDrawingDependency
 internal sealed class GeneratedVideoDrawingResource : GeneratedDrawingDependencyResource
 {
     internal GeneratedVideoDrawingResource() : base(MilResourceType.VideoDrawing) { }
+    internal MilRectD Rect { get; private set; }
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
-    { if (value.Length != 40) return Direct3D9Factory.UceMalformedPacketHResult; GeneratedProtocolResource?[] d = new GeneratedProtocolResource?[2]; if (!TryResolve(table, MemoryMarshal.Read<uint>(value[32..]), MilResourceType.MediaPlayer, out d[0]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[36..]), MilResourceType.RectResource, out d[1])) return Direct3D9Factory.UceMalformedPacketHResult; return CommitDependencies(d, static () => { }); }
+    { if (value.Length != 40) return Direct3D9Factory.UceMalformedPacketHResult; MilRectD rect = MemoryMarshal.Read<MilRectD>(value); GeneratedProtocolResource?[] d = new GeneratedProtocolResource?[2]; if (!TryResolve(table, MemoryMarshal.Read<uint>(value[32..]), MilResourceType.MediaPlayer, out d[0]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[36..]), MilResourceType.RectResource, out d[1])) return Direct3D9Factory.UceMalformedPacketHResult; return CommitDependencies(d, () => Rect = rect); }
 }
 
 internal sealed class GeneratedDrawingGroupResource : GeneratedDrawingDependencyResource

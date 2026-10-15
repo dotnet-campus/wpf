@@ -143,6 +143,41 @@ public sealed class GeneratedEffectResourceTests
         Assert.AreEqual(0, result);
     }
 
+    [TestMethod]
+    [DataRow(0, 0)]
+    [DataRow(16, 16)]
+    [DataRow(17, 17)]
+    [DataRow(16, 17)]
+    [DataRow(17, 16)]
+    public void WhenSamplerTailIsInvalidThenRawPayloadIsPreservedWithoutTailDependencies(int infos, int handles)
+    {
+        var (table, router) = Context();
+        byte[] payload = new byte[infos * 8 + handles * 4];
+        if (infos > 16) BitConverter.GetBytes(-1).CopyTo(payload, 128);
+        if (handles > 16) BitConverter.GetBytes(uint.MaxValue).CopyTo(payload, infos * 8 + 64);
+        int result = router.ProcessPackets([Create(1, MilResourceType.ShaderEffect),
+            GeneratedProtocolPacketWriter.WriteEffect(Shader(1) with
+            { SamplerInfoSize = (uint)(infos * 8), SamplerValuesSize = (uint)(handles * 4) }, payload)]);
+        var data = Get<GeneratedShaderEffectResource>(table, 1).Data;
+        Assert.AreEqual((0, infos * 2, handles, Math.Min(handles, 16)),
+            (result, data?.SamplerInfo.Length, data?.SamplerHandles.Length, data?.Samplers.Count));
+    }
+
+    [TestMethod]
+    public void WhenRepeatedSamplerHandlesAreDeletedThenEffectOwnsOnlyEffectiveDependencies()
+    {
+        var (table, router) = Context();
+        byte[] payload = new byte[17 * 12];
+        for (int i = 0; i < 17; i++) BitConverter.GetBytes(2u).CopyTo(payload, 17 * 8 + i * 4);
+        _ = router.ProcessPackets([Create(1, MilResourceType.ShaderEffect), Create(2, MilResourceType.ImplicitInputBrush),
+            GeneratedProtocolPacketWriter.WriteEffect(Shader(1) with { SamplerInfoSize = 136, SamplerValuesSize = 68 }, payload)]);
+        var brush = Get<GeneratedImplicitInputBrushResource>(table, 2);
+        _ = table.Delete(2, MilResourceType.ImplicitInputBrush);
+        int retained = brush.ReferenceCount;
+        _ = table.Delete(1, MilResourceType.ShaderEffect);
+        Assert.AreEqual((16, 0, true), (retained, brush.ReferenceCount, brush.IsReleased));
+    }
+
     private static MilShaderEffectCommand Shader(uint handle) => new(MilCommand.ShaderEffect, handle, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0);
     private static byte[] Create(uint handle, MilResourceType type) => GeneratedProtocolPacketWriter.WriteChannelCreateResource(handle, type);
     private static (GeneratedProtocolHandleTable, GeneratedProtocolRouter) Context()

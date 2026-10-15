@@ -22,12 +22,30 @@ internal sealed class SoftwareImageCoverage
         _mode = mode;
     }
 
+    internal bool TryClipParallelogram(MilPoint2D[] polygon, out SoftwareImageCoverage? result)
+    {
+        result = null;
+        if (_path is not null)
+        {
+            if (!_path.TryClipParallelogram(polygon, out var path) || path is null) return false;
+            result = new(path);
+            return true;
+        }
+        if (_points.Length != 0) return false;
+        SoftwareImageCoverage? first = null, second = null;
+        if (_first is not null && !_first.TryClipParallelogram(polygon, out first)) return false;
+        if (_second is not null && !_second.TryClipParallelogram(polygon, out second)) return false;
+        result = Combine(first, second, _mode);
+        return true;
+    }
+
     internal static SoftwareImageCoverage Combine(SoftwareImageCoverage? first, SoftwareImageCoverage? second, MilCombineMode mode)
         => new(first, second, mode);
 
     private SoftwareImageCoverage((long X, long Y)[] points) => _points = points;
 
-    internal static bool TryCreate(MilRectD rectangle, GeneratedImageTransform transform, out SoftwareImageCoverage? coverage)
+    internal static bool TryCreate(MilRectD rectangle, GeneratedImageTransform transform, out SoftwareImageCoverage? coverage,
+        Direct3D9SurfaceRect? clip = null)
     {
         coverage = null;
         // Negative extents describe an empty geometry, not a reflected polygon.
@@ -41,7 +59,19 @@ internal sealed class SoftwareImageCoverage
             transform.Apply(rectangle.X + rectangle.Width, rectangle.Y),
             transform.Apply(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height),
             transform.Apply(rectangle.X, rectangle.Y + rectangle.Height)];
-        var points = new (long X, long Y)[4];
+        foreach (var corner in corners)
+            if (!double.IsFinite(corner.X) || !double.IsFinite(corner.Y)) return false;
+        if (clip is { } bounds)
+        {
+            // Clip in double precision before 28.4 conversion so enormous viewports remain representable.
+            var polygon = corners.ToList();
+            polygon = ClipPolygon(polygon, bounds.Left, true, true);
+            polygon = ClipPolygon(polygon, bounds.Right, true, false);
+            polygon = ClipPolygon(polygon, bounds.Top, false, true);
+            polygon = ClipPolygon(polygon, bounds.Bottom, false, false);
+            corners = polygon.ToArray();
+        }
+        var points = new (long X, long Y)[corners.Length];
         for (int i = 0; i < corners.Length; i++)
         {
             double x = (corners[i].X - 0.5) * 16, y = (corners[i].Y - 0.5) * 16;
@@ -51,6 +81,33 @@ internal sealed class SoftwareImageCoverage
         }
         coverage = new(points);
         return true;
+    }
+
+    private static List<(double X, double Y)> ClipPolygon(List<(double X, double Y)> polygon,
+        double boundary, bool horizontal, bool keepGreater)
+    {
+        List<(double X, double Y)> result = [];
+        if (polygon.Count == 0) return result;
+        var previous = polygon[^1];
+        double previousCoordinate = horizontal ? previous.X : previous.Y;
+        bool previousInside = keepGreater ? previousCoordinate >= boundary : previousCoordinate <= boundary;
+        foreach (var current in polygon)
+        {
+            double coordinate = horizontal ? current.X : current.Y;
+            bool inside = keepGreater ? coordinate >= boundary : coordinate <= boundary;
+            if (inside != previousInside)
+            {
+                double fraction = (boundary - previousCoordinate) / (coordinate - previousCoordinate);
+                result.Add(horizontal
+                    ? (boundary, previous.Y + fraction * (current.Y - previous.Y))
+                    : (previous.X + fraction * (current.X - previous.X), boundary));
+            }
+            if (inside) result.Add(current);
+            previous = current;
+            previousCoordinate = coordinate;
+            previousInside = inside;
+        }
+        return result;
     }
 
     internal int GetCoverage(int x, int y) => System.Numerics.BitOperations.PopCount(GetSamples(x, y));
@@ -72,13 +129,13 @@ internal sealed class SoftwareImageCoverage
             };
             return inside ? 64 : 0;
         }
-        if (_points.Length != 4) return 0;
+        if (_points.Length < 3) return 0;
         long scanY = (long)y * 16;
         long left = long.MaxValue, right = long.MinValue;
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < _points.Length; i++)
         {
             var a = (_points[i].X / 8 - 8, _points[i].Y / 8 - 8);
-            var b = (_points[(i + 1) % 4].X / 8 - 8, _points[(i + 1) % 4].Y / 8 - 8);
+            var b = (_points[(i + 1) % _points.Length].X / 8 - 8, _points[(i + 1) % _points.Length].Y / 8 - 8);
             if (a.Item2 > b.Item2) (a, b) = (b, a);
             if (scanY < a.Item2 || scanY >= b.Item2) continue;
             long denominator = (b.Item2 - a.Item2) * 16;
@@ -111,9 +168,9 @@ internal sealed class SoftwareImageCoverage
         {
             long scanY = ((long)y * 8 + row) * 16;
             long left = long.MaxValue, right = long.MinValue;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < _points.Length; i++)
             {
-                var a = _points[i]; var b = _points[(i + 1) % 4];
+                var a = _points[i]; var b = _points[(i + 1) % _points.Length];
                 if (a.Y > b.Y) (a, b) = (b, a);
                 if (scanY < a.Y || scanY >= b.Y) continue;
                 long denominator = (b.Y - a.Y) * 16;

@@ -7,6 +7,17 @@
   "generatedSession": "SESSION-WP00I-STATIC-EXPANSION-06",
   "encoding": "UTF-8",
   "pathConvention": "OriginWpf-relative-forward-slash",
-  "validationStatus": "TwoRecordsLineIntegrityConfirmed-WriteChannelCorruptionObserved-MachineValidationDeferred",
-  "deferredValidationReason": "Line-by-line reread disproved the prior seven-record integrity claim. The restricted write channel reused corrupted fragments during overwrite, append, and tail deletion. records.jsonl was reduced to two individually confirmed complete records. core/api/api.vcxproj was statically reviewed and remains queued for safe restoration. Machine schema validation, builds, tests, scripts, and processes remain prohibited and non-blocking."
+  "validationStatus": "IndependentReferenceValidationPassed-ClosureStillBlocked",
+  "actualCounts": {
+    "records": 45,
+    "groups": 9,
+    "evidence": 77,
+    "workPackages": 10
+  },
+  "independentValidationReport": "WpfGfxShape/Investigations/GenProtoEvidence/closure-validation-eeb6b2f515db4b37b5adb87c1b121cf0/report.json",
+  "deferredValidationReason": "Reference existence is not production or evidence closure; external provenance and generated semantic/layout assertions remain required.",
+  "recordCount": 45,
+  "referenceRepairReport": "WpfGfxShape/Investigations/GenProtoEvidence/reference-repair-b730182afec34f6bb3f4eb76f7ef841a/classification.json",
+  "latestDeliveryArchive": "WpfGfxShape/Investigations/GenProtoEvidence/delivery-6a03b29edb064c22a50b7b1985affa62",
+  "stage4Closed": false
 }

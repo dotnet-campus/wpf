@@ -46,7 +46,10 @@ internal static partial class GeneratedProtocolPacketWriter
 
 internal sealed unsafe class GeneratedBitmapSourceResource : GeneratedProtocolResource
 {
-    private nint _bitmap;
+    private FrozenComSlot? _sourceSlot;
+    private nint _bitmap => _sourceSlot?.Pointer ?? 0;
+
+    internal FrozenBitmapLease? PinBitmapSource() => _sourceSlot?.Pin();
 
     internal GeneratedBitmapSourceResource() : base(MilResourceType.BitmapSource) { }
 
@@ -54,9 +57,8 @@ internal sealed unsafe class GeneratedBitmapSourceResource : GeneratedProtocolRe
 
     internal nint AcquireBitmapSource()
     {
-        nint bitmap = _bitmap;
-        if (bitmap != 0) ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)bitmap)[1])(bitmap);
-        return bitmap;
+        using FrozenBitmapLease? lease = PinBitmapSource();
+        return lease?.Acquire() ?? 0;
     }
 
     internal int ProcessCommand(MilCommand command, ReadOnlySpan<byte> packet)
@@ -115,10 +117,11 @@ internal sealed unsafe class GeneratedBitmapSourceResource : GeneratedProtocolRe
                 return Direct3D9Factory.NoInterfaceHResult;
             }
 
-            nint previous = _bitmap;
-            _bitmap = bitmap;
+            var next = new FrozenComSlot(bitmap);
+            FrozenComSlot? previous = _sourceSlot;
+            _sourceSlot = next;
             bitmap = 0;
-            Direct3D9Factory.Release(previous);
+            previous?.Retire();
             return Direct3D9Factory.SuccessHResult;
         }
         finally
@@ -137,8 +140,8 @@ internal sealed unsafe class GeneratedBitmapSourceResource : GeneratedProtocolRe
 
     protected override void OnFinalRelease()
     {
-        nint bitmap = _bitmap;
-        _bitmap = 0;
-        Direct3D9Factory.Release(bitmap);
+        FrozenComSlot? previous = _sourceSlot;
+        _sourceSlot = null;
+        previous?.Retire();
     }
 }

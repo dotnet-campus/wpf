@@ -107,28 +107,25 @@ internal sealed unsafe class EventProxy
 
     internal int RaiseEvent(byte* bytes, uint length)
     {
+        EventProxyDescriptor* descriptor;
         lock (_lock)
         {
-            if (_references == 0)
+            if (AddRef() == 0)
             {
                 return unchecked((int)0x80070006);
             }
 
-            if (_isShutdown)
-            {
-                return 0;
-            }
+            descriptor = _isShutdown ? null : _descriptor;
+        }
 
-            // A reentrant callback may release the caller's reference; retain descriptor storage until return.
-            _ = AddRef();
-            try
-            {
-                return _descriptor->RaiseEvent(_descriptor, bytes, length);
-            }
-            finally
-            {
-                _ = Release();
-            }
+        // The retained reference protects descriptor storage during lock-free callbacks.
+        try
+        {
+            return descriptor == null ? 0 : descriptor->RaiseEvent(descriptor, bytes, length);
+        }
+        finally
+        {
+            _ = Release();
         }
     }
 

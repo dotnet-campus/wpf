@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsTestProject>true</IsTestProject>
+    <RunSettingsFilePath>$(MSBuildThisFileDirectory)evidence.runsettings</RunSettingsFilePath>
+    <!-- Preserve the historical parser verbatim; modernization advice remains a warning. -->
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);SYSLIB1045</WarningsNotAsErrors>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <GlobalAnalyzerConfigFiles Include="authority.globalconfig" />
+    <PackageReference Include="MSTest" Version="4.0.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+    <Compile Include="../../../src/Microsoft.DotNet.Wpf/src/WpfGfx/tools/csp/CsPrimeParser.cs" Link="Authority/CsPrimeParser.cs" />
+    <Compile Include="../../../src/Microsoft.DotNet.Wpf/src/WpfGfx/tools/csp/CsPrimeRuntime.cs" Link="Authority/CsPrimeRuntime.cs" />
+    <AssemblyMetadata Include="RepositoryRoot" Value="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../../../'))" />
+  </ItemGroup>
+</Project>

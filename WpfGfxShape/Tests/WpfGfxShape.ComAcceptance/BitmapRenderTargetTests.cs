@@ -237,7 +237,7 @@ public sealed unsafe partial class BitmapRenderTargetTests
     public void WhenExistingTargetArgumentIsNullThenExportRejectsIt(int missing)
     {
         var api = new Api();
-        string path = typeof(BitmapRenderTargetTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
         var create = (delegate* unmanaged[Stdcall]<nint, nint, nint*, int>)NativeLibrary.GetExport(module, "MILFactoryCreateSWRenderTargetForBitmap");
         nint factory = 0, original = 0, bitmap = 0, target = 0;
@@ -465,7 +465,7 @@ public sealed unsafe partial class BitmapRenderTargetTests
         internal readonly delegate* unmanaged[Stdcall]<nint, int> Clear;
         internal Api()
         {
-            string path = typeof(BitmapRenderTargetTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!;
+            string path = AcceptancePaths.AotDll;
             nint module = NativeLibrary.Load(path);
             Create = (delegate* unmanaged[Stdcall]<nint*, uint, int>)NativeLibrary.GetExport(module, "MILCreateFactory");
             CreateTarget = (delegate* unmanaged[Stdcall]<nint, uint, uint, uint, float, float, uint, nint*, int>)NativeLibrary.GetExport(module, "MILFactoryCreateBitmapRenderTarget");

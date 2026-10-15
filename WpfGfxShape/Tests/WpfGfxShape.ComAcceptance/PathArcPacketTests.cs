@@ -12,7 +12,7 @@ public sealed unsafe class PathArcPacketTests
     [DataRow(56, unchecked((int)0x88980403))]
     public void WhenArcPacketHasNativeSizeThenCommitValidatesWholeSegment(int segmentSize, int expected)
     {
-        string path = typeof(PathArcPacketTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
         var create = (delegate* unmanaged[Stdcall]<byte, nint*, int>)NativeLibrary.GetExport(module, "WgxConnection_Create");
         var disconnect = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "WgxConnection_Disconnect");

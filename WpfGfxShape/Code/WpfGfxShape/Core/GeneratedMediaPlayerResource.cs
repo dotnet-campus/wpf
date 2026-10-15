@@ -30,6 +30,65 @@ internal sealed unsafe partial class GeneratedMediaPlayerResource : GeneratedPro
 {
     internal GeneratedMediaPlayerResource() : base(MilResourceType.MediaPlayer) { }
 
+    private nint _systemMedia;
+    private readonly object _systemGate = new();
+    private Av.SystemMediaSource? _systemSource;
+    private int _systemFramePending;
+    private bool _systemCompositionRegistered;
+
+    private Action? _systemListener;
+    private void OnSystemEvent(Action listener)
+    {
+        lock (_systemGate)
+        {
+            if (_systemListener != listener || _systemMedia == 0 || IsReleased) return;
+            Interlocked.Exchange(ref _systemFramePending, 1);
+            _composition?.ScheduleCompositionPass();
+        }
+    }
+
+    internal int AcquireSystemFrame(out Av.SystemVideoSample? sample)
+    {
+        sample = null;
+        nint media;
+        lock (_systemGate)
+        {
+            media = _systemMedia;
+            if (media == 0 || IsReleased) return 0;
+            Direct3D9Factory.AddRef(media);
+        }
+        Interlocked.Exchange(ref _systemFramePending, 0);
+        try
+        {
+            int result = Av.SystemVideoSample.Acquire(media, false, true, out sample, out bool newFrame);
+            if (result >= 0 && newFrame) NotifyFrameReady();
+            return result;
+        }
+        finally
+        {
+            Direct3D9Factory.Release(media);
+        }
+    }
+
+    private void ReleaseSystemMedia()
+    {
+        nint media;
+        lock (_systemGate)
+        {
+            if (_systemListener is not null) _systemSource?.Unsubscribe(_systemListener);
+            _systemListener = null;
+            _systemSource = null;
+            media = _systemMedia;
+            _systemMedia = 0;
+        }
+        if (_systemCompositionRegistered)
+        {
+            _composition?.UnregisterVideo(this);
+            _systemCompositionRegistered = false;
+        }
+        Direct3D9Factory.Release(media);
+    }
+
     private bool _notifyUceDirect;
     internal bool NotifyUceDirect
     {
@@ -74,10 +133,29 @@ internal sealed unsafe partial class GeneratedMediaPlayerResource : GeneratedPro
                 return Direct3D9Factory.NoInterfaceHResult;
             }
 
-            // RegisterResource requires a real CMilSlaveVideo*, whose nonvirtual C++
-            // callbacks cannot accept a managed object or a GCHandle. Fail closed
-            // until the AV/composition bridge exists; never pretend registration succeeded.
-            return unchecked((int)0x80004001);
+            Av.SystemMediaSource? source = Av.SystemMediaSource.Resolve(media);
+            if (!_systemCompositionRegistered && _composition is not null)
+            {
+                int registration = _composition.RegisterVideo(this);
+                if (registration < 0) return registration;
+                _systemCompositionRegistered = true;
+            }
+            nint previous;
+            lock (_systemGate)
+            {
+                if (_systemListener is not null) _systemSource?.Unsubscribe(_systemListener);
+                previous = _systemMedia;
+                _systemSource = source;
+                _systemMedia = media;
+                media = 0;
+                Action? listener = null;
+                listener = () => OnSystemEvent(listener!);
+                _systemListener = listener;
+                source?.Subscribe(listener);
+            }
+            Direct3D9Factory.Release(previous);
+            NotifyChanged();
+            return 0;
         }
         finally
         {

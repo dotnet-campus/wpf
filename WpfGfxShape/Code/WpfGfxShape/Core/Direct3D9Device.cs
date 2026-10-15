@@ -1455,6 +1455,7 @@ internal sealed unsafe class Direct3D9Device : IDisposable
         }
 
         Direct3D9DeviceState state = swapChain.Present(request);
+
         bool presentProcessed = state.PresentProcessed;
         if (state.Kind == Direct3D9DeviceStateKind.Occluded)
         {

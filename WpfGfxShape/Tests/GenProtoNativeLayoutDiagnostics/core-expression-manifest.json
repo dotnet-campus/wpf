@@ -1,0 +1,5534 @@
+{
+  "header": "d:\\lindexi\\Code\\dotnetcampus\\WpfLab\\WpfGfxShape\\src/Microsoft.DotNet.Wpf/src/WpfGfx/include/processed/wgx_core_types.h",
+  "headerSha256": "9E2D6AF944AAFD8108B476A88465F69D191FF22C3051323115675E6BD8792629",
+  "path": "d:\\lindexi\\Code\\dotnetcampus\\WpfLab\\WpfGfxShape\\WpfGfxShape/Tests/GenProtoNativeLayoutDiagnostics/NativeCore.generated.inc",
+  "expressionsSha256": "8D92F91DEBCC6DFEAD0691C1D1CACF131E63D8ADE6B509E7CF82245C0F25BA08",
+  "nativeCompilerExecuted": false,
+  "structs": [
+    "MilMatrix3x2D",
+    "MilPoint2F",
+    "MilColorI",
+    "MilPoint3F",
+    "MilQuaternionF",
+    "MilMatrix4x4D",
+    "MilGraphicsAccelerationCaps",
+    "MilGraphicsAccelerationAssessment",
+    "MilPoint2L",
+    "MilPoint2D",
+    "MilPointAndSizeL",
+    "MilPointAndSizeF",
+    "MilRectF",
+    "MilPointAndSizeD",
+    "MilRectD",
+    "MilSizeD",
+    "MilGradientStop",
+    "MilPathGeometry",
+    "MilPathFigure",
+    "MilSegment",
+    "MilSegmentLine",
+    "MilSegmentBezier",
+    "MilSegmentQuadraticBezier",
+    "MilSegmentArc",
+    "MilSegmentPoly",
+    "MilPenData",
+    "MilRenderOptions",
+    "MilMsgCompositionDeviceStateChangeData",
+    "MilMsgSyncFlushReplyData",
+    "MilMsgVersionReplyData",
+    "MilMsgTierData",
+    "MilMsgPartitionIsZombieData",
+    "MilMsgSyncModeStatusData",
+    "MilMsgPresentedData",
+    "MilMsgSysMemUsageData",
+    "MilMsgAsyncFlushReplyData",
+    "MilMsgRenderStatusData",
+    "MIL_MESSAGE",
+    "MILCMD_TRANSPORT_SYNCFLUSH",
+    "MILCMD_TRANSPORT_DESTROYRESOURCESONCHANNEL",
+    "MILCMD_PARTITION_REGISTERFORNOTIFICATIONS",
+    "MILCMD_CHANNEL_REQUESTTIER",
+    "MILCMD_PARTITION_SETVBLANKSYNCMODE",
+    "MILCMD_PARTITION_NOTIFYPRESENT",
+    "MILCMD_CHANNEL_CREATERESOURCE",
+    "MILCMD_CHANNEL_DELETERESOURCE",
+    "MILCMD_CHANNEL_DUPLICATEHANDLE",
+    "MILCMD_D3DIMAGE",
+    "MILCMD_D3DIMAGE_PRESENT",
+    "MILCMD_BITMAP_SOURCE",
+    "MILCMD_BITMAP_INVALIDATE",
+    "MILCMD_DOUBLERESOURCE",
+    "MILCMD_COLORRESOURCE",
+    "MILCMD_POINTRESOURCE",
+    "MILCMD_RECTRESOURCE",
+    "MILCMD_SIZERESOURCE",
+    "MILCMD_MATRIXRESOURCE",
+    "MILCMD_POINT3DRESOURCE",
+    "MILCMD_VECTOR3DRESOURCE",
+    "MILCMD_QUATERNIONRESOURCE",
+    "MILCMD_MEDIAPLAYER",
+    "MILCMD_RENDERDATA",
+    "MILCMD_ETWEVENTRESOURCE",
+    "MILCMD_VISUAL_CREATE",
+    "MILCMD_VISUAL_SETOFFSET",
+    "MILCMD_VISUAL_SETTRANSFORM",
+    "MILCMD_VISUAL_SETEFFECT",
+    "MILCMD_VISUAL_SETCACHEMODE",
+    "MILCMD_VISUAL_SETCLIP",
+    "MILCMD_VISUAL_SETALPHA",
+    "MILCMD_VISUAL_SETRENDEROPTIONS",
+    "MILCMD_VISUAL_SETCONTENT",
+    "MILCMD_VISUAL_SETALPHAMASK",
+    "MILCMD_VISUAL_REMOVEALLCHILDREN",
+    "MILCMD_VISUAL_REMOVECHILD",
+    "MILCMD_VISUAL_INSERTCHILDAT",
+    "MILCMD_VISUAL_SETGUIDELINECOLLECTION",
+    "MILCMD_VISUAL_SETSCROLLABLEAREACLIP",
+    "MILCMD_VIEWPORT3DVISUAL_SETCAMERA",
+    "MILCMD_VIEWPORT3DVISUAL_SETVIEWPORT",
+    "MILCMD_VIEWPORT3DVISUAL_SET3DCHILD",
+    "MILCMD_VISUAL3D_SETCONTENT",
+    "MILCMD_VISUAL3D_SETTRANSFORM",
+    "MILCMD_VISUAL3D_REMOVEALLCHILDREN",
+    "MILCMD_VISUAL3D_REMOVECHILD",
+    "MILCMD_VISUAL3D_INSERTCHILDAT",
+    "MILCMD_HWNDTARGET_CREATE",
+    "MILCMD_HWNDTARGET_SUPPRESSLAYERED",
+    "MILCMD_TARGET_UPDATEWINDOWSETTINGS",
+    "MILCMD_GENERICTARGET_CREATE",
+    "MILCMD_TARGET_SETROOT",
+    "MILCMD_TARGET_SETCLEARCOLOR",
+    "MILCMD_TARGET_INVALIDATE",
+    "MILCMD_TARGET_SETFLAGS",
+    "MILCMD_HWNDTARGET_DPICHANGED",
+    "MILCMD_GLYPHRUN_CREATE",
+    "MILCMD_DOUBLEBUFFEREDBITMAP",
+    "MILCMD_DOUBLEBUFFEREDBITMAP_COPYFORWARD",
+    "MILCMD_PARTITION_NOTIFYPOLICYCHANGEFORNONINTERACTIVEMODE",
+    "MILCMD_AXISANGLEROTATION3D",
+    "MILCMD_QUATERNIONROTATION3D",
+    "MILCMD_PERSPECTIVECAMERA",
+    "MILCMD_ORTHOGRAPHICCAMERA",
+    "MILCMD_MATRIXCAMERA",
+    "MILCMD_MODEL3DGROUP",
+    "MILCMD_AMBIENTLIGHT",
+    "MILCMD_DIRECTIONALLIGHT",
+    "MILCMD_POINTLIGHT",
+    "MILCMD_SPOTLIGHT",
+    "MILCMD_GEOMETRYMODEL3D",
+    "MILCMD_MESHGEOMETRY3D",
+    "MILCMD_MATERIALGROUP",
+    "MILCMD_DIFFUSEMATERIAL",
+    "MILCMD_SPECULARMATERIAL",
+    "MILCMD_EMISSIVEMATERIAL",
+    "MILCMD_TRANSFORM3DGROUP",
+    "MILCMD_TRANSLATETRANSFORM3D",
+    "MILCMD_SCALETRANSFORM3D",
+    "MILCMD_ROTATETRANSFORM3D",
+    "MILCMD_MATRIXTRANSFORM3D",
+    "MILCMD_PIXELSHADER",
+    "MILCMD_IMPLICITINPUTBRUSH",
+    "MILCMD_BLUREFFECT",
+    "MILCMD_DROPSHADOWEFFECT",
+    "MILCMD_SHADEREFFECT",
+    "MILCMD_DRAWINGIMAGE",
+    "MILCMD_TRANSFORMGROUP",
+    "MILCMD_TRANSLATETRANSFORM",
+    "MILCMD_SCALETRANSFORM",
+    "MILCMD_SKEWTRANSFORM",
+    "MILCMD_ROTATETRANSFORM",
+    "MILCMD_MATRIXTRANSFORM",
+    "MILCMD_LINEGEOMETRY",
+    "MILCMD_RECTANGLEGEOMETRY",
+    "MILCMD_ELLIPSEGEOMETRY",
+    "MILCMD_GEOMETRYGROUP",
+    "MILCMD_COMBINEDGEOMETRY",
+    "MILCMD_PATHGEOMETRY",
+    "MILCMD_SOLIDCOLORBRUSH",
+    "MILCMD_LINEARGRADIENTBRUSH",
+    "MILCMD_RADIALGRADIENTBRUSH",
+    "MILCMD_IMAGEBRUSH",
+    "MILCMD_DRAWINGBRUSH",
+    "MILCMD_VISUALBRUSH",
+    "MILCMD_BITMAPCACHEBRUSH",
+    "MILCMD_DASHSTYLE",
+    "MILCMD_PEN",
+    "MILCMD_GEOMETRYDRAWING",
+    "MILCMD_GLYPHRUNDRAWING",
+    "MILCMD_IMAGEDRAWING",
+    "MILCMD_VIDEODRAWING",
+    "MILCMD_DRAWINGGROUP",
+    "MILCMD_GUIDELINESET",
+    "MILCMD_BITMAPCACHE",
+    "MILCMD_DRAW_LINE",
+    "MILCMD_DRAW_LINE_ANIMATE",
+    "MILCMD_DRAW_RECTANGLE",
+    "MILCMD_DRAW_RECTANGLE_ANIMATE",
+    "MILCMD_DRAW_ROUNDED_RECTANGLE",
+    "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE",
+    "MILCMD_DRAW_ELLIPSE",
+    "MILCMD_DRAW_ELLIPSE_ANIMATE",
+    "MILCMD_DRAW_GEOMETRY",
+    "MILCMD_DRAW_IMAGE",
+    "MILCMD_DRAW_IMAGE_ANIMATE",
+    "MILCMD_DRAW_GLYPH_RUN",
+    "MILCMD_DRAW_DRAWING",
+    "MILCMD_DRAW_VIDEO",
+    "MILCMD_DRAW_VIDEO_ANIMATE",
+    "MILCMD_PUSH_CLIP",
+    "MILCMD_PUSH_OPACITY_MASK",
+    "MILCMD_PUSH_OPACITY",
+    "MILCMD_PUSH_OPACITY_ANIMATE",
+    "MILCMD_PUSH_TRANSFORM",
+    "MILCMD_PUSH_GUIDELINE_SET",
+    "MILCMD_PUSH_GUIDELINE_Y1",
+    "MILCMD_PUSH_GUIDELINE_Y2",
+    "MILCMD_PUSH_EFFECT",
+    "MILCMD_POP"
+  ],
+  "expressions": [
+    {
+      "Name": "MilMatrix3x2D.size",
+      "Expression": "sizeof(MilMatrix3x2D)"
+    },
+    {
+      "Name": "MilMatrix3x2D.alignment",
+      "Expression": "alignof(MilMatrix3x2D)"
+    },
+    {
+      "Name": "MilMatrix3x2D.S_11",
+      "Expression": "offsetof(MilMatrix3x2D, S_11)"
+    },
+    {
+      "Name": "MilMatrix3x2D.S_12",
+      "Expression": "offsetof(MilMatrix3x2D, S_12)"
+    },
+    {
+      "Name": "MilMatrix3x2D.S_21",
+      "Expression": "offsetof(MilMatrix3x2D, S_21)"
+    },
+    {
+      "Name": "MilMatrix3x2D.S_22",
+      "Expression": "offsetof(MilMatrix3x2D, S_22)"
+    },
+    {
+      "Name": "MilMatrix3x2D.DX",
+      "Expression": "offsetof(MilMatrix3x2D, DX)"
+    },
+    {
+      "Name": "MilMatrix3x2D.DY",
+      "Expression": "offsetof(MilMatrix3x2D, DY)"
+    },
+    {
+      "Name": "MilPoint2F.size",
+      "Expression": "sizeof(MilPoint2F)"
+    },
+    {
+      "Name": "MilPoint2F.alignment",
+      "Expression": "alignof(MilPoint2F)"
+    },
+    {
+      "Name": "MilPoint2F.X",
+      "Expression": "offsetof(MilPoint2F, X)"
+    },
+    {
+      "Name": "MilPoint2F.Y",
+      "Expression": "offsetof(MilPoint2F, Y)"
+    },
+    {
+      "Name": "MilColorI.size",
+      "Expression": "sizeof(MilColorI)"
+    },
+    {
+      "Name": "MilColorI.alignment",
+      "Expression": "alignof(MilColorI)"
+    },
+    {
+      "Name": "MilColorI.r",
+      "Expression": "offsetof(MilColorI, r)"
+    },
+    {
+      "Name": "MilColorI.g",
+      "Expression": "offsetof(MilColorI, g)"
+    },
+    {
+      "Name": "MilColorI.b",
+      "Expression": "offsetof(MilColorI, b)"
+    },
+    {
+      "Name": "MilColorI.a",
+      "Expression": "offsetof(MilColorI, a)"
+    },
+    {
+      "Name": "MilPoint3F.size",
+      "Expression": "sizeof(MilPoint3F)"
+    },
+    {
+      "Name": "MilPoint3F.alignment",
+      "Expression": "alignof(MilPoint3F)"
+    },
+    {
+      "Name": "MilPoint3F.X",
+      "Expression": "offsetof(MilPoint3F, X)"
+    },
+    {
+      "Name": "MilPoint3F.Y",
+      "Expression": "offsetof(MilPoint3F, Y)"
+    },
+    {
+      "Name": "MilPoint3F.Z",
+      "Expression": "offsetof(MilPoint3F, Z)"
+    },
+    {
+      "Name": "MilQuaternionF.size",
+      "Expression": "sizeof(MilQuaternionF)"
+    },
+    {
+      "Name": "MilQuaternionF.alignment",
+      "Expression": "alignof(MilQuaternionF)"
+    },
+    {
+      "Name": "MilQuaternionF.X",
+      "Expression": "offsetof(MilQuaternionF, X)"
+    },
+    {
+      "Name": "MilQuaternionF.Y",
+      "Expression": "offsetof(MilQuaternionF, Y)"
+    },
+    {
+      "Name": "MilQuaternionF.Z",
+      "Expression": "offsetof(MilQuaternionF, Z)"
+    },
+    {
+      "Name": "MilQuaternionF.W",
+      "Expression": "offsetof(MilQuaternionF, W)"
+    },
+    {
+      "Name": "MilMatrix4x4D.size",
+      "Expression": "sizeof(MilMatrix4x4D)"
+    },
+    {
+      "Name": "MilMatrix4x4D.alignment",
+      "Expression": "alignof(MilMatrix4x4D)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_11",
+      "Expression": "offsetof(MilMatrix4x4D, M_11)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_12",
+      "Expression": "offsetof(MilMatrix4x4D, M_12)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_13",
+      "Expression": "offsetof(MilMatrix4x4D, M_13)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_14",
+      "Expression": "offsetof(MilMatrix4x4D, M_14)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_21",
+      "Expression": "offsetof(MilMatrix4x4D, M_21)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_22",
+      "Expression": "offsetof(MilMatrix4x4D, M_22)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_23",
+      "Expression": "offsetof(MilMatrix4x4D, M_23)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_24",
+      "Expression": "offsetof(MilMatrix4x4D, M_24)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_31",
+      "Expression": "offsetof(MilMatrix4x4D, M_31)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_32",
+      "Expression": "offsetof(MilMatrix4x4D, M_32)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_33",
+      "Expression": "offsetof(MilMatrix4x4D, M_33)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_34",
+      "Expression": "offsetof(MilMatrix4x4D, M_34)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_41",
+      "Expression": "offsetof(MilMatrix4x4D, M_41)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_42",
+      "Expression": "offsetof(MilMatrix4x4D, M_42)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_43",
+      "Expression": "offsetof(MilMatrix4x4D, M_43)"
+    },
+    {
+      "Name": "MilMatrix4x4D.M_44",
+      "Expression": "offsetof(MilMatrix4x4D, M_44)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.size",
+      "Expression": "sizeof(MilGraphicsAccelerationCaps)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.alignment",
+      "Expression": "alignof(MilGraphicsAccelerationCaps)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.TierValue",
+      "Expression": "offsetof(MilGraphicsAccelerationCaps, TierValue)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.HasWDDMSupport",
+      "Expression": "offsetof(MilGraphicsAccelerationCaps, HasWDDMSupport)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.PixelShaderVersion",
+      "Expression": "offsetof(MilGraphicsAccelerationCaps, PixelShaderVersion)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.VertexShaderVersion",
+      "Expression": "offsetof(MilGraphicsAccelerationCaps, VertexShaderVersion)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.MaxTextureWidth",
+      "Expression": "offsetof(MilGraphicsAccelerationCaps, MaxTextureWidth)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.MaxTextureHeight",
+      "Expression": "offsetof(MilGraphicsAccelerationCaps, MaxTextureHeight)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.WindowCompatibleMode",
+      "Expression": "offsetof(MilGraphicsAccelerationCaps, WindowCompatibleMode)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.BitsPerPixel",
+      "Expression": "offsetof(MilGraphicsAccelerationCaps, BitsPerPixel)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.HasSSE2Support",
+      "Expression": "offsetof(MilGraphicsAccelerationCaps, HasSSE2Support)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationCaps.MaxPixelShader30InstructionSlots",
+      "Expression": "offsetof(MilGraphicsAccelerationCaps, MaxPixelShader30InstructionSlots)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationAssessment.size",
+      "Expression": "sizeof(MilGraphicsAccelerationAssessment)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationAssessment.alignment",
+      "Expression": "alignof(MilGraphicsAccelerationAssessment)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationAssessment.VideoMemoryBandwidth",
+      "Expression": "offsetof(MilGraphicsAccelerationAssessment, VideoMemoryBandwidth)"
+    },
+    {
+      "Name": "MilGraphicsAccelerationAssessment.VideoMemorySize",
+      "Expression": "offsetof(MilGraphicsAccelerationAssessment, VideoMemorySize)"
+    },
+    {
+      "Name": "MilPoint2L.size",
+      "Expression": "sizeof(MilPoint2L)"
+    },
+    {
+      "Name": "MilPoint2L.alignment",
+      "Expression": "alignof(MilPoint2L)"
+    },
+    {
+      "Name": "MilPoint2L.X",
+      "Expression": "offsetof(MilPoint2L, X)"
+    },
+    {
+      "Name": "MilPoint2L.Y",
+      "Expression": "offsetof(MilPoint2L, Y)"
+    },
+    {
+      "Name": "MilPoint2D.size",
+      "Expression": "sizeof(MilPoint2D)"
+    },
+    {
+      "Name": "MilPoint2D.alignment",
+      "Expression": "alignof(MilPoint2D)"
+    },
+    {
+      "Name": "MilPoint2D.X",
+      "Expression": "offsetof(MilPoint2D, X)"
+    },
+    {
+      "Name": "MilPoint2D.Y",
+      "Expression": "offsetof(MilPoint2D, Y)"
+    },
+    {
+      "Name": "MilPointAndSizeL.size",
+      "Expression": "sizeof(MilPointAndSizeL)"
+    },
+    {
+      "Name": "MilPointAndSizeL.alignment",
+      "Expression": "alignof(MilPointAndSizeL)"
+    },
+    {
+      "Name": "MilPointAndSizeL.X",
+      "Expression": "offsetof(MilPointAndSizeL, X)"
+    },
+    {
+      "Name": "MilPointAndSizeL.Y",
+      "Expression": "offsetof(MilPointAndSizeL, Y)"
+    },
+    {
+      "Name": "MilPointAndSizeL.Width",
+      "Expression": "offsetof(MilPointAndSizeL, Width)"
+    },
+    {
+      "Name": "MilPointAndSizeL.Height",
+      "Expression": "offsetof(MilPointAndSizeL, Height)"
+    },
+    {
+      "Name": "MilPointAndSizeF.size",
+      "Expression": "sizeof(MilPointAndSizeF)"
+    },
+    {
+      "Name": "MilPointAndSizeF.alignment",
+      "Expression": "alignof(MilPointAndSizeF)"
+    },
+    {
+      "Name": "MilPointAndSizeF.X",
+      "Expression": "offsetof(MilPointAndSizeF, X)"
+    },
+    {
+      "Name": "MilPointAndSizeF.Y",
+      "Expression": "offsetof(MilPointAndSizeF, Y)"
+    },
+    {
+      "Name": "MilPointAndSizeF.Width",
+      "Expression": "offsetof(MilPointAndSizeF, Width)"
+    },
+    {
+      "Name": "MilPointAndSizeF.Height",
+      "Expression": "offsetof(MilPointAndSizeF, Height)"
+    },
+    {
+      "Name": "MilRectF.size",
+      "Expression": "sizeof(MilRectF)"
+    },
+    {
+      "Name": "MilRectF.alignment",
+      "Expression": "alignof(MilRectF)"
+    },
+    {
+      "Name": "MilRectF.left",
+      "Expression": "offsetof(MilRectF, left)"
+    },
+    {
+      "Name": "MilRectF.top",
+      "Expression": "offsetof(MilRectF, top)"
+    },
+    {
+      "Name": "MilRectF.right",
+      "Expression": "offsetof(MilRectF, right)"
+    },
+    {
+      "Name": "MilRectF.bottom",
+      "Expression": "offsetof(MilRectF, bottom)"
+    },
+    {
+      "Name": "MilPointAndSizeD.size",
+      "Expression": "sizeof(MilPointAndSizeD)"
+    },
+    {
+      "Name": "MilPointAndSizeD.alignment",
+      "Expression": "alignof(MilPointAndSizeD)"
+    },
+    {
+      "Name": "MilPointAndSizeD.X",
+      "Expression": "offsetof(MilPointAndSizeD, X)"
+    },
+    {
+      "Name": "MilPointAndSizeD.Y",
+      "Expression": "offsetof(MilPointAndSizeD, Y)"
+    },
+    {
+      "Name": "MilPointAndSizeD.Width",
+      "Expression": "offsetof(MilPointAndSizeD, Width)"
+    },
+    {
+      "Name": "MilPointAndSizeD.Height",
+      "Expression": "offsetof(MilPointAndSizeD, Height)"
+    },
+    {
+      "Name": "MilRectD.size",
+      "Expression": "sizeof(MilRectD)"
+    },
+    {
+      "Name": "MilRectD.alignment",
+      "Expression": "alignof(MilRectD)"
+    },
+    {
+      "Name": "MilRectD.left",
+      "Expression": "offsetof(MilRectD, left)"
+    },
+    {
+      "Name": "MilRectD.top",
+      "Expression": "offsetof(MilRectD, top)"
+    },
+    {
+      "Name": "MilRectD.right",
+      "Expression": "offsetof(MilRectD, right)"
+    },
+    {
+      "Name": "MilRectD.bottom",
+      "Expression": "offsetof(MilRectD, bottom)"
+    },
+    {
+      "Name": "MilSizeD.size",
+      "Expression": "sizeof(MilSizeD)"
+    },
+    {
+      "Name": "MilSizeD.alignment",
+      "Expression": "alignof(MilSizeD)"
+    },
+    {
+      "Name": "MilSizeD.Width",
+      "Expression": "offsetof(MilSizeD, Width)"
+    },
+    {
+      "Name": "MilSizeD.Height",
+      "Expression": "offsetof(MilSizeD, Height)"
+    },
+    {
+      "Name": "MilGradientStop.size",
+      "Expression": "sizeof(MilGradientStop)"
+    },
+    {
+      "Name": "MilGradientStop.alignment",
+      "Expression": "alignof(MilGradientStop)"
+    },
+    {
+      "Name": "MilGradientStop.Position",
+      "Expression": "offsetof(MilGradientStop, Position)"
+    },
+    {
+      "Name": "MilGradientStop.Color",
+      "Expression": "offsetof(MilGradientStop, Color)"
+    },
+    {
+      "Name": "MilPathGeometry.size",
+      "Expression": "sizeof(MilPathGeometry)"
+    },
+    {
+      "Name": "MilPathGeometry.alignment",
+      "Expression": "alignof(MilPathGeometry)"
+    },
+    {
+      "Name": "MilPathGeometry.Size",
+      "Expression": "offsetof(MilPathGeometry, Size)"
+    },
+    {
+      "Name": "MilPathGeometry.Flags",
+      "Expression": "offsetof(MilPathGeometry, Flags)"
+    },
+    {
+      "Name": "MilPathGeometry.Bounds",
+      "Expression": "offsetof(MilPathGeometry, Bounds)"
+    },
+    {
+      "Name": "MilPathGeometry.FigureCount",
+      "Expression": "offsetof(MilPathGeometry, FigureCount)"
+    },
+    {
+      "Name": "MilPathGeometry.ForcePacking",
+      "Expression": "offsetof(MilPathGeometry, ForcePacking)"
+    },
+    {
+      "Name": "MilPathFigure.size",
+      "Expression": "sizeof(MilPathFigure)"
+    },
+    {
+      "Name": "MilPathFigure.alignment",
+      "Expression": "alignof(MilPathFigure)"
+    },
+    {
+      "Name": "MilPathFigure.BackSize",
+      "Expression": "offsetof(MilPathFigure, BackSize)"
+    },
+    {
+      "Name": "MilPathFigure.Flags",
+      "Expression": "offsetof(MilPathFigure, Flags)"
+    },
+    {
+      "Name": "MilPathFigure.Count",
+      "Expression": "offsetof(MilPathFigure, Count)"
+    },
+    {
+      "Name": "MilPathFigure.Size",
+      "Expression": "offsetof(MilPathFigure, Size)"
+    },
+    {
+      "Name": "MilPathFigure.StartPoint",
+      "Expression": "offsetof(MilPathFigure, StartPoint)"
+    },
+    {
+      "Name": "MilPathFigure.OffsetToLastSegment",
+      "Expression": "offsetof(MilPathFigure, OffsetToLastSegment)"
+    },
+    {
+      "Name": "MilPathFigure.ForcePacking",
+      "Expression": "offsetof(MilPathFigure, ForcePacking)"
+    },
+    {
+      "Name": "MilSegment.size",
+      "Expression": "sizeof(MilSegment)"
+    },
+    {
+      "Name": "MilSegment.alignment",
+      "Expression": "alignof(MilSegment)"
+    },
+    {
+      "Name": "MilSegment.Type",
+      "Expression": "offsetof(MilSegment, Type)"
+    },
+    {
+      "Name": "MilSegment.Flags",
+      "Expression": "offsetof(MilSegment, Flags)"
+    },
+    {
+      "Name": "MilSegment.BackSize",
+      "Expression": "offsetof(MilSegment, BackSize)"
+    },
+    {
+      "Name": "MilSegmentLine.size",
+      "Expression": "sizeof(MilSegmentLine)"
+    },
+    {
+      "Name": "MilSegmentLine.alignment",
+      "Expression": "alignof(MilSegmentLine)"
+    },
+    {
+      "Name": "MilSegmentLine.ForcePacking",
+      "Expression": "offsetof(MilSegmentLine, ForcePacking)"
+    },
+    {
+      "Name": "MilSegmentLine.Point",
+      "Expression": "offsetof(MilSegmentLine, Point)"
+    },
+    {
+      "Name": "MilSegmentLine.Type",
+      "Expression": "offsetof(MilSegmentLine, Type)"
+    },
+    {
+      "Name": "MilSegmentLine.Flags",
+      "Expression": "offsetof(MilSegmentLine, Flags)"
+    },
+    {
+      "Name": "MilSegmentLine.BackSize",
+      "Expression": "offsetof(MilSegmentLine, BackSize)"
+    },
+    {
+      "Name": "MilSegmentBezier.size",
+      "Expression": "sizeof(MilSegmentBezier)"
+    },
+    {
+      "Name": "MilSegmentBezier.alignment",
+      "Expression": "alignof(MilSegmentBezier)"
+    },
+    {
+      "Name": "MilSegmentBezier.ForcePacking",
+      "Expression": "offsetof(MilSegmentBezier, ForcePacking)"
+    },
+    {
+      "Name": "MilSegmentBezier.Point1",
+      "Expression": "offsetof(MilSegmentBezier, Point1)"
+    },
+    {
+      "Name": "MilSegmentBezier.Point2",
+      "Expression": "offsetof(MilSegmentBezier, Point2)"
+    },
+    {
+      "Name": "MilSegmentBezier.Point3",
+      "Expression": "offsetof(MilSegmentBezier, Point3)"
+    },
+    {
+      "Name": "MilSegmentBezier.Type",
+      "Expression": "offsetof(MilSegmentBezier, Type)"
+    },
+    {
+      "Name": "MilSegmentBezier.Flags",
+      "Expression": "offsetof(MilSegmentBezier, Flags)"
+    },
+    {
+      "Name": "MilSegmentBezier.BackSize",
+      "Expression": "offsetof(MilSegmentBezier, BackSize)"
+    },
+    {
+      "Name": "MilSegmentQuadraticBezier.size",
+      "Expression": "sizeof(MilSegmentQuadraticBezier)"
+    },
+    {
+      "Name": "MilSegmentQuadraticBezier.alignment",
+      "Expression": "alignof(MilSegmentQuadraticBezier)"
+    },
+    {
+      "Name": "MilSegmentQuadraticBezier.ForcePacking",
+      "Expression": "offsetof(MilSegmentQuadraticBezier, ForcePacking)"
+    },
+    {
+      "Name": "MilSegmentQuadraticBezier.Point1",
+      "Expression": "offsetof(MilSegmentQuadraticBezier, Point1)"
+    },
+    {
+      "Name": "MilSegmentQuadraticBezier.Point2",
+      "Expression": "offsetof(MilSegmentQuadraticBezier, Point2)"
+    },
+    {
+      "Name": "MilSegmentQuadraticBezier.Type",
+      "Expression": "offsetof(MilSegmentQuadraticBezier, Type)"
+    },
+    {
+      "Name": "MilSegmentQuadraticBezier.Flags",
+      "Expression": "offsetof(MilSegmentQuadraticBezier, Flags)"
+    },
+    {
+      "Name": "MilSegmentQuadraticBezier.BackSize",
+      "Expression": "offsetof(MilSegmentQuadraticBezier, BackSize)"
+    },
+    {
+      "Name": "MilSegmentArc.size",
+      "Expression": "sizeof(MilSegmentArc)"
+    },
+    {
+      "Name": "MilSegmentArc.alignment",
+      "Expression": "alignof(MilSegmentArc)"
+    },
+    {
+      "Name": "MilSegmentArc.LargeArc",
+      "Expression": "offsetof(MilSegmentArc, LargeArc)"
+    },
+    {
+      "Name": "MilSegmentArc.Point",
+      "Expression": "offsetof(MilSegmentArc, Point)"
+    },
+    {
+      "Name": "MilSegmentArc.Size",
+      "Expression": "offsetof(MilSegmentArc, Size)"
+    },
+    {
+      "Name": "MilSegmentArc.XRotation",
+      "Expression": "offsetof(MilSegmentArc, XRotation)"
+    },
+    {
+      "Name": "MilSegmentArc.Sweep",
+      "Expression": "offsetof(MilSegmentArc, Sweep)"
+    },
+    {
+      "Name": "MilSegmentArc.ForcePacking",
+      "Expression": "offsetof(MilSegmentArc, ForcePacking)"
+    },
+    {
+      "Name": "MilSegmentArc.Type",
+      "Expression": "offsetof(MilSegmentArc, Type)"
+    },
+    {
+      "Name": "MilSegmentArc.Flags",
+      "Expression": "offsetof(MilSegmentArc, Flags)"
+    },
+    {
+      "Name": "MilSegmentArc.BackSize",
+      "Expression": "offsetof(MilSegmentArc, BackSize)"
+    },
+    {
+      "Name": "MilSegmentPoly.size",
+      "Expression": "sizeof(MilSegmentPoly)"
+    },
+    {
+      "Name": "MilSegmentPoly.alignment",
+      "Expression": "alignof(MilSegmentPoly)"
+    },
+    {
+      "Name": "MilSegmentPoly.Count",
+      "Expression": "offsetof(MilSegmentPoly, Count)"
+    },
+    {
+      "Name": "MilSegmentPoly.Type",
+      "Expression": "offsetof(MilSegmentPoly, Type)"
+    },
+    {
+      "Name": "MilSegmentPoly.Flags",
+      "Expression": "offsetof(MilSegmentPoly, Flags)"
+    },
+    {
+      "Name": "MilSegmentPoly.BackSize",
+      "Expression": "offsetof(MilSegmentPoly, BackSize)"
+    },
+    {
+      "Name": "MilPenData.size",
+      "Expression": "sizeof(MilPenData)"
+    },
+    {
+      "Name": "MilPenData.alignment",
+      "Expression": "alignof(MilPenData)"
+    },
+    {
+      "Name": "MilPenData.Thickness",
+      "Expression": "offsetof(MilPenData, Thickness)"
+    },
+    {
+      "Name": "MilPenData.MiterLimit",
+      "Expression": "offsetof(MilPenData, MiterLimit)"
+    },
+    {
+      "Name": "MilPenData.DashOffset",
+      "Expression": "offsetof(MilPenData, DashOffset)"
+    },
+    {
+      "Name": "MilPenData.StartLineCap",
+      "Expression": "offsetof(MilPenData, StartLineCap)"
+    },
+    {
+      "Name": "MilPenData.EndLineCap",
+      "Expression": "offsetof(MilPenData, EndLineCap)"
+    },
+    {
+      "Name": "MilPenData.DashCap",
+      "Expression": "offsetof(MilPenData, DashCap)"
+    },
+    {
+      "Name": "MilPenData.LineJoin",
+      "Expression": "offsetof(MilPenData, LineJoin)"
+    },
+    {
+      "Name": "MilPenData.DashArraySize",
+      "Expression": "offsetof(MilPenData, DashArraySize)"
+    },
+    {
+      "Name": "MilRenderOptions.size",
+      "Expression": "sizeof(MilRenderOptions)"
+    },
+    {
+      "Name": "MilRenderOptions.alignment",
+      "Expression": "alignof(MilRenderOptions)"
+    },
+    {
+      "Name": "MilRenderOptions.Flags",
+      "Expression": "offsetof(MilRenderOptions, Flags)"
+    },
+    {
+      "Name": "MilRenderOptions.EdgeMode",
+      "Expression": "offsetof(MilRenderOptions, EdgeMode)"
+    },
+    {
+      "Name": "MilRenderOptions.CompositingMode",
+      "Expression": "offsetof(MilRenderOptions, CompositingMode)"
+    },
+    {
+      "Name": "MilRenderOptions.BitmapScalingMode",
+      "Expression": "offsetof(MilRenderOptions, BitmapScalingMode)"
+    },
+    {
+      "Name": "MilRenderOptions.ClearTypeHint",
+      "Expression": "offsetof(MilRenderOptions, ClearTypeHint)"
+    },
+    {
+      "Name": "MilRenderOptions.TextRenderingMode",
+      "Expression": "offsetof(MilRenderOptions, TextRenderingMode)"
+    },
+    {
+      "Name": "MilRenderOptions.TextHintingMode",
+      "Expression": "offsetof(MilRenderOptions, TextHintingMode)"
+    },
+    {
+      "Name": "MilMsgCompositionDeviceStateChangeData.size",
+      "Expression": "sizeof(MilMsgCompositionDeviceStateChangeData)"
+    },
+    {
+      "Name": "MilMsgCompositionDeviceStateChangeData.alignment",
+      "Expression": "alignof(MilMsgCompositionDeviceStateChangeData)"
+    },
+    {
+      "Name": "MilMsgCompositionDeviceStateChangeData.deviceStateOld",
+      "Expression": "offsetof(MilMsgCompositionDeviceStateChangeData, deviceStateOld)"
+    },
+    {
+      "Name": "MilMsgCompositionDeviceStateChangeData.deviceStateNew",
+      "Expression": "offsetof(MilMsgCompositionDeviceStateChangeData, deviceStateNew)"
+    },
+    {
+      "Name": "MilMsgSyncFlushReplyData.size",
+      "Expression": "sizeof(MilMsgSyncFlushReplyData)"
+    },
+    {
+      "Name": "MilMsgSyncFlushReplyData.alignment",
+      "Expression": "alignof(MilMsgSyncFlushReplyData)"
+    },
+    {
+      "Name": "MilMsgSyncFlushReplyData.hr",
+      "Expression": "offsetof(MilMsgSyncFlushReplyData, hr)"
+    },
+    {
+      "Name": "MilMsgVersionReplyData.size",
+      "Expression": "sizeof(MilMsgVersionReplyData)"
+    },
+    {
+      "Name": "MilMsgVersionReplyData.alignment",
+      "Expression": "alignof(MilMsgVersionReplyData)"
+    },
+    {
+      "Name": "MilMsgVersionReplyData.SupportedVersionsCount",
+      "Expression": "offsetof(MilMsgVersionReplyData, SupportedVersionsCount)"
+    },
+    {
+      "Name": "MilMsgTierData.size",
+      "Expression": "sizeof(MilMsgTierData)"
+    },
+    {
+      "Name": "MilMsgTierData.alignment",
+      "Expression": "alignof(MilMsgTierData)"
+    },
+    {
+      "Name": "MilMsgTierData.CommonMinimumCaps",
+      "Expression": "offsetof(MilMsgTierData, CommonMinimumCaps)"
+    },
+    {
+      "Name": "MilMsgTierData.DisplayUniqueness",
+      "Expression": "offsetof(MilMsgTierData, DisplayUniqueness)"
+    },
+    {
+      "Name": "MilMsgTierData.Caps",
+      "Expression": "offsetof(MilMsgTierData, Caps)"
+    },
+    {
+      "Name": "MilMsgTierData.Assessment",
+      "Expression": "offsetof(MilMsgTierData, Assessment)"
+    },
+    {
+      "Name": "MilMsgPartitionIsZombieData.size",
+      "Expression": "sizeof(MilMsgPartitionIsZombieData)"
+    },
+    {
+      "Name": "MilMsgPartitionIsZombieData.alignment",
+      "Expression": "alignof(MilMsgPartitionIsZombieData)"
+    },
+    {
+      "Name": "MilMsgPartitionIsZombieData.hrFailureCode",
+      "Expression": "offsetof(MilMsgPartitionIsZombieData, hrFailureCode)"
+    },
+    {
+      "Name": "MilMsgSyncModeStatusData.size",
+      "Expression": "sizeof(MilMsgSyncModeStatusData)"
+    },
+    {
+      "Name": "MilMsgSyncModeStatusData.alignment",
+      "Expression": "alignof(MilMsgSyncModeStatusData)"
+    },
+    {
+      "Name": "MilMsgSyncModeStatusData.hrEnabled",
+      "Expression": "offsetof(MilMsgSyncModeStatusData, hrEnabled)"
+    },
+    {
+      "Name": "MilMsgPresentedData.size",
+      "Expression": "sizeof(MilMsgPresentedData)"
+    },
+    {
+      "Name": "MilMsgPresentedData.alignment",
+      "Expression": "alignof(MilMsgPresentedData)"
+    },
+    {
+      "Name": "MilMsgPresentedData.presentationResults",
+      "Expression": "offsetof(MilMsgPresentedData, presentationResults)"
+    },
+    {
+      "Name": "MilMsgPresentedData.refreshRate",
+      "Expression": "offsetof(MilMsgPresentedData, refreshRate)"
+    },
+    {
+      "Name": "MilMsgPresentedData.presentationTime",
+      "Expression": "offsetof(MilMsgPresentedData, presentationTime)"
+    },
+    {
+      "Name": "MilMsgSysMemUsageData.size",
+      "Expression": "sizeof(MilMsgSysMemUsageData)"
+    },
+    {
+      "Name": "MilMsgSysMemUsageData.alignment",
+      "Expression": "alignof(MilMsgSysMemUsageData)"
+    },
+    {
+      "Name": "MilMsgSysMemUsageData.percentSystemMemoryUsed",
+      "Expression": "offsetof(MilMsgSysMemUsageData, percentSystemMemoryUsed)"
+    },
+    {
+      "Name": "MilMsgSysMemUsageData.totalClientSystemMemory",
+      "Expression": "offsetof(MilMsgSysMemUsageData, totalClientSystemMemory)"
+    },
+    {
+      "Name": "MilMsgAsyncFlushReplyData.size",
+      "Expression": "sizeof(MilMsgAsyncFlushReplyData)"
+    },
+    {
+      "Name": "MilMsgAsyncFlushReplyData.alignment",
+      "Expression": "alignof(MilMsgAsyncFlushReplyData)"
+    },
+    {
+      "Name": "MilMsgAsyncFlushReplyData.responseToken",
+      "Expression": "offsetof(MilMsgAsyncFlushReplyData, responseToken)"
+    },
+    {
+      "Name": "MilMsgAsyncFlushReplyData.hrCode",
+      "Expression": "offsetof(MilMsgAsyncFlushReplyData, hrCode)"
+    },
+    {
+      "Name": "MilMsgRenderStatusData.size",
+      "Expression": "sizeof(MilMsgRenderStatusData)"
+    },
+    {
+      "Name": "MilMsgRenderStatusData.alignment",
+      "Expression": "alignof(MilMsgRenderStatusData)"
+    },
+    {
+      "Name": "MilMsgRenderStatusData.hrCode",
+      "Expression": "offsetof(MilMsgRenderStatusData, hrCode)"
+    },
+    {
+      "Name": "MIL_MESSAGE.size",
+      "Expression": "sizeof(MIL_MESSAGE)"
+    },
+    {
+      "Name": "MIL_MESSAGE.alignment",
+      "Expression": "alignof(MIL_MESSAGE)"
+    },
+    {
+      "Name": "MIL_MESSAGE.type",
+      "Expression": "offsetof(MIL_MESSAGE, type)"
+    },
+    {
+      "Name": "MIL_MESSAGE.dwReserved",
+      "Expression": "offsetof(MIL_MESSAGE, dwReserved)"
+    },
+    {
+      "Name": "MIL_MESSAGE.syncFlushReplyData",
+      "Expression": "offsetof(MIL_MESSAGE, syncFlushReplyData)"
+    },
+    {
+      "Name": "MIL_MESSAGE.tierData",
+      "Expression": "offsetof(MIL_MESSAGE, tierData)"
+    },
+    {
+      "Name": "MIL_MESSAGE.partitionIsZombieData",
+      "Expression": "offsetof(MIL_MESSAGE, partitionIsZombieData)"
+    },
+    {
+      "Name": "MIL_MESSAGE.deviceStateChangeData",
+      "Expression": "offsetof(MIL_MESSAGE, deviceStateChangeData)"
+    },
+    {
+      "Name": "MIL_MESSAGE.syncModeStatusData",
+      "Expression": "offsetof(MIL_MESSAGE, syncModeStatusData)"
+    },
+    {
+      "Name": "MIL_MESSAGE.presentationTimeData",
+      "Expression": "offsetof(MIL_MESSAGE, presentationTimeData)"
+    },
+    {
+      "Name": "MIL_MESSAGE.systemMemoryUsageData",
+      "Expression": "offsetof(MIL_MESSAGE, systemMemoryUsageData)"
+    },
+    {
+      "Name": "MIL_MESSAGE.asyncFlushData",
+      "Expression": "offsetof(MIL_MESSAGE, asyncFlushData)"
+    },
+    {
+      "Name": "MIL_MESSAGE.renderStatusData",
+      "Expression": "offsetof(MIL_MESSAGE, renderStatusData)"
+    },
+    {
+      "Name": "MILCMD_TRANSPORT_SYNCFLUSH.size",
+      "Expression": "sizeof(MILCMD_TRANSPORT_SYNCFLUSH)"
+    },
+    {
+      "Name": "MILCMD_TRANSPORT_SYNCFLUSH.alignment",
+      "Expression": "alignof(MILCMD_TRANSPORT_SYNCFLUSH)"
+    },
+    {
+      "Name": "MILCMD_TRANSPORT_SYNCFLUSH.Type",
+      "Expression": "offsetof(MILCMD_TRANSPORT_SYNCFLUSH, Type)"
+    },
+    {
+      "Name": "MILCMD_TRANSPORT_DESTROYRESOURCESONCHANNEL.size",
+      "Expression": "sizeof(MILCMD_TRANSPORT_DESTROYRESOURCESONCHANNEL)"
+    },
+    {
+      "Name": "MILCMD_TRANSPORT_DESTROYRESOURCESONCHANNEL.alignment",
+      "Expression": "alignof(MILCMD_TRANSPORT_DESTROYRESOURCESONCHANNEL)"
+    },
+    {
+      "Name": "MILCMD_TRANSPORT_DESTROYRESOURCESONCHANNEL.Type",
+      "Expression": "offsetof(MILCMD_TRANSPORT_DESTROYRESOURCESONCHANNEL, Type)"
+    },
+    {
+      "Name": "MILCMD_TRANSPORT_DESTROYRESOURCESONCHANNEL.hChannel",
+      "Expression": "offsetof(MILCMD_TRANSPORT_DESTROYRESOURCESONCHANNEL, hChannel)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_REGISTERFORNOTIFICATIONS.size",
+      "Expression": "sizeof(MILCMD_PARTITION_REGISTERFORNOTIFICATIONS)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_REGISTERFORNOTIFICATIONS.alignment",
+      "Expression": "alignof(MILCMD_PARTITION_REGISTERFORNOTIFICATIONS)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_REGISTERFORNOTIFICATIONS.Type",
+      "Expression": "offsetof(MILCMD_PARTITION_REGISTERFORNOTIFICATIONS, Type)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_REGISTERFORNOTIFICATIONS.Enable",
+      "Expression": "offsetof(MILCMD_PARTITION_REGISTERFORNOTIFICATIONS, Enable)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_REQUESTTIER.size",
+      "Expression": "sizeof(MILCMD_CHANNEL_REQUESTTIER)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_REQUESTTIER.alignment",
+      "Expression": "alignof(MILCMD_CHANNEL_REQUESTTIER)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_REQUESTTIER.Type",
+      "Expression": "offsetof(MILCMD_CHANNEL_REQUESTTIER, Type)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_REQUESTTIER.ReturnCommonMinimum",
+      "Expression": "offsetof(MILCMD_CHANNEL_REQUESTTIER, ReturnCommonMinimum)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_SETVBLANKSYNCMODE.size",
+      "Expression": "sizeof(MILCMD_PARTITION_SETVBLANKSYNCMODE)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_SETVBLANKSYNCMODE.alignment",
+      "Expression": "alignof(MILCMD_PARTITION_SETVBLANKSYNCMODE)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_SETVBLANKSYNCMODE.Type",
+      "Expression": "offsetof(MILCMD_PARTITION_SETVBLANKSYNCMODE, Type)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_SETVBLANKSYNCMODE.Enable",
+      "Expression": "offsetof(MILCMD_PARTITION_SETVBLANKSYNCMODE, Enable)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_NOTIFYPRESENT.size",
+      "Expression": "sizeof(MILCMD_PARTITION_NOTIFYPRESENT)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_NOTIFYPRESENT.alignment",
+      "Expression": "alignof(MILCMD_PARTITION_NOTIFYPRESENT)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_NOTIFYPRESENT.Type",
+      "Expression": "offsetof(MILCMD_PARTITION_NOTIFYPRESENT, Type)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_NOTIFYPRESENT.FrameTime",
+      "Expression": "offsetof(MILCMD_PARTITION_NOTIFYPRESENT, FrameTime)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_CREATERESOURCE.size",
+      "Expression": "sizeof(MILCMD_CHANNEL_CREATERESOURCE)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_CREATERESOURCE.alignment",
+      "Expression": "alignof(MILCMD_CHANNEL_CREATERESOURCE)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_CREATERESOURCE.Type",
+      "Expression": "offsetof(MILCMD_CHANNEL_CREATERESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_CREATERESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_CHANNEL_CREATERESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_CREATERESOURCE.resType",
+      "Expression": "offsetof(MILCMD_CHANNEL_CREATERESOURCE, resType)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_DELETERESOURCE.size",
+      "Expression": "sizeof(MILCMD_CHANNEL_DELETERESOURCE)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_DELETERESOURCE.alignment",
+      "Expression": "alignof(MILCMD_CHANNEL_DELETERESOURCE)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_DELETERESOURCE.Type",
+      "Expression": "offsetof(MILCMD_CHANNEL_DELETERESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_DELETERESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_CHANNEL_DELETERESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_DELETERESOURCE.resType",
+      "Expression": "offsetof(MILCMD_CHANNEL_DELETERESOURCE, resType)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_DUPLICATEHANDLE.size",
+      "Expression": "sizeof(MILCMD_CHANNEL_DUPLICATEHANDLE)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_DUPLICATEHANDLE.alignment",
+      "Expression": "alignof(MILCMD_CHANNEL_DUPLICATEHANDLE)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_DUPLICATEHANDLE.Type",
+      "Expression": "offsetof(MILCMD_CHANNEL_DUPLICATEHANDLE, Type)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_DUPLICATEHANDLE.Original",
+      "Expression": "offsetof(MILCMD_CHANNEL_DUPLICATEHANDLE, Original)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_DUPLICATEHANDLE.TargetChannel",
+      "Expression": "offsetof(MILCMD_CHANNEL_DUPLICATEHANDLE, TargetChannel)"
+    },
+    {
+      "Name": "MILCMD_CHANNEL_DUPLICATEHANDLE.Duplicate",
+      "Expression": "offsetof(MILCMD_CHANNEL_DUPLICATEHANDLE, Duplicate)"
+    },
+    {
+      "Name": "MILCMD_D3DIMAGE.size",
+      "Expression": "sizeof(MILCMD_D3DIMAGE)"
+    },
+    {
+      "Name": "MILCMD_D3DIMAGE.alignment",
+      "Expression": "alignof(MILCMD_D3DIMAGE)"
+    },
+    {
+      "Name": "MILCMD_D3DIMAGE.Type",
+      "Expression": "offsetof(MILCMD_D3DIMAGE, Type)"
+    },
+    {
+      "Name": "MILCMD_D3DIMAGE.Handle",
+      "Expression": "offsetof(MILCMD_D3DIMAGE, Handle)"
+    },
+    {
+      "Name": "MILCMD_D3DIMAGE.pInteropDeviceBitmap",
+      "Expression": "offsetof(MILCMD_D3DIMAGE, pInteropDeviceBitmap)"
+    },
+    {
+      "Name": "MILCMD_D3DIMAGE.pSoftwareBitmap",
+      "Expression": "offsetof(MILCMD_D3DIMAGE, pSoftwareBitmap)"
+    },
+    {
+      "Name": "MILCMD_D3DIMAGE_PRESENT.size",
+      "Expression": "sizeof(MILCMD_D3DIMAGE_PRESENT)"
+    },
+    {
+      "Name": "MILCMD_D3DIMAGE_PRESENT.alignment",
+      "Expression": "alignof(MILCMD_D3DIMAGE_PRESENT)"
+    },
+    {
+      "Name": "MILCMD_D3DIMAGE_PRESENT.Type",
+      "Expression": "offsetof(MILCMD_D3DIMAGE_PRESENT, Type)"
+    },
+    {
+      "Name": "MILCMD_D3DIMAGE_PRESENT.Handle",
+      "Expression": "offsetof(MILCMD_D3DIMAGE_PRESENT, Handle)"
+    },
+    {
+      "Name": "MILCMD_D3DIMAGE_PRESENT.hEvent",
+      "Expression": "offsetof(MILCMD_D3DIMAGE_PRESENT, hEvent)"
+    },
+    {
+      "Name": "MILCMD_BITMAP_SOURCE.size",
+      "Expression": "sizeof(MILCMD_BITMAP_SOURCE)"
+    },
+    {
+      "Name": "MILCMD_BITMAP_SOURCE.alignment",
+      "Expression": "alignof(MILCMD_BITMAP_SOURCE)"
+    },
+    {
+      "Name": "MILCMD_BITMAP_SOURCE.Type",
+      "Expression": "offsetof(MILCMD_BITMAP_SOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_BITMAP_SOURCE.Handle",
+      "Expression": "offsetof(MILCMD_BITMAP_SOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_BITMAP_SOURCE.pIBitmap",
+      "Expression": "offsetof(MILCMD_BITMAP_SOURCE, pIBitmap)"
+    },
+    {
+      "Name": "MILCMD_BITMAP_INVALIDATE.size",
+      "Expression": "sizeof(MILCMD_BITMAP_INVALIDATE)"
+    },
+    {
+      "Name": "MILCMD_BITMAP_INVALIDATE.alignment",
+      "Expression": "alignof(MILCMD_BITMAP_INVALIDATE)"
+    },
+    {
+      "Name": "MILCMD_BITMAP_INVALIDATE.Type",
+      "Expression": "offsetof(MILCMD_BITMAP_INVALIDATE, Type)"
+    },
+    {
+      "Name": "MILCMD_BITMAP_INVALIDATE.Handle",
+      "Expression": "offsetof(MILCMD_BITMAP_INVALIDATE, Handle)"
+    },
+    {
+      "Name": "MILCMD_BITMAP_INVALIDATE.UseDirtyRect",
+      "Expression": "offsetof(MILCMD_BITMAP_INVALIDATE, UseDirtyRect)"
+    },
+    {
+      "Name": "MILCMD_BITMAP_INVALIDATE.DirtyRect",
+      "Expression": "offsetof(MILCMD_BITMAP_INVALIDATE, DirtyRect)"
+    },
+    {
+      "Name": "MILCMD_DOUBLERESOURCE.size",
+      "Expression": "sizeof(MILCMD_DOUBLERESOURCE)"
+    },
+    {
+      "Name": "MILCMD_DOUBLERESOURCE.alignment",
+      "Expression": "alignof(MILCMD_DOUBLERESOURCE)"
+    },
+    {
+      "Name": "MILCMD_DOUBLERESOURCE.Type",
+      "Expression": "offsetof(MILCMD_DOUBLERESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_DOUBLERESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_DOUBLERESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_DOUBLERESOURCE.Value",
+      "Expression": "offsetof(MILCMD_DOUBLERESOURCE, Value)"
+    },
+    {
+      "Name": "MILCMD_COLORRESOURCE.size",
+      "Expression": "sizeof(MILCMD_COLORRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_COLORRESOURCE.alignment",
+      "Expression": "alignof(MILCMD_COLORRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_COLORRESOURCE.Type",
+      "Expression": "offsetof(MILCMD_COLORRESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_COLORRESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_COLORRESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_COLORRESOURCE.Value",
+      "Expression": "offsetof(MILCMD_COLORRESOURCE, Value)"
+    },
+    {
+      "Name": "MILCMD_POINTRESOURCE.size",
+      "Expression": "sizeof(MILCMD_POINTRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_POINTRESOURCE.alignment",
+      "Expression": "alignof(MILCMD_POINTRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_POINTRESOURCE.Type",
+      "Expression": "offsetof(MILCMD_POINTRESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_POINTRESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_POINTRESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_POINTRESOURCE.Value",
+      "Expression": "offsetof(MILCMD_POINTRESOURCE, Value)"
+    },
+    {
+      "Name": "MILCMD_RECTRESOURCE.size",
+      "Expression": "sizeof(MILCMD_RECTRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_RECTRESOURCE.alignment",
+      "Expression": "alignof(MILCMD_RECTRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_RECTRESOURCE.Type",
+      "Expression": "offsetof(MILCMD_RECTRESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_RECTRESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_RECTRESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_RECTRESOURCE.Value",
+      "Expression": "offsetof(MILCMD_RECTRESOURCE, Value)"
+    },
+    {
+      "Name": "MILCMD_SIZERESOURCE.size",
+      "Expression": "sizeof(MILCMD_SIZERESOURCE)"
+    },
+    {
+      "Name": "MILCMD_SIZERESOURCE.alignment",
+      "Expression": "alignof(MILCMD_SIZERESOURCE)"
+    },
+    {
+      "Name": "MILCMD_SIZERESOURCE.Type",
+      "Expression": "offsetof(MILCMD_SIZERESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_SIZERESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_SIZERESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_SIZERESOURCE.Value",
+      "Expression": "offsetof(MILCMD_SIZERESOURCE, Value)"
+    },
+    {
+      "Name": "MILCMD_MATRIXRESOURCE.size",
+      "Expression": "sizeof(MILCMD_MATRIXRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_MATRIXRESOURCE.alignment",
+      "Expression": "alignof(MILCMD_MATRIXRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_MATRIXRESOURCE.Type",
+      "Expression": "offsetof(MILCMD_MATRIXRESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_MATRIXRESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_MATRIXRESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_MATRIXRESOURCE.Value",
+      "Expression": "offsetof(MILCMD_MATRIXRESOURCE, Value)"
+    },
+    {
+      "Name": "MILCMD_POINT3DRESOURCE.size",
+      "Expression": "sizeof(MILCMD_POINT3DRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_POINT3DRESOURCE.alignment",
+      "Expression": "alignof(MILCMD_POINT3DRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_POINT3DRESOURCE.Type",
+      "Expression": "offsetof(MILCMD_POINT3DRESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_POINT3DRESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_POINT3DRESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_POINT3DRESOURCE.Value",
+      "Expression": "offsetof(MILCMD_POINT3DRESOURCE, Value)"
+    },
+    {
+      "Name": "MILCMD_VECTOR3DRESOURCE.size",
+      "Expression": "sizeof(MILCMD_VECTOR3DRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_VECTOR3DRESOURCE.alignment",
+      "Expression": "alignof(MILCMD_VECTOR3DRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_VECTOR3DRESOURCE.Type",
+      "Expression": "offsetof(MILCMD_VECTOR3DRESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_VECTOR3DRESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_VECTOR3DRESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_VECTOR3DRESOURCE.Value",
+      "Expression": "offsetof(MILCMD_VECTOR3DRESOURCE, Value)"
+    },
+    {
+      "Name": "MILCMD_QUATERNIONRESOURCE.size",
+      "Expression": "sizeof(MILCMD_QUATERNIONRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_QUATERNIONRESOURCE.alignment",
+      "Expression": "alignof(MILCMD_QUATERNIONRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_QUATERNIONRESOURCE.Type",
+      "Expression": "offsetof(MILCMD_QUATERNIONRESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_QUATERNIONRESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_QUATERNIONRESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_QUATERNIONRESOURCE.Value",
+      "Expression": "offsetof(MILCMD_QUATERNIONRESOURCE, Value)"
+    },
+    {
+      "Name": "MILCMD_MEDIAPLAYER.size",
+      "Expression": "sizeof(MILCMD_MEDIAPLAYER)"
+    },
+    {
+      "Name": "MILCMD_MEDIAPLAYER.alignment",
+      "Expression": "alignof(MILCMD_MEDIAPLAYER)"
+    },
+    {
+      "Name": "MILCMD_MEDIAPLAYER.Type",
+      "Expression": "offsetof(MILCMD_MEDIAPLAYER, Type)"
+    },
+    {
+      "Name": "MILCMD_MEDIAPLAYER.Handle",
+      "Expression": "offsetof(MILCMD_MEDIAPLAYER, Handle)"
+    },
+    {
+      "Name": "MILCMD_MEDIAPLAYER.pMedia",
+      "Expression": "offsetof(MILCMD_MEDIAPLAYER, pMedia)"
+    },
+    {
+      "Name": "MILCMD_MEDIAPLAYER.notifyUceDirect",
+      "Expression": "offsetof(MILCMD_MEDIAPLAYER, notifyUceDirect)"
+    },
+    {
+      "Name": "MILCMD_RENDERDATA.size",
+      "Expression": "sizeof(MILCMD_RENDERDATA)"
+    },
+    {
+      "Name": "MILCMD_RENDERDATA.alignment",
+      "Expression": "alignof(MILCMD_RENDERDATA)"
+    },
+    {
+      "Name": "MILCMD_RENDERDATA.Type",
+      "Expression": "offsetof(MILCMD_RENDERDATA, Type)"
+    },
+    {
+      "Name": "MILCMD_RENDERDATA.Handle",
+      "Expression": "offsetof(MILCMD_RENDERDATA, Handle)"
+    },
+    {
+      "Name": "MILCMD_RENDERDATA.cbData",
+      "Expression": "offsetof(MILCMD_RENDERDATA, cbData)"
+    },
+    {
+      "Name": "MILCMD_ETWEVENTRESOURCE.size",
+      "Expression": "sizeof(MILCMD_ETWEVENTRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_ETWEVENTRESOURCE.alignment",
+      "Expression": "alignof(MILCMD_ETWEVENTRESOURCE)"
+    },
+    {
+      "Name": "MILCMD_ETWEVENTRESOURCE.Type",
+      "Expression": "offsetof(MILCMD_ETWEVENTRESOURCE, Type)"
+    },
+    {
+      "Name": "MILCMD_ETWEVENTRESOURCE.Handle",
+      "Expression": "offsetof(MILCMD_ETWEVENTRESOURCE, Handle)"
+    },
+    {
+      "Name": "MILCMD_ETWEVENTRESOURCE.id",
+      "Expression": "offsetof(MILCMD_ETWEVENTRESOURCE, id)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_CREATE.size",
+      "Expression": "sizeof(MILCMD_VISUAL_CREATE)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_CREATE.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_CREATE)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_CREATE.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_CREATE, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_CREATE.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_CREATE, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETOFFSET.size",
+      "Expression": "sizeof(MILCMD_VISUAL_SETOFFSET)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETOFFSET.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_SETOFFSET)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETOFFSET.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_SETOFFSET, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETOFFSET.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_SETOFFSET, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETOFFSET.offsetX",
+      "Expression": "offsetof(MILCMD_VISUAL_SETOFFSET, offsetX)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETOFFSET.offsetY",
+      "Expression": "offsetof(MILCMD_VISUAL_SETOFFSET, offsetY)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETTRANSFORM.size",
+      "Expression": "sizeof(MILCMD_VISUAL_SETTRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETTRANSFORM.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_SETTRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETTRANSFORM.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_SETTRANSFORM, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETTRANSFORM.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_SETTRANSFORM, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETTRANSFORM.hTransform",
+      "Expression": "offsetof(MILCMD_VISUAL_SETTRANSFORM, hTransform)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETEFFECT.size",
+      "Expression": "sizeof(MILCMD_VISUAL_SETEFFECT)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETEFFECT.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_SETEFFECT)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETEFFECT.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_SETEFFECT, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETEFFECT.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_SETEFFECT, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETEFFECT.hEffect",
+      "Expression": "offsetof(MILCMD_VISUAL_SETEFFECT, hEffect)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCACHEMODE.size",
+      "Expression": "sizeof(MILCMD_VISUAL_SETCACHEMODE)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCACHEMODE.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_SETCACHEMODE)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCACHEMODE.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_SETCACHEMODE, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCACHEMODE.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_SETCACHEMODE, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCACHEMODE.hCacheMode",
+      "Expression": "offsetof(MILCMD_VISUAL_SETCACHEMODE, hCacheMode)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCLIP.size",
+      "Expression": "sizeof(MILCMD_VISUAL_SETCLIP)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCLIP.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_SETCLIP)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCLIP.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_SETCLIP, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCLIP.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_SETCLIP, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCLIP.hClip",
+      "Expression": "offsetof(MILCMD_VISUAL_SETCLIP, hClip)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETALPHA.size",
+      "Expression": "sizeof(MILCMD_VISUAL_SETALPHA)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETALPHA.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_SETALPHA)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETALPHA.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_SETALPHA, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETALPHA.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_SETALPHA, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETALPHA.alpha",
+      "Expression": "offsetof(MILCMD_VISUAL_SETALPHA, alpha)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETRENDEROPTIONS.size",
+      "Expression": "sizeof(MILCMD_VISUAL_SETRENDEROPTIONS)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETRENDEROPTIONS.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_SETRENDEROPTIONS)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETRENDEROPTIONS.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_SETRENDEROPTIONS, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETRENDEROPTIONS.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_SETRENDEROPTIONS, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETRENDEROPTIONS.renderOptions",
+      "Expression": "offsetof(MILCMD_VISUAL_SETRENDEROPTIONS, renderOptions)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCONTENT.size",
+      "Expression": "sizeof(MILCMD_VISUAL_SETCONTENT)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCONTENT.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_SETCONTENT)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCONTENT.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_SETCONTENT, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCONTENT.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_SETCONTENT, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETCONTENT.hContent",
+      "Expression": "offsetof(MILCMD_VISUAL_SETCONTENT, hContent)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETALPHAMASK.size",
+      "Expression": "sizeof(MILCMD_VISUAL_SETALPHAMASK)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETALPHAMASK.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_SETALPHAMASK)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETALPHAMASK.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_SETALPHAMASK, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETALPHAMASK.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_SETALPHAMASK, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETALPHAMASK.hAlphaMask",
+      "Expression": "offsetof(MILCMD_VISUAL_SETALPHAMASK, hAlphaMask)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_REMOVEALLCHILDREN.size",
+      "Expression": "sizeof(MILCMD_VISUAL_REMOVEALLCHILDREN)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_REMOVEALLCHILDREN.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_REMOVEALLCHILDREN)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_REMOVEALLCHILDREN.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_REMOVEALLCHILDREN, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_REMOVEALLCHILDREN.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_REMOVEALLCHILDREN, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_REMOVECHILD.size",
+      "Expression": "sizeof(MILCMD_VISUAL_REMOVECHILD)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_REMOVECHILD.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_REMOVECHILD)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_REMOVECHILD.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_REMOVECHILD, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_REMOVECHILD.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_REMOVECHILD, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_REMOVECHILD.hChild",
+      "Expression": "offsetof(MILCMD_VISUAL_REMOVECHILD, hChild)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_INSERTCHILDAT.size",
+      "Expression": "sizeof(MILCMD_VISUAL_INSERTCHILDAT)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_INSERTCHILDAT.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_INSERTCHILDAT)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_INSERTCHILDAT.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_INSERTCHILDAT, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_INSERTCHILDAT.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_INSERTCHILDAT, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_INSERTCHILDAT.hChild",
+      "Expression": "offsetof(MILCMD_VISUAL_INSERTCHILDAT, hChild)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_INSERTCHILDAT.index",
+      "Expression": "offsetof(MILCMD_VISUAL_INSERTCHILDAT, index)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETGUIDELINECOLLECTION.size",
+      "Expression": "sizeof(MILCMD_VISUAL_SETGUIDELINECOLLECTION)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETGUIDELINECOLLECTION.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_SETGUIDELINECOLLECTION)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETGUIDELINECOLLECTION.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_SETGUIDELINECOLLECTION, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETGUIDELINECOLLECTION.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_SETGUIDELINECOLLECTION, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETGUIDELINECOLLECTION.countX",
+      "Expression": "offsetof(MILCMD_VISUAL_SETGUIDELINECOLLECTION, countX)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETGUIDELINECOLLECTION.UINT16Padding0",
+      "Expression": "offsetof(MILCMD_VISUAL_SETGUIDELINECOLLECTION, UINT16Padding0)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETGUIDELINECOLLECTION.countY",
+      "Expression": "offsetof(MILCMD_VISUAL_SETGUIDELINECOLLECTION, countY)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETGUIDELINECOLLECTION.UINT16Padding1",
+      "Expression": "offsetof(MILCMD_VISUAL_SETGUIDELINECOLLECTION, UINT16Padding1)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETSCROLLABLEAREACLIP.size",
+      "Expression": "sizeof(MILCMD_VISUAL_SETSCROLLABLEAREACLIP)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETSCROLLABLEAREACLIP.alignment",
+      "Expression": "alignof(MILCMD_VISUAL_SETSCROLLABLEAREACLIP)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETSCROLLABLEAREACLIP.Type",
+      "Expression": "offsetof(MILCMD_VISUAL_SETSCROLLABLEAREACLIP, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETSCROLLABLEAREACLIP.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL_SETSCROLLABLEAREACLIP, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETSCROLLABLEAREACLIP.Clip",
+      "Expression": "offsetof(MILCMD_VISUAL_SETSCROLLABLEAREACLIP, Clip)"
+    },
+    {
+      "Name": "MILCMD_VISUAL_SETSCROLLABLEAREACLIP.IsEnabled",
+      "Expression": "offsetof(MILCMD_VISUAL_SETSCROLLABLEAREACLIP, IsEnabled)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SETCAMERA.size",
+      "Expression": "sizeof(MILCMD_VIEWPORT3DVISUAL_SETCAMERA)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SETCAMERA.alignment",
+      "Expression": "alignof(MILCMD_VIEWPORT3DVISUAL_SETCAMERA)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SETCAMERA.Type",
+      "Expression": "offsetof(MILCMD_VIEWPORT3DVISUAL_SETCAMERA, Type)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SETCAMERA.Handle",
+      "Expression": "offsetof(MILCMD_VIEWPORT3DVISUAL_SETCAMERA, Handle)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SETCAMERA.hCamera",
+      "Expression": "offsetof(MILCMD_VIEWPORT3DVISUAL_SETCAMERA, hCamera)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SETVIEWPORT.size",
+      "Expression": "sizeof(MILCMD_VIEWPORT3DVISUAL_SETVIEWPORT)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SETVIEWPORT.alignment",
+      "Expression": "alignof(MILCMD_VIEWPORT3DVISUAL_SETVIEWPORT)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SETVIEWPORT.Type",
+      "Expression": "offsetof(MILCMD_VIEWPORT3DVISUAL_SETVIEWPORT, Type)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SETVIEWPORT.Handle",
+      "Expression": "offsetof(MILCMD_VIEWPORT3DVISUAL_SETVIEWPORT, Handle)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SETVIEWPORT.Viewport",
+      "Expression": "offsetof(MILCMD_VIEWPORT3DVISUAL_SETVIEWPORT, Viewport)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SET3DCHILD.size",
+      "Expression": "sizeof(MILCMD_VIEWPORT3DVISUAL_SET3DCHILD)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SET3DCHILD.alignment",
+      "Expression": "alignof(MILCMD_VIEWPORT3DVISUAL_SET3DCHILD)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SET3DCHILD.Type",
+      "Expression": "offsetof(MILCMD_VIEWPORT3DVISUAL_SET3DCHILD, Type)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SET3DCHILD.Handle",
+      "Expression": "offsetof(MILCMD_VIEWPORT3DVISUAL_SET3DCHILD, Handle)"
+    },
+    {
+      "Name": "MILCMD_VIEWPORT3DVISUAL_SET3DCHILD.hChild",
+      "Expression": "offsetof(MILCMD_VIEWPORT3DVISUAL_SET3DCHILD, hChild)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_SETCONTENT.size",
+      "Expression": "sizeof(MILCMD_VISUAL3D_SETCONTENT)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_SETCONTENT.alignment",
+      "Expression": "alignof(MILCMD_VISUAL3D_SETCONTENT)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_SETCONTENT.Type",
+      "Expression": "offsetof(MILCMD_VISUAL3D_SETCONTENT, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_SETCONTENT.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL3D_SETCONTENT, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_SETCONTENT.hContent",
+      "Expression": "offsetof(MILCMD_VISUAL3D_SETCONTENT, hContent)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_SETTRANSFORM.size",
+      "Expression": "sizeof(MILCMD_VISUAL3D_SETTRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_SETTRANSFORM.alignment",
+      "Expression": "alignof(MILCMD_VISUAL3D_SETTRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_SETTRANSFORM.Type",
+      "Expression": "offsetof(MILCMD_VISUAL3D_SETTRANSFORM, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_SETTRANSFORM.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL3D_SETTRANSFORM, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_SETTRANSFORM.hTransform",
+      "Expression": "offsetof(MILCMD_VISUAL3D_SETTRANSFORM, hTransform)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_REMOVEALLCHILDREN.size",
+      "Expression": "sizeof(MILCMD_VISUAL3D_REMOVEALLCHILDREN)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_REMOVEALLCHILDREN.alignment",
+      "Expression": "alignof(MILCMD_VISUAL3D_REMOVEALLCHILDREN)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_REMOVEALLCHILDREN.Type",
+      "Expression": "offsetof(MILCMD_VISUAL3D_REMOVEALLCHILDREN, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_REMOVEALLCHILDREN.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL3D_REMOVEALLCHILDREN, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_REMOVECHILD.size",
+      "Expression": "sizeof(MILCMD_VISUAL3D_REMOVECHILD)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_REMOVECHILD.alignment",
+      "Expression": "alignof(MILCMD_VISUAL3D_REMOVECHILD)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_REMOVECHILD.Type",
+      "Expression": "offsetof(MILCMD_VISUAL3D_REMOVECHILD, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_REMOVECHILD.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL3D_REMOVECHILD, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_REMOVECHILD.hChild",
+      "Expression": "offsetof(MILCMD_VISUAL3D_REMOVECHILD, hChild)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_INSERTCHILDAT.size",
+      "Expression": "sizeof(MILCMD_VISUAL3D_INSERTCHILDAT)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_INSERTCHILDAT.alignment",
+      "Expression": "alignof(MILCMD_VISUAL3D_INSERTCHILDAT)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_INSERTCHILDAT.Type",
+      "Expression": "offsetof(MILCMD_VISUAL3D_INSERTCHILDAT, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_INSERTCHILDAT.Handle",
+      "Expression": "offsetof(MILCMD_VISUAL3D_INSERTCHILDAT, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_INSERTCHILDAT.hChild",
+      "Expression": "offsetof(MILCMD_VISUAL3D_INSERTCHILDAT, hChild)"
+    },
+    {
+      "Name": "MILCMD_VISUAL3D_INSERTCHILDAT.index",
+      "Expression": "offsetof(MILCMD_VISUAL3D_INSERTCHILDAT, index)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.size",
+      "Expression": "sizeof(MILCMD_HWNDTARGET_CREATE)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.alignment",
+      "Expression": "alignof(MILCMD_HWNDTARGET_CREATE)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.Type",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, Type)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.Handle",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, Handle)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.hwnd",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, hwnd)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.hSection",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, hSection)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.masterDevice",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, masterDevice)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.width",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, width)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.height",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, height)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.clearColor",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, clearColor)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.flags",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, flags)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.hBitmap",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, hBitmap)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.stride",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, stride)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.ePixelFormat",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, ePixelFormat)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.DpiAwarenessContext",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, DpiAwarenessContext)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.DpiX",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, DpiX)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_CREATE.DpiY",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_CREATE, DpiY)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_SUPPRESSLAYERED.size",
+      "Expression": "sizeof(MILCMD_HWNDTARGET_SUPPRESSLAYERED)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_SUPPRESSLAYERED.alignment",
+      "Expression": "alignof(MILCMD_HWNDTARGET_SUPPRESSLAYERED)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_SUPPRESSLAYERED.Type",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_SUPPRESSLAYERED, Type)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_SUPPRESSLAYERED.Handle",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_SUPPRESSLAYERED, Handle)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_SUPPRESSLAYERED.Suppress",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_SUPPRESSLAYERED, Suppress)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.size",
+      "Expression": "sizeof(MILCMD_TARGET_UPDATEWINDOWSETTINGS)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.alignment",
+      "Expression": "alignof(MILCMD_TARGET_UPDATEWINDOWSETTINGS)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.Type",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, Type)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.Handle",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, Handle)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.windowRect",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, windowRect)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.windowLayerType",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, windowLayerType)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.transparencyMode",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, transparencyMode)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.constantAlpha",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, constantAlpha)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.isChild",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, isChild)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.isRTL",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, isRTL)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.renderingEnabled",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, renderingEnabled)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.colorKey",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, colorKey)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.disableCookie",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, disableCookie)"
+    },
+    {
+      "Name": "MILCMD_TARGET_UPDATEWINDOWSETTINGS.gdiBlt",
+      "Expression": "offsetof(MILCMD_TARGET_UPDATEWINDOWSETTINGS, gdiBlt)"
+    },
+    {
+      "Name": "MILCMD_GENERICTARGET_CREATE.size",
+      "Expression": "sizeof(MILCMD_GENERICTARGET_CREATE)"
+    },
+    {
+      "Name": "MILCMD_GENERICTARGET_CREATE.alignment",
+      "Expression": "alignof(MILCMD_GENERICTARGET_CREATE)"
+    },
+    {
+      "Name": "MILCMD_GENERICTARGET_CREATE.Type",
+      "Expression": "offsetof(MILCMD_GENERICTARGET_CREATE, Type)"
+    },
+    {
+      "Name": "MILCMD_GENERICTARGET_CREATE.Handle",
+      "Expression": "offsetof(MILCMD_GENERICTARGET_CREATE, Handle)"
+    },
+    {
+      "Name": "MILCMD_GENERICTARGET_CREATE.hwnd",
+      "Expression": "offsetof(MILCMD_GENERICTARGET_CREATE, hwnd)"
+    },
+    {
+      "Name": "MILCMD_GENERICTARGET_CREATE.pRenderTarget",
+      "Expression": "offsetof(MILCMD_GENERICTARGET_CREATE, pRenderTarget)"
+    },
+    {
+      "Name": "MILCMD_GENERICTARGET_CREATE.width",
+      "Expression": "offsetof(MILCMD_GENERICTARGET_CREATE, width)"
+    },
+    {
+      "Name": "MILCMD_GENERICTARGET_CREATE.height",
+      "Expression": "offsetof(MILCMD_GENERICTARGET_CREATE, height)"
+    },
+    {
+      "Name": "MILCMD_GENERICTARGET_CREATE.dummy",
+      "Expression": "offsetof(MILCMD_GENERICTARGET_CREATE, dummy)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETROOT.size",
+      "Expression": "sizeof(MILCMD_TARGET_SETROOT)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETROOT.alignment",
+      "Expression": "alignof(MILCMD_TARGET_SETROOT)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETROOT.Type",
+      "Expression": "offsetof(MILCMD_TARGET_SETROOT, Type)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETROOT.Handle",
+      "Expression": "offsetof(MILCMD_TARGET_SETROOT, Handle)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETROOT.hRoot",
+      "Expression": "offsetof(MILCMD_TARGET_SETROOT, hRoot)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETCLEARCOLOR.size",
+      "Expression": "sizeof(MILCMD_TARGET_SETCLEARCOLOR)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETCLEARCOLOR.alignment",
+      "Expression": "alignof(MILCMD_TARGET_SETCLEARCOLOR)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETCLEARCOLOR.Type",
+      "Expression": "offsetof(MILCMD_TARGET_SETCLEARCOLOR, Type)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETCLEARCOLOR.Handle",
+      "Expression": "offsetof(MILCMD_TARGET_SETCLEARCOLOR, Handle)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETCLEARCOLOR.clearColor",
+      "Expression": "offsetof(MILCMD_TARGET_SETCLEARCOLOR, clearColor)"
+    },
+    {
+      "Name": "MILCMD_TARGET_INVALIDATE.size",
+      "Expression": "sizeof(MILCMD_TARGET_INVALIDATE)"
+    },
+    {
+      "Name": "MILCMD_TARGET_INVALIDATE.alignment",
+      "Expression": "alignof(MILCMD_TARGET_INVALIDATE)"
+    },
+    {
+      "Name": "MILCMD_TARGET_INVALIDATE.Type",
+      "Expression": "offsetof(MILCMD_TARGET_INVALIDATE, Type)"
+    },
+    {
+      "Name": "MILCMD_TARGET_INVALIDATE.Handle",
+      "Expression": "offsetof(MILCMD_TARGET_INVALIDATE, Handle)"
+    },
+    {
+      "Name": "MILCMD_TARGET_INVALIDATE.rc",
+      "Expression": "offsetof(MILCMD_TARGET_INVALIDATE, rc)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETFLAGS.size",
+      "Expression": "sizeof(MILCMD_TARGET_SETFLAGS)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETFLAGS.alignment",
+      "Expression": "alignof(MILCMD_TARGET_SETFLAGS)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETFLAGS.Type",
+      "Expression": "offsetof(MILCMD_TARGET_SETFLAGS, Type)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETFLAGS.Handle",
+      "Expression": "offsetof(MILCMD_TARGET_SETFLAGS, Handle)"
+    },
+    {
+      "Name": "MILCMD_TARGET_SETFLAGS.flags",
+      "Expression": "offsetof(MILCMD_TARGET_SETFLAGS, flags)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_DPICHANGED.size",
+      "Expression": "sizeof(MILCMD_HWNDTARGET_DPICHANGED)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_DPICHANGED.alignment",
+      "Expression": "alignof(MILCMD_HWNDTARGET_DPICHANGED)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_DPICHANGED.Type",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_DPICHANGED, Type)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_DPICHANGED.Handle",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_DPICHANGED, Handle)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_DPICHANGED.DpiX",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_DPICHANGED, DpiX)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_DPICHANGED.DpiY",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_DPICHANGED, DpiY)"
+    },
+    {
+      "Name": "MILCMD_HWNDTARGET_DPICHANGED.AfterParent",
+      "Expression": "offsetof(MILCMD_HWNDTARGET_DPICHANGED, AfterParent)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.size",
+      "Expression": "sizeof(MILCMD_GLYPHRUN_CREATE)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.alignment",
+      "Expression": "alignof(MILCMD_GLYPHRUN_CREATE)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.Type",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, Type)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.Handle",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, Handle)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.pIDWriteFont",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, pIDWriteFont)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.GlyphRunFlags",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, GlyphRunFlags)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.UINT16Padding0",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, UINT16Padding0)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.Origin",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, Origin)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.MuSize",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, MuSize)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.ManagedBounds",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, ManagedBounds)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.GlyphCount",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, GlyphCount)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.UINT16Padding1",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, UINT16Padding1)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.BidiLevel",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, BidiLevel)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.UINT16Padding2",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, UINT16Padding2)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.DWriteTextMeasuringMethod",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, DWriteTextMeasuringMethod)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUN_CREATE.UINT16Padding3",
+      "Expression": "offsetof(MILCMD_GLYPHRUN_CREATE, UINT16Padding3)"
+    },
+    {
+      "Name": "MILCMD_DOUBLEBUFFEREDBITMAP.size",
+      "Expression": "sizeof(MILCMD_DOUBLEBUFFEREDBITMAP)"
+    },
+    {
+      "Name": "MILCMD_DOUBLEBUFFEREDBITMAP.alignment",
+      "Expression": "alignof(MILCMD_DOUBLEBUFFEREDBITMAP)"
+    },
+    {
+      "Name": "MILCMD_DOUBLEBUFFEREDBITMAP.Type",
+      "Expression": "offsetof(MILCMD_DOUBLEBUFFEREDBITMAP, Type)"
+    },
+    {
+      "Name": "MILCMD_DOUBLEBUFFEREDBITMAP.Handle",
+      "Expression": "offsetof(MILCMD_DOUBLEBUFFEREDBITMAP, Handle)"
+    },
+    {
+      "Name": "MILCMD_DOUBLEBUFFEREDBITMAP.SwDoubleBufferedBitmap",
+      "Expression": "offsetof(MILCMD_DOUBLEBUFFEREDBITMAP, SwDoubleBufferedBitmap)"
+    },
+    {
+      "Name": "MILCMD_DOUBLEBUFFEREDBITMAP.UseBackBuffer",
+      "Expression": "offsetof(MILCMD_DOUBLEBUFFEREDBITMAP, UseBackBuffer)"
+    },
+    {
+      "Name": "MILCMD_DOUBLEBUFFEREDBITMAP_COPYFORWARD.size",
+      "Expression": "sizeof(MILCMD_DOUBLEBUFFEREDBITMAP_COPYFORWARD)"
+    },
+    {
+      "Name": "MILCMD_DOUBLEBUFFEREDBITMAP_COPYFORWARD.alignment",
+      "Expression": "alignof(MILCMD_DOUBLEBUFFEREDBITMAP_COPYFORWARD)"
+    },
+    {
+      "Name": "MILCMD_DOUBLEBUFFEREDBITMAP_COPYFORWARD.Type",
+      "Expression": "offsetof(MILCMD_DOUBLEBUFFEREDBITMAP_COPYFORWARD, Type)"
+    },
+    {
+      "Name": "MILCMD_DOUBLEBUFFEREDBITMAP_COPYFORWARD.Handle",
+      "Expression": "offsetof(MILCMD_DOUBLEBUFFEREDBITMAP_COPYFORWARD, Handle)"
+    },
+    {
+      "Name": "MILCMD_DOUBLEBUFFEREDBITMAP_COPYFORWARD.CopyCompletedEvent",
+      "Expression": "offsetof(MILCMD_DOUBLEBUFFEREDBITMAP_COPYFORWARD, CopyCompletedEvent)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_NOTIFYPOLICYCHANGEFORNONINTERACTIVEMODE.size",
+      "Expression": "sizeof(MILCMD_PARTITION_NOTIFYPOLICYCHANGEFORNONINTERACTIVEMODE)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_NOTIFYPOLICYCHANGEFORNONINTERACTIVEMODE.alignment",
+      "Expression": "alignof(MILCMD_PARTITION_NOTIFYPOLICYCHANGEFORNONINTERACTIVEMODE)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_NOTIFYPOLICYCHANGEFORNONINTERACTIVEMODE.Type",
+      "Expression": "offsetof(MILCMD_PARTITION_NOTIFYPOLICYCHANGEFORNONINTERACTIVEMODE, Type)"
+    },
+    {
+      "Name": "MILCMD_PARTITION_NOTIFYPOLICYCHANGEFORNONINTERACTIVEMODE.ShouldRenderEvenWhenNoDisplayDevicesAreAvailable",
+      "Expression": "offsetof(MILCMD_PARTITION_NOTIFYPOLICYCHANGEFORNONINTERACTIVEMODE, ShouldRenderEvenWhenNoDisplayDevicesAreAvailable)"
+    },
+    {
+      "Name": "MILCMD_AXISANGLEROTATION3D.size",
+      "Expression": "sizeof(MILCMD_AXISANGLEROTATION3D)"
+    },
+    {
+      "Name": "MILCMD_AXISANGLEROTATION3D.alignment",
+      "Expression": "alignof(MILCMD_AXISANGLEROTATION3D)"
+    },
+    {
+      "Name": "MILCMD_AXISANGLEROTATION3D.Type",
+      "Expression": "offsetof(MILCMD_AXISANGLEROTATION3D, Type)"
+    },
+    {
+      "Name": "MILCMD_AXISANGLEROTATION3D.Handle",
+      "Expression": "offsetof(MILCMD_AXISANGLEROTATION3D, Handle)"
+    },
+    {
+      "Name": "MILCMD_AXISANGLEROTATION3D.angle",
+      "Expression": "offsetof(MILCMD_AXISANGLEROTATION3D, angle)"
+    },
+    {
+      "Name": "MILCMD_AXISANGLEROTATION3D.axis",
+      "Expression": "offsetof(MILCMD_AXISANGLEROTATION3D, axis)"
+    },
+    {
+      "Name": "MILCMD_AXISANGLEROTATION3D.hAxisAnimations",
+      "Expression": "offsetof(MILCMD_AXISANGLEROTATION3D, hAxisAnimations)"
+    },
+    {
+      "Name": "MILCMD_AXISANGLEROTATION3D.hAngleAnimations",
+      "Expression": "offsetof(MILCMD_AXISANGLEROTATION3D, hAngleAnimations)"
+    },
+    {
+      "Name": "MILCMD_QUATERNIONROTATION3D.size",
+      "Expression": "sizeof(MILCMD_QUATERNIONROTATION3D)"
+    },
+    {
+      "Name": "MILCMD_QUATERNIONROTATION3D.alignment",
+      "Expression": "alignof(MILCMD_QUATERNIONROTATION3D)"
+    },
+    {
+      "Name": "MILCMD_QUATERNIONROTATION3D.Type",
+      "Expression": "offsetof(MILCMD_QUATERNIONROTATION3D, Type)"
+    },
+    {
+      "Name": "MILCMD_QUATERNIONROTATION3D.Handle",
+      "Expression": "offsetof(MILCMD_QUATERNIONROTATION3D, Handle)"
+    },
+    {
+      "Name": "MILCMD_QUATERNIONROTATION3D.quaternion",
+      "Expression": "offsetof(MILCMD_QUATERNIONROTATION3D, quaternion)"
+    },
+    {
+      "Name": "MILCMD_QUATERNIONROTATION3D.hQuaternionAnimations",
+      "Expression": "offsetof(MILCMD_QUATERNIONROTATION3D, hQuaternionAnimations)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.size",
+      "Expression": "sizeof(MILCMD_PERSPECTIVECAMERA)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.alignment",
+      "Expression": "alignof(MILCMD_PERSPECTIVECAMERA)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.Type",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, Type)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.Handle",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, Handle)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.nearPlaneDistance",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, nearPlaneDistance)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.farPlaneDistance",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, farPlaneDistance)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.fieldOfView",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, fieldOfView)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.position",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, position)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.htransform",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, htransform)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.lookDirection",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, lookDirection)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.hNearPlaneDistanceAnimations",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, hNearPlaneDistanceAnimations)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.upDirection",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, upDirection)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.hFarPlaneDistanceAnimations",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, hFarPlaneDistanceAnimations)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.hPositionAnimations",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, hPositionAnimations)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.hLookDirectionAnimations",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, hLookDirectionAnimations)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.hUpDirectionAnimations",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, hUpDirectionAnimations)"
+    },
+    {
+      "Name": "MILCMD_PERSPECTIVECAMERA.hFieldOfViewAnimations",
+      "Expression": "offsetof(MILCMD_PERSPECTIVECAMERA, hFieldOfViewAnimations)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.size",
+      "Expression": "sizeof(MILCMD_ORTHOGRAPHICCAMERA)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.alignment",
+      "Expression": "alignof(MILCMD_ORTHOGRAPHICCAMERA)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.Type",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, Type)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.Handle",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, Handle)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.nearPlaneDistance",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, nearPlaneDistance)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.farPlaneDistance",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, farPlaneDistance)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.width",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, width)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.position",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, position)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.htransform",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, htransform)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.lookDirection",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, lookDirection)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.hNearPlaneDistanceAnimations",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, hNearPlaneDistanceAnimations)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.upDirection",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, upDirection)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.hFarPlaneDistanceAnimations",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, hFarPlaneDistanceAnimations)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.hPositionAnimations",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, hPositionAnimations)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.hLookDirectionAnimations",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, hLookDirectionAnimations)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.hUpDirectionAnimations",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, hUpDirectionAnimations)"
+    },
+    {
+      "Name": "MILCMD_ORTHOGRAPHICCAMERA.hWidthAnimations",
+      "Expression": "offsetof(MILCMD_ORTHOGRAPHICCAMERA, hWidthAnimations)"
+    },
+    {
+      "Name": "MILCMD_MATRIXCAMERA.size",
+      "Expression": "sizeof(MILCMD_MATRIXCAMERA)"
+    },
+    {
+      "Name": "MILCMD_MATRIXCAMERA.alignment",
+      "Expression": "alignof(MILCMD_MATRIXCAMERA)"
+    },
+    {
+      "Name": "MILCMD_MATRIXCAMERA.Type",
+      "Expression": "offsetof(MILCMD_MATRIXCAMERA, Type)"
+    },
+    {
+      "Name": "MILCMD_MATRIXCAMERA.Handle",
+      "Expression": "offsetof(MILCMD_MATRIXCAMERA, Handle)"
+    },
+    {
+      "Name": "MILCMD_MATRIXCAMERA.viewMatrix",
+      "Expression": "offsetof(MILCMD_MATRIXCAMERA, viewMatrix)"
+    },
+    {
+      "Name": "MILCMD_MATRIXCAMERA.projectionMatrix",
+      "Expression": "offsetof(MILCMD_MATRIXCAMERA, projectionMatrix)"
+    },
+    {
+      "Name": "MILCMD_MATRIXCAMERA.htransform",
+      "Expression": "offsetof(MILCMD_MATRIXCAMERA, htransform)"
+    },
+    {
+      "Name": "MILCMD_MODEL3DGROUP.size",
+      "Expression": "sizeof(MILCMD_MODEL3DGROUP)"
+    },
+    {
+      "Name": "MILCMD_MODEL3DGROUP.alignment",
+      "Expression": "alignof(MILCMD_MODEL3DGROUP)"
+    },
+    {
+      "Name": "MILCMD_MODEL3DGROUP.Type",
+      "Expression": "offsetof(MILCMD_MODEL3DGROUP, Type)"
+    },
+    {
+      "Name": "MILCMD_MODEL3DGROUP.Handle",
+      "Expression": "offsetof(MILCMD_MODEL3DGROUP, Handle)"
+    },
+    {
+      "Name": "MILCMD_MODEL3DGROUP.htransform",
+      "Expression": "offsetof(MILCMD_MODEL3DGROUP, htransform)"
+    },
+    {
+      "Name": "MILCMD_MODEL3DGROUP.ChildrenSize",
+      "Expression": "offsetof(MILCMD_MODEL3DGROUP, ChildrenSize)"
+    },
+    {
+      "Name": "MILCMD_AMBIENTLIGHT.size",
+      "Expression": "sizeof(MILCMD_AMBIENTLIGHT)"
+    },
+    {
+      "Name": "MILCMD_AMBIENTLIGHT.alignment",
+      "Expression": "alignof(MILCMD_AMBIENTLIGHT)"
+    },
+    {
+      "Name": "MILCMD_AMBIENTLIGHT.Type",
+      "Expression": "offsetof(MILCMD_AMBIENTLIGHT, Type)"
+    },
+    {
+      "Name": "MILCMD_AMBIENTLIGHT.Handle",
+      "Expression": "offsetof(MILCMD_AMBIENTLIGHT, Handle)"
+    },
+    {
+      "Name": "MILCMD_AMBIENTLIGHT.color",
+      "Expression": "offsetof(MILCMD_AMBIENTLIGHT, color)"
+    },
+    {
+      "Name": "MILCMD_AMBIENTLIGHT.htransform",
+      "Expression": "offsetof(MILCMD_AMBIENTLIGHT, htransform)"
+    },
+    {
+      "Name": "MILCMD_AMBIENTLIGHT.hColorAnimations",
+      "Expression": "offsetof(MILCMD_AMBIENTLIGHT, hColorAnimations)"
+    },
+    {
+      "Name": "MILCMD_DIRECTIONALLIGHT.size",
+      "Expression": "sizeof(MILCMD_DIRECTIONALLIGHT)"
+    },
+    {
+      "Name": "MILCMD_DIRECTIONALLIGHT.alignment",
+      "Expression": "alignof(MILCMD_DIRECTIONALLIGHT)"
+    },
+    {
+      "Name": "MILCMD_DIRECTIONALLIGHT.Type",
+      "Expression": "offsetof(MILCMD_DIRECTIONALLIGHT, Type)"
+    },
+    {
+      "Name": "MILCMD_DIRECTIONALLIGHT.Handle",
+      "Expression": "offsetof(MILCMD_DIRECTIONALLIGHT, Handle)"
+    },
+    {
+      "Name": "MILCMD_DIRECTIONALLIGHT.color",
+      "Expression": "offsetof(MILCMD_DIRECTIONALLIGHT, color)"
+    },
+    {
+      "Name": "MILCMD_DIRECTIONALLIGHT.direction",
+      "Expression": "offsetof(MILCMD_DIRECTIONALLIGHT, direction)"
+    },
+    {
+      "Name": "MILCMD_DIRECTIONALLIGHT.htransform",
+      "Expression": "offsetof(MILCMD_DIRECTIONALLIGHT, htransform)"
+    },
+    {
+      "Name": "MILCMD_DIRECTIONALLIGHT.hColorAnimations",
+      "Expression": "offsetof(MILCMD_DIRECTIONALLIGHT, hColorAnimations)"
+    },
+    {
+      "Name": "MILCMD_DIRECTIONALLIGHT.hDirectionAnimations",
+      "Expression": "offsetof(MILCMD_DIRECTIONALLIGHT, hDirectionAnimations)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.size",
+      "Expression": "sizeof(MILCMD_POINTLIGHT)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.alignment",
+      "Expression": "alignof(MILCMD_POINTLIGHT)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.Type",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, Type)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.Handle",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, Handle)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.color",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, color)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.range",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, range)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.constantAttenuation",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, constantAttenuation)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.linearAttenuation",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, linearAttenuation)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.quadraticAttenuation",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, quadraticAttenuation)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.position",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, position)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.htransform",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, htransform)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.hColorAnimations",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, hColorAnimations)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.hPositionAnimations",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, hPositionAnimations)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.hRangeAnimations",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, hRangeAnimations)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.hConstantAttenuationAnimations",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, hConstantAttenuationAnimations)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.hLinearAttenuationAnimations",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, hLinearAttenuationAnimations)"
+    },
+    {
+      "Name": "MILCMD_POINTLIGHT.hQuadraticAttenuationAnimations",
+      "Expression": "offsetof(MILCMD_POINTLIGHT, hQuadraticAttenuationAnimations)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.size",
+      "Expression": "sizeof(MILCMD_SPOTLIGHT)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.alignment",
+      "Expression": "alignof(MILCMD_SPOTLIGHT)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.Type",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, Type)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.Handle",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, Handle)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.color",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, color)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.range",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, range)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.constantAttenuation",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, constantAttenuation)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.linearAttenuation",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, linearAttenuation)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.quadraticAttenuation",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, quadraticAttenuation)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.outerConeAngle",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, outerConeAngle)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.innerConeAngle",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, innerConeAngle)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.position",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, position)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.htransform",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, htransform)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.direction",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, direction)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.hColorAnimations",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, hColorAnimations)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.hPositionAnimations",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, hPositionAnimations)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.hRangeAnimations",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, hRangeAnimations)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.hConstantAttenuationAnimations",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, hConstantAttenuationAnimations)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.hLinearAttenuationAnimations",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, hLinearAttenuationAnimations)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.hQuadraticAttenuationAnimations",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, hQuadraticAttenuationAnimations)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.hDirectionAnimations",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, hDirectionAnimations)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.hOuterConeAngleAnimations",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, hOuterConeAngleAnimations)"
+    },
+    {
+      "Name": "MILCMD_SPOTLIGHT.hInnerConeAngleAnimations",
+      "Expression": "offsetof(MILCMD_SPOTLIGHT, hInnerConeAngleAnimations)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYMODEL3D.size",
+      "Expression": "sizeof(MILCMD_GEOMETRYMODEL3D)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYMODEL3D.alignment",
+      "Expression": "alignof(MILCMD_GEOMETRYMODEL3D)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYMODEL3D.Type",
+      "Expression": "offsetof(MILCMD_GEOMETRYMODEL3D, Type)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYMODEL3D.Handle",
+      "Expression": "offsetof(MILCMD_GEOMETRYMODEL3D, Handle)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYMODEL3D.htransform",
+      "Expression": "offsetof(MILCMD_GEOMETRYMODEL3D, htransform)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYMODEL3D.hgeometry",
+      "Expression": "offsetof(MILCMD_GEOMETRYMODEL3D, hgeometry)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYMODEL3D.hmaterial",
+      "Expression": "offsetof(MILCMD_GEOMETRYMODEL3D, hmaterial)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYMODEL3D.hbackMaterial",
+      "Expression": "offsetof(MILCMD_GEOMETRYMODEL3D, hbackMaterial)"
+    },
+    {
+      "Name": "MILCMD_MESHGEOMETRY3D.size",
+      "Expression": "sizeof(MILCMD_MESHGEOMETRY3D)"
+    },
+    {
+      "Name": "MILCMD_MESHGEOMETRY3D.alignment",
+      "Expression": "alignof(MILCMD_MESHGEOMETRY3D)"
+    },
+    {
+      "Name": "MILCMD_MESHGEOMETRY3D.Type",
+      "Expression": "offsetof(MILCMD_MESHGEOMETRY3D, Type)"
+    },
+    {
+      "Name": "MILCMD_MESHGEOMETRY3D.Handle",
+      "Expression": "offsetof(MILCMD_MESHGEOMETRY3D, Handle)"
+    },
+    {
+      "Name": "MILCMD_MESHGEOMETRY3D.PositionsSize",
+      "Expression": "offsetof(MILCMD_MESHGEOMETRY3D, PositionsSize)"
+    },
+    {
+      "Name": "MILCMD_MESHGEOMETRY3D.NormalsSize",
+      "Expression": "offsetof(MILCMD_MESHGEOMETRY3D, NormalsSize)"
+    },
+    {
+      "Name": "MILCMD_MESHGEOMETRY3D.TextureCoordinatesSize",
+      "Expression": "offsetof(MILCMD_MESHGEOMETRY3D, TextureCoordinatesSize)"
+    },
+    {
+      "Name": "MILCMD_MESHGEOMETRY3D.TriangleIndicesSize",
+      "Expression": "offsetof(MILCMD_MESHGEOMETRY3D, TriangleIndicesSize)"
+    },
+    {
+      "Name": "MILCMD_MATERIALGROUP.size",
+      "Expression": "sizeof(MILCMD_MATERIALGROUP)"
+    },
+    {
+      "Name": "MILCMD_MATERIALGROUP.alignment",
+      "Expression": "alignof(MILCMD_MATERIALGROUP)"
+    },
+    {
+      "Name": "MILCMD_MATERIALGROUP.Type",
+      "Expression": "offsetof(MILCMD_MATERIALGROUP, Type)"
+    },
+    {
+      "Name": "MILCMD_MATERIALGROUP.Handle",
+      "Expression": "offsetof(MILCMD_MATERIALGROUP, Handle)"
+    },
+    {
+      "Name": "MILCMD_MATERIALGROUP.ChildrenSize",
+      "Expression": "offsetof(MILCMD_MATERIALGROUP, ChildrenSize)"
+    },
+    {
+      "Name": "MILCMD_DIFFUSEMATERIAL.size",
+      "Expression": "sizeof(MILCMD_DIFFUSEMATERIAL)"
+    },
+    {
+      "Name": "MILCMD_DIFFUSEMATERIAL.alignment",
+      "Expression": "alignof(MILCMD_DIFFUSEMATERIAL)"
+    },
+    {
+      "Name": "MILCMD_DIFFUSEMATERIAL.Type",
+      "Expression": "offsetof(MILCMD_DIFFUSEMATERIAL, Type)"
+    },
+    {
+      "Name": "MILCMD_DIFFUSEMATERIAL.Handle",
+      "Expression": "offsetof(MILCMD_DIFFUSEMATERIAL, Handle)"
+    },
+    {
+      "Name": "MILCMD_DIFFUSEMATERIAL.color",
+      "Expression": "offsetof(MILCMD_DIFFUSEMATERIAL, color)"
+    },
+    {
+      "Name": "MILCMD_DIFFUSEMATERIAL.ambientColor",
+      "Expression": "offsetof(MILCMD_DIFFUSEMATERIAL, ambientColor)"
+    },
+    {
+      "Name": "MILCMD_DIFFUSEMATERIAL.hbrush",
+      "Expression": "offsetof(MILCMD_DIFFUSEMATERIAL, hbrush)"
+    },
+    {
+      "Name": "MILCMD_SPECULARMATERIAL.size",
+      "Expression": "sizeof(MILCMD_SPECULARMATERIAL)"
+    },
+    {
+      "Name": "MILCMD_SPECULARMATERIAL.alignment",
+      "Expression": "alignof(MILCMD_SPECULARMATERIAL)"
+    },
+    {
+      "Name": "MILCMD_SPECULARMATERIAL.Type",
+      "Expression": "offsetof(MILCMD_SPECULARMATERIAL, Type)"
+    },
+    {
+      "Name": "MILCMD_SPECULARMATERIAL.Handle",
+      "Expression": "offsetof(MILCMD_SPECULARMATERIAL, Handle)"
+    },
+    {
+      "Name": "MILCMD_SPECULARMATERIAL.color",
+      "Expression": "offsetof(MILCMD_SPECULARMATERIAL, color)"
+    },
+    {
+      "Name": "MILCMD_SPECULARMATERIAL.specularPower",
+      "Expression": "offsetof(MILCMD_SPECULARMATERIAL, specularPower)"
+    },
+    {
+      "Name": "MILCMD_SPECULARMATERIAL.hbrush",
+      "Expression": "offsetof(MILCMD_SPECULARMATERIAL, hbrush)"
+    },
+    {
+      "Name": "MILCMD_EMISSIVEMATERIAL.size",
+      "Expression": "sizeof(MILCMD_EMISSIVEMATERIAL)"
+    },
+    {
+      "Name": "MILCMD_EMISSIVEMATERIAL.alignment",
+      "Expression": "alignof(MILCMD_EMISSIVEMATERIAL)"
+    },
+    {
+      "Name": "MILCMD_EMISSIVEMATERIAL.Type",
+      "Expression": "offsetof(MILCMD_EMISSIVEMATERIAL, Type)"
+    },
+    {
+      "Name": "MILCMD_EMISSIVEMATERIAL.Handle",
+      "Expression": "offsetof(MILCMD_EMISSIVEMATERIAL, Handle)"
+    },
+    {
+      "Name": "MILCMD_EMISSIVEMATERIAL.color",
+      "Expression": "offsetof(MILCMD_EMISSIVEMATERIAL, color)"
+    },
+    {
+      "Name": "MILCMD_EMISSIVEMATERIAL.hbrush",
+      "Expression": "offsetof(MILCMD_EMISSIVEMATERIAL, hbrush)"
+    },
+    {
+      "Name": "MILCMD_TRANSFORM3DGROUP.size",
+      "Expression": "sizeof(MILCMD_TRANSFORM3DGROUP)"
+    },
+    {
+      "Name": "MILCMD_TRANSFORM3DGROUP.alignment",
+      "Expression": "alignof(MILCMD_TRANSFORM3DGROUP)"
+    },
+    {
+      "Name": "MILCMD_TRANSFORM3DGROUP.Type",
+      "Expression": "offsetof(MILCMD_TRANSFORM3DGROUP, Type)"
+    },
+    {
+      "Name": "MILCMD_TRANSFORM3DGROUP.Handle",
+      "Expression": "offsetof(MILCMD_TRANSFORM3DGROUP, Handle)"
+    },
+    {
+      "Name": "MILCMD_TRANSFORM3DGROUP.ChildrenSize",
+      "Expression": "offsetof(MILCMD_TRANSFORM3DGROUP, ChildrenSize)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM3D.size",
+      "Expression": "sizeof(MILCMD_TRANSLATETRANSFORM3D)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM3D.alignment",
+      "Expression": "alignof(MILCMD_TRANSLATETRANSFORM3D)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM3D.Type",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM3D, Type)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM3D.Handle",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM3D, Handle)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM3D.offsetX",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM3D, offsetX)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM3D.offsetY",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM3D, offsetY)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM3D.offsetZ",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM3D, offsetZ)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM3D.hOffsetXAnimations",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM3D, hOffsetXAnimations)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM3D.hOffsetYAnimations",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM3D, hOffsetYAnimations)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM3D.hOffsetZAnimations",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM3D, hOffsetZAnimations)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.size",
+      "Expression": "sizeof(MILCMD_SCALETRANSFORM3D)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.alignment",
+      "Expression": "alignof(MILCMD_SCALETRANSFORM3D)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.Type",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, Type)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.Handle",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, Handle)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.scaleX",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, scaleX)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.scaleY",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, scaleY)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.scaleZ",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, scaleZ)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.centerX",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, centerX)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.centerY",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, centerY)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.centerZ",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, centerZ)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.hScaleXAnimations",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, hScaleXAnimations)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.hScaleYAnimations",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, hScaleYAnimations)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.hScaleZAnimations",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, hScaleZAnimations)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.hCenterXAnimations",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, hCenterXAnimations)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.hCenterYAnimations",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, hCenterYAnimations)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM3D.hCenterZAnimations",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM3D, hCenterZAnimations)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM3D.size",
+      "Expression": "sizeof(MILCMD_ROTATETRANSFORM3D)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM3D.alignment",
+      "Expression": "alignof(MILCMD_ROTATETRANSFORM3D)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM3D.Type",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM3D, Type)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM3D.Handle",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM3D, Handle)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM3D.centerX",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM3D, centerX)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM3D.centerY",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM3D, centerY)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM3D.centerZ",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM3D, centerZ)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM3D.hCenterXAnimations",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM3D, hCenterXAnimations)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM3D.hCenterYAnimations",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM3D, hCenterYAnimations)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM3D.hCenterZAnimations",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM3D, hCenterZAnimations)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM3D.hrotation",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM3D, hrotation)"
+    },
+    {
+      "Name": "MILCMD_MATRIXTRANSFORM3D.size",
+      "Expression": "sizeof(MILCMD_MATRIXTRANSFORM3D)"
+    },
+    {
+      "Name": "MILCMD_MATRIXTRANSFORM3D.alignment",
+      "Expression": "alignof(MILCMD_MATRIXTRANSFORM3D)"
+    },
+    {
+      "Name": "MILCMD_MATRIXTRANSFORM3D.Type",
+      "Expression": "offsetof(MILCMD_MATRIXTRANSFORM3D, Type)"
+    },
+    {
+      "Name": "MILCMD_MATRIXTRANSFORM3D.Handle",
+      "Expression": "offsetof(MILCMD_MATRIXTRANSFORM3D, Handle)"
+    },
+    {
+      "Name": "MILCMD_MATRIXTRANSFORM3D.matrix",
+      "Expression": "offsetof(MILCMD_MATRIXTRANSFORM3D, matrix)"
+    },
+    {
+      "Name": "MILCMD_PIXELSHADER.size",
+      "Expression": "sizeof(MILCMD_PIXELSHADER)"
+    },
+    {
+      "Name": "MILCMD_PIXELSHADER.alignment",
+      "Expression": "alignof(MILCMD_PIXELSHADER)"
+    },
+    {
+      "Name": "MILCMD_PIXELSHADER.Type",
+      "Expression": "offsetof(MILCMD_PIXELSHADER, Type)"
+    },
+    {
+      "Name": "MILCMD_PIXELSHADER.Handle",
+      "Expression": "offsetof(MILCMD_PIXELSHADER, Handle)"
+    },
+    {
+      "Name": "MILCMD_PIXELSHADER.ShaderRenderMode",
+      "Expression": "offsetof(MILCMD_PIXELSHADER, ShaderRenderMode)"
+    },
+    {
+      "Name": "MILCMD_PIXELSHADER.PixelShaderBytecodeSize",
+      "Expression": "offsetof(MILCMD_PIXELSHADER, PixelShaderBytecodeSize)"
+    },
+    {
+      "Name": "MILCMD_PIXELSHADER.CompileSoftwareShader",
+      "Expression": "offsetof(MILCMD_PIXELSHADER, CompileSoftwareShader)"
+    },
+    {
+      "Name": "MILCMD_IMPLICITINPUTBRUSH.size",
+      "Expression": "sizeof(MILCMD_IMPLICITINPUTBRUSH)"
+    },
+    {
+      "Name": "MILCMD_IMPLICITINPUTBRUSH.alignment",
+      "Expression": "alignof(MILCMD_IMPLICITINPUTBRUSH)"
+    },
+    {
+      "Name": "MILCMD_IMPLICITINPUTBRUSH.Type",
+      "Expression": "offsetof(MILCMD_IMPLICITINPUTBRUSH, Type)"
+    },
+    {
+      "Name": "MILCMD_IMPLICITINPUTBRUSH.Handle",
+      "Expression": "offsetof(MILCMD_IMPLICITINPUTBRUSH, Handle)"
+    },
+    {
+      "Name": "MILCMD_IMPLICITINPUTBRUSH.Opacity",
+      "Expression": "offsetof(MILCMD_IMPLICITINPUTBRUSH, Opacity)"
+    },
+    {
+      "Name": "MILCMD_IMPLICITINPUTBRUSH.hOpacityAnimations",
+      "Expression": "offsetof(MILCMD_IMPLICITINPUTBRUSH, hOpacityAnimations)"
+    },
+    {
+      "Name": "MILCMD_IMPLICITINPUTBRUSH.hTransform",
+      "Expression": "offsetof(MILCMD_IMPLICITINPUTBRUSH, hTransform)"
+    },
+    {
+      "Name": "MILCMD_IMPLICITINPUTBRUSH.hRelativeTransform",
+      "Expression": "offsetof(MILCMD_IMPLICITINPUTBRUSH, hRelativeTransform)"
+    },
+    {
+      "Name": "MILCMD_BLUREFFECT.size",
+      "Expression": "sizeof(MILCMD_BLUREFFECT)"
+    },
+    {
+      "Name": "MILCMD_BLUREFFECT.alignment",
+      "Expression": "alignof(MILCMD_BLUREFFECT)"
+    },
+    {
+      "Name": "MILCMD_BLUREFFECT.Type",
+      "Expression": "offsetof(MILCMD_BLUREFFECT, Type)"
+    },
+    {
+      "Name": "MILCMD_BLUREFFECT.Handle",
+      "Expression": "offsetof(MILCMD_BLUREFFECT, Handle)"
+    },
+    {
+      "Name": "MILCMD_BLUREFFECT.Radius",
+      "Expression": "offsetof(MILCMD_BLUREFFECT, Radius)"
+    },
+    {
+      "Name": "MILCMD_BLUREFFECT.hRadiusAnimations",
+      "Expression": "offsetof(MILCMD_BLUREFFECT, hRadiusAnimations)"
+    },
+    {
+      "Name": "MILCMD_BLUREFFECT.KernelType",
+      "Expression": "offsetof(MILCMD_BLUREFFECT, KernelType)"
+    },
+    {
+      "Name": "MILCMD_BLUREFFECT.RenderingBias",
+      "Expression": "offsetof(MILCMD_BLUREFFECT, RenderingBias)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.size",
+      "Expression": "sizeof(MILCMD_DROPSHADOWEFFECT)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.alignment",
+      "Expression": "alignof(MILCMD_DROPSHADOWEFFECT)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.Type",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, Type)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.Handle",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, Handle)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.ShadowDepth",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, ShadowDepth)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.Color",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, Color)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.Direction",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, Direction)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.Opacity",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, Opacity)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.BlurRadius",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, BlurRadius)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.hShadowDepthAnimations",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, hShadowDepthAnimations)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.hColorAnimations",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, hColorAnimations)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.hDirectionAnimations",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, hDirectionAnimations)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.hOpacityAnimations",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, hOpacityAnimations)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.hBlurRadiusAnimations",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, hBlurRadiusAnimations)"
+    },
+    {
+      "Name": "MILCMD_DROPSHADOWEFFECT.RenderingBias",
+      "Expression": "offsetof(MILCMD_DROPSHADOWEFFECT, RenderingBias)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.size",
+      "Expression": "sizeof(MILCMD_SHADEREFFECT)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.alignment",
+      "Expression": "alignof(MILCMD_SHADEREFFECT)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.Type",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, Type)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.Handle",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, Handle)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.TopPadding",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, TopPadding)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.BottomPadding",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, BottomPadding)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.LeftPadding",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, LeftPadding)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.RightPadding",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, RightPadding)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.hPixelShader",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, hPixelShader)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.DdxUvDdyUvRegisterIndex",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, DdxUvDdyUvRegisterIndex)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.ShaderConstantFloatRegistersSize",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, ShaderConstantFloatRegistersSize)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.DependencyPropertyFloatValuesSize",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, DependencyPropertyFloatValuesSize)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.ShaderConstantIntRegistersSize",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, ShaderConstantIntRegistersSize)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.DependencyPropertyIntValuesSize",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, DependencyPropertyIntValuesSize)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.ShaderConstantBoolRegistersSize",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, ShaderConstantBoolRegistersSize)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.DependencyPropertyBoolValuesSize",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, DependencyPropertyBoolValuesSize)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.ShaderSamplerRegistrationInfoSize",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, ShaderSamplerRegistrationInfoSize)"
+    },
+    {
+      "Name": "MILCMD_SHADEREFFECT.DependencyPropertySamplerValuesSize",
+      "Expression": "offsetof(MILCMD_SHADEREFFECT, DependencyPropertySamplerValuesSize)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGIMAGE.size",
+      "Expression": "sizeof(MILCMD_DRAWINGIMAGE)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGIMAGE.alignment",
+      "Expression": "alignof(MILCMD_DRAWINGIMAGE)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGIMAGE.Type",
+      "Expression": "offsetof(MILCMD_DRAWINGIMAGE, Type)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGIMAGE.Handle",
+      "Expression": "offsetof(MILCMD_DRAWINGIMAGE, Handle)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGIMAGE.hDrawing",
+      "Expression": "offsetof(MILCMD_DRAWINGIMAGE, hDrawing)"
+    },
+    {
+      "Name": "MILCMD_TRANSFORMGROUP.size",
+      "Expression": "sizeof(MILCMD_TRANSFORMGROUP)"
+    },
+    {
+      "Name": "MILCMD_TRANSFORMGROUP.alignment",
+      "Expression": "alignof(MILCMD_TRANSFORMGROUP)"
+    },
+    {
+      "Name": "MILCMD_TRANSFORMGROUP.Type",
+      "Expression": "offsetof(MILCMD_TRANSFORMGROUP, Type)"
+    },
+    {
+      "Name": "MILCMD_TRANSFORMGROUP.Handle",
+      "Expression": "offsetof(MILCMD_TRANSFORMGROUP, Handle)"
+    },
+    {
+      "Name": "MILCMD_TRANSFORMGROUP.ChildrenSize",
+      "Expression": "offsetof(MILCMD_TRANSFORMGROUP, ChildrenSize)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM.size",
+      "Expression": "sizeof(MILCMD_TRANSLATETRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM.alignment",
+      "Expression": "alignof(MILCMD_TRANSLATETRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM.Type",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM, Type)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM.Handle",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM, Handle)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM.X",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM, X)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM.Y",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM, Y)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM.hXAnimations",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM, hXAnimations)"
+    },
+    {
+      "Name": "MILCMD_TRANSLATETRANSFORM.hYAnimations",
+      "Expression": "offsetof(MILCMD_TRANSLATETRANSFORM, hYAnimations)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.size",
+      "Expression": "sizeof(MILCMD_SCALETRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.alignment",
+      "Expression": "alignof(MILCMD_SCALETRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.Type",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM, Type)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.Handle",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM, Handle)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.ScaleX",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM, ScaleX)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.ScaleY",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM, ScaleY)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.CenterX",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM, CenterX)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.CenterY",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM, CenterY)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.hScaleXAnimations",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM, hScaleXAnimations)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.hScaleYAnimations",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM, hScaleYAnimations)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.hCenterXAnimations",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM, hCenterXAnimations)"
+    },
+    {
+      "Name": "MILCMD_SCALETRANSFORM.hCenterYAnimations",
+      "Expression": "offsetof(MILCMD_SCALETRANSFORM, hCenterYAnimations)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.size",
+      "Expression": "sizeof(MILCMD_SKEWTRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.alignment",
+      "Expression": "alignof(MILCMD_SKEWTRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.Type",
+      "Expression": "offsetof(MILCMD_SKEWTRANSFORM, Type)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.Handle",
+      "Expression": "offsetof(MILCMD_SKEWTRANSFORM, Handle)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.AngleX",
+      "Expression": "offsetof(MILCMD_SKEWTRANSFORM, AngleX)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.AngleY",
+      "Expression": "offsetof(MILCMD_SKEWTRANSFORM, AngleY)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.CenterX",
+      "Expression": "offsetof(MILCMD_SKEWTRANSFORM, CenterX)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.CenterY",
+      "Expression": "offsetof(MILCMD_SKEWTRANSFORM, CenterY)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.hAngleXAnimations",
+      "Expression": "offsetof(MILCMD_SKEWTRANSFORM, hAngleXAnimations)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.hAngleYAnimations",
+      "Expression": "offsetof(MILCMD_SKEWTRANSFORM, hAngleYAnimations)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.hCenterXAnimations",
+      "Expression": "offsetof(MILCMD_SKEWTRANSFORM, hCenterXAnimations)"
+    },
+    {
+      "Name": "MILCMD_SKEWTRANSFORM.hCenterYAnimations",
+      "Expression": "offsetof(MILCMD_SKEWTRANSFORM, hCenterYAnimations)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM.size",
+      "Expression": "sizeof(MILCMD_ROTATETRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM.alignment",
+      "Expression": "alignof(MILCMD_ROTATETRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM.Type",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM, Type)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM.Handle",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM, Handle)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM.Angle",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM, Angle)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM.CenterX",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM, CenterX)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM.CenterY",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM, CenterY)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM.hAngleAnimations",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM, hAngleAnimations)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM.hCenterXAnimations",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM, hCenterXAnimations)"
+    },
+    {
+      "Name": "MILCMD_ROTATETRANSFORM.hCenterYAnimations",
+      "Expression": "offsetof(MILCMD_ROTATETRANSFORM, hCenterYAnimations)"
+    },
+    {
+      "Name": "MILCMD_MATRIXTRANSFORM.size",
+      "Expression": "sizeof(MILCMD_MATRIXTRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_MATRIXTRANSFORM.alignment",
+      "Expression": "alignof(MILCMD_MATRIXTRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_MATRIXTRANSFORM.Type",
+      "Expression": "offsetof(MILCMD_MATRIXTRANSFORM, Type)"
+    },
+    {
+      "Name": "MILCMD_MATRIXTRANSFORM.Handle",
+      "Expression": "offsetof(MILCMD_MATRIXTRANSFORM, Handle)"
+    },
+    {
+      "Name": "MILCMD_MATRIXTRANSFORM.Matrix",
+      "Expression": "offsetof(MILCMD_MATRIXTRANSFORM, Matrix)"
+    },
+    {
+      "Name": "MILCMD_MATRIXTRANSFORM.hMatrixAnimations",
+      "Expression": "offsetof(MILCMD_MATRIXTRANSFORM, hMatrixAnimations)"
+    },
+    {
+      "Name": "MILCMD_LINEGEOMETRY.size",
+      "Expression": "sizeof(MILCMD_LINEGEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_LINEGEOMETRY.alignment",
+      "Expression": "alignof(MILCMD_LINEGEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_LINEGEOMETRY.Type",
+      "Expression": "offsetof(MILCMD_LINEGEOMETRY, Type)"
+    },
+    {
+      "Name": "MILCMD_LINEGEOMETRY.Handle",
+      "Expression": "offsetof(MILCMD_LINEGEOMETRY, Handle)"
+    },
+    {
+      "Name": "MILCMD_LINEGEOMETRY.StartPoint",
+      "Expression": "offsetof(MILCMD_LINEGEOMETRY, StartPoint)"
+    },
+    {
+      "Name": "MILCMD_LINEGEOMETRY.EndPoint",
+      "Expression": "offsetof(MILCMD_LINEGEOMETRY, EndPoint)"
+    },
+    {
+      "Name": "MILCMD_LINEGEOMETRY.hTransform",
+      "Expression": "offsetof(MILCMD_LINEGEOMETRY, hTransform)"
+    },
+    {
+      "Name": "MILCMD_LINEGEOMETRY.hStartPointAnimations",
+      "Expression": "offsetof(MILCMD_LINEGEOMETRY, hStartPointAnimations)"
+    },
+    {
+      "Name": "MILCMD_LINEGEOMETRY.hEndPointAnimations",
+      "Expression": "offsetof(MILCMD_LINEGEOMETRY, hEndPointAnimations)"
+    },
+    {
+      "Name": "MILCMD_RECTANGLEGEOMETRY.size",
+      "Expression": "sizeof(MILCMD_RECTANGLEGEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_RECTANGLEGEOMETRY.alignment",
+      "Expression": "alignof(MILCMD_RECTANGLEGEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_RECTANGLEGEOMETRY.Type",
+      "Expression": "offsetof(MILCMD_RECTANGLEGEOMETRY, Type)"
+    },
+    {
+      "Name": "MILCMD_RECTANGLEGEOMETRY.Handle",
+      "Expression": "offsetof(MILCMD_RECTANGLEGEOMETRY, Handle)"
+    },
+    {
+      "Name": "MILCMD_RECTANGLEGEOMETRY.RadiusX",
+      "Expression": "offsetof(MILCMD_RECTANGLEGEOMETRY, RadiusX)"
+    },
+    {
+      "Name": "MILCMD_RECTANGLEGEOMETRY.RadiusY",
+      "Expression": "offsetof(MILCMD_RECTANGLEGEOMETRY, RadiusY)"
+    },
+    {
+      "Name": "MILCMD_RECTANGLEGEOMETRY.Rect",
+      "Expression": "offsetof(MILCMD_RECTANGLEGEOMETRY, Rect)"
+    },
+    {
+      "Name": "MILCMD_RECTANGLEGEOMETRY.hTransform",
+      "Expression": "offsetof(MILCMD_RECTANGLEGEOMETRY, hTransform)"
+    },
+    {
+      "Name": "MILCMD_RECTANGLEGEOMETRY.hRadiusXAnimations",
+      "Expression": "offsetof(MILCMD_RECTANGLEGEOMETRY, hRadiusXAnimations)"
+    },
+    {
+      "Name": "MILCMD_RECTANGLEGEOMETRY.hRadiusYAnimations",
+      "Expression": "offsetof(MILCMD_RECTANGLEGEOMETRY, hRadiusYAnimations)"
+    },
+    {
+      "Name": "MILCMD_RECTANGLEGEOMETRY.hRectAnimations",
+      "Expression": "offsetof(MILCMD_RECTANGLEGEOMETRY, hRectAnimations)"
+    },
+    {
+      "Name": "MILCMD_ELLIPSEGEOMETRY.size",
+      "Expression": "sizeof(MILCMD_ELLIPSEGEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_ELLIPSEGEOMETRY.alignment",
+      "Expression": "alignof(MILCMD_ELLIPSEGEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_ELLIPSEGEOMETRY.Type",
+      "Expression": "offsetof(MILCMD_ELLIPSEGEOMETRY, Type)"
+    },
+    {
+      "Name": "MILCMD_ELLIPSEGEOMETRY.Handle",
+      "Expression": "offsetof(MILCMD_ELLIPSEGEOMETRY, Handle)"
+    },
+    {
+      "Name": "MILCMD_ELLIPSEGEOMETRY.RadiusX",
+      "Expression": "offsetof(MILCMD_ELLIPSEGEOMETRY, RadiusX)"
+    },
+    {
+      "Name": "MILCMD_ELLIPSEGEOMETRY.RadiusY",
+      "Expression": "offsetof(MILCMD_ELLIPSEGEOMETRY, RadiusY)"
+    },
+    {
+      "Name": "MILCMD_ELLIPSEGEOMETRY.Center",
+      "Expression": "offsetof(MILCMD_ELLIPSEGEOMETRY, Center)"
+    },
+    {
+      "Name": "MILCMD_ELLIPSEGEOMETRY.hTransform",
+      "Expression": "offsetof(MILCMD_ELLIPSEGEOMETRY, hTransform)"
+    },
+    {
+      "Name": "MILCMD_ELLIPSEGEOMETRY.hRadiusXAnimations",
+      "Expression": "offsetof(MILCMD_ELLIPSEGEOMETRY, hRadiusXAnimations)"
+    },
+    {
+      "Name": "MILCMD_ELLIPSEGEOMETRY.hRadiusYAnimations",
+      "Expression": "offsetof(MILCMD_ELLIPSEGEOMETRY, hRadiusYAnimations)"
+    },
+    {
+      "Name": "MILCMD_ELLIPSEGEOMETRY.hCenterAnimations",
+      "Expression": "offsetof(MILCMD_ELLIPSEGEOMETRY, hCenterAnimations)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYGROUP.size",
+      "Expression": "sizeof(MILCMD_GEOMETRYGROUP)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYGROUP.alignment",
+      "Expression": "alignof(MILCMD_GEOMETRYGROUP)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYGROUP.Type",
+      "Expression": "offsetof(MILCMD_GEOMETRYGROUP, Type)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYGROUP.Handle",
+      "Expression": "offsetof(MILCMD_GEOMETRYGROUP, Handle)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYGROUP.hTransform",
+      "Expression": "offsetof(MILCMD_GEOMETRYGROUP, hTransform)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYGROUP.FillRule",
+      "Expression": "offsetof(MILCMD_GEOMETRYGROUP, FillRule)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYGROUP.ChildrenSize",
+      "Expression": "offsetof(MILCMD_GEOMETRYGROUP, ChildrenSize)"
+    },
+    {
+      "Name": "MILCMD_COMBINEDGEOMETRY.size",
+      "Expression": "sizeof(MILCMD_COMBINEDGEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_COMBINEDGEOMETRY.alignment",
+      "Expression": "alignof(MILCMD_COMBINEDGEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_COMBINEDGEOMETRY.Type",
+      "Expression": "offsetof(MILCMD_COMBINEDGEOMETRY, Type)"
+    },
+    {
+      "Name": "MILCMD_COMBINEDGEOMETRY.Handle",
+      "Expression": "offsetof(MILCMD_COMBINEDGEOMETRY, Handle)"
+    },
+    {
+      "Name": "MILCMD_COMBINEDGEOMETRY.hTransform",
+      "Expression": "offsetof(MILCMD_COMBINEDGEOMETRY, hTransform)"
+    },
+    {
+      "Name": "MILCMD_COMBINEDGEOMETRY.GeometryCombineMode",
+      "Expression": "offsetof(MILCMD_COMBINEDGEOMETRY, GeometryCombineMode)"
+    },
+    {
+      "Name": "MILCMD_COMBINEDGEOMETRY.hGeometry1",
+      "Expression": "offsetof(MILCMD_COMBINEDGEOMETRY, hGeometry1)"
+    },
+    {
+      "Name": "MILCMD_COMBINEDGEOMETRY.hGeometry2",
+      "Expression": "offsetof(MILCMD_COMBINEDGEOMETRY, hGeometry2)"
+    },
+    {
+      "Name": "MILCMD_PATHGEOMETRY.size",
+      "Expression": "sizeof(MILCMD_PATHGEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_PATHGEOMETRY.alignment",
+      "Expression": "alignof(MILCMD_PATHGEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_PATHGEOMETRY.Type",
+      "Expression": "offsetof(MILCMD_PATHGEOMETRY, Type)"
+    },
+    {
+      "Name": "MILCMD_PATHGEOMETRY.Handle",
+      "Expression": "offsetof(MILCMD_PATHGEOMETRY, Handle)"
+    },
+    {
+      "Name": "MILCMD_PATHGEOMETRY.hTransform",
+      "Expression": "offsetof(MILCMD_PATHGEOMETRY, hTransform)"
+    },
+    {
+      "Name": "MILCMD_PATHGEOMETRY.FillRule",
+      "Expression": "offsetof(MILCMD_PATHGEOMETRY, FillRule)"
+    },
+    {
+      "Name": "MILCMD_PATHGEOMETRY.FiguresSize",
+      "Expression": "offsetof(MILCMD_PATHGEOMETRY, FiguresSize)"
+    },
+    {
+      "Name": "MILCMD_SOLIDCOLORBRUSH.size",
+      "Expression": "sizeof(MILCMD_SOLIDCOLORBRUSH)"
+    },
+    {
+      "Name": "MILCMD_SOLIDCOLORBRUSH.alignment",
+      "Expression": "alignof(MILCMD_SOLIDCOLORBRUSH)"
+    },
+    {
+      "Name": "MILCMD_SOLIDCOLORBRUSH.Type",
+      "Expression": "offsetof(MILCMD_SOLIDCOLORBRUSH, Type)"
+    },
+    {
+      "Name": "MILCMD_SOLIDCOLORBRUSH.Handle",
+      "Expression": "offsetof(MILCMD_SOLIDCOLORBRUSH, Handle)"
+    },
+    {
+      "Name": "MILCMD_SOLIDCOLORBRUSH.Opacity",
+      "Expression": "offsetof(MILCMD_SOLIDCOLORBRUSH, Opacity)"
+    },
+    {
+      "Name": "MILCMD_SOLIDCOLORBRUSH.Color",
+      "Expression": "offsetof(MILCMD_SOLIDCOLORBRUSH, Color)"
+    },
+    {
+      "Name": "MILCMD_SOLIDCOLORBRUSH.hOpacityAnimations",
+      "Expression": "offsetof(MILCMD_SOLIDCOLORBRUSH, hOpacityAnimations)"
+    },
+    {
+      "Name": "MILCMD_SOLIDCOLORBRUSH.hTransform",
+      "Expression": "offsetof(MILCMD_SOLIDCOLORBRUSH, hTransform)"
+    },
+    {
+      "Name": "MILCMD_SOLIDCOLORBRUSH.hRelativeTransform",
+      "Expression": "offsetof(MILCMD_SOLIDCOLORBRUSH, hRelativeTransform)"
+    },
+    {
+      "Name": "MILCMD_SOLIDCOLORBRUSH.hColorAnimations",
+      "Expression": "offsetof(MILCMD_SOLIDCOLORBRUSH, hColorAnimations)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.size",
+      "Expression": "sizeof(MILCMD_LINEARGRADIENTBRUSH)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.alignment",
+      "Expression": "alignof(MILCMD_LINEARGRADIENTBRUSH)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.Type",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, Type)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.Handle",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, Handle)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.Opacity",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, Opacity)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.StartPoint",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, StartPoint)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.EndPoint",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, EndPoint)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.hOpacityAnimations",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, hOpacityAnimations)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.hTransform",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, hTransform)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.hRelativeTransform",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, hRelativeTransform)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.ColorInterpolationMode",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, ColorInterpolationMode)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.MappingMode",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, MappingMode)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.SpreadMethod",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, SpreadMethod)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.GradientStopsSize",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, GradientStopsSize)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.hStartPointAnimations",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, hStartPointAnimations)"
+    },
+    {
+      "Name": "MILCMD_LINEARGRADIENTBRUSH.hEndPointAnimations",
+      "Expression": "offsetof(MILCMD_LINEARGRADIENTBRUSH, hEndPointAnimations)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.size",
+      "Expression": "sizeof(MILCMD_RADIALGRADIENTBRUSH)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.alignment",
+      "Expression": "alignof(MILCMD_RADIALGRADIENTBRUSH)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.Type",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, Type)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.Handle",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, Handle)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.Opacity",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, Opacity)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.Center",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, Center)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.RadiusX",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, RadiusX)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.RadiusY",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, RadiusY)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.GradientOrigin",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, GradientOrigin)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.hOpacityAnimations",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, hOpacityAnimations)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.hTransform",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, hTransform)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.hRelativeTransform",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, hRelativeTransform)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.ColorInterpolationMode",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, ColorInterpolationMode)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.MappingMode",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, MappingMode)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.SpreadMethod",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, SpreadMethod)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.GradientStopsSize",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, GradientStopsSize)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.hCenterAnimations",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, hCenterAnimations)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.hRadiusXAnimations",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, hRadiusXAnimations)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.hRadiusYAnimations",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, hRadiusYAnimations)"
+    },
+    {
+      "Name": "MILCMD_RADIALGRADIENTBRUSH.hGradientOriginAnimations",
+      "Expression": "offsetof(MILCMD_RADIALGRADIENTBRUSH, hGradientOriginAnimations)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.size",
+      "Expression": "sizeof(MILCMD_IMAGEBRUSH)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.alignment",
+      "Expression": "alignof(MILCMD_IMAGEBRUSH)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.Type",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, Type)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.Handle",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, Handle)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.Opacity",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, Opacity)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.Viewport",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, Viewport)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.Viewbox",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, Viewbox)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.CacheInvalidationThresholdMinimum",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, CacheInvalidationThresholdMinimum)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.CacheInvalidationThresholdMaximum",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, CacheInvalidationThresholdMaximum)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.hOpacityAnimations",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, hOpacityAnimations)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.hTransform",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, hTransform)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.hRelativeTransform",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, hRelativeTransform)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.ViewportUnits",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, ViewportUnits)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.ViewboxUnits",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, ViewboxUnits)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.hViewportAnimations",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, hViewportAnimations)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.hViewboxAnimations",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, hViewboxAnimations)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.Stretch",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, Stretch)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.TileMode",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, TileMode)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.AlignmentX",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, AlignmentX)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.AlignmentY",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, AlignmentY)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.CachingHint",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, CachingHint)"
+    },
+    {
+      "Name": "MILCMD_IMAGEBRUSH.hImageSource",
+      "Expression": "offsetof(MILCMD_IMAGEBRUSH, hImageSource)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.size",
+      "Expression": "sizeof(MILCMD_DRAWINGBRUSH)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.alignment",
+      "Expression": "alignof(MILCMD_DRAWINGBRUSH)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.Type",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, Type)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.Handle",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, Handle)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.Opacity",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, Opacity)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.Viewport",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, Viewport)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.Viewbox",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, Viewbox)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.CacheInvalidationThresholdMinimum",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, CacheInvalidationThresholdMinimum)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.CacheInvalidationThresholdMaximum",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, CacheInvalidationThresholdMaximum)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.hOpacityAnimations",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, hOpacityAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.hTransform",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, hTransform)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.hRelativeTransform",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, hRelativeTransform)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.ViewportUnits",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, ViewportUnits)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.ViewboxUnits",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, ViewboxUnits)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.hViewportAnimations",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, hViewportAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.hViewboxAnimations",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, hViewboxAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.Stretch",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, Stretch)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.TileMode",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, TileMode)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.AlignmentX",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, AlignmentX)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.AlignmentY",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, AlignmentY)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.CachingHint",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, CachingHint)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGBRUSH.hDrawing",
+      "Expression": "offsetof(MILCMD_DRAWINGBRUSH, hDrawing)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.size",
+      "Expression": "sizeof(MILCMD_VISUALBRUSH)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.alignment",
+      "Expression": "alignof(MILCMD_VISUALBRUSH)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.Type",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, Type)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.Handle",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, Handle)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.Opacity",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, Opacity)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.Viewport",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, Viewport)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.Viewbox",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, Viewbox)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.CacheInvalidationThresholdMinimum",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, CacheInvalidationThresholdMinimum)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.CacheInvalidationThresholdMaximum",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, CacheInvalidationThresholdMaximum)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.hOpacityAnimations",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, hOpacityAnimations)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.hTransform",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, hTransform)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.hRelativeTransform",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, hRelativeTransform)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.ViewportUnits",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, ViewportUnits)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.ViewboxUnits",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, ViewboxUnits)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.hViewportAnimations",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, hViewportAnimations)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.hViewboxAnimations",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, hViewboxAnimations)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.Stretch",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, Stretch)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.TileMode",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, TileMode)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.AlignmentX",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, AlignmentX)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.AlignmentY",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, AlignmentY)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.CachingHint",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, CachingHint)"
+    },
+    {
+      "Name": "MILCMD_VISUALBRUSH.hVisual",
+      "Expression": "offsetof(MILCMD_VISUALBRUSH, hVisual)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHEBRUSH.size",
+      "Expression": "sizeof(MILCMD_BITMAPCACHEBRUSH)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHEBRUSH.alignment",
+      "Expression": "alignof(MILCMD_BITMAPCACHEBRUSH)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHEBRUSH.Type",
+      "Expression": "offsetof(MILCMD_BITMAPCACHEBRUSH, Type)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHEBRUSH.Handle",
+      "Expression": "offsetof(MILCMD_BITMAPCACHEBRUSH, Handle)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHEBRUSH.Opacity",
+      "Expression": "offsetof(MILCMD_BITMAPCACHEBRUSH, Opacity)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHEBRUSH.hOpacityAnimations",
+      "Expression": "offsetof(MILCMD_BITMAPCACHEBRUSH, hOpacityAnimations)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHEBRUSH.hTransform",
+      "Expression": "offsetof(MILCMD_BITMAPCACHEBRUSH, hTransform)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHEBRUSH.hRelativeTransform",
+      "Expression": "offsetof(MILCMD_BITMAPCACHEBRUSH, hRelativeTransform)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHEBRUSH.hBitmapCache",
+      "Expression": "offsetof(MILCMD_BITMAPCACHEBRUSH, hBitmapCache)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHEBRUSH.hInternalTarget",
+      "Expression": "offsetof(MILCMD_BITMAPCACHEBRUSH, hInternalTarget)"
+    },
+    {
+      "Name": "MILCMD_DASHSTYLE.size",
+      "Expression": "sizeof(MILCMD_DASHSTYLE)"
+    },
+    {
+      "Name": "MILCMD_DASHSTYLE.alignment",
+      "Expression": "alignof(MILCMD_DASHSTYLE)"
+    },
+    {
+      "Name": "MILCMD_DASHSTYLE.Type",
+      "Expression": "offsetof(MILCMD_DASHSTYLE, Type)"
+    },
+    {
+      "Name": "MILCMD_DASHSTYLE.Handle",
+      "Expression": "offsetof(MILCMD_DASHSTYLE, Handle)"
+    },
+    {
+      "Name": "MILCMD_DASHSTYLE.Offset",
+      "Expression": "offsetof(MILCMD_DASHSTYLE, Offset)"
+    },
+    {
+      "Name": "MILCMD_DASHSTYLE.hOffsetAnimations",
+      "Expression": "offsetof(MILCMD_DASHSTYLE, hOffsetAnimations)"
+    },
+    {
+      "Name": "MILCMD_DASHSTYLE.DashesSize",
+      "Expression": "offsetof(MILCMD_DASHSTYLE, DashesSize)"
+    },
+    {
+      "Name": "MILCMD_PEN.size",
+      "Expression": "sizeof(MILCMD_PEN)"
+    },
+    {
+      "Name": "MILCMD_PEN.alignment",
+      "Expression": "alignof(MILCMD_PEN)"
+    },
+    {
+      "Name": "MILCMD_PEN.Type",
+      "Expression": "offsetof(MILCMD_PEN, Type)"
+    },
+    {
+      "Name": "MILCMD_PEN.Handle",
+      "Expression": "offsetof(MILCMD_PEN, Handle)"
+    },
+    {
+      "Name": "MILCMD_PEN.Thickness",
+      "Expression": "offsetof(MILCMD_PEN, Thickness)"
+    },
+    {
+      "Name": "MILCMD_PEN.MiterLimit",
+      "Expression": "offsetof(MILCMD_PEN, MiterLimit)"
+    },
+    {
+      "Name": "MILCMD_PEN.hBrush",
+      "Expression": "offsetof(MILCMD_PEN, hBrush)"
+    },
+    {
+      "Name": "MILCMD_PEN.hThicknessAnimations",
+      "Expression": "offsetof(MILCMD_PEN, hThicknessAnimations)"
+    },
+    {
+      "Name": "MILCMD_PEN.StartLineCap",
+      "Expression": "offsetof(MILCMD_PEN, StartLineCap)"
+    },
+    {
+      "Name": "MILCMD_PEN.EndLineCap",
+      "Expression": "offsetof(MILCMD_PEN, EndLineCap)"
+    },
+    {
+      "Name": "MILCMD_PEN.DashCap",
+      "Expression": "offsetof(MILCMD_PEN, DashCap)"
+    },
+    {
+      "Name": "MILCMD_PEN.LineJoin",
+      "Expression": "offsetof(MILCMD_PEN, LineJoin)"
+    },
+    {
+      "Name": "MILCMD_PEN.hDashStyle",
+      "Expression": "offsetof(MILCMD_PEN, hDashStyle)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYDRAWING.size",
+      "Expression": "sizeof(MILCMD_GEOMETRYDRAWING)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYDRAWING.alignment",
+      "Expression": "alignof(MILCMD_GEOMETRYDRAWING)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYDRAWING.Type",
+      "Expression": "offsetof(MILCMD_GEOMETRYDRAWING, Type)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYDRAWING.Handle",
+      "Expression": "offsetof(MILCMD_GEOMETRYDRAWING, Handle)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYDRAWING.hBrush",
+      "Expression": "offsetof(MILCMD_GEOMETRYDRAWING, hBrush)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYDRAWING.hPen",
+      "Expression": "offsetof(MILCMD_GEOMETRYDRAWING, hPen)"
+    },
+    {
+      "Name": "MILCMD_GEOMETRYDRAWING.hGeometry",
+      "Expression": "offsetof(MILCMD_GEOMETRYDRAWING, hGeometry)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUNDRAWING.size",
+      "Expression": "sizeof(MILCMD_GLYPHRUNDRAWING)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUNDRAWING.alignment",
+      "Expression": "alignof(MILCMD_GLYPHRUNDRAWING)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUNDRAWING.Type",
+      "Expression": "offsetof(MILCMD_GLYPHRUNDRAWING, Type)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUNDRAWING.Handle",
+      "Expression": "offsetof(MILCMD_GLYPHRUNDRAWING, Handle)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUNDRAWING.hGlyphRun",
+      "Expression": "offsetof(MILCMD_GLYPHRUNDRAWING, hGlyphRun)"
+    },
+    {
+      "Name": "MILCMD_GLYPHRUNDRAWING.hForegroundBrush",
+      "Expression": "offsetof(MILCMD_GLYPHRUNDRAWING, hForegroundBrush)"
+    },
+    {
+      "Name": "MILCMD_IMAGEDRAWING.size",
+      "Expression": "sizeof(MILCMD_IMAGEDRAWING)"
+    },
+    {
+      "Name": "MILCMD_IMAGEDRAWING.alignment",
+      "Expression": "alignof(MILCMD_IMAGEDRAWING)"
+    },
+    {
+      "Name": "MILCMD_IMAGEDRAWING.Type",
+      "Expression": "offsetof(MILCMD_IMAGEDRAWING, Type)"
+    },
+    {
+      "Name": "MILCMD_IMAGEDRAWING.Handle",
+      "Expression": "offsetof(MILCMD_IMAGEDRAWING, Handle)"
+    },
+    {
+      "Name": "MILCMD_IMAGEDRAWING.Rect",
+      "Expression": "offsetof(MILCMD_IMAGEDRAWING, Rect)"
+    },
+    {
+      "Name": "MILCMD_IMAGEDRAWING.hImageSource",
+      "Expression": "offsetof(MILCMD_IMAGEDRAWING, hImageSource)"
+    },
+    {
+      "Name": "MILCMD_IMAGEDRAWING.hRectAnimations",
+      "Expression": "offsetof(MILCMD_IMAGEDRAWING, hRectAnimations)"
+    },
+    {
+      "Name": "MILCMD_VIDEODRAWING.size",
+      "Expression": "sizeof(MILCMD_VIDEODRAWING)"
+    },
+    {
+      "Name": "MILCMD_VIDEODRAWING.alignment",
+      "Expression": "alignof(MILCMD_VIDEODRAWING)"
+    },
+    {
+      "Name": "MILCMD_VIDEODRAWING.Type",
+      "Expression": "offsetof(MILCMD_VIDEODRAWING, Type)"
+    },
+    {
+      "Name": "MILCMD_VIDEODRAWING.Handle",
+      "Expression": "offsetof(MILCMD_VIDEODRAWING, Handle)"
+    },
+    {
+      "Name": "MILCMD_VIDEODRAWING.Rect",
+      "Expression": "offsetof(MILCMD_VIDEODRAWING, Rect)"
+    },
+    {
+      "Name": "MILCMD_VIDEODRAWING.hPlayer",
+      "Expression": "offsetof(MILCMD_VIDEODRAWING, hPlayer)"
+    },
+    {
+      "Name": "MILCMD_VIDEODRAWING.hRectAnimations",
+      "Expression": "offsetof(MILCMD_VIDEODRAWING, hRectAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.size",
+      "Expression": "sizeof(MILCMD_DRAWINGGROUP)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.alignment",
+      "Expression": "alignof(MILCMD_DRAWINGGROUP)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.Type",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, Type)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.Handle",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, Handle)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.Opacity",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, Opacity)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.ChildrenSize",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, ChildrenSize)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.hClipGeometry",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, hClipGeometry)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.hOpacityAnimations",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, hOpacityAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.hOpacityMask",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, hOpacityMask)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.hTransform",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, hTransform)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.hGuidelineSet",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, hGuidelineSet)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.EdgeMode",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, EdgeMode)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.bitmapScalingMode",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, bitmapScalingMode)"
+    },
+    {
+      "Name": "MILCMD_DRAWINGGROUP.ClearTypeHint",
+      "Expression": "offsetof(MILCMD_DRAWINGGROUP, ClearTypeHint)"
+    },
+    {
+      "Name": "MILCMD_GUIDELINESET.size",
+      "Expression": "sizeof(MILCMD_GUIDELINESET)"
+    },
+    {
+      "Name": "MILCMD_GUIDELINESET.alignment",
+      "Expression": "alignof(MILCMD_GUIDELINESET)"
+    },
+    {
+      "Name": "MILCMD_GUIDELINESET.Type",
+      "Expression": "offsetof(MILCMD_GUIDELINESET, Type)"
+    },
+    {
+      "Name": "MILCMD_GUIDELINESET.Handle",
+      "Expression": "offsetof(MILCMD_GUIDELINESET, Handle)"
+    },
+    {
+      "Name": "MILCMD_GUIDELINESET.GuidelinesXSize",
+      "Expression": "offsetof(MILCMD_GUIDELINESET, GuidelinesXSize)"
+    },
+    {
+      "Name": "MILCMD_GUIDELINESET.GuidelinesYSize",
+      "Expression": "offsetof(MILCMD_GUIDELINESET, GuidelinesYSize)"
+    },
+    {
+      "Name": "MILCMD_GUIDELINESET.IsDynamic",
+      "Expression": "offsetof(MILCMD_GUIDELINESET, IsDynamic)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHE.size",
+      "Expression": "sizeof(MILCMD_BITMAPCACHE)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHE.alignment",
+      "Expression": "alignof(MILCMD_BITMAPCACHE)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHE.Type",
+      "Expression": "offsetof(MILCMD_BITMAPCACHE, Type)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHE.Handle",
+      "Expression": "offsetof(MILCMD_BITMAPCACHE, Handle)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHE.RenderAtScale",
+      "Expression": "offsetof(MILCMD_BITMAPCACHE, RenderAtScale)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHE.hRenderAtScaleAnimations",
+      "Expression": "offsetof(MILCMD_BITMAPCACHE, hRenderAtScaleAnimations)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHE.SnapsToDevicePixels",
+      "Expression": "offsetof(MILCMD_BITMAPCACHE, SnapsToDevicePixels)"
+    },
+    {
+      "Name": "MILCMD_BITMAPCACHE.EnableClearType",
+      "Expression": "offsetof(MILCMD_BITMAPCACHE, EnableClearType)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE.size",
+      "Expression": "sizeof(MILCMD_DRAW_LINE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE.alignment",
+      "Expression": "alignof(MILCMD_DRAW_LINE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE.type",
+      "Expression": "offsetof(MILCMD_DRAW_LINE, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE.point0",
+      "Expression": "offsetof(MILCMD_DRAW_LINE, point0)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE.point1",
+      "Expression": "offsetof(MILCMD_DRAW_LINE, point1)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE.hPen",
+      "Expression": "offsetof(MILCMD_DRAW_LINE, hPen)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_DRAW_LINE, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE_ANIMATE.size",
+      "Expression": "sizeof(MILCMD_DRAW_LINE_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE_ANIMATE.alignment",
+      "Expression": "alignof(MILCMD_DRAW_LINE_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE_ANIMATE.type",
+      "Expression": "offsetof(MILCMD_DRAW_LINE_ANIMATE, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE_ANIMATE.point0",
+      "Expression": "offsetof(MILCMD_DRAW_LINE_ANIMATE, point0)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE_ANIMATE.point1",
+      "Expression": "offsetof(MILCMD_DRAW_LINE_ANIMATE, point1)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE_ANIMATE.hPen",
+      "Expression": "offsetof(MILCMD_DRAW_LINE_ANIMATE, hPen)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE_ANIMATE.hPoint0Animations",
+      "Expression": "offsetof(MILCMD_DRAW_LINE_ANIMATE, hPoint0Animations)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE_ANIMATE.hPoint1Animations",
+      "Expression": "offsetof(MILCMD_DRAW_LINE_ANIMATE, hPoint1Animations)"
+    },
+    {
+      "Name": "MILCMD_DRAW_LINE_ANIMATE.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_DRAW_LINE_ANIMATE, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE.size",
+      "Expression": "sizeof(MILCMD_DRAW_RECTANGLE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE.alignment",
+      "Expression": "alignof(MILCMD_DRAW_RECTANGLE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE.type",
+      "Expression": "offsetof(MILCMD_DRAW_RECTANGLE, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE.rectangle",
+      "Expression": "offsetof(MILCMD_DRAW_RECTANGLE, rectangle)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE.hBrush",
+      "Expression": "offsetof(MILCMD_DRAW_RECTANGLE, hBrush)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE.hPen",
+      "Expression": "offsetof(MILCMD_DRAW_RECTANGLE, hPen)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE_ANIMATE.size",
+      "Expression": "sizeof(MILCMD_DRAW_RECTANGLE_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE_ANIMATE.alignment",
+      "Expression": "alignof(MILCMD_DRAW_RECTANGLE_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE_ANIMATE.type",
+      "Expression": "offsetof(MILCMD_DRAW_RECTANGLE_ANIMATE, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE_ANIMATE.rectangle",
+      "Expression": "offsetof(MILCMD_DRAW_RECTANGLE_ANIMATE, rectangle)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE_ANIMATE.hBrush",
+      "Expression": "offsetof(MILCMD_DRAW_RECTANGLE_ANIMATE, hBrush)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE_ANIMATE.hPen",
+      "Expression": "offsetof(MILCMD_DRAW_RECTANGLE_ANIMATE, hPen)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE_ANIMATE.hRectangleAnimations",
+      "Expression": "offsetof(MILCMD_DRAW_RECTANGLE_ANIMATE, hRectangleAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAW_RECTANGLE_ANIMATE.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_DRAW_RECTANGLE_ANIMATE, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE.size",
+      "Expression": "sizeof(MILCMD_DRAW_ROUNDED_RECTANGLE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE.alignment",
+      "Expression": "alignof(MILCMD_DRAW_ROUNDED_RECTANGLE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE.type",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE.rectangle",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE, rectangle)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE.radiusX",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE, radiusX)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE.radiusY",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE, radiusY)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE.hBrush",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE, hBrush)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE.hPen",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE, hPen)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.size",
+      "Expression": "sizeof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.alignment",
+      "Expression": "alignof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.type",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.rectangle",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE, rectangle)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.radiusX",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE, radiusX)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.radiusY",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE, radiusY)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.hBrush",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE, hBrush)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.hPen",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE, hPen)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.hRectangleAnimations",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE, hRectangleAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.hRadiusXAnimations",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE, hRadiusXAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.hRadiusYAnimations",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE, hRadiusYAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_DRAW_ROUNDED_RECTANGLE_ANIMATE, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE.size",
+      "Expression": "sizeof(MILCMD_DRAW_ELLIPSE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE.alignment",
+      "Expression": "alignof(MILCMD_DRAW_ELLIPSE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE.type",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE.center",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE, center)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE.radiusX",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE, radiusX)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE.radiusY",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE, radiusY)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE.hBrush",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE, hBrush)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE.hPen",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE, hPen)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.size",
+      "Expression": "sizeof(MILCMD_DRAW_ELLIPSE_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.alignment",
+      "Expression": "alignof(MILCMD_DRAW_ELLIPSE_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.type",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE_ANIMATE, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.center",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE_ANIMATE, center)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.radiusX",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE_ANIMATE, radiusX)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.radiusY",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE_ANIMATE, radiusY)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.hBrush",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE_ANIMATE, hBrush)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.hPen",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE_ANIMATE, hPen)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.hCenterAnimations",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE_ANIMATE, hCenterAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.hRadiusXAnimations",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE_ANIMATE, hRadiusXAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.hRadiusYAnimations",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE_ANIMATE, hRadiusYAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAW_ELLIPSE_ANIMATE.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_DRAW_ELLIPSE_ANIMATE, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GEOMETRY.size",
+      "Expression": "sizeof(MILCMD_DRAW_GEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GEOMETRY.alignment",
+      "Expression": "alignof(MILCMD_DRAW_GEOMETRY)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GEOMETRY.type",
+      "Expression": "offsetof(MILCMD_DRAW_GEOMETRY, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GEOMETRY.hBrush",
+      "Expression": "offsetof(MILCMD_DRAW_GEOMETRY, hBrush)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GEOMETRY.hPen",
+      "Expression": "offsetof(MILCMD_DRAW_GEOMETRY, hPen)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GEOMETRY.hGeometry",
+      "Expression": "offsetof(MILCMD_DRAW_GEOMETRY, hGeometry)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GEOMETRY.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_DRAW_GEOMETRY, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE.size",
+      "Expression": "sizeof(MILCMD_DRAW_IMAGE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE.alignment",
+      "Expression": "alignof(MILCMD_DRAW_IMAGE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE.type",
+      "Expression": "offsetof(MILCMD_DRAW_IMAGE, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE.rectangle",
+      "Expression": "offsetof(MILCMD_DRAW_IMAGE, rectangle)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE.hImageSource",
+      "Expression": "offsetof(MILCMD_DRAW_IMAGE, hImageSource)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_DRAW_IMAGE, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE_ANIMATE.size",
+      "Expression": "sizeof(MILCMD_DRAW_IMAGE_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE_ANIMATE.alignment",
+      "Expression": "alignof(MILCMD_DRAW_IMAGE_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE_ANIMATE.type",
+      "Expression": "offsetof(MILCMD_DRAW_IMAGE_ANIMATE, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE_ANIMATE.rectangle",
+      "Expression": "offsetof(MILCMD_DRAW_IMAGE_ANIMATE, rectangle)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE_ANIMATE.hImageSource",
+      "Expression": "offsetof(MILCMD_DRAW_IMAGE_ANIMATE, hImageSource)"
+    },
+    {
+      "Name": "MILCMD_DRAW_IMAGE_ANIMATE.hRectangleAnimations",
+      "Expression": "offsetof(MILCMD_DRAW_IMAGE_ANIMATE, hRectangleAnimations)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GLYPH_RUN.size",
+      "Expression": "sizeof(MILCMD_DRAW_GLYPH_RUN)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GLYPH_RUN.alignment",
+      "Expression": "alignof(MILCMD_DRAW_GLYPH_RUN)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GLYPH_RUN.type",
+      "Expression": "offsetof(MILCMD_DRAW_GLYPH_RUN, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GLYPH_RUN.hForegroundBrush",
+      "Expression": "offsetof(MILCMD_DRAW_GLYPH_RUN, hForegroundBrush)"
+    },
+    {
+      "Name": "MILCMD_DRAW_GLYPH_RUN.hGlyphRun",
+      "Expression": "offsetof(MILCMD_DRAW_GLYPH_RUN, hGlyphRun)"
+    },
+    {
+      "Name": "MILCMD_DRAW_DRAWING.size",
+      "Expression": "sizeof(MILCMD_DRAW_DRAWING)"
+    },
+    {
+      "Name": "MILCMD_DRAW_DRAWING.alignment",
+      "Expression": "alignof(MILCMD_DRAW_DRAWING)"
+    },
+    {
+      "Name": "MILCMD_DRAW_DRAWING.type",
+      "Expression": "offsetof(MILCMD_DRAW_DRAWING, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_DRAWING.hDrawing",
+      "Expression": "offsetof(MILCMD_DRAW_DRAWING, hDrawing)"
+    },
+    {
+      "Name": "MILCMD_DRAW_DRAWING.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_DRAW_DRAWING, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO.size",
+      "Expression": "sizeof(MILCMD_DRAW_VIDEO)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO.alignment",
+      "Expression": "alignof(MILCMD_DRAW_VIDEO)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO.type",
+      "Expression": "offsetof(MILCMD_DRAW_VIDEO, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO.rectangle",
+      "Expression": "offsetof(MILCMD_DRAW_VIDEO, rectangle)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO.hPlayer",
+      "Expression": "offsetof(MILCMD_DRAW_VIDEO, hPlayer)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_DRAW_VIDEO, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO_ANIMATE.size",
+      "Expression": "sizeof(MILCMD_DRAW_VIDEO_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO_ANIMATE.alignment",
+      "Expression": "alignof(MILCMD_DRAW_VIDEO_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO_ANIMATE.type",
+      "Expression": "offsetof(MILCMD_DRAW_VIDEO_ANIMATE, type)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO_ANIMATE.rectangle",
+      "Expression": "offsetof(MILCMD_DRAW_VIDEO_ANIMATE, rectangle)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO_ANIMATE.hPlayer",
+      "Expression": "offsetof(MILCMD_DRAW_VIDEO_ANIMATE, hPlayer)"
+    },
+    {
+      "Name": "MILCMD_DRAW_VIDEO_ANIMATE.hRectangleAnimations",
+      "Expression": "offsetof(MILCMD_DRAW_VIDEO_ANIMATE, hRectangleAnimations)"
+    },
+    {
+      "Name": "MILCMD_PUSH_CLIP.size",
+      "Expression": "sizeof(MILCMD_PUSH_CLIP)"
+    },
+    {
+      "Name": "MILCMD_PUSH_CLIP.alignment",
+      "Expression": "alignof(MILCMD_PUSH_CLIP)"
+    },
+    {
+      "Name": "MILCMD_PUSH_CLIP.type",
+      "Expression": "offsetof(MILCMD_PUSH_CLIP, type)"
+    },
+    {
+      "Name": "MILCMD_PUSH_CLIP.hClipGeometry",
+      "Expression": "offsetof(MILCMD_PUSH_CLIP, hClipGeometry)"
+    },
+    {
+      "Name": "MILCMD_PUSH_CLIP.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_PUSH_CLIP, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_MASK.size",
+      "Expression": "sizeof(MILCMD_PUSH_OPACITY_MASK)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_MASK.alignment",
+      "Expression": "alignof(MILCMD_PUSH_OPACITY_MASK)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_MASK.type",
+      "Expression": "offsetof(MILCMD_PUSH_OPACITY_MASK, type)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_MASK.boundingBoxCacheLocalSpace",
+      "Expression": "offsetof(MILCMD_PUSH_OPACITY_MASK, boundingBoxCacheLocalSpace)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_MASK.hOpacityMask",
+      "Expression": "offsetof(MILCMD_PUSH_OPACITY_MASK, hOpacityMask)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_MASK.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_PUSH_OPACITY_MASK, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY.size",
+      "Expression": "sizeof(MILCMD_PUSH_OPACITY)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY.alignment",
+      "Expression": "alignof(MILCMD_PUSH_OPACITY)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY.type",
+      "Expression": "offsetof(MILCMD_PUSH_OPACITY, type)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY.opacity",
+      "Expression": "offsetof(MILCMD_PUSH_OPACITY, opacity)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_ANIMATE.size",
+      "Expression": "sizeof(MILCMD_PUSH_OPACITY_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_ANIMATE.alignment",
+      "Expression": "alignof(MILCMD_PUSH_OPACITY_ANIMATE)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_ANIMATE.type",
+      "Expression": "offsetof(MILCMD_PUSH_OPACITY_ANIMATE, type)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_ANIMATE.opacity",
+      "Expression": "offsetof(MILCMD_PUSH_OPACITY_ANIMATE, opacity)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_ANIMATE.hOpacityAnimations",
+      "Expression": "offsetof(MILCMD_PUSH_OPACITY_ANIMATE, hOpacityAnimations)"
+    },
+    {
+      "Name": "MILCMD_PUSH_OPACITY_ANIMATE.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_PUSH_OPACITY_ANIMATE, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_PUSH_TRANSFORM.size",
+      "Expression": "sizeof(MILCMD_PUSH_TRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_PUSH_TRANSFORM.alignment",
+      "Expression": "alignof(MILCMD_PUSH_TRANSFORM)"
+    },
+    {
+      "Name": "MILCMD_PUSH_TRANSFORM.type",
+      "Expression": "offsetof(MILCMD_PUSH_TRANSFORM, type)"
+    },
+    {
+      "Name": "MILCMD_PUSH_TRANSFORM.hTransform",
+      "Expression": "offsetof(MILCMD_PUSH_TRANSFORM, hTransform)"
+    },
+    {
+      "Name": "MILCMD_PUSH_TRANSFORM.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_PUSH_TRANSFORM, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_SET.size",
+      "Expression": "sizeof(MILCMD_PUSH_GUIDELINE_SET)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_SET.alignment",
+      "Expression": "alignof(MILCMD_PUSH_GUIDELINE_SET)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_SET.type",
+      "Expression": "offsetof(MILCMD_PUSH_GUIDELINE_SET, type)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_SET.hGuidelines",
+      "Expression": "offsetof(MILCMD_PUSH_GUIDELINE_SET, hGuidelines)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_SET.QuadWordPad0",
+      "Expression": "offsetof(MILCMD_PUSH_GUIDELINE_SET, QuadWordPad0)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_Y1.size",
+      "Expression": "sizeof(MILCMD_PUSH_GUIDELINE_Y1)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_Y1.alignment",
+      "Expression": "alignof(MILCMD_PUSH_GUIDELINE_Y1)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_Y1.type",
+      "Expression": "offsetof(MILCMD_PUSH_GUIDELINE_Y1, type)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_Y1.coordinate",
+      "Expression": "offsetof(MILCMD_PUSH_GUIDELINE_Y1, coordinate)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_Y2.size",
+      "Expression": "sizeof(MILCMD_PUSH_GUIDELINE_Y2)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_Y2.alignment",
+      "Expression": "alignof(MILCMD_PUSH_GUIDELINE_Y2)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_Y2.type",
+      "Expression": "offsetof(MILCMD_PUSH_GUIDELINE_Y2, type)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_Y2.leadingCoordinate",
+      "Expression": "offsetof(MILCMD_PUSH_GUIDELINE_Y2, leadingCoordinate)"
+    },
+    {
+      "Name": "MILCMD_PUSH_GUIDELINE_Y2.offsetToDrivenCoordinate",
+      "Expression": "offsetof(MILCMD_PUSH_GUIDELINE_Y2, offsetToDrivenCoordinate)"
+    },
+    {
+      "Name": "MILCMD_PUSH_EFFECT.size",
+      "Expression": "sizeof(MILCMD_PUSH_EFFECT)"
+    },
+    {
+      "Name": "MILCMD_PUSH_EFFECT.alignment",
+      "Expression": "alignof(MILCMD_PUSH_EFFECT)"
+    },
+    {
+      "Name": "MILCMD_PUSH_EFFECT.type",
+      "Expression": "offsetof(MILCMD_PUSH_EFFECT, type)"
+    },
+    {
+      "Name": "MILCMD_POP.size",
+      "Expression": "sizeof(MILCMD_POP)"
+    },
+    {
+      "Name": "MILCMD_POP.alignment",
+      "Expression": "alignof(MILCMD_POP)"
+    },
+    {
+      "Name": "MILCMD_POP.type",
+      "Expression": "offsetof(MILCMD_POP, type)"
+    },
+    {
+      "Name": "D3DMATRIX.size",
+      "Expression": "sizeof(D3DMATRIX)"
+    },
+    {
+      "Name": "D3DMATRIX.alignment",
+      "Expression": "alignof(D3DMATRIX)"
+    },
+    {
+      "Name": "D3DMATRIX._11",
+      "Expression": "offsetof(D3DMATRIX, _11)"
+    },
+    {
+      "Name": "D3DMATRIX._12",
+      "Expression": "offsetof(D3DMATRIX, _12)"
+    },
+    {
+      "Name": "D3DMATRIX._13",
+      "Expression": "offsetof(D3DMATRIX, _13)"
+    },
+    {
+      "Name": "D3DMATRIX._14",
+      "Expression": "offsetof(D3DMATRIX, _14)"
+    },
+    {
+      "Name": "D3DMATRIX._21",
+      "Expression": "offsetof(D3DMATRIX, _21)"
+    },
+    {
+      "Name": "D3DMATRIX._22",
+      "Expression": "offsetof(D3DMATRIX, _22)"
+    },
+    {
+      "Name": "D3DMATRIX._23",
+      "Expression": "offsetof(D3DMATRIX, _23)"
+    },
+    {
+      "Name": "D3DMATRIX._24",
+      "Expression": "offsetof(D3DMATRIX, _24)"
+    },
+    {
+      "Name": "D3DMATRIX._31",
+      "Expression": "offsetof(D3DMATRIX, _31)"
+    },
+    {
+      "Name": "D3DMATRIX._32",
+      "Expression": "offsetof(D3DMATRIX, _32)"
+    },
+    {
+      "Name": "D3DMATRIX._33",
+      "Expression": "offsetof(D3DMATRIX, _33)"
+    },
+    {
+      "Name": "D3DMATRIX._34",
+      "Expression": "offsetof(D3DMATRIX, _34)"
+    },
+    {
+      "Name": "D3DMATRIX._41",
+      "Expression": "offsetof(D3DMATRIX, _41)"
+    },
+    {
+      "Name": "D3DMATRIX._42",
+      "Expression": "offsetof(D3DMATRIX, _42)"
+    },
+    {
+      "Name": "D3DMATRIX._43",
+      "Expression": "offsetof(D3DMATRIX, _43)"
+    },
+    {
+      "Name": "D3DMATRIX._44",
+      "Expression": "offsetof(D3DMATRIX, _44)"
+    },
+    {
+      "Name": "MilColorF.size",
+      "Expression": "sizeof(MilColorF)"
+    },
+    {
+      "Name": "MilColorF.alignment",
+      "Expression": "alignof(MilColorF)"
+    },
+    {
+      "Name": "MilColorF.r",
+      "Expression": "offsetof(MilColorF, r)"
+    },
+    {
+      "Name": "MilColorF.g",
+      "Expression": "offsetof(MilColorF, g)"
+    },
+    {
+      "Name": "MilColorF.b",
+      "Expression": "offsetof(MilColorF, b)"
+    },
+    {
+      "Name": "MilColorF.a",
+      "Expression": "offsetof(MilColorF, a)"
+    }
+  ]
+}

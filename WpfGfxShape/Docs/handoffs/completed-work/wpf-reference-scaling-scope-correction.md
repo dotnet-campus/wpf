@@ -1,0 +1,13 @@
+# 显式padding对照发现原版插值作用域错误
+
+新增WhenExplicitPaddingTileIsSampledThenOriginalSourceVariantsAreRecorded：原版DrawingImage1×1红、Bitmap1×1红、显式2×2左上红其余透明，96DPI，Absolute viewbox2×2、viewport(0.25,1,2,2)、None stretch、Tile、目标(-10,-10,20,20)，模式1/2/3共9组。
+
+仅在DrawingVisual设置nearest的初样本b3008ff1f4764b38ac603d1ea2cf23b0显式2×2仍输出191/64。将scaling设置到实际DrawingGroup内容后4391c4afe01a4e939368bbd9a2c78f04变为nearest255/0。表明旧实验标签不证明绘制内容实际nearest，不能据此改AOT nearest实现。
+
+修正450组原版fixture的fill/stroke绘制内容及BitmapSource control均经设置BitmapScalingMode的DrawingGroup；保持Visual mask原层级，明确ScalingScope字段记录其插值作用域仍须复核。新固定样本Tests/WpfGfxShape.WpfReference/TestResults/original-wpf-e07cbceaf453471dacb4cb12c99bdbc2.json，SHA25698D740A895372A31DAF4EB234F3942E31A8C99A15D278F121DA84C36B585CE58。旧310e样本不再用于fill/stroke mode3正式校准，保留历史。
+
+原版padding实验和450组采集各定向1/1通过。更换原版固定输入后AOT普通BitmapSource差异64降至48，DrawingImage86降至70；这16/16减少来自实验作用域校正，不是生产算法修复。Visual mask尚需模式状态实验，不能宣布全部70/48为同契约生产错误。
+
+本轮未改生产代码、未发布。AOT仍252DAC7D124A51CBE02996D51E4A71E25B290FD15A39C4E3D9099C4D5AA350DF。最终COM896通过1失败0跳过总897，2秒；报告Tests/WpfGfxShape.ComAcceptance/TestResults/wpf-calibration-55a91823a1ec49a08abffe02f929d585.json，TRX Tests/WpfGfxShape.ComAcceptance/TestResults/com-acceptance.trx。
+
+下一闭环先证明Visual/scoped mask实际scaling消费，建立行为校准的作用域自检，再按可靠源参数trace base tile和最终span。禁止把标注nearest但实际linear样本继续当oracle或把差异下降作为生产修复进度。HDR/1e10/1e-7约束保持，非新稳定基线。

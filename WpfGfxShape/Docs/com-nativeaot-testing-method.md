@@ -2,6 +2,20 @@
 
 > 用户最新约定：只写一个单元测试项目，直接使用 wpfgfx 生产项目发布的 AOT DLL。不创建 Host，不启动自定义子进程，不创建或修改任何 .slnx。
 
+## 当前标准 MTP 与沙箱入口
+
+当前唯一 COM 项目使用 MSTest 4.0.1、`OutputType=Exe`、`EnableMSTestRunner=true`。exe 是包生成的标准 Microsoft.Testing.Platform 验收应用，不是自建 Host；应用内直接加载生产 AOT，不能因 exe 形态误恢复已禁止的 Host。
+
+本机与沙箱必须共用测试和原断言。沙箱构建使用 `ComAcceptanceSandbox=true`，AcceptancePaths 从 `AppContext.BaseDirectory` 解析 `Native/wpfgfx_cor3.dll` 和 `Results`，拒绝 rooted/越界路径，在加载前核对 PE 无 CLR、架构与 `aot.sha256`。本机继续使用显式绝对发布路径。包是框架依赖应用，远端需对应 .NET 10 Windows Desktop runtime。
+
+完整命令、工作目录、25 文件白名单和上传/回收规范见 [`com-acceptance-sandbox-operations.md`](com-acceptance-sandbox-operations.md)。生产与包 publish 是独立显式动作，测试不自动 publish。本轮仅文档收口，没有新发布。
+
+本机标准 MTP Test 命令（只记录，非本轮执行）：在 `WpfGfxShape/Tests/WpfGfxShape.ComAcceptance/` 为工作目录执行 `dotnet test --project WpfGfxShape.ComAcceptance.csproj -c Release -- --report-trx --report-trx-filename local-final-full.trx`。结果以实际输出路径为准，禁止覆盖冻结证据。
+
+项目级 `global.json` 的 `test.runner=Microsoft.Testing.Platform` 需要 SDK 从当前工作目录发现；从仓库根只传 csproj 不会采用该文件。本轮专用测试入口定向实际失败于 .NET 10 MTP 禁止 VSTest target，未运行用例，不得报定向 Green。项目级 SDK version=10.0.107/allowPrerelease=true/rollForward=latestFeature 与根相同，但没有根的 paths（.dotnet/$host$），所以实际 SDK 解析一致性未验证。本轮保留该 MTP opt-in 文件、不做未经验证的删改，也不升级 SDK；正确目录的命令尚未由本轮工具验证，不能称专用 dotnet test 兼容已解决。已验证的直接标准 exe 入口不依赖该 runner 选择。
+
+运行身份、计数、strict适用版本及真实失败只见[唯一状态源](handoffs/current-stable-baseline.md)。同步perf等旧全量Green不代表当前回归；原始证据按[历史隔离索引](history-index.md)保留。本文不维护逐轮结果。
+
 ## 项目与依赖
 
 唯一新测试项目：`Tests/WpfGfxShape.ComAcceptance/WpfGfxShape.ComAcceptance.csproj`，使用 MSTest。
@@ -56,7 +70,7 @@
 
 证据：`core/api/exports.cpp:895-910`、`core/dll/wpfgfx.def`、`include/wgx_render.h:82,852-859`、`core/av/eventproxy.cpp`。
 
-当前共 28 个测试用例（含参数化展开）：4 项受控并发回归先于对应计数修复编写，其中非最终 Release 阻塞测试取得实际行为 Red；原有 24 项均先于生产导出实现编写；包括下表原有 23 项及 callback 内 QI/平衡 Release 重入用例。S-UNDATED-055 已在当前源码新发布 Release/win-x64 AOT DLL 上 24/24 通过；历史旧产物缺导出的 Red 不等于实现前当前源码发布 Red：
+下表保存 EventProxy 必须验证的合同，不维护用例总数。首批测试的 Red/Green 只属其历史发布：旧产物缺导出的共同前置 Red 不等于方法体断言逐项 Red；生产实现后必须重新执行。
 
 | 合同 | 测试覆盖 |
 |---|---|
@@ -68,13 +82,13 @@
 | descriptor | 创建后清空调用方 descriptor，原生副本仍可回调和 dispose |
 | 对象生命周期 | 未调用即释放；额外 AddRef 防止提前销毁；最终释放一次；不同对象回调上下文及销毁隔离 |
 
-已核对的原生依据用于约束测试预期，不用替身模拟待测 COM 对象。当前产物缺导出时，初始化失败会阻止测试方法执行；23 项 Red 只说明共同前置缺失，不代表已逐项证明方法体断言有效。导出实现后必须再次运行全部用例。
+原生依据用于约束预期，不用替身模拟待测 COM 对象。产物缺导出时初始化失败会阻止方法体执行；共同前置失败不代表所有行为断言有效，导出实现后必须再次运行全部用例。
 
 IUnknown 三槽之后是 RaiseEvent。Shutdown 不是公开槽位，不能为测试虚构。最后 Release 后不能再调用对象。回调中不执行可能跨 unmanaged 边界抛出的断言，断言在测试方法中执行。
 
 ## 生命周期与运行限制
 
-测试对象应在 finally 中释放；模块保持加载到测试进程结束，不假定 Native AOT 可安全动态卸载。测试程序集禁止并行执行以降低共享本机状态干扰。
+测试对象应在 finally 中释放；按[已生效产品合同](decisions/DEC-0004-process-lifetime-module.md)，生产模块保持加载到进程结束、不被运行期替换；unload/reload/热替换不适用（非通过、非阻塞），无需再批准。COM Release、channel/player关闭、线程退出、callback静止及初始化失败资源清理仍须验收。测试程序集禁止并行执行以降低共享本机状态干扰。
 
 直接测试真实 DLL 意味着本机崩溃可能终止测试运行器，这是本方案的真实失败结果，不通过自定义 Host 隐藏或转换。死锁保护可由标准测试运行器/CI 的超时设施提供，不新增进程调度框架。
 
@@ -82,7 +96,7 @@ COM 跨 apartment、异步媒体通知、重入/并发关闭、真实播放、�
 
 ## ManagedStreamWrapper 合同
 
-ManagedStreamTests 当前17项覆盖 MILCreateStreamFromStreamDescriptor、MILIStreamWrite、IUnknown/IStream/IManagedStream QI、descriptor副本、13个委托槽的参数/HRESULT及最终释放。按原生保留 QI 空输出 E_INVALIDARG、不支持 ISequentialStream QI，以及 Write/Seek/CopyTo 的可空输出临时存储；Read输出原样转发。新增测试先于实现，缺导出共同前置Red后发布Green。另有7项双流生命周期测试，总计流24项：生产对象间复制、四种输出组合、EOF、真实Clone存活、读写定位/扩缩容、STATSTG无名称字段及最终释放。内存流descriptor仅为调用方来源，不等同真实PresentationCore/WIC集成；克隆明确采用快照与独立位置。
+ManagedStream 必须覆盖 MILCreateStreamFromStreamDescriptor、MILIStreamWrite、IUnknown/IStream/IManagedStream QI、descriptor副本、13个委托槽的参数/HRESULT及最终释放。按原生保留 QI 空输出 E_INVALIDARG、不支持 ISequentialStream QI，以及 Write/Seek/CopyTo 可空输出临时存储；Read输出原样转发。双流合同包括生产对象间复制、四种输出组合、EOF、真实Clone存活、读写定位/扩缩容、STATSTG无名称字段及最终释放。内存流descriptor仅为调用方来源，不等同真实PresentationCore/WIC集成；克隆采用快照与独立位置。历史执行计数不在方法页维护。
 
 ## 标准结果留存
 

@@ -14,16 +14,24 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer : IDisposabl
     private byte[] _pixels = [];
     private readonly bool _floating;
     private int BytesPerPixel => _floating ? 16 : 4;
+    internal Direct3D9SurfaceRect TargetBounds => new(0, 0, checked((int)_width), checked((int)_height));
     private SoftwareImageDrawingContext _context;
     private uint ScalingMode => _context.BitmapScalingMode;
     private MilCompositingMode CompositingMode => _context.CompositingMode;
-    private readonly Stack<(byte[] Pixels, double Opacity, SoftwareImageCoverage? Mask, float? AlphaMask, GeneratedImageMask? ImageMask)> _layers = new();
+    private readonly Stack<(byte[] Pixels, double Opacity, SoftwareImageCoverage? Mask, float? AlphaMask, GeneratedImageMask? ImageMask, Direct3D9SurfaceRect Bounds)> _layers = new();
 
     internal int BeginOpacityLayer(double opacity, SoftwareImageCoverage? mask = null, float? alphaMask = null, GeneratedImageMask? imageMask = null)
     {
         if (_realizeBitmap is not null) return Direct3D9Factory.WgxInvalidCallHResult;
         if (!double.IsFinite(opacity) || opacity < 0 || opacity > 1) return Direct3D9Factory.InvalidArgumentHResult;
-        _layers.Push((new byte[checked((int)_width * (int)_height * BytesPerPixel)], opacity, mask, alphaMask, imageMask));
+        var parent = _layers.TryPeek(out var active) ? active.Bounds : TargetBounds;
+        var requested = imageMask?.LayerBounds ?? parent;
+        int left = Math.Clamp(requested.Left, parent.Left, parent.Right);
+        int top = Math.Clamp(requested.Top, parent.Top, parent.Bottom);
+        int right = Math.Clamp(requested.Right, left, parent.Right);
+        int bottom = Math.Clamp(requested.Bottom, top, parent.Bottom);
+        var bounds = new Direct3D9SurfaceRect(left, top, right, bottom);
+        _layers.Push((new byte[checked((right - left) * (bottom - top) * BytesPerPixel)], opacity, mask, alphaMask, imageMask, bounds));
         return 0;
     }
 
@@ -59,11 +67,18 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer : IDisposabl
         }
         using var ownedEffects = effects;
         if (effects is null) return Direct3D9Factory.UnexpectedHResult;
+        var bounds = layer.Bounds;
+        int left = Math.Clamp(bounds.Left, 0, checked((int)_width));
+        int top = Math.Clamp(bounds.Top, 0, checked((int)_height));
+        int right = Math.Clamp(bounds.Right, left, checked((int)_width));
+        int bottom = Math.Clamp(bounds.Bottom, top, checked((int)_height));
+        if (right == left || bottom == top) return 0;
+        uint layerWidth = (uint)(right - left), layerHeight = (uint)(bottom - top);
         nint bitmap = 0, bitmapLock = 0;
         try
         {
             Guid format = _floating ? new("6fddc324-4e03-4bfe-b185-3d77768dc91a") : new("6fddc324-4e03-4bfe-b185-3d77768dc910");
-            result = SoftwareBitmap.Create(_width, _height, 96, 96, format, out bitmap);
+            result = SoftwareBitmap.Create(layerWidth, layerHeight, 96, 96, format, out bitmap);
             if (result < 0) return result;
             result = ((delegate* unmanaged[Stdcall]<nint, nint, uint, nint*, int>)(*(void***)bitmap)[8])(bitmap, 0, 2, &bitmapLock);
             if (result < 0) return result;
@@ -72,16 +87,18 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer : IDisposabl
             if (result < 0) return result;
             result = ((delegate* unmanaged[Stdcall]<nint, uint*, int>)(*(void***)bitmapLock)[4])(bitmapLock, &stride);
             if (result < 0) return result;
-            int rowBytes = checked((int)_width * BytesPerPixel);
-            ulong required = _height == 0 ? 0 : (ulong)(_height - 1) * stride + (uint)rowBytes;
+            int rowBytes = checked((int)layerWidth * BytesPerPixel);
+            ulong required = (ulong)(layerHeight - 1) * stride + (uint)rowBytes;
             if (pixels == null || stride < rowBytes || required > size) return Direct3D9Factory.InvalidArgumentHResult;
-            for (uint y = 0; y < _height; y++)
-                layer.Pixels.AsSpan(checked((int)y * rowBytes), rowBytes).CopyTo(new Span<byte>(pixels + (nuint)y * stride, rowBytes));
+            for (uint y = 0; y < layerHeight; y++)
+                layer.Pixels.AsSpan(checked((int)y * rowBytes), rowBytes)
+                    .CopyTo(new Span<byte>(pixels + (nuint)y * stride, rowBytes));
             Direct3D9Factory.Release(bitmapLock); bitmapLock = 0;
             // Native DrawLayer composites its materialized bitmap through the drawing pipeline.
-            return DrawTransformed(bitmap, new(0, 0, _width, _height),
-                new(GeneratedImageTransform.Identity, null, 3, MilCompositingMode.SourceOver,
-                    Antialias: layer.Mask is not null, PrefilterEnabled: false, Effects: effects, GeometryMask: layer.Mask), false);
+            return DrawTransformed(bitmap, new(0, 0, layerWidth, layerHeight),
+                new(new(1, 1, left, top), new(left, top, right, bottom), 3, MilCompositingMode.SourceOver,
+                    Antialias: layer.Mask is not null, PrefilterEnabled: false, Effects: effects, GeometryMask: layer.Mask,
+                    EffectToDevice: GeneratedImageTransform.Identity), false);
         }
         finally { Direct3D9Factory.Release(bitmapLock); Direct3D9Factory.Release(bitmap); }
     }
@@ -120,7 +137,8 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer : IDisposabl
                 _ => Direct3D9Factory.NotImplementedHResult,
                 BlendSpan,
                 _ => { },
-                () => { }));
+                () => { }),
+            lockedBounds: () => _layers.TryPeek(out var layer) ? layer.Bounds : TargetBounds);
     }
 
     internal int Draw(nint source, MilRectD rectangle, double offsetX, double offsetY, bool isMilSource, bool prefiltered = false)
@@ -246,6 +264,7 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer : IDisposabl
         stride = checked((int)_width * BytesPerPixel);
         if (_layers.TryPeek(out var layer))
         {
+            stride = checked((layer.Bounds.Right - layer.Bounds.Left) * BytesPerPixel);
             pixels = _pixels = layer.Pixels;
             return 0;
         }
@@ -275,7 +294,11 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer : IDisposabl
 
     private int RealizeAndDrawLocked(byte[] pixels, int stride, Direct3D9SoftwareRenderTargetState state, Direct3D9SurfaceRect clip)
     {
+        if (_layers.TryPeek(out var layer))
+            clip = new(Math.Max(clip.Left, layer.Bounds.Left), Math.Max(clip.Top, layer.Bounds.Top),
+                Math.Min(clip.Right, layer.Bounds.Right), Math.Min(clip.Bottom, layer.Bounds.Bottom));
         _drawClip = clip;
+        if (clip.Right <= clip.Left || clip.Bottom <= clip.Top) return 0;
         int effectsResult = _context.Effects?.Prepare(_context, _floating) ?? 0;
         if (effectsResult < 0) return effectsResult;
         return _realizeBitmap is { } realize ? realize() : Direct3D9Factory.WgxInvalidCallHResult;
@@ -320,7 +343,9 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer : IDisposabl
 
     private void BlendSpan(byte[] destination, int offset, uint count, int x, int y)
     {
-        if (_floating) { BlendFloatSpan(destination, offset, count, x, y); return; }
+        _context.Effects?.GenerateSpan(x, y, count);
+        if (_floating && _context.WorkingFormat == SoftwareImageWorkingFormat.Native)
+        { BlendFloatSpan(destination, offset, count, x, y); return; }
         if (_coverage is not null) { BlendAffineSpan(destination, offset, count, x, y); return; }
         long u = _uOrigin + ((long)x - _x) * _uIncrement;
         for (uint pixel = 0; pixel < count; pixel++, u += _uIncrement, offset += 4)

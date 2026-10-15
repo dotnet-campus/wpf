@@ -27,9 +27,10 @@ public sealed class GeneratedBrushResourceTests
         byte[] tile = GeneratedProtocolPacketWriter.WriteTileBrush(MilCommand.ImageBrush, 7, 1, new MilRectD(1, 2, 3, 4), new MilRectD(5, 6, 7, 8), 0.5, 2, 9);
 
         Assert.AreEqual(
-            (0x7Eu, 1u, 0.5, 2u, 5u, 0x7Fu, 24u, 0.25, 1f, 0x81u, 7u, 9u),
+            (0x7Eu, 1u, 0.5, 2u, 5u, 0x7Fu, 24u, 0.25, 0.5f, 0.25f, 0.75f, 1f, 0x81u, 7u, 9u),
             (BitConverter.ToUInt32(solid, 0), BitConverter.ToUInt32(solid, 4), BitConverter.ToDouble(solid, 8), BitConverter.ToUInt32(solid, 32), BitConverter.ToUInt32(solid, 44),
                 BitConverter.ToUInt32(linear, 0), BitConverter.ToUInt32(linear, 72), BitConverter.ToDouble(linear, 84), BitConverter.ToSingle(linear, 92),
+                BitConverter.ToSingle(linear, 96), BitConverter.ToSingle(linear, 100), BitConverter.ToSingle(linear, 104),
                 BitConverter.ToUInt32(tile, 0), BitConverter.ToUInt32(tile, 4), BitConverter.ToUInt32(tile, 144)));
     }
 

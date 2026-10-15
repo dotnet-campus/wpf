@@ -61,6 +61,13 @@ internal sealed unsafe class SoftwareImageRenderSession : IDisposable
         if (hr < 0) return hr;
         _width = Math.Min(w, width);
         _height = Math.Min(h, height);
+        ulong rowBytes = (ulong)_width * (floating ? 16u : 4u);
+        ulong required = _height == 0 ? 0 : (ulong)(_height - 1) * stride + rowBytes;
+        if ((_width != 0 && _height != 0 && pixels == null)
+            || _width > int.MaxValue || _height > int.MaxValue
+            || rowBytes > int.MaxValue || (ulong)_width * _height * (floating ? 16u : 4u) > int.MaxValue
+            || stride < rowBytes || required > size)
+            return Direct3D9Factory.InvalidArgumentHResult;
         _renderer = new(pixels, size, stride, _width, _height, floating);
         return 0;
     }

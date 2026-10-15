@@ -20,7 +20,7 @@ internal sealed class GeneratedTargetRegistry
         target.Release();
     }
 
-    internal int Render()
+    internal int Render(bool signalPresent = true)
     {
         GeneratedTargetResource[] targets = [.. _targets];
         foreach (GeneratedTargetResource target in targets) target.AddRef();
@@ -28,7 +28,7 @@ internal sealed class GeneratedTargetRegistry
         {
             foreach (GeneratedTargetResource target in targets)
             {
-                int result = target.Render();
+                int result = target.Render(signalPresent);
                 if (result < 0) return result;
             }
             return 0;

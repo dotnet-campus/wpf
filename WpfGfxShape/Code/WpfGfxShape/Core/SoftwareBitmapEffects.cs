@@ -83,13 +83,18 @@ internal sealed unsafe class SoftwareBitmapEffects : IDisposable
         return 0;
     }
 
+    internal void GenerateSpan(int x, int y, uint count)
+    {
+        foreach (var entry in _entries) entry.Mask?.GenerateSpan(x, y, count);
+    }
+
     internal uint Apply(uint pixel, int x, int y)
     {
         foreach (var entry in _entries)
         {
             int factor = entry.Mask is { } mask
                 ? (int)MathF.Round(mask.Alpha(x, y) * 255) * 257
-                : (int)MathF.Round(entry.Scale * 65536);
+                : (int)MathF.Floor(entry.Scale * 65536 + 0.5f);
             uint next = 0;
             for (int channel = 0; channel < 4; channel++)
                 next |= (uint)(((byte)(pixel >> (channel * 8)) * factor + 32768) >> 16) << (channel * 8);

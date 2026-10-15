@@ -1,0 +1,9 @@
+# source clip生产ABI输入验收
+
+复查确认BitmapRenderTargetTests.BitmapRealizer.cs已有直接设置bitmap brush+160四顶点、+200启用flag并消费生产AOT的测试，不需要另建Host。扩展4组：逆序顶点Pbgra32、逆序float半透明、目标外空交集、逆序目标外float；默认既有15组保持。
+
+定向19/19通过，包含effects首错、输出锁冲突失败与重试、primitive结束、bitmap读回及最终可重新加锁。空source clip全部像素0；逆序非空与原顺序同值。未修改生产算法或原版golden，未发布Native AOT。
+
+最终全量894通过1失败0跳过、总895，2秒；唯一失败仍原版校准。报告Tests/WpfGfxShape.ComAcceptance/TestResults/wpf-calibration-491c9de27c964034ab370c7639293ddf.json。TRX Tests/WpfGfxShape.ComAcceptance/TestResults/com-acceptance.trx。
+
+本轮只是直接ABI输入边界验收，不是完整source clip几何裁剪修复。新增轴对齐cases无法区分sample mask交集与原生几何裁剪，因此旋转/部分边界stroke的独立原版fixture仍必须完成；普通bitmap73、DrawingImage86差异未关闭。下一步应在同一生产测试中加入真正可区分两种算法的有限shape，再按原生ClipWithParallelogram修复，并联合realization/生命周期验收。不能把19组通过宣称原生几何合同关闭。

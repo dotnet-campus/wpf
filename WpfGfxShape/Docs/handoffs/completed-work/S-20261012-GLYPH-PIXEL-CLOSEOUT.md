@@ -1,0 +1,64 @@
+# Glyph generated软件像素消费者收口
+
+## 交付范围
+
+关闭本次generated软件离屏glyph方法族验收：真实IDWriteFont→FontFace、76字节命令与数组载荷、GlyphRunDrawing与直接DrawGlyphRun、DirectWrite analysis/alpha texture、中心子像素灰度/gamma、Pbgra32整数source-over、float HDR非限幅输出、glyph bounds、clip/opacity/translation、字体替换、目标锁失败重试、引用保活与关闭、自动创建handle的字体所有权。
+
+这是有明确范围的消费者闭环，不是整个glyphrunslave.cpp文件族Complete，不覆盖所有字体/复杂脚本/侧向与bidi组合、ClearType显示目标、动画quality cache、一般仿射及所有brush种类。阶段4 Active；阶段1–3 Closed，5–7 Pending；不能替换原库。
+
+## 新发现及根因修复
+
+首次完整运行现有DLL：1221通过/1既有失败/0跳过/1222总计，RunID c1c10d42-fe75-4ba6-b35f-bbed3e802c50，SHA F9709E206A06C2C85266ABE82E6C73F3BE1832A44380B07F64D0FB529D3C5C5C，报告wpf-calibration-804e0ac7400f4da3b92079102ca8d977.json。
+
+新增8个参数实例：glyph句柄释放后Drawing引用保活2项，通道/连接关闭后调用者bitmap像素存活4项，自动创建handle2项。自动创建handle真实验收导致测试主机崩溃，单独筛选同样复现；不是正常测试失败，也不是成功全量。根因：SameThreadChannel在router创建glyph之前判断transferred=false，ProcessCreate消费字体转移引用后finally ReleasePacket再次释放字体，留下悬空资源指针。修复为传输层先创建缺失glyph资源，确认实际接收者，再交router消费；创建失败保留首错并由传输层释放引用。未用额外AddRef掩盖重复释放。
+
+## 关闭与重入合同
+
+GlyphPixelTests真实生产COM验证：释放客户端glyph handle后两条Drawing/render-data引用继续呈现原版完整surface；DestroyChannel或Disconnect后调用者拥有的WIC bitmap仍保留原版完整surface。既有GlyphRunTests还验证open batch关闭释放真实字体、截断及替换。
+
+本次系统Arial/DirectWrite路径没有注册用户回调、回调descriptor或人为重入入口；DirectWrite调用本身不等于可任意回调用户代码。GeneratedGlyphAlpha借用face在外部调用前AddRef并保存数组快照，结束释放。原生glyphrunslave.cpp拥有realization/font引用，不能把原生内部realization调度误作公共回调。自定义字体loader不在本次范围。
+
+可合法触发的实际传输Dispose回调重入复用UceChannelTests.WhenTransportReleaseReentersThenRemainingReferencesAreReleasedOnce(false/true)，真实事件引用释放期间重入Commit/DestroyChannel，两个实例在最终定向及全量通过。未伪造glyph回调或修改原生源。
+
+## 发布记录
+
+两次发布均使用：dotnet publish WpfGfxShape/Code/WpfGfxShape/WpfGfxShape.csproj -c Release -r win-x64 -p:NoWarn=CA1416。
+
+- 发布1：所有权修复前，Release/win-x64 Native AOT成功；自动handle定向仍主机崩溃。该发布未取得独立SHA，不声称通过。
+- 发布2：SameThreadChannel所有权修复后，Release/win-x64 Native AOT成功，日志含Generating native code和publish输出；存在既有分析器警告，不宣称零警告。
+- 产物：WpfGfxShape/artifacts/publish/WpfGfxShape/Release/win-x64/wpfgfx_cor3.dll。
+- 发布2实际加载SHA256：38D2FA963A7666A995617ADB000737172FF9F433A48FE2709AFFB23C0B4050A0。
+
+## 最终验证身份（已回读）
+
+测试项目：WpfGfxShape/Tests/WpfGfxShape.ComAcceptance/WpfGfxShape.ComAcceptance.csproj，直接加载生产AOT，不引用生产托管程序集。
+
+定向filter：FullyQualifiedName~GlyphPixelTests|FullyQualifiedName~GlyphRunTests|FullyQualifiedName~WhenTransportReleaseReentersThenRemainingReferencesAreReleasedOnce。
+
+定向实际发现总数32，32通过/0失败/0跳过，RunID 3ba97665-f1ef-48b9-aa6a-9ad4e73b49f1。GlyphPixelTests 26实例、GlyphRunTests 4实例、真实通道回调重入2实例；新增8实例全部通过。定向TRX第2行在全量覆盖前已实际读取，不声称目前固定TRX仍保存定向。
+
+最终完整全量：1230总计，1229通过/1失败/0跳过，退出码1，RunID f4b49add-af5a-422d-bc5c-c989de5de142。TRX：WpfGfxShape/Tests/WpfGfxShape.ComAcceptance/TestResults/com-acceptance.trx。
+
+报告：WpfGfxShape/Tests/WpfGfxShape.ComAcceptance/TestResults/wpf-calibration-1531ed30aecb4ca2b799ff6de5866194.json。已实际读取报告头和TRX身份：AOT SHA如上；原版SHA 501A1CD67D51BB1663870B12AF0F8C0BA29B3D37B8B509BE896D2AAF32DB214A；参考SHA 98D740A895372A31DAF4EB234F3942E31A8C99A15D278F121DA84C36B585CE58。
+
+唯一失败仍CompositionTests.WhenTileParametersAreCalibratedThenPixelsMatchOriginalWpfMeasurements，float投影57/450，Direct Pbgra32 0/180，格式判定差57。没有新增最终失败，golden、HDR/1e10和严格阈值未改。不能称全绿；报告本身不提供float golden。
+
+## 最终定向方法清单
+
+命名空间WpfGfxShape.ComAcceptance。
+
+GlyphPixelTests：WhenGlyphRunDrawingIsPresentedThenWholeSurfaceMatchesIndependentOriginal；WhenDirectDrawGlyphRunIsPresentedThenWholeSurfaceMatchesIndependentOriginal；WhenGlyphTargetLockFailsThenRetryMatchesIndependentOriginal；WhenGlyphVisualIsTranslatedThenWholeSurfaceMatchesTranslatedOriginal；WhenGlyphClipIsScopedThenWholeSurfaceMatchesClippedOriginal；WhenGlyphBrushIsBlueThenWholeSurfaceMatchesOriginalChannelPermutation；WhenGlyphFontFaceIsReplacedThenPresentedPixelsRemainOriginal；WhenGlyphOpacityLayerIsScopedThenWholeSurfaceMatchesHalfOriginal；WhenGlyphBrushContainsFloatHdrThenDirectWriteCoveragePreservesUnclampedChannels；WhenGlyphsOverlapThenIntegerSourceOverMatchesNativeContract；WhenGlyphHandleIsReleasedThenDrawingReferencesPreserveOriginalPixels；WhenGlyphOwnerClosesThenCallerBitmapPreservesOriginalPixels；WhenGlyphCommandCreatesHandleThenWholeSurfaceMatchesIndependentOriginal。
+
+GlyphRunTests：WhenRealDirectWriteFontIsTransferredThenGlyphCreationAndReplacementSucceed；WhenGlyphPayloadIsTruncatedThenCommitReturnsMalformedPacket；WhenGlyphTransportRemainsOpenThenChannelDestroyReleasesRealFont。
+
+UceChannelTests：WhenTransportReleaseReentersThenRemainingReferencesAreReleasedOnce。
+
+## 实际修改文件与后续
+
+生产：Code/WpfGfxShape/Core/SameThreadChannel.cs。
+测试：Tests/WpfGfxShape.ComAcceptance/GlyphPixelTests.cs。
+文档：本文件；Docs/native-to-managed-file-map.md；Docs/handoffs/current-stable-baseline.md；Docs/handoffs/current-work-item.md；Docs/remaining-gap-closure-plan.md；Ledger/views/glyph-module-current.md。
+
+机器Ledger的RepairRequiredPartial与损坏JSONL不在本次修复范围；使用独立当前ledger视图同步方法映射和证据，不虚构机器Complete。
+
+本次优先完整收口glyph供顺序分派，没有实施D3DImage代码；下一生产大块为真实D3DImage interop：外部D3D9 surface/device→CInteropDeviceBitmap等价身份→factory/消费者→software fallback/bounds→availability callback/detach/device-loss及失败引用回收，禁止普通IWICBitmap冒充非虚C++对象。最终全量后仅写归档和状态文档，没有新增未验证代码。

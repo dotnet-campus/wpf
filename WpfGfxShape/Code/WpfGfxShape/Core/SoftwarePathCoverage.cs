@@ -6,15 +6,24 @@ internal sealed class SoftwarePathCoverage
 {
     private readonly List<((long X, long Y) A, (long X, long Y) B)> _edges = [];
     private readonly MilFillMode _fillRule;
+    private readonly List<MilPoint2D[]> _figures = [];
 
     private SoftwarePathCoverage(MilFillMode fillRule) => _fillRule = fillRule;
 
-    internal static bool TryCreateFigures(IEnumerable<MilPoint2D[]> figures, MilFillMode fillRule, out SoftwarePathCoverage? result)
+    internal static bool TryCreateFigures(IEnumerable<MilPoint2D[]> figures, MilFillMode fillRule, out SoftwarePathCoverage? result, Direct3D9SurfaceRect? clip = null)
     {
         result = null;
         var coverage = new SoftwarePathCoverage(fillRule);
-        foreach (var points in figures)
+        foreach (var figure in figures)
         {
+            foreach (var point in figure)
+                if (!double.IsFinite(point.X) || !double.IsFinite(point.Y)) return false;
+            coverage._figures.Add((MilPoint2D[])figure.Clone());
+            // Native clips quantized edges; clipping floating vertices first changes their slopes.
+            // Keep the original vertices whenever they fit the rasterizer's fixed-point range.
+            bool needsClipping = figure.Any(point => Math.Abs((point.X - 0.5) * 16) > 8388608
+                || Math.Abs((point.Y - 0.5) * 16) > 8388608);
+            var points = needsClipping && clip is { } bounds ? ClipFigure(figure, bounds) : figure;
             if (points.Length == 0) continue;
             if (!Quantize(points[0].X, points[0].Y, out var start)) return false;
             var previous = start;
@@ -28,6 +37,79 @@ internal sealed class SoftwarePathCoverage
         }
         result = coverage;
         return true;
+    }
+
+    internal bool TryClipParallelogram(MilPoint2D[] polygon, out SoftwarePathCoverage? result)
+    {
+        result = null;
+        if (_figures.Count == 0 && _edges.Count != 0) return false;
+        if (polygon.Length != 4 || polygon.Any(p => !double.IsFinite(p.X) || !double.IsFinite(p.Y))) return false;
+        double area = 0;
+        for (int i = 0; i < polygon.Length; i++)
+        {
+            var a = polygon[i]; var b = polygon[(i + 1) % polygon.Length];
+            area += a.X * b.Y - a.Y * b.X;
+        }
+        if (!double.IsFinite(area)) return false;
+        if (area == 0) return TryCreateFigures([], _fillRule, out result);
+        var figures = new List<MilPoint2D[]>();
+        foreach (var figure in _figures)
+        {
+            var points = figure;
+            for (int side = 0; side < polygon.Length && points.Length != 0; side++)
+            {
+                var a = polygon[side]; var b = polygon[(side + 1) % polygon.Length];
+                double Distance(MilPoint2D p) => Math.Sign(area) * ((b.X - a.X) * (p.Y - a.Y) - (b.Y - a.Y) * (p.X - a.X));
+                var output = new List<MilPoint2D>();
+                var previous = points[^1];
+                double previousDistance = Distance(previous);
+                foreach (var current in points)
+                {
+                    double distance = Distance(current);
+                    if (!double.IsFinite(distance) || !double.IsFinite(previousDistance)) return false;
+                    if ((distance >= 0) != (previousDistance >= 0))
+                    {
+                        double t = previousDistance / (previousDistance - distance);
+                        output.Add(new(previous.X + t * (current.X - previous.X), previous.Y + t * (current.Y - previous.Y)));
+                    }
+                    if (distance >= 0) output.Add(current);
+                    previous = current; previousDistance = distance;
+                }
+                points = output.ToArray();
+            }
+            figures.Add(points);
+        }
+        return TryCreateFigures(figures, _fillRule, out result);
+    }
+
+    private static MilPoint2D[] ClipFigure(MilPoint2D[] points, Direct3D9SurfaceRect clip)
+    {
+        if (clip.Right <= clip.Left || clip.Bottom <= clip.Top) return [];
+        for (int side = 0; side < 4 && points.Length != 0; side++)
+        {
+            bool vertical = side < 2, lower = (side & 1) == 0;
+            double bound = side switch { 0 => clip.Left, 1 => clip.Right, 2 => clip.Top, _ => clip.Bottom };
+            var output = new List<MilPoint2D>();
+            var previous = points[^1];
+            double a = vertical ? previous.X : previous.Y;
+            bool previousInside = lower ? a >= bound : a <= bound;
+            foreach (var current in points)
+            {
+                double b = vertical ? current.X : current.Y;
+                bool inside = lower ? b >= bound : b <= bound;
+                if (inside != previousInside)
+                {
+                    double value = vertical
+                        ? (previous.Y * (bound - b) - current.Y * (bound - a)) / (a - b)
+                        : (previous.X * (bound - b) - current.X * (bound - a)) / (a - b);
+                    output.Add(vertical ? new(bound, value) : new(value, bound));
+                }
+                if (inside) output.Add(current);
+                previous = current; a = b; previousInside = inside;
+            }
+            points = output.ToArray();
+        }
+        return points;
     }
 
     internal static bool TryCreatePolygon(ReadOnlySpan<MilPoint2D> points, GeneratedImageTransform transform,
@@ -328,7 +410,8 @@ internal sealed class SoftwarePathCoverage
         double x = (deviceX - 0.5) * 16, y = (deviceY - 0.5) * 16;
         point = default;
         if (!double.IsFinite(x) || !double.IsFinite(y) || Math.Abs(x) > 8388608 || Math.Abs(y) > 8388608) return false;
-        point = (((long)Math.Round(x) + 8) * 8, ((long)Math.Round(y) + 8) * 8);
+        // TransformRasterizerPointsTo28_4 uses CFloatFPU::Round: half integers round up.
+        point = (((long)Math.Floor(x + 0.5) + 8) * 8, ((long)Math.Floor(y + 0.5) + 8) * 8);
         return true;
     }
 

@@ -66,7 +66,7 @@ internal static unsafe partial class BitmapFormatConverter
         finally { Direct3D9Factory.Release(value); Direct3D9Factory.Release(factory); }
     }
 
-    internal static int Create(nint source, Guid format, out nint converter)
+    internal static int Create(nint source, Guid format, out nint converter, nint palette = 0)
     {
         converter = 0;
         Guid classId = new("cacaf262-9370-4615-a13b-9f5539da4c0a");
@@ -80,7 +80,7 @@ internal static unsafe partial class BitmapFormatConverter
             result = create(factory, &value);
             if (result < 0) return result;
             var initialize = (delegate* unmanaged[Stdcall]<nint, nint, Guid*, uint, nint, double, uint, int>)(*(void***)value)[8];
-            result = initialize(value, source, &format, 0, 0, 0, 0);
+            result = initialize(value, source, &format, 0, palette, 0, 0);
             if (result < 0) return result;
             converter = value;
             value = 0;

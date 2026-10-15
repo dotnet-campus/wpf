@@ -11,8 +11,11 @@ internal static class SoftwareStrokeContours
 
     internal readonly record struct Segment(MilPoint2D[] Points, bool Smooth, bool Gap);
 
-    internal static bool TryRead(GeneratedPathGeometryResource path, out List<Figure> figures, bool preserveGaps = false)
+    internal static bool TryRead(GeneratedPathGeometryResource path, out List<Figure> figures, bool preserveGaps = false,
+        bool allowNonFinite = false)
     {
+        bool Add(List<MilPoint2D> points, GeneratedImageTransform matrix, MilPoint2D value)
+            => SoftwareStrokeContours.Add(points, matrix, value, allowNonFinite);
         figures = [];
         if (!GeneratedImageTransform.TryResolve(path.Transform, out var transform)) return false;
         if (path.Figures.Length == 0) return true;
@@ -32,7 +35,7 @@ internal static class SoftwareStrokeContours
                 for (int i = 0; i < values.Length; i++)
                 {
                     var p = transform.Apply(values[i].X, values[i].Y);
-                    if (!float.IsFinite((float)p.X) || !float.IsFinite((float)p.Y)) return false;
+                    if (!allowNonFinite && (!float.IsFinite((float)p.X) || !float.IsFinite((float)p.Y))) return false;
                     values[i] = new((float)p.X, (float)p.Y);
                 }
                 rawSegments.Add(new(values, smooth, gap));
@@ -168,13 +171,13 @@ internal static class SoftwareStrokeContours
         return true;
     }
 
-    private static bool Add(List<MilPoint2D> points, GeneratedImageTransform transform, MilPoint2D value)
+    private static bool Add(List<MilPoint2D> points, GeneratedImageTransform transform, MilPoint2D value,
+        bool allowNonFinite = false)
     {
         var p = transform.Apply(value.X, value.Y);
-        if (!double.IsFinite(p.X) || !double.IsFinite(p.Y)) return false;
         // GetShapeDataCore stores REAL coordinates before widening; do not raster-quantize the centerline.
         var next = new MilPoint2D((float)p.X, (float)p.Y);
-        if (!float.IsFinite((float)p.X) || !float.IsFinite((float)p.Y)) return false;
+        if (!allowNonFinite && (!float.IsFinite((float)p.X) || !float.IsFinite((float)p.Y))) return false;
         if (points.Count == 0 || points[^1] != next) points.Add(next);
         return true;
     }

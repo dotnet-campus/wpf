@@ -1,0 +1,40 @@
+<Project>
+  <PropertyGroup>
+    <ComAcceptancePackageDirectory>$(WpfGfxShapeArtifactsRoot)com-acceptance-package\</ComAcceptancePackageDirectory>
+  </PropertyGroup>
+  <Target Name="DisableAcceptanceCoverageRegistration" BeforeTargets="_GenerateSelfRegisteredExtensionsFileInputCache;_GenerateTestingPlatformEntryPointFileInputCache">
+    <ItemGroup>
+      <TestingPlatformBuilderHook Remove="83B7B6C3-DC9C-4F30-8323-A3E1EBA7F65B;98058041-B5B6-4A75-9834-58E6DF796A22" />
+    </ItemGroup>
+  </Target>
+  <Target Name="PackageComAcceptance" AfterTargets="Build" Condition="'$(ComAcceptanceSandbox)' == 'true' and '$(SelfContained)' != 'true'">
+    <Error Condition="!Exists('$(AotDllPath)')" Text="$(AotDllPath)" />
+    <RemoveDir Directories="$(ComAcceptancePackageDirectory)" />
+    <ItemGroup>
+      <AcceptancePackageFile Include="$(TargetDir)WpfGfxShape.ComAcceptance.exe;$(TargetPath);$(TargetDir)WpfGfxShape.ComAcceptance.deps.json;$(TargetDir)WpfGfxShape.ComAcceptance.runtimeconfig.json" />
+      <AcceptancePackageFile Include="$(TargetDir)Microsoft.Testing.Platform.dll;$(TargetDir)Microsoft.Testing.Extensions.TrxReport.dll;$(TargetDir)Microsoft.Testing.Extensions.TrxReport.Abstractions.dll;$(TargetDir)Microsoft.Testing.Extensions.VSTestBridge.dll;$(TargetDir)Microsoft.VisualStudio.TestPlatform.ObjectModel.dll;$(TargetDir)Microsoft.TestPlatform.AdapterUtilities.dll;$(TargetDir)MSTest.TestAdapter.dll;$(TargetDir)MSTestAdapter.PlatformServices.dll;$(TargetDir)MSTest.TestFramework.dll;$(TargetDir)MSTest.TestFramework.Extensions.dll;$(TargetDir)Microsoft.TestPlatform.CoreUtilities.dll;$(TargetDir)Microsoft.TestPlatform.PlatformAbstractions.dll;$(TargetDir)Microsoft.TestPlatform.Utilities.dll;$(TargetDir)Newtonsoft.Json.dll;$(TargetDir)Microsoft.Testing.Extensions.MSBuild.dll" />
+      <AcceptanceReferenceData Include="$(TargetDir)ReferenceData\*.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AcceptancePackageFile)" DestinationFolder="$(ComAcceptancePackageDirectory)" />
+    <Copy SourceFiles="@(AcceptanceReferenceData)" DestinationFolder="$(ComAcceptancePackageDirectory)ReferenceData" />
+    <Copy SourceFiles="$(AotDllPath)" DestinationFolder="$(ComAcceptancePackageDirectory)Native" />
+    <GetFileHash Files="$(AotDllPath)" Algorithm="SHA256">
+      <Output TaskParameter="Items" ItemName="AcceptanceAotIdentity" />
+    </GetFileHash>
+    <WriteLinesToFile File="$(ComAcceptancePackageDirectory)aot.sha256" Lines="@(AcceptanceAotIdentity->'%(FileHash)')" Overwrite="true" />
+    <WriteLinesToFile File="$(ComAcceptancePackageDirectory)package-files.txt" Lines="@(AcceptancePackageFile->'%(Filename)%(Extension)');@(AcceptanceReferenceData->'ReferenceData/%(Filename)%(Extension)');Native/wpfgfx_cor3.dll;aot.sha256;package-files.txt" Overwrite="true" />
+  </Target>
+  <Target Name="PackageSelfContainedComAcceptance" AfterTargets="Publish" Condition="'$(ComAcceptanceSandbox)' == 'true' and '$(SelfContained)' == 'true'">
+    <Error Condition="!Exists('$(PublishDir)Native\wpfgfx_cor3.dll')" Text="$(PublishDir)Native\wpfgfx_cor3.dll" />
+    <RemoveDir Directories="$(ComAcceptancePackageDirectory)" />
+    <ItemGroup>
+      <AcceptancePublishedFile Include="$(PublishDir)**\*" Exclude="$(PublishDir)**\*.pdb;$(PublishDir)Results\**;$(PublishDir)TestResults\**;$(PublishDir)CodeCoverage\**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AcceptancePublishedFile)" DestinationFiles="@(AcceptancePublishedFile->'$(ComAcceptancePackageDirectory)%(RecursiveDir)%(Filename)%(Extension)')" />
+    <GetFileHash Files="$(PublishDir)Native\wpfgfx_cor3.dll" Algorithm="SHA256">
+      <Output TaskParameter="Items" ItemName="AcceptancePublishedIdentity" />
+    </GetFileHash>
+    <WriteLinesToFile File="$(ComAcceptancePackageDirectory)aot.sha256" Lines="@(AcceptancePublishedIdentity->'%(FileHash)')" Overwrite="true" />
+    <WriteLinesToFile File="$(ComAcceptancePackageDirectory)package-files.txt" Lines="@(AcceptancePublishedFile->'%(RecursiveDir)%(Filename)%(Extension)'->Replace('\', '/'));aot.sha256;package-files.txt" Overwrite="true" />
+  </Target>
+</Project>

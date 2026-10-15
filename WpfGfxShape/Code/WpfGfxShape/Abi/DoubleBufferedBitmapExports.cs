@@ -48,7 +48,7 @@ internal static unsafe class DoubleBufferedBitmapExports
             if (result < 0) return result;
             if (*format != frontFormat)
             {
-                result = BitmapFormatConverter.Create(back, frontFormat, out converter);
+                result = BitmapFormatConverter.Create(back, frontFormat, out converter, palette);
                 if (result < 0) return result;
             }
             void** table = Table.Address;
@@ -117,10 +117,15 @@ internal static unsafe class DoubleBufferedBitmapExports
         return 0;
     }
 
-    internal static nint AcquireBitmapSource(nint instance, bool useBackBuffer)
+    internal static nint GetBitmapSourceNoAddRef(nint instance, bool useBackBuffer)
     {
         Instance* self = (Instance*)instance;
-        nint source = useBackBuffer ? (self->Converter != 0 ? self->Converter : self->Back) : self->Front;
+        return useBackBuffer ? (self->Converter != 0 ? self->Converter : self->Back) : self->Front;
+    }
+
+    internal static nint AcquireBitmapSource(nint instance, bool useBackBuffer)
+    {
+        nint source = GetBitmapSourceNoAddRef(instance, useBackBuffer);
         ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)source)[1])(source);
         return source;
     }

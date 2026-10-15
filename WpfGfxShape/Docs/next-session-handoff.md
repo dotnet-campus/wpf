@@ -1,22 +1,19 @@
-# 下一轮交接：继续推进 wpfgfx 代码翻译
+# 当前唯一恢复入口
 
-> 本文件是当前唯一权威入口，只保存恢复顺序和文档导航，不再累积完成历史。
+本页仅导航，不保存 SHA、测试计数、阶段状态或历史下一步。
 
 ## 恢复顺序
 
-1. 阅读 [`handoffs/current-execution-rules.md`](handoffs/current-execution-rules.md)，确认每轮执行规则与禁止扩展边界。
-2. 阅读 [`handoffs/current-stable-baseline.md`](handoffs/current-stable-baseline.md)，确认当前阶段、稳定能力和最近验证基线。
-3. 阅读 [`handoffs/current-work-item.md`](handoffs/current-work-item.md)，执行其中的唯一下一动作。
-4. 需要中长期缺口顺序、阶段状态和剩余大项时阅读 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md)。
-5. 需要新完成事实时查询 [`handoffs/completed-work/`](handoffs/completed-work/)；旧完成归档保留在 [`handoffs/progress-completed-work.md`](handoffs/progress-completed-work.md)，HW render-target 旧历史见 [`handoffs/progress-hw-rendertarget.md`](handoffs/progress-hw-rendertarget.md)。
+1. [执行规则](handoffs/current-execution-rules.md)：总计划驱动、监督委派、工具和生产边界。
+2. [唯一当前状态源](handoffs/current-stable-baseline.md)：已测身份、失败、阶段状态及证据适用范围。
+3. [当前工作项](handoffs/current-work-item.md)：恢复点、完整模块条件和本轮权限。
+4. [总计划](remaining-gap-closure-plan.md)：七阶段完成条件及主题合同索引。
+5. [全域文档索引](README.md)：按现行、决策、方法、历史、冻结、撤销分层。
 
-## 维护规则
+## 使用边界
 
-- 本文件保持短小，只维护导航和恢复顺序。
-- 当前规则只写入 `current-execution-rules.md`。
-- 当前稳定摘要和验证基线只写入 `current-stable-baseline.md`；“最近验证基线”只保留最新一份，更新时整节替换，不追加旧验证、冻结历史或旧下一动作。历史发布与验收事实查询 `handoffs/completed-work/` 中对应的独立归档。
-- 阶段状态、完成条件和剩余大项只写入 `remaining-gap-closure-plan.md`，不维护缺少稳定分母的整体完成百分比。
-- 唯一下一动作只写入 `current-work-item.md`。
-- 每次维护 `current-work-item.md` 的“唯一下一动作”时，必须选择一个较大的、可独立验收的生产任务：优先完整原生方法、紧密耦合的方法族、完整生命周期或可端到端验证的生产闭环。不得把同一闭环连续拆成“仅定位”“仅计数”“仅分配”“仅转换”“仅接线”之类的小任务；只有遇到已记录的明确技术阻塞、原生证据缺失或风险边界时才允许缩小，并必须在工作切片中写明阻塞原因、缩小范围和后续合并闭环。
-- 每个完成切片在 `handoffs/completed-work/` 中创建一个新的独立 Markdown 文件，不得继续堆积在当前入口、当前工作切片或单一长历史文档中。
-- 旧 `progress-completed-work.md` 保留原位作为冻结历史，不拆分、不迁移、不再追加；新文件命名和内容规则见 `handoffs/completed-work/README.md`。
+- 实测只证明对应产物和范围；历史 Green 不升级当前状态。
+- 不从历史页的“最新/下一步”恢复工作。
+- DLL 进程寿命驻留规则只认 [DEC-0004](decisions/DEC-0004-process-lifetime-module.md)。
+- [外部输入清单](all-completion-external-prerequisites.md)只维护交付内容，不代替阶段验收。
+- 本轮为文档治理，不是生产交付；[治理报告](docs-governance-report.md)列范围与未核验项。

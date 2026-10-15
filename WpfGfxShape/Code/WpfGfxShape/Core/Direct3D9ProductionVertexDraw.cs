@@ -69,11 +69,12 @@ internal sealed class Direct3D9ProductionVertexDraw
                 Direct3D9BuilderPrimitiveKind.LineList => Primitivetype.Linelist,
                 _ => throw new InvalidOperationException("Unsupported production primitive kind."),
             };
-            return _device.DrawPrimitiveUp(
+            result = _device.DrawPrimitiveUp(
                 primitiveType,
                 primitiveCount,
                 vertexData,
                 (uint) Unsafe.SizeOf<Direct3D9ExpandedVertex>());
+            return result;
         }
     }
 }

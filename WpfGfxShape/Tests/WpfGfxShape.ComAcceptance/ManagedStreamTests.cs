@@ -17,8 +17,7 @@ public sealed unsafe partial class ManagedStreamTests
     [TestInitialize]
     public void LoadPublishedLibrary()
     {
-        string path = typeof(ManagedStreamTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-            .Single(attribute => attribute.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         using (var file = File.OpenRead(path))
         using (var pe = new PEReader(file))
         {

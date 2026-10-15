@@ -17,8 +17,7 @@ public sealed unsafe class EventProxyTests
     public void LoadPublishedLibrary()
     {
         Assert.IsTrue(OperatingSystem.IsWindows());
-        string path = typeof(EventProxyTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-            .Single(attribute => attribute.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         Assert.IsTrue(File.Exists(path), path);
         using (var stream = File.OpenRead(path))
         using (var pe = new PEReader(stream))
@@ -414,6 +413,41 @@ public sealed unsafe class EventProxyTests
         Assert.AreEqual(1, state.Disposals);
     }
 
+    [TestMethod]
+    public void WhenOneCallbackIsBlockedThenAnotherCallbackCompletesOutsideRegistrationLock()
+    {
+        using var state = new ConcurrentState();
+        GCHandle root = GCHandle.Alloc(state);
+        nint instance = CreateConcurrent(root);
+        state.Instance = instance;
+        state.BlockCallback = true;
+        Task<int>? first = null;
+        Task<int>? second = null;
+        try
+        {
+            first = Task.Run(() => Raise(instance, null, 0));
+            Assert.IsTrue(state.Entered.Wait(TimeSpan.FromSeconds(5)), "First callback did not enter.");
+            second = Task.Run(() => Raise(instance, null, 0));
+            Assert.IsTrue(second.Wait(TimeSpan.FromSeconds(5)), "Second callback waited for the first callback lock.");
+            Assert.AreEqual(0, second.Result);
+        }
+        finally
+        {
+            state.Continue.Set();
+            try
+            {
+                Assert.IsTrue(first is null || first.Wait(TimeSpan.FromSeconds(20)));
+                Assert.IsTrue(second is null || second.Wait(TimeSpan.FromSeconds(20)));
+            }
+            finally
+            {
+                Release(instance);
+                root.Free();
+            }
+        }
+        Assert.AreEqual((2, 1, 0, 0), (state.Calls, state.Disposals, state.Errors, state.Active));
+    }
+
     private nint CreateConcurrent(GCHandle root)
     {
         Descriptor descriptor = new() { Dispose = &OnConcurrentDispose, Raise = &OnConcurrentRaise, Handle = (nuint)GCHandle.ToIntPtr(root) };
@@ -452,15 +486,15 @@ public sealed unsafe class EventProxyTests
     private static int OnConcurrentRaise(Descriptor* descriptor, byte* bytes, uint length)
     {
         var state = (ConcurrentState)GCHandle.FromIntPtr((nint)descriptor->Handle).Target!;
-        if (Interlocked.Increment(ref state.Active) != 1) Interlocked.Increment(ref state.Errors);
-        Interlocked.Increment(ref state.Calls);
+        Interlocked.Increment(ref state.Active);
+        int call = Interlocked.Increment(ref state.Calls);
         Guid iid = new("00000000-0000-0000-C000-000000000046");
         nint identity = 0;
         int result = Query(state.Instance, &iid, &identity);
         if (result != 0 || identity != state.Instance) Interlocked.Increment(ref state.Errors);
         Release(identity);
         state.Entered.Set();
-        if (state.BlockCallback && !state.Continue.Wait(TimeSpan.FromSeconds(15))) Interlocked.Increment(ref state.Errors);
+        if (state.BlockCallback && call == 1 && !state.Continue.Wait(TimeSpan.FromSeconds(15))) Interlocked.Increment(ref state.Errors);
         Interlocked.Decrement(ref state.Active);
         return 0;
     }

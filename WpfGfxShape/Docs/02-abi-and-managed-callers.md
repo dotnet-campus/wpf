@@ -125,21 +125,8 @@
 
 实际阶段顺序以 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 为准。
 
-## 10. 当前状态
+## 10. 状态与承载边界
 
-已具备：
-
-- Native AOT shared-library probe；
-- 托管 ABI Host 和集成测试；
-- 大量内部 D3D9 COM `Stdcall` 调用与单元/组件回归。
-
-尚未具备：
-
-- 106/107 生产导出的完整实现和机器 manifest；
-- 完整 COM/factory；
-- connection/channel/resource/UCE ABI；
-- 原 DLL 与候选 DLL 的完整 PE/资源/行为差分；
-- ARM64/x86 完整架构验证；
-- PresentationCore E2E。
-
-当前 ABI 测试通过只证明 probe 承载，不代表候选库可替换原 `wpfgfx_cor3.dll`。
+本文只维护静态 ABI/调用方合同，不维护生产实现清单。当前身份与有限验收见[状态源](handoffs/current-stable-baseline.md)。
+生产 COM 验收由唯一 ComAcceptance 项目直接加载生产 AOT DLL，见[生产测试方法](com-nativeaot-testing-method.md)；旧 probe/ABI Host 只证明机制，不是生产缺口或替代验收。
+完整 PE/资源/行为差分、COM/factory、connection/channel/resource/UCE、架构与 PresentationCore E2E 均按[总计划](remaining-gap-closure-plan.md)的完整条件验收；不得把已有有限实现描述为整体尚未创建，也不得由有限通过授予替换资格。

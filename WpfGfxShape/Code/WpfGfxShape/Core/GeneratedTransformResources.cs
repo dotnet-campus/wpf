@@ -314,6 +314,7 @@ internal sealed class GeneratedRotateTransformResource : GeneratedDependencyReso
 internal sealed class GeneratedMatrixTransformResource : GeneratedDependencyResource
 {
     internal GeneratedMatrixTransformResource() : base(MilResourceType.MatrixTransform) { }
+    internal static GeneratedMatrixTransformResource CreateStatic(MilMatrix3x2D value) => new() { Value = value };
     internal MilMatrix3x2D Value { get; private set; }
     internal GeneratedProtocolResource? Animation { get; private set; }
 

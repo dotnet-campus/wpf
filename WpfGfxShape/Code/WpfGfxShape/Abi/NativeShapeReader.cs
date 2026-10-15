@@ -4,7 +4,8 @@ namespace WpfGfxShape.Abi;
 
 internal static unsafe class NativeShapeReader
 {
-    internal static int Capture(nint shape, GeneratedImageTransform transform, out SoftwareImageCoverage? coverage)
+    internal static int Capture(nint shape, GeneratedImageTransform transform, out SoftwareImageCoverage? coverage,
+        Direct3D9SurfaceRect? clip = null)
     {
         coverage = null;
         if (shape == 0) return 0;
@@ -68,7 +69,7 @@ internal static unsafe class NativeShapeReader
             }
             figures.Add(points.ToArray());
         }
-        if (!SoftwarePathCoverage.TryCreateFigures(figures, fill, out var path)) return Direct3D9Factory.InvalidArgumentHResult;
+        if (!SoftwarePathCoverage.TryCreateFigures(figures, fill, out var path, clip)) return Direct3D9Factory.InvalidArgumentHResult;
         if (path is null) return Direct3D9Factory.UnexpectedHResult;
         coverage = new(path);
         return 0;

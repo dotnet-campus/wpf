@@ -18,7 +18,7 @@ public sealed unsafe partial class CompositionEffectsTests
     [DataRow(26u, 0.5, 0u, -1f, 0.5)]
     public void WhenOpacityLayerEndsThenProductionEffectScalesWholeGroup(uint format, double opacity, uint expected, float maskAlpha, double outerOpacity = 1)
     {
-        string path = typeof(CompositionEffectsTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
         var connect = (delegate* unmanaged[Stdcall]<byte, nint*, int>)NativeLibrary.GetExport(module, "WgxConnection_Create");
         var disconnect = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "WgxConnection_Disconnect");
@@ -81,7 +81,7 @@ public sealed unsafe partial class CompositionEffectsTests
                 Assert.AreEqual(0, resource(channel, 75, &brush));
                 byte* brushPacket = stackalloc byte[48]; new Span<byte>(brushPacket, 48).Clear();
                 *(uint*)brushPacket = 0x7e; *(uint*)(brushPacket + 4) = brush;
-                *(double*)(brushPacket + 8) = 1; *(float*)(brushPacket + 16) = maskAlpha;
+                *(double*)(brushPacket + 8) = 1; *(float*)(brushPacket + 28) = maskAlpha;
                 Assert.AreEqual(0, send(brushPacket, 48, 0, channel));
                 bind[0] = 0x23; bind[1] = visual; bind[2] = brush;
                 Assert.AreEqual(0, send(bind, 12, 0, channel));
@@ -117,7 +117,7 @@ public sealed unsafe partial class CompositionEffectsTests
                 Assert.AreEqual(0, send(animatedOpacity, 16, 0, channel));
                 byte* animatedBrush = stackalloc byte[48]; new Span<byte>(animatedBrush, 48).Clear();
                 *(uint*)animatedBrush = 0x7e; *(uint*)(animatedBrush + 4) = maskBrush;
-                *(double*)(animatedBrush + 8) = 1; *(float*)(animatedBrush + 16) = maskAlpha;
+                *(double*)(animatedBrush + 8) = 1; *(float*)(animatedBrush + 28) = maskAlpha;
                 *(uint*)(animatedBrush + 32) = opacityResource;
                 Assert.AreEqual(0, send(animatedBrush, 48, 0, channel));
                 Assert.AreEqual(0, close(channel)); Assert.AreEqual(0, commit(channel));
@@ -150,7 +150,7 @@ public sealed unsafe partial class CompositionEffectsTests
                 Assert.AreEqual(0, resource(channel, 50, &colorResource));
                 byte* animatedColor = stackalloc byte[24]; new Span<byte>(animatedColor, 24).Clear();
                 *(uint*)animatedColor = 0x0f; *(uint*)(animatedColor + 4) = colorResource;
-                *(float*)(animatedColor + 12) = 1;
+                *(float*)(animatedColor + 8) = 1;
                 Assert.AreEqual(0, send(animatedColor, 24, 0, channel));
                 *(uint*)(animatedBrush + 44) = colorResource;
                 Assert.AreEqual(0, send(animatedBrush, 48, 0, channel));
@@ -158,19 +158,19 @@ public sealed unsafe partial class CompositionEffectsTests
                 WritePixel(output, format, Vector4.Zero, 0);
                 Assert.AreEqual(0, present(connection));
                 AssertTransparent(output, format);
-                *(float*)(animatedColor + 8) = float.NaN;
+                *(float*)(animatedColor + 20) = float.NaN;
                 Assert.AreEqual(0, send(animatedColor, 24, 0, channel));
                 Assert.AreEqual(0, close(channel)); Assert.AreEqual(0, commit(channel));
                 Assert.AreEqual(unchecked((int)0x80004001), present(connection));
                 AssertTransparent(output, format);
-                *(float*)(animatedColor + 8) = maskAlpha;
+                *(float*)(animatedColor + 20) = maskAlpha;
                 Assert.AreEqual(0, send(animatedColor, 24, 0, channel));
                 Assert.AreEqual(0, close(channel)); Assert.AreEqual(0, commit(channel));
                 Assert.AreEqual(0, present(connection));
                 AssertMaskedPixel(output, format, expected, opacity, maskAlpha);
                 *(uint*)(animatedBrush + 44) = 0;
                 Assert.AreEqual(0, send(animatedBrush, 48, 0, channel));
-                *(float*)(animatedColor + 8) = 0;
+                *(float*)(animatedColor + 20) = 0;
                 Assert.AreEqual(0, send(animatedColor, 24, 0, channel));
                 Assert.AreEqual(0, close(channel)); Assert.AreEqual(0, commit(channel));
                 WritePixel(output, format, Vector4.Zero, 0);

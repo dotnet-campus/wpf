@@ -76,6 +76,59 @@ internal sealed class Direct3D9DeviceManager : IDisposable
     private readonly List<Direct3D9Device> _unusableDevices = [];
     private readonly HashSet<Direct3D9Device> _lostDevices = [];
     private readonly List<Action<uint, bool>> _adapterStatusListeners = [];
+    private readonly Queue<AdapterStatusNotification> _pendingAdapterNotifications = [];
+    private int _managerLockDepth;
+
+    private sealed record AdapterStatusNotification(uint Adapter, bool Valid, Action<uint, bool>[] Listeners)
+    {
+        internal void Dispatch()
+        {
+            foreach (Action<uint, bool> listener in Listeners) listener(Adapter, Valid);
+        }
+    }
+
+    private sealed class ManagerLock : IDisposable
+    {
+        private readonly Direct3D9DeviceManager _manager;
+
+        internal ManagerLock(Direct3D9DeviceManager manager)
+        {
+            _manager = manager;
+            Monitor.Enter(manager._syncRoot);
+            manager._managerLockDepth++;
+        }
+
+        public void Dispose()
+        {
+            AdapterStatusNotification[] notifications = [];
+            try
+            {
+                // Capture before releasing the outermost lock so another operation cannot steal this batch.
+                if (--_manager._managerLockDepth == 0 && _manager._pendingAdapterNotifications.Count != 0)
+                {
+                    notifications = [.. _manager._pendingAdapterNotifications];
+                    _manager._pendingAdapterNotifications.Clear();
+                }
+            }
+            finally { Monitor.Exit(_manager._syncRoot); }
+            foreach (AdapterStatusNotification notification in notifications) notification.Dispatch();
+        }
+    }
+
+    private ManagerLock EnterManagerLock() => new(this);
+    private static readonly object InteropListenersGate = new();
+    private static readonly List<Action<uint, bool>> InteropListeners = [];
+
+    internal static void AddInteropAdapterStatusListener(Action<uint, bool> listener)
+    {
+        ArgumentNullException.ThrowIfNull(listener);
+        lock (InteropListenersGate) InteropListeners.Add(listener);
+    }
+
+    internal static void RemoveInteropAdapterStatusListener(Action<uint, bool> listener)
+    {
+        lock (InteropListenersGate) InteropListeners.Remove(listener);
+    }
     private Direct3D9DisplaySet _latestDisplaySet;
     private Direct3D9DisplaySet? _displaySet;
     private Direct3D9DisplaySet? _nextDisplaySet;
@@ -135,7 +188,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
     {
         get
         {
-            lock (_syncRoot)
+            using (EnterManagerLock())
             {
                 return _usableDevices.Count;
             }
@@ -146,7 +199,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
     {
         get
         {
-            lock (_syncRoot)
+            using (EnterManagerLock())
             {
                 return _unusableDevices.Count;
             }
@@ -155,22 +208,22 @@ internal sealed class Direct3D9DeviceManager : IDisposable
 
     internal Direct3D9Device CreateDevice(Direct3D9DeviceCreationParameters creationParameters)
     {
-        Direct3D9Device device = CreateInitializedDevice(creationParameters, notifyAdapterValid: true);
-        try
+        using (EnterManagerLock())
         {
-            CheckBackBufferRenderTargetFormat(device, creationParameters.PresentParameters.BackBufferFormat);
-            lock (_syncRoot)
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Direct3D9Device device = CreateInitializedDevice(creationParameters);
+            try
             {
+                CheckBackBufferRenderTargetFormat(device, creationParameters.PresentParameters.BackBufferFormat);
                 ObjectDisposedException.ThrowIf(_isDisposed, this);
                 _usableDevices.Add(device);
+                return device;
             }
-
-            return device;
-        }
-        catch
-        {
-            device.Dispose();
-            throw;
+            catch
+            {
+                device.Dispose();
+                throw;
+            }
         }
     }
 
@@ -251,7 +304,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
 
     internal Direct3D9Device GetSoftwareDevice()
     {
-        lock (_syncRoot)
+        using (EnterManagerLock())
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
 
@@ -264,7 +317,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
                     return _softwareDevice;
                 }
 
-                Direct3D9Device device = CreateInitializedDevice(ComposeSoftwareDeviceCreationParameters());
+                Direct3D9Device device = CreateInitializedDevice(ComposeSoftwareDeviceCreationParameters(), notifyAdapter: false);
                 _softwareDevice = device;
                 return device;
             }
@@ -288,7 +341,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
 
     internal bool DoesWindowedHardwareDeviceExist(uint adapterOrdinal)
     {
-        lock (_syncRoot)
+        using (EnterManagerLock())
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
 
@@ -331,7 +384,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
         ref Direct3D9DeviceCreationParameters creationParameters,
         out bool deviceCreated)
     {
-        lock (_syncRoot)
+        using (EnterManagerLock())
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
             Direct3D9Device? device = FindUsableDevice(creationParameters);
@@ -351,7 +404,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
         ArgumentNullException.ThrowIfNull(unusableDevice);
 
         Direct3D9DeviceCreationParameters creationParameters;
-        lock (_syncRoot)
+        using (EnterManagerLock())
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
             if (!_unusableDevices.Contains(unusableDevice))
@@ -377,7 +430,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
         ArgumentNullException.ThrowIfNull(oldDisplaySet);
         ArgumentNullException.ThrowIfNull(newDisplaySet);
 
-        lock (_syncRoot)
+        using (EnterManagerLock())
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
             if (ReferenceEquals(oldDisplaySet, _latestDisplaySet))
@@ -390,24 +443,24 @@ internal sealed class Direct3D9DeviceManager : IDisposable
                 return;
             }
 
-            while (_usableDevices.Count > 0)
-            {
-                Direct3D9Device device = _usableDevices[^1];
-                using Direct3D9DeviceEntryGuard deviceEntry = new(device);
-                device.MarkUnusable();
-            }
-
-            _softwareDevice?.MarkUnusable();
-
             _displaySet = null;
             _nextDisplaySet = newDisplaySet;
         }
+
+        Direct3D9Device[] devices;
+        using (EnterManagerLock()) devices = [.. _usableDevices.AsEnumerable().Reverse()];
+        foreach (Direct3D9Device device in devices)
+        {
+            using Direct3D9DeviceEntryGuard deviceEntry = new(device);
+            device.MarkUnusable();
+        }
+        _softwareDevice?.MarkUnusable();
     }
 
     internal void AddAdapterStatusListener(Action<uint, bool> listener)
     {
         ArgumentNullException.ThrowIfNull(listener);
-        lock (_syncRoot)
+        using (EnterManagerLock())
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
             _adapterStatusListeners.Add(listener);
@@ -417,15 +470,14 @@ internal sealed class Direct3D9DeviceManager : IDisposable
     internal void RemoveAdapterStatusListener(Action<uint, bool> listener)
     {
         ArgumentNullException.ThrowIfNull(listener);
-        lock (_syncRoot)
+        using (EnterManagerLock())
         {
             _adapterStatusListeners.Remove(listener);
         }
     }
 
     private Direct3D9Device CreateInitializedDevice(
-        Direct3D9DeviceCreationParameters creationParameters,
-        bool notifyAdapterValid = false)
+        Direct3D9DeviceCreationParameters creationParameters, bool notifyAdapter = true)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
         if (creationParameters.UseExtendedDeviceCreate)
@@ -450,13 +502,10 @@ internal sealed class Direct3D9DeviceManager : IDisposable
             throw;
         }
 
-        if (notifyAdapterValid)
-        {
-            NotifyAdapterStatus(device.AdapterOrdinal, isValid: true);
-        }
-
         try
         {
+            if (notifyAdapter) NotifyAdapterStatus(device.AdapterOrdinal, isValid: true);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
             InitializeDeviceTier(device);
             ApplyDeviceDriverWorkarounds(device);
             GatherSupportedTextureFormats(device);
@@ -504,7 +553,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
 
     private void InitializeDisplaySet(Direct3D9DisplaySet? givenDisplaySet)
     {
-        lock (_syncRoot)
+        using (EnterManagerLock())
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
             Direct3D9DisplaySet latestDisplaySet = _latestDisplaySetProvider?.Invoke() ?? _latestDisplaySet;
@@ -873,7 +922,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
             return;
         }
 
-        lock (_syncRoot)
+        using (EnterManagerLock())
         {
             int usableIndex = _usableDevices.IndexOf(device);
             if (usableIndex < 0)
@@ -882,26 +931,26 @@ internal sealed class Direct3D9DeviceManager : IDisposable
             }
 
             NotifyDeviceLost(device);
-            _usableDevices.RemoveAt(usableIndex);
-            _unusableDevices.Add(device);
+            _usableDevices.Remove(device);
+            if (!_isDisposed)
+            {
+                _unusableDevices.Add(device);
+            }
         }
     }
 
     private void OnDeviceDisposed(Direct3D9Device device)
     {
-        lock (_syncRoot)
+        bool notify;
+        using (EnterManagerLock())
         {
             if (ReferenceEquals(device, _softwareDevice))
             {
                 _softwareDevice = null;
             }
 
-            bool isTracked = _usableDevices.Contains(device) || _unusableDevices.Contains(device);
-            if (isTracked)
-            {
-                NotifyDeviceLost(device);
-            }
-
+            notify = (_usableDevices.Contains(device) || _unusableDevices.Contains(device)) && !_lostDevices.Contains(device);
+            if (notify) NotifyDeviceLost(device);
             _usableDevices.Remove(device);
             _unusableDevices.Remove(device);
             _lostDevices.Remove(device);
@@ -910,30 +959,41 @@ internal sealed class Direct3D9DeviceManager : IDisposable
 
     private void NotifyDeviceLost(Direct3D9Device device)
     {
-        if (_lostDevices.Add(device))
+        using (EnterManagerLock())
         {
-            NotifyAdapterStatus(device.AdapterOrdinal, isValid: false);
+            if (_lostDevices.Add(device))
+                NotifyAdapterStatus(device.AdapterOrdinal, isValid: false);
         }
     }
 
     private void NotifyAdapterStatus(uint adapterOrdinal, bool isValid)
     {
-        Action<uint, bool>[] listeners;
-        lock (_syncRoot)
+        using (EnterManagerLock())
         {
-            listeners = [.. _adapterStatusListeners];
+            Action<uint, bool>[] interop;
+            lock (InteropListenersGate) interop = [.. InteropListeners];
+            _pendingAdapterNotifications.Enqueue(new(adapterOrdinal, isValid, interop));
+            // Native manager listeners observe the pre-transition tracking state;
+            // public interop callbacks must instead run after the outermost lock exits.
+            Action<uint, bool>[] listeners = [.. _adapterStatusListeners];
+            foreach (Action<uint, bool> listener in listeners)
+            {
+                listener(adapterOrdinal, isValid);
+            }
         }
+    }
 
-        foreach (Action<uint, bool> listener in listeners)
-        {
-            listener(adapterOrdinal, isValid);
-        }
+    internal static void NotifyInteropAdapterStatus(uint adapterOrdinal, bool isValid)
+    {
+        Action<uint, bool>[] listeners;
+        lock (InteropListenersGate) listeners = [.. InteropListeners];
+        foreach (Action<uint, bool> listener in listeners) listener(adapterOrdinal, isValid);
     }
 
     public void Dispose()
     {
         Direct3D9Device[] devices;
-        lock (_syncRoot)
+        using (EnterManagerLock())
         {
             if (_isDisposed)
             {

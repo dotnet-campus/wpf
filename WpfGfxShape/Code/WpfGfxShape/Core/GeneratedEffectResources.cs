@@ -51,16 +51,35 @@ internal sealed class GeneratedPixelShaderResource() : GeneratedEffectResource(M
     internal MilShaderRenderMode RenderMode { get; private set; }
     internal bool CompileSoftwareShader { get; private set; }
     internal ReadOnlyMemory<byte> Bytecode { get; private set; }
+    private PixelShaderGeneration _generation = new(MilShaderRenderMode.Auto, false, default);
+    internal Action? BadShaderNotification { get; set; }
+
+    internal PixelShaderGeneration CaptureGeneration()
+    {
+        _generation.AddRef();
+        return _generation;
+    }
+
+    internal int GetSoftwareProgram(out SoftwarePixelShaderProgram? program) =>
+        _generation.GetSoftwareProgram(BadShaderNotification, out program);
 
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
     {
         if (!ReadCommand(value, out MilPixelShaderCommand command, true) || command.RenderMode > MilShaderRenderMode.HardwareOnly
             || command.BytecodeSize != value.Length - 12 || command.BytecodeSize % 4 != 0) return Malformed;
         byte[] bytecode = value[12..].ToArray();
-        return CommitDependencies([], () => { RenderMode = command.RenderMode; CompileSoftwareShader = command.CompileSoftwareShader != 0; Bytecode = bytecode; });
+        return CommitDependencies([], () =>
+        {
+            var previous = _generation;
+            RenderMode = command.RenderMode;
+            CompileSoftwareShader = command.CompileSoftwareShader != 0;
+            Bytecode = bytecode;
+            _generation = new(RenderMode, CompileSoftwareShader, bytecode);
+            previous.Release();
+        });
     }
 
-    protected override void OnFinalRelease() { base.OnFinalRelease(); Bytecode = default; }
+    protected override void OnFinalRelease() { base.OnFinalRelease(); Bytecode = default; _generation.Release(); BadShaderNotification = null; }
 }
 
 internal sealed class GeneratedImplicitInputBrushResource() : GeneratedEffectResource(MilResourceType.ImplicitInputBrush)
@@ -102,7 +121,7 @@ internal sealed class GeneratedDropShadowEffectResource() : GeneratedEffectResou
     }
 }
 
-internal sealed record GeneratedShaderEffectData(MilShaderEffectCommand Command, short[] FloatRegisters, float[] FloatValues, short[] IntRegisters, int[] IntValues, short[] BoolRegisters, int[] BoolValues, int[] SamplerInfo, IReadOnlyList<GeneratedProtocolResource?> Samplers, GeneratedProtocolResource? PixelShader);
+internal sealed record GeneratedShaderEffectData(MilShaderEffectCommand Command, short[] FloatRegisters, float[] FloatValues, short[] IntRegisters, int[] IntValues, short[] BoolRegisters, int[] BoolValues, int[] SamplerInfo, uint[] SamplerHandles, IReadOnlyList<GeneratedProtocolResource?> Samplers, GeneratedProtocolResource? PixelShader);
 
 internal sealed class GeneratedShaderEffectResource() : GeneratedEffectResource(MilResourceType.ShaderEffect)
 {
@@ -112,7 +131,7 @@ internal sealed class GeneratedShaderEffectResource() : GeneratedEffectResource(
     {
         if (!ReadCommand(value, out MilShaderEffectCommand command, true)) return Malformed;
         uint[] sizes = [command.FloatRegistersSize, command.FloatValuesSize, command.IntRegistersSize, command.IntValuesSize, command.BoolRegistersSize, command.BoolValuesSize, command.SamplerInfoSize, command.SamplerValuesSize];
-        int[] alignments = [2, 4, 2, 4, 2, 4, 8, 4];
+        int[] alignments = [2, 4, 2, 4, 2, 4, 4, 4];
         long total = 72;
         for (int i = 0; i < sizes.Length; i++)
         {
@@ -120,7 +139,7 @@ internal sealed class GeneratedShaderEffectResource() : GeneratedEffectResource(
             total += sizes[i];
         }
         if (total != value.Length || (long)sizes[0] * 8 != sizes[1] || (long)sizes[2] * 8 != sizes[3]
-            || (long)sizes[4] * 2 != sizes[5] || sizes[6] / 8 != sizes[7] / 4
+            || (long)sizes[4] * 2 != sizes[5] || Math.Min(sizes[6] / 8, 16u) != Math.Min(sizes[7] / 4, 16u)
             || !TryResolve(table, command.PixelShader, MilResourceType.PixelShader, out var shader)) return Malformed;
 
         ReadOnlySpan<byte> payload = value[72..];
@@ -132,15 +151,15 @@ internal sealed class GeneratedShaderEffectResource() : GeneratedEffectResource(
         int[] boolValues = Take<int>(ref payload, sizes[5]);
         int[] samplerInfo = Take<int>(ref payload, sizes[6]);
         uint[] samplerHandles = Take<uint>(ref payload, sizes[7]);
-        if (floatRegisters.Any(static r => r < 0) || intRegisters.Any(static r => r < 0) || boolRegisters.Any(static r => r < 0)
-            || samplerInfo.Any(static v => v < 0)) return Malformed;
+        if (floatRegisters.Any(static r => r < 0) || intRegisters.Any(static r => r < 0) || boolRegisters.Any(static r => r < 0)) return Malformed;
 
-        GeneratedProtocolResource?[] samplers = new GeneratedProtocolResource?[samplerHandles.Length];
+        GeneratedProtocolResource?[] samplers = new GeneratedProtocolResource?[Math.Min(samplerHandles.Length, 16)];
         for (int i = 0; i < samplers.Length; i++)
         {
-            if (samplerInfo[i * 2 + 1] > 2 || !TryResolve(table, samplerHandles[i], IsBrush, out samplers[i])) return Malformed;
+            if (samplerInfo[i * 2] < 0 || samplerInfo[i * 2 + 1] is < 0 or > 2
+                || !TryResolve(table, samplerHandles[i], IsBrush, out samplers[i])) return Malformed;
         }
-        GeneratedShaderEffectData data = new(command, floatRegisters, floatValues, intRegisters, intValues, boolRegisters, boolValues, samplerInfo, samplers, shader);
+        GeneratedShaderEffectData data = new(command, floatRegisters, floatValues, intRegisters, intValues, boolRegisters, boolValues, samplerInfo, samplerHandles, samplers, shader);
         return CommitDependencies([shader, .. samplers], () => Data = data);
     }
 

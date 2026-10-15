@@ -210,9 +210,77 @@ public sealed unsafe partial class CompositionTests
     [DataRow(9, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true)]
     [DataRow(0, false, 3, true, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true)]
     [DataRow(0, false, 3, false, true, false, false, false, false, false, false, false, false, -1, false, 0, 0, false, true)]
-    public void WhenDecoderReadsDuringRenderThenReentrantLifecyclePreservesActivePixels(int action, bool imageMask = false, int geometryKind = 0, bool outsideTarget = false, bool failFill = false, bool solidFill = false, bool pathGeometry = false, bool widePath = false, bool reversePath = false, bool gapPath = false, bool ellipseGeometry = false, bool roundedGeometry = false, bool groupGeometry = false, int combinedMode = -1, bool curvedPath = false, int curveMode = 0, int deviceMode = 0, bool drawingImage = false, bool drawingBrushSource = false)
+    [DataRow(0, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true)]
+    [DataRow(3, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true)]
+    [DataRow(8, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true)]
+    [DataRow(0, true, 3, false, true, false, false, false, false, false, false, false, false, -1, false, 0, 0, false, true)]
+    [DataRow(0, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u)]
+    [DataRow(3, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u)]
+    [DataRow(8, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u)]
+    [DataRow(9, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u)]
+    [DataRow(0, false, 3, true, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u)]
+    [DataRow(0, false, 3, false, true, false, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u)]
+    [DataRow(0, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u)]
+    [DataRow(3, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u)]
+    [DataRow(8, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u)]
+    [DataRow(0, true, 3, false, true, false, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 3u)]
+    [DataRow(0, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, true)]
+    [DataRow(3, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, true)]
+    [DataRow(8, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, true)]
+    [DataRow(9, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, true)]
+    [DataRow(0, false, 3, true, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, true)]
+    [DataRow(0, false, 3, false, true, false, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, true)]
+    [DataRow(1, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, true)]
+    [DataRow(2, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, true)]
+    [DataRow(4, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, true)]
+    [DataRow(0, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, true)]
+    [DataRow(1, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, true)]
+    [DataRow(2, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, true)]
+    [DataRow(3, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, true)]
+    [DataRow(4, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, true)]
+    [DataRow(8, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, true)]
+    [DataRow(9, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, true)]
+    [DataRow(0, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 3u, true)]
+    [DataRow(3, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 3u, true)]
+    [DataRow(0, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, false, true)]
+    [DataRow(3, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, false, true)]
+    [DataRow(8, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 3u, false, true)]
+    [DataRow(9, false, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, false, true)]
+    [DataRow(0, false, 3, true, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, false, true)]
+    [DataRow(0, false, 3, false, true, false, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 3u, false, true)]
+    [DataRow(0, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, false, true)]
+    [DataRow(3, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, false, true)]
+    [DataRow(8, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 3u, false, true)]
+    [DataRow(9, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, false, true)]
+    public void WhenDecoderReadsDuringRenderThenReentrantLifecyclePreservesActivePixels(int action, bool imageMask = false, int geometryKind = 0, bool outsideTarget = false, bool failFill = false, bool solidFill = false, bool pathGeometry = false, bool widePath = false, bool reversePath = false, bool gapPath = false, bool ellipseGeometry = false, bool roundedGeometry = false, bool groupGeometry = false, int combinedMode = -1, bool curvedPath = false, int curveMode = 0, int deviceMode = 0, bool drawingImage = false, bool drawingBrushSource = false, uint scalingMode = 0, bool filteredDrawing = false, bool tiledDrawing = false, bool callbackBaseline = false, bool failDecoder = false, int lateMutation = 0, bool cacheTransaction = false, bool cacheConsumer = false)
     {
-        string path = typeof(CompositionTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
+        bool decoderFailure = false;
+        int decoderFailures = 0;
+        const int decoderError = unchecked((int)0x8003001E);
+        uint filteredActive = 0, filteredReplacement = 0;
+        uint filteredFirstActive = 0xffff0000u, filteredFirstReplacement = 0;
+        if (filteredDrawing)
+        {
+            // The Pbgra32 target uses an sRGB-compatible intermediate and byte-span interpolation.
+            // Device centre 1.5 maps to source 1.25: weights 1/4 and 3/4 round to 64 and 191.
+            filteredActive = 0xff40bf00u;
+            filteredReplacement = 0xffbfbfffu;
+            // DeviceAligned first texel has 3/4 content coverage and a separate 3/4 viewport source clip.
+            // The bitmap fill keeps its 3/4 coverage; the drawing stroke contributes (3/4)^2.
+            const double drawingCoverage = 0.75 * 0.75;
+            filteredFirstActive = failFill ? (uint)Math.Round(255 * (1 - 0.25 * (1 - drawingCoverage))) << 24
+                | (uint)Math.Round(255 * (1 - 0.25 * (1 - drawingCoverage))) << 16 : 0xffff0000u;
+            filteredFirstReplacement = 0xff000000u | (uint)Math.Round(255 * (1 - drawingCoverage)) << 16
+                | (uint)Math.Round(255 * drawingCoverage);
+            if (scalingMode == 3)
+            {
+                filteredActive = 0xff00ff00u;
+                filteredReplacement = 0xffffffffu;
+                if (!failFill) filteredFirstActive = 0xffff0000u;
+                // Nearest changes texel selection, not the fractional viewport coverage.
+            }
+        }
         nint module = NativeLibrary.Load(path);
         var createConnection = (delegate* unmanaged[Stdcall]<byte, nint*, int>)NativeLibrary.GetExport(module, "WgxConnection_Create");
         var disconnect = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "WgxConnection_Disconnect");
@@ -235,6 +303,7 @@ public sealed unsafe partial class CompositionTests
         nint callbackConnection = 0, callbackChannel = 0, replacement = 0;
         nint callbackRenderTarget = 0, callbackFactory = 0, callbackInternalTarget = 0;
         uint callbackImage = 0, callbackTarget = 0, callbackVisual = 0;
+        uint lateChild = 0, lateBrush = 0, lateGeometry = 0, lateImage = 0;
         try
         {
             Assert.AreEqual(0, createConnection(1, &connection));
@@ -255,9 +324,44 @@ public sealed unsafe partial class CompositionTests
             bmp[56] = 255; bmp[58] = 255;
             stream = ManagedStreamTests.CreateCallbackStream(module, bmp, () =>
             {
-                if (!armed) return;
+                if (!armed || callbackBaseline) return;
                 armed = false;
                 calls++;
+                if (lateMutation != 0)
+                {
+                    byte* packet = stackalloc byte[72]; new Span<byte>(packet, 72).Clear();
+                    if (lateMutation == 1)
+                    {
+                        *(uint*)packet = 0x1b; *(uint*)(packet + 4) = lateChild; *(double*)(packet + 8) = -1;
+                        nestedResult = send(packet, 24, 0, callbackChannel);
+                    }
+                    else if (lateMutation == 5)
+                    {
+                        *(uint*)packet = 0x7e; *(uint*)(packet + 4) = lateBrush; *(double*)(packet + 8) = 1;
+                        *(float*)(packet + 28) = 1; *(float*)(packet + 20) = 1;
+                        nestedResult = send(packet, 48, 0, callbackChannel);
+                    }
+                    else if (lateMutation == 2)
+                    {
+                        *(uint*)packet = 0x79; *(uint*)(packet + 4) = lateGeometry;
+                        *(double*)(packet + 24) = 0; *(double*)(packet + 40) = 1; *(double*)(packet + 48) = 1;
+                        nestedResult = send(packet, 72, 0, callbackChannel);
+                    }
+                    else if (lateMutation == 3)
+                    {
+                        *(uint*)packet = 0x7e; *(uint*)(packet + 4) = lateBrush; *(double*)(packet + 8) = 1;
+                        *(float*)(packet + 28) = 1; *(float*)(packet + 24) = 1;
+                        nestedResult = send(packet, 48, 0, callbackChannel);
+                    }
+                    else
+                    {
+                        int deleted = 0;
+                        nestedResult = releaseResource(callbackChannel, lateImage, &deleted);
+                    }
+                    if (nestedResult >= 0) nestedResult = close(callbackChannel);
+                    if (nestedResult >= 0) nestedResult = commit(callbackChannel);
+                    return;
+                }
                 switch (action)
                 {
                     case 0: nestedResult = present(callbackConnection); break;
@@ -296,7 +400,12 @@ public sealed unsafe partial class CompositionTests
                         if (nestedResult >= 0) nestedResult = commit(callbackChannel);
                         break;
                 }
-            }, () => streamDisposals++);
+            }, () => streamDisposals++, () =>
+            {
+                if (!decoderFailure) return 0;
+                decoderFailures++;
+                return decoderError;
+            });
             frame = wic.DecodeFrame(stream);
             Assert.AreEqual(0, wrap(frame, &wrapper));
             uint image = 0, data = 0, visual = 0, destination = 0;
@@ -407,6 +516,19 @@ public sealed unsafe partial class CompositionTests
                         *(uint*)(brushPacket + 4) = brush;
                     }
                 }
+                if (tiledDrawing)
+                {
+                    // A negative tile shifted by one period still maps device centres to the two source texels.
+                    *(double*)(brushPacket + 16) = 16;
+                    *(double*)(brushPacket + 24) = 16;
+                    *(double*)(brushPacket + 32) = 16;
+                    *(double*)(brushPacket + 40) = 16;
+                    *(double*)(brushPacket + 64) = 16;
+                    *(double*)(brushPacket + 72) = 16;
+                    *(uint*)(brushPacket + 112) = 0;
+                    *(uint*)(brushPacket + 128) = 4;
+                }
+                if (filteredDrawing) *(double*)(brushPacket + 16) = 0.25;
                 Assert.AreEqual(0, send(brushPacket, 148, 0, channel));
                 Assert.AreEqual(0, createResource(channel, ellipseGeometry ? 70u : pathGeometry ? 73u : geometryKind is 1 or 3 ? 69u : 68u, &geometry));
                 byte* geometryPacket = stackalloc byte[72]; new Span<byte>(geometryPacket, 72).Clear();
@@ -415,6 +537,13 @@ public sealed unsafe partial class CompositionTests
                 if (geometryKind is 1 or 3)
                 {
                     *(double*)(geometryPacket + 40) = 2; *(double*)(geometryPacket + 48) = 1;
+                    if (deviceMode == 2 && drawingBrushSource)
+                    {
+                        // Inverse-rotate the device rectangle [0,2] x [0,1] into geometry space.
+                        *(double*)(geometryPacket + 32) = -2;
+                        *(double*)(geometryPacket + 40) = 1;
+                        *(double*)(geometryPacket + 48) = 2;
+                    }
                     if (roundedGeometry)
                     {
                         *(double*)(geometryPacket + 8) = 0.25; *(double*)(geometryPacket + 16) = 0.25;
@@ -542,14 +671,14 @@ public sealed unsafe partial class CompositionTests
                     *(uint*)(brushPacket + 4) = fillBrush; *(uint*)(brushPacket + 144) = fillImage;
                     Assert.AreEqual(0, send(brushPacket, 148, 0, channel));
                 }
-                if (solidFill)
+                if (solidFill && !failFill)
                 {
                     fillBrush = 0;
                     Assert.AreEqual(0, createResource(channel, 75, &fillBrush));
                     byte* solidPacket = stackalloc byte[48]; new Span<byte>(solidPacket, 48).Clear();
                     *(uint*)solidPacket = 0x7e; *(uint*)(solidPacket + 4) = fillBrush;
                     *(double*)(solidPacket + 8) = 1;
-                    *(float*)(solidPacket + 16) = 1; *(float*)(solidPacket + 20) = 1;
+                    *(float*)(solidPacket + 28) = 1; *(float*)(solidPacket + 16) = 1;
                     Assert.AreEqual(0, send(solidPacket, 48, 0, channel));
                 }
                 uint* records = stackalloc uint[] { 0x18, data, 24, 24, 0x46, fillBrush, pen, geometry, 0 };
@@ -568,6 +697,109 @@ public sealed unsafe partial class CompositionTests
                     Assert.AreEqual(0, send(&drawingRecord, (uint)sizeof(DrawPacket), 0, channel));
                 }
             }
+            if (lateMutation != 0)
+            {
+                uint lateData = 0, created = 0;
+                Assert.AreEqual(0, createResource(channel, 43, &lateData));
+                Assert.AreEqual(0, createResource(channel, 39, &created));
+                lateChild = created;
+                if (lateMutation == 4)
+                {
+                    created = 0;
+                    Assert.AreEqual(0, createResource(channel, 95, &created));
+                    lateImage = created;
+                    BitmapSourcePacket lateSource = new() { Type = 0x0c, Handle = lateImage, Bitmap = replacement };
+                    ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)replacement)[1])(replacement);
+                    Assert.AreEqual(0, send(&lateSource, (uint)sizeof(BitmapSourcePacket), 0, channel));
+                    DrawPacket lateDraw = new() { Type = 0x18, Handle = lateData, DataSize = 48,
+                        RecordSize = 48, Command = 0x47, Width = 2, Height = 1, Image = lateImage };
+                    Assert.AreEqual(0, send(&lateDraw, (uint)sizeof(DrawPacket), 0, channel));
+                }
+                else
+                {
+                    created = 0;
+                    Assert.AreEqual(0, createResource(channel, 75, &created));
+                    lateBrush = created;
+                    created = 0;
+                    Assert.AreEqual(0, createResource(channel, 69, &created));
+                    lateGeometry = created;
+                    byte* solid = stackalloc byte[48]; new Span<byte>(solid, 48).Clear();
+                    *(uint*)solid = 0x7e; *(uint*)(solid + 4) = lateBrush; *(double*)(solid + 8) = 1;
+                    *(float*)(solid + 28) = 1; *(float*)(solid + 16) = 1;
+                    Assert.AreEqual(0, send(solid, 48, 0, channel));
+                    byte* rectangle = stackalloc byte[72]; new Span<byte>(rectangle, 72).Clear();
+                    *(uint*)rectangle = 0x79; *(uint*)(rectangle + 4) = lateGeometry;
+                    *(double*)(rectangle + 24) = 1; *(double*)(rectangle + 40) = 1; *(double*)(rectangle + 48) = 1;
+                    Assert.AreEqual(0, send(rectangle, 72, 0, channel));
+                    uint* records = stackalloc uint[] { 0x18, lateData, 24, 24, 0x46, lateBrush, 0, lateGeometry, 0 };
+                    Assert.AreEqual(0, send(records, 36, 0, channel));
+                }
+                uint* childBinding = stackalloc uint[] { 0x22, lateChild, lateData };
+                Assert.AreEqual(0, send(childBinding, 12, 0, channel));
+                uint renderedChild = lateChild;
+                if (lateMutation == 5)
+                {
+                    uint cache = 0, mode = 0, drawing = 0, nestedDrawingImage = 0, outerGeometry = 0, outerData = 0;
+                    Assert.AreEqual(0, createResource(channel, 83, &cache));
+                    Assert.AreEqual(0, createResource(channel, 94, &mode));
+                    Assert.AreEqual(0, createResource(channel, 87, &drawing));
+                    Assert.AreEqual(0, createResource(channel, 59, &nestedDrawingImage));
+                    Assert.AreEqual(0, createResource(channel, 69, &outerGeometry));
+                    Assert.AreEqual(0, createResource(channel, 43, &outerData));
+                    renderedChild = 0;
+                    Assert.AreEqual(0, createResource(channel, 39, &renderedChild));
+                    byte* modePacket = stackalloc byte[32]; new Span<byte>(modePacket, 32).Clear();
+                    *(uint*)modePacket = 0x8d; *(uint*)(modePacket + 4) = mode; *(double*)(modePacket + 8) = 1;
+                    Assert.AreEqual(0, send(modePacket, 32, 0, channel));
+                    byte* cachePacket = stackalloc byte[36]; new Span<byte>(cachePacket, 36).Clear();
+                    *(uint*)cachePacket = 0x84; *(uint*)(cachePacket + 4) = cache;
+                    *(double*)(cachePacket + 8) = 1; *(uint*)(cachePacket + 28) = mode;
+                    *(uint*)(cachePacket + 32) = lateChild;
+                    Assert.AreEqual(0, send(cachePacket, 36, 0, channel));
+                    byte* rectangle = stackalloc byte[72]; new Span<byte>(rectangle, 72).Clear();
+                    *(uint*)rectangle = 0x79; *(uint*)(rectangle + 4) = outerGeometry;
+                    *(double*)(rectangle + 24) = 1; *(double*)(rectangle + 40) = 1; *(double*)(rectangle + 48) = 1;
+                    Assert.AreEqual(0, send(rectangle, 72, 0, channel));
+                    uint* geometryDrawing = stackalloc uint[] { 0x87, drawing, cache, 0, outerGeometry };
+                    Assert.AreEqual(0, send(geometryDrawing, 20, 0, channel));
+                    uint* imageBinding = stackalloc uint[] { 0x71, nestedDrawingImage, drawing };
+                    Assert.AreEqual(0, send(imageBinding, 12, 0, channel));
+                    DrawPacket outerDraw = new() { Type = 0x18, Handle = outerData, DataSize = 48,
+                        RecordSize = 48, Command = 0x47, X = 1, Width = 1, Height = 1, Image = nestedDrawingImage };
+                    Assert.AreEqual(0, send(&outerDraw, (uint)sizeof(DrawPacket), 0, channel));
+                    uint* outerBinding = stackalloc uint[] { 0x22, renderedChild, outerData };
+                    Assert.AreEqual(0, send(outerBinding, 12, 0, channel));
+                }
+                uint* insert = stackalloc uint[] { 0x26, visual, renderedChild, 0 };
+                Assert.AreEqual(0, send(insert, 16, 0, channel));
+            }
+            if (cacheTransaction || cacheConsumer)
+            {
+                uint cache = 0, mode = 0, outer = 0, outerData = 0, geometry = 0;
+                Assert.AreEqual(0, createResource(channel, 83, &cache));
+                Assert.AreEqual(0, createResource(channel, 94, &mode));
+                Assert.AreEqual(0, createResource(channel, 39, &outer));
+                Assert.AreEqual(0, createResource(channel, 43, &outerData));
+                Assert.AreEqual(0, createResource(channel, 69, &geometry));
+                byte* packet = stackalloc byte[72]; new Span<byte>(packet, 72).Clear();
+                *(uint*)packet = 0x8d; *(uint*)(packet + 4) = mode; *(double*)(packet + 8) = 1;
+                Assert.AreEqual(0, send(packet, 32, 0, channel));
+                new Span<byte>(packet, 72).Clear();
+                *(uint*)packet = 0x84; *(uint*)(packet + 4) = cache; *(double*)(packet + 8) = 1;
+                *(uint*)(packet + 28) = mode; *(uint*)(packet + 32) = visual;
+                Assert.AreEqual(0, send(packet, 36, 0, channel));
+                new Span<byte>(packet, 72).Clear();
+                *(uint*)packet = 0x79; *(uint*)(packet + 4) = geometry;
+                *(double*)(packet + 40) = 2; *(double*)(packet + 48) = 1;
+                Assert.AreEqual(0, send(packet, 72, 0, channel));
+                uint* records = stackalloc uint[] { 0x18, outerData, 24, 24, 0x46, cache, 0, geometry, 0 };
+                Assert.AreEqual(0, send(records, 36, 0, channel));
+                uint* content = stackalloc uint[] { 0x22, outer, outerData };
+                Assert.AreEqual(0, send(content, 12, 0, channel));
+                visual = outer;
+            }
+            uint* options = stackalloc uint[] { 0x21, visual, 1, 0, 0, scalingMode, 0, 0, 0 };
+            Assert.AreEqual(0, send(options, 36, 0, channel));
             TargetPacket targetPacket = new() { Type = 0x34, Handle = destination, Target = (ulong)target, Width = 2, Height = 1 };
             Assert.AreEqual(0, send(&targetPacket, (uint)sizeof(TargetPacket), 0, channel));
             binding[0] = 0x35; binding[1] = destination; binding[2] = visual;
@@ -612,6 +844,16 @@ public sealed unsafe partial class CompositionTests
                     (target, &internalId, &internalTarget));
                 callbackInternalTarget = internalTarget;
             }
+            if (failDecoder)
+            {
+                decoderFailure = true;
+                Assert.AreEqual(decoderError, present(connection));
+                Assert.IsGreaterThan(0, decoderFailures);
+                // The completed solid fill precedes the decoder-backed stroke; Present is not a frame transaction.
+                Assert.AreEqual((0xffff0000u, 0xffff0000u), Read(output));
+                decoderFailure = false;
+                Write(output, 0, 0);
+            }
             if (failFill)
             {
                 Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, uint, nint*, int>)(*(void***)fillBitmap)[8])(fillBitmap, 0, 2, &fillLock));
@@ -635,7 +877,46 @@ public sealed unsafe partial class CompositionTests
             }
             armed = true;
             Assert.AreEqual(action == 6 ? unchecked((int)0x88982F0D) : 0, present(connection));
-            Assert.AreEqual((1, action == 9 ? unchecked((int)0x88980085) : action == 0 ? unchecked((int)0x8000FFFF) : 0, action == 7 ? (0xffbf4000u, 0xff40bf00u) : (0xffff0000u, 0xff00ff00u)), (calls, nestedResult, Read(output)));
+            Assert.AreEqual((callbackBaseline ? 0 : 1, callbackBaseline ? 0 : action == 9 ? cacheConsumer ? unchecked((int)0x80070057) : unchecked((int)0x88980085) : action == 0 ? unchecked((int)0x8000FFFF) : 0, lateMutation == 4 ? (0xff0000ffu, 0xffffffffu) : lateMutation != 0 ? (0xffff0000u, 0xffff0000u) : action == 7 ? (0xffbf4000u, 0xff40bf00u) : filteredDrawing ? (filteredFirstActive, filteredActive) : (0xffff0000u, 0xff00ff00u)), (calls, nestedResult, Read(output)));
+            if (cacheTransaction)
+            {
+                decoderFailure = true;
+                Write(output, 0, 0);
+                Assert.AreEqual(0, present(connection));
+                Assert.AreEqual(0, decoderFailures);
+                Assert.AreEqual((0xffff0000u, 0xff00ff00u), Read(output));
+                byte* offset = stackalloc byte[24]; new Span<byte>(offset, 24).Clear();
+                *(uint*)offset = 0x1b; *(uint*)(offset + 4) = visual; *(double*)(offset + 8) = 0.25;
+                Assert.AreEqual(0, send(offset, 24, 0, channel));
+                Assert.AreEqual(0, close(channel)); Assert.AreEqual(0, commit(channel));
+                Assert.AreEqual(decoderError, present(connection));
+                Assert.IsGreaterThan(0, decoderFailures);
+                *(double*)(offset + 8) = 0;
+                Assert.AreEqual(0, send(offset, 24, 0, channel));
+                Assert.AreEqual(0, close(channel)); Assert.AreEqual(0, commit(channel));
+                Write(output, 0, 0);
+                Assert.AreEqual(0, present(connection));
+                Assert.AreEqual((0xffff0000u, 0xff00ff00u), Read(output));
+                decoderFailure = false;
+                *(double*)(offset + 8) = 0.25;
+                Assert.AreEqual(0, send(offset, 24, 0, channel));
+                Assert.AreEqual(0, close(channel)); Assert.AreEqual(0, commit(channel));
+                Assert.AreEqual(0, present(connection));
+                *(double*)(offset + 8) = 0;
+                Assert.AreEqual(0, send(offset, 24, 0, channel));
+                Assert.AreEqual(0, close(channel)); Assert.AreEqual(0, commit(channel));
+                Write(output, 0, 0);
+                Assert.AreEqual(0, present(connection));
+                Assert.AreEqual((0xffff0000u, 0xff00ff00u), Read(output));
+            }
+            if (lateMutation != 0)
+            {
+                Write(output, 0, 0);
+                Assert.AreEqual(0, present(connection));
+                Assert.AreEqual(lateMutation == 3 ? (0xffff0000u, 0xff0000ffu)
+                    : lateMutation == 4 ? (0xff0000ffu, 0xffffffffu)
+                    : (0xffff0000u, 0xff00ff00u), Read(output));
+            }
             if (action == 6)
             {
                 Release(secondLock); secondLock = 0;
@@ -664,7 +945,7 @@ public sealed unsafe partial class CompositionTests
                 Write(output, 0, 0);
                 Assert.AreEqual(0, present(connection));
                 Assert.AreEqual(imageMask ? (0u, geometryKind == 0 ? 0xff00ff00u : 0xffffffffu)
-                    : (0xff0000ffu, 0xffffffffu), Read(output));
+                    : filteredDrawing ? (filteredFirstReplacement, filteredReplacement) : (0xff0000ffu, 0xffffffffu), Read(output));
             }
         }
         finally

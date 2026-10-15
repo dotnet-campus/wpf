@@ -1,0 +1,6 @@
+<Project DefaultTargets="Build">
+  <Target Name="Build">
+    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Restore;Build;Test" Properties="Configuration=Release;ComAcceptanceSandbox=false;TestingPlatformCommandLineArguments=--filter FullyQualifiedName~WhenStage4|FullyQualifiedName~WhenNativeGpu --report-trx --results-directory ../../Investigations/S-20261014-003-LIFECYCLE/closure-local-short --report-trx-filename lifecycle-local-short.trx" ContinueOnError="ErrorAndContinue" />
+    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Test" Properties="Configuration=Release;ComAcceptanceSandbox=false;TestingPlatformCommandLineArguments=--report-trx --results-directory ../../Investigations/S-20261014-003-LIFECYCLE/closure-local-full --report-trx-filename lifecycle-local-full.trx" />
+  </Target>
+</Project>

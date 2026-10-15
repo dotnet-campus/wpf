@@ -16,6 +16,7 @@ internal static unsafe class NativeAotAbiProbe
 
     private const ulong ChecksumSeed = 0x5750464746580001UL;
 
+#if WPFGFX_DIAGNOSTIC_ABI
     [UnmanagedCallersOnly(
         EntryPoint = "WpfGfxShape_NativeAotAbiProbe_v1",
         CallConvs = [typeof(CallConvStdcall)])]
@@ -28,6 +29,7 @@ internal static unsafe class NativeAotAbiProbe
     {
         return Invoke(abiVersion, operation, input, context, output);
     }
+#endif
 
     internal static int Invoke(
         uint abiVersion,

@@ -13,6 +13,10 @@
     <EnableAotAnalyzer>true</EnableAotAnalyzer>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <EnablePInvokeAnalyzer>true</EnablePInvokeAnalyzer>
+    <WpfGfxShapeDiagnosticAbi Condition="'$(WpfGfxShapeDiagnosticAbi)' == ''">false</WpfGfxShapeDiagnosticAbi>
+    <DebuggerSupport Condition="'$(WpfGfxShapeDiagnosticAbi)' != 'true'">false</DebuggerSupport>
+    <DefineConstants Condition="'$(WpfGfxShapeDiagnosticAbi)' == 'true'">$(DefineConstants);WPFGFX_DIAGNOSTIC_ABI</DefineConstants>
+    <PublishDir Condition="'$(WpfGfxShapeDiagnosticAbi)' == 'true'">$(WpfGfxShapeArtifactsRoot)diagnostic-publish\$(MSBuildProjectName)\$(Configuration)\$(RuntimeIdentifier)\</PublishDir>
   </PropertyGroup>
 
   <ItemGroup>

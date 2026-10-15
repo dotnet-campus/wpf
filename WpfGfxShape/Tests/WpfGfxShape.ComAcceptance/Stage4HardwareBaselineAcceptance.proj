@@ -1,0 +1,5 @@
+<Project DefaultTargets="Build">
+  <Target Name="Build">
+    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Restore;Build;Test" Properties="Configuration=Release;ComAcceptanceSandbox=false;TestingPlatformCommandLineArguments=--filter FullyQualifiedName~WhenStage4 --report-trx --report-trx-filename stage4-hw-module-baseline-directed.trx" />
+  </Target>
+</Project>

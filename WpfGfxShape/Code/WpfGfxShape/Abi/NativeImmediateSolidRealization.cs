@@ -18,22 +18,35 @@ internal static unsafe class NativeImmediateSolidRealization
         internal nint BitmapBrush;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 240)]
+    [StructLayout(LayoutKind.Explicit, Size = 384)]
     private struct BitmapBrush
     {
         [FieldOffset(0)] internal void** Table;
         [FieldOffset(76)] internal uint Space;
         [FieldOffset(80)] internal System.Numerics.Matrix4x4 Mapping;
+        [FieldOffset(160)] internal System.Numerics.Vector2 Clip0;
+        [FieldOffset(168)] internal System.Numerics.Vector2 Clip1;
+        [FieldOffset(176)] internal System.Numerics.Vector2 Clip2;
+        [FieldOffset(184)] internal System.Numerics.Vector2 Clip3;
+        [FieldOffset(200)] internal int HasSourceClip;
         [FieldOffset(208)] internal nint Source;
         [FieldOffset(216)] internal uint Wrap;
         [FieldOffset(236)] internal float Opacity;
+        [FieldOffset(240)] internal GeneratedImageTransform ExactMapping;
+        [FieldOffset(288)] internal MilRectD ExactSourceClip;
+        [FieldOffset(320)] internal GeneratedImageTransform ExactClipMapping;
+        [FieldOffset(368)] internal int HasExactClipMapping;
+        [FieldOffset(376)] internal SoftwareImageWorkingFormat WorkingFormat;
     }
 
     private static readonly void** RealizerTable = CreateRealizerTable();
     private static readonly void** SolidTable = CreateSolidTable();
     private static readonly void** BitmapTable = CreateBitmapTable();
 
-    internal static nint CreateBitmap(nint source)
+    internal static nint CreateBitmap(nint source, GeneratedImageTransform? mapping = null,
+        MilRectD? sourceClip = null, float opacity = 1, MilBitmapWrapMode wrapMode = MilBitmapWrapMode.Extend,
+        GeneratedImageTransform? clipMapping = null,
+        SoftwareImageWorkingFormat workingFormat = SoftwareImageWorkingFormat.Native)
     {
         BitmapBrush* brush = (BitmapBrush*)NativeMemory.AllocZeroed((nuint)sizeof(BitmapBrush));
         nint realization = 0;
@@ -41,8 +54,37 @@ internal static unsafe class NativeImmediateSolidRealization
         {
             brush->Table = BitmapTable;
             brush->Mapping = System.Numerics.Matrix4x4.Identity;
+            brush->ExactMapping = mapping ?? GeneratedImageTransform.Identity;
+            brush->WorkingFormat = workingFormat;
             brush->Wrap = (uint)MilBitmapWrapMode.Border;
-            brush->Opacity = 1;
+            brush->Opacity = opacity;
+            if (mapping is { } transform)
+            {
+                brush->Mapping.M11 = (float)transform.ScaleX; brush->Mapping.M22 = (float)transform.ScaleY;
+                brush->Mapping.M12 = (float)transform.M12; brush->Mapping.M21 = (float)transform.M21;
+                brush->Mapping.M41 = (float)transform.X; brush->Mapping.M42 = (float)transform.Y;
+                brush->Wrap = (uint)wrapMode;
+                if (sourceClip is { } rectangle)
+                {
+                    brush->ExactSourceClip = rectangle;
+                    if (clipMapping is { } independentClip)
+                    {
+                        brush->ExactClipMapping = independentClip;
+                        brush->HasExactClipMapping = 1;
+                    }
+                    var clipTransform = clipMapping ?? transform;
+                    System.Numerics.Vector2 Point(double x, double y)
+                    {
+                        var point = clipTransform.Apply(x, y);
+                        return new((float)point.X, (float)point.Y);
+                    }
+                    brush->Clip0 = Point(rectangle.X, rectangle.Y);
+                    brush->Clip1 = Point(rectangle.X + rectangle.Width, rectangle.Y);
+                    brush->Clip2 = Point(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height);
+                    brush->Clip3 = Point(rectangle.X, rectangle.Y + rectangle.Height);
+                    brush->HasSourceClip = 1;
+                }
+            }
             ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)source)[1])(source);
             brush->Source = source;
             realization = Create(null);
@@ -58,6 +100,34 @@ internal static unsafe class NativeImmediateSolidRealization
             }
         }
     }
+
+    internal static bool TryGetExactMapping(nint brush, out GeneratedImageTransform mapping)
+    {
+        mapping = default;
+        if (*(void***)brush != BitmapTable) return false;
+        // Only our allocation has this tail; foreign CMILBrush objects retain the native prefix contract.
+        mapping = ((BitmapBrush*)brush)->ExactMapping;
+        return true;
+    }
+
+    internal static bool TryGetExactSourceClip(nint brush, out MilRectD rectangle)
+    {
+        rectangle = default;
+        if (*(void***)brush != BitmapTable || ((BitmapBrush*)brush)->HasSourceClip == 0) return false;
+        rectangle = ((BitmapBrush*)brush)->ExactSourceClip;
+        return true;
+    }
+
+    internal static bool TryGetExactClipMapping(nint brush, out GeneratedImageTransform mapping)
+    {
+        mapping = default;
+        if (*(void***)brush != BitmapTable || ((BitmapBrush*)brush)->HasExactClipMapping == 0) return false;
+        mapping = ((BitmapBrush*)brush)->ExactClipMapping;
+        return true;
+    }
+
+    internal static SoftwareImageWorkingFormat GetWorkingFormat(nint brush)
+        => *(void***)brush == BitmapTable ? ((BitmapBrush*)brush)->WorkingFormat : SoftwareImageWorkingFormat.Native;
 
     private static void Destroy(Instance* self)
     {

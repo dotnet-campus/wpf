@@ -15,7 +15,8 @@ internal sealed unsafe class SoftwareBrushRealization : IDisposable
     }
 
     internal static int Capture(GeneratedProtocolResource? resource, GeneratedImageTransform transform,
-        uint scalingMode, MilRectD bounds, out SoftwareBrushRealization? realization)
+        uint scalingMode, MilRectD bounds, out SoftwareBrushRealization? realization, Direct3D9SurfaceRect? deviceClip = null,
+        bool? shaderFloating = null, double dpiX = 96, double dpiY = 96)
     {
         realization = null;
         if (resource is null) { realization = new(null, null); return 0; }
@@ -28,15 +29,58 @@ internal sealed unsafe class SoftwareBrushRealization : IDisposable
                 Alpha = value.Color.Alpha * (float)Math.Clamp(value.Opacity, 0, 1)
             }, out realization);
         }
-        if (resource is not GeneratedImageBrushResource image) return Direct3D9Factory.NotImplementedHResult;
-        if (!GeneratedImageMask.TryCapture(image, transform, scalingMode, out var snapshot, bounds))
-            return Direct3D9Factory.NotImplementedHResult;
+        GeneratedImageMask? snapshot;
+        if (resource is GeneratedBitmapCacheBrushResource cache && shaderFloating is { } floating)
+        {
+            int hr = GeneratedImageMask.CaptureCacheBrush(cache, transform, scalingMode, bounds, deviceClip,
+                floating, dpiX, dpiY, out snapshot);
+            if (hr < 0) return hr;
+        }
+        else if (resource is GeneratedVisualBrushResource visual)
+        {
+            int hr = GeneratedImageMask.CaptureVisualBrush(visual, transform, scalingMode, bounds, deviceClip, out snapshot);
+            if (hr < 0) return hr;
+        }
+        else if (resource is GeneratedImageBrushResource image)
+        {
+            if (!GeneratedImageMask.TryCapture(image, transform, scalingMode, out snapshot, bounds, deviceClip, worldBounds: bounds))
+                return Direct3D9Factory.NotImplementedHResult;
+        }
+        else return Direct3D9Factory.NotImplementedHResult;
         try
         {
             realization = new(snapshot, null);
             return 0;
         }
         finally { if (realization is null) snapshot?.Dispose(); }
+    }
+
+    internal static int CaptureFrozen(FrozenBrush brush, GeneratedImageTransform transform,
+        uint scalingMode, MilRectD bounds, out SoftwareBrushRealization? realization, Direct3D9SurfaceRect? clip)
+    {
+        realization = null;
+        GeneratedImageMask? mask;
+        if (brush.Visual is not null)
+        {
+            int hr = GeneratedImageMask.CaptureVisualBrushFrozen(brush, transform, scalingMode, bounds, clip, out mask);
+            if (hr < 0) return hr;
+        }
+        else if (!GeneratedImageMask.TryCaptureFrozen(brush, transform, scalingMode, out mask, bounds, clip, worldBounds: bounds))
+            return Direct3D9Factory.NotImplementedHResult;
+        try { realization = new(mask, null); return 0; }
+        finally { if (realization is null) mask?.Dispose(); }
+    }
+
+    internal static int CaptureFrozen(FrozenCacheRequest request, GeneratedImageTransform transform,
+        uint scalingMode, MilRectD bounds, out SoftwareBrushRealization? realization,
+        Direct3D9SurfaceRect? clip, bool floating = false, double dpiX = 96, double dpiY = 96)
+    {
+        realization = null;
+        int hr = GeneratedImageMask.CaptureCacheBrushFrozen(request, transform, scalingMode, bounds, clip,
+            floating, dpiX, dpiY, out var mask);
+        if (hr < 0) return hr;
+        try { realization = new(mask, null); return 0; }
+        finally { if (realization is null) mask?.Dispose(); }
     }
 
     private static int CreateImmediate(MilColorF color, out SoftwareBrushRealization? realization)
@@ -62,7 +106,8 @@ internal sealed unsafe class SoftwareBrushRealization : IDisposable
             {
                 realizer = WpfGfxShape.Abi.NativeResourceBrushRealization.Create(this, session);
                 context = context with { WorldToDevice = GeneratedImageTransform.Identity,
-                    BitmapScalingMode = 3, PrefilterEnabled = false };
+                    BitmapScalingMode = _image.CanRealizeDirectly ? _image.ScalingMode : 3,
+                    PrefilterEnabled = _image.CanRealizeDirectly ? null : false };
             }
             else realizer = _immediate;
             initialized = true;

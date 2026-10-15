@@ -33,7 +33,7 @@ public sealed class GeneratedValueResourceTests
         byte[] matrixPacket = GeneratedProtocolPacketWriter.WriteMatrixResource(8, new MilMatrix3x2D(1, 2, 3, 4, 5, 6));
 
         Assert.AreEqual(
-            (14u, 0x11223344u, 1.5, 15u, 7u, 1f, 0.25f, 19u, 8u, 6d),
+            (14u, 0x11223344u, 1.5, 15u, 7u, 0.25f, 0.5f, 0.75f, 1f, 19u, 8u, 6d),
             (
                 BitConverter.ToUInt32(doublePacket, 0),
                 BitConverter.ToUInt32(doublePacket, 4),
@@ -42,6 +42,8 @@ public sealed class GeneratedValueResourceTests
                 BitConverter.ToUInt32(colorPacket, 4),
                 BitConverter.ToSingle(colorPacket, 8),
                 BitConverter.ToSingle(colorPacket, 12),
+                BitConverter.ToSingle(colorPacket, 16),
+                BitConverter.ToSingle(colorPacket, 20),
                 BitConverter.ToUInt32(matrixPacket, 0),
                 BitConverter.ToUInt32(matrixPacket, 4),
                 BitConverter.ToDouble(matrixPacket, 48)));

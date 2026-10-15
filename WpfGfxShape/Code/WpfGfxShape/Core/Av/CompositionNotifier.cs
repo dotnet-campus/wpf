@@ -63,23 +63,19 @@ internal sealed class CompositionNotifier
 
     internal void NotifyComposition()
     {
-        bool displayUIFrame = false;
+        ICompositionVideoNotification[] resources;
+        bool displayUIFrame;
         lock (_lock)
         {
-            var current = _registeredResources.First;
-            while (current is not null)
-            {
-                var next = current.Next;
-                // Keep the call on the left: every slave must receive the frame request.
-                displayUIFrame = !current.Value.NewFrame() || displayUIFrame;
-                current = next;
-            }
+            resources = _registeredResources.ToArray();
+            displayUIFrame = _outstandingUIFrame;
+            _outstandingUIFrame = false;
+        }
 
-            if (_outstandingUIFrame)
-            {
-                _outstandingUIFrame = false;
-                displayUIFrame = true;
-            }
+        // Snapshot ownership keeps callbacks alive without holding the registration lock.
+        foreach (ICompositionVideoNotification resource in resources)
+        {
+            displayUIFrame = !resource.NewFrame() || displayUIFrame;
         }
 
         if (displayUIFrame)
@@ -90,15 +86,15 @@ internal sealed class CompositionNotifier
 
     internal void InvalidateLastCompositionSampleTime()
     {
+        ICompositionVideoNotification[] resources;
         lock (_lock)
         {
-            var current = _registeredResources.First;
-            while (current is not null)
-            {
-                var next = current.Next;
-                current.Value.InvalidateLastCompositionSampleTime();
-                current = next;
-            }
+            resources = _registeredResources.ToArray();
+        }
+
+        foreach (ICompositionVideoNotification resource in resources)
+        {
+            resource.InvalidateLastCompositionSampleTime();
         }
     }
 

@@ -85,10 +85,24 @@ internal sealed unsafe partial class GeneratedMediaPlayerResource : IComposition
                 return unchecked((int)0x80004001);
             }
 
+            result = _composition.RegisterVideo(this);
+            if (result < 0)
+            {
+                return result;
+            }
+
+            result = provider.RegisterResource(this);
+            if (result < 0)
+            {
+                // Registration may have partially succeeded; preserve the first failure.
+                _ = provider.UnregisterResource(this);
+                _composition.UnregisterVideo(this);
+                return result;
+            }
+
             _surfaceRendererProvider = provider;
             provider = null;
-            result = _composition.RegisterVideo(this);
-            return result < 0 ? result : _surfaceRendererProvider.RegisterResource(this);
+            return result;
         }
         finally
         {
@@ -123,13 +137,24 @@ internal sealed unsafe partial class GeneratedMediaPlayerResource : IComposition
             return Direct3D9Factory.UceMalformedPacketHResult;
         }
 
-        _ = EndComposition();
+        if (_systemCompositionRegistered)
+        {
+            frameReady = Interlocked.Exchange(ref _systemFramePending, 0) != 0;
+            return 0;
+        }
+
+        int result = EndComposition();
+        if (result < 0)
+        {
+            return result;
+        }
+
         IVideoSurfaceRenderer? renderer = null;
-        int result = _surfaceRendererProvider?.GetSurfaceRenderer(out renderer) ?? 0;
+        result = _surfaceRendererProvider?.GetSurfaceRenderer(out renderer) ?? 0;
         if (result < 0)
         {
             renderer?.Release();
-            return 0;
+            return result;
         }
 
         _currentRenderer = renderer;
@@ -147,8 +172,7 @@ internal sealed unsafe partial class GeneratedMediaPlayerResource : IComposition
             frameReady = result >= 0 && ready;
         }
 
-        // Native video errors must not zombify the composition partition.
-        return 0;
+        return result;
     }
 
     internal int EndComposition()
@@ -159,7 +183,7 @@ internal sealed unsafe partial class GeneratedMediaPlayerResource : IComposition
         {
             try
             {
-                _ = renderer.EndComposition(this);
+                return renderer.EndComposition(this);
             }
             finally
             {
@@ -187,13 +211,21 @@ internal sealed unsafe partial class GeneratedMediaPlayerResource : IComposition
 
     protected override void OnFinalRelease()
     {
+        ReleaseSystemMedia();
         _ = EndComposition();
-        if (_surfaceRendererProvider is not null)
+        IVideoSurfaceRendererProvider? provider = _surfaceRendererProvider;
+        _surfaceRendererProvider = null;
+        if (provider is not null)
         {
-            _ = _surfaceRendererProvider.UnregisterResource(this);
-            _composition?.UnregisterVideo(this);
-            _surfaceRendererProvider.Release();
-            _surfaceRendererProvider = null;
+            try
+            {
+                _ = provider.UnregisterResource(this);
+                _composition?.UnregisterVideo(this);
+            }
+            finally
+            {
+                provider.Release();
+            }
         }
 
         _composition = null;

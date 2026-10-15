@@ -27,6 +27,27 @@ public sealed unsafe class Direct3D9TextureRenderTargetTests
     }
 
     [TestMethod]
+    public void WhenFloatSurfaceIdentityIsRequestedThenDirect3DFormatPreservesFloatPrecision()
+    {
+        using Direct3D9Device device = CreateDevice();
+        using Direct3D9SurfaceRenderTarget target = new(device, MultisampleType.MultisampleNone,
+            pixelFormat: MilPixelFormat.Prgba128BppFloat);
+
+        Assert.AreEqual(Format.A32B32G32R32f, target.GetDirect3DTextureFormat());
+    }
+
+    [TestMethod]
+    public void WhenUnsupportedIntermediateFormatIsRequestedThenCreationFailsWithoutAnOutput()
+    {
+        using Direct3D9Device device = CreateDevice();
+
+        int result = Direct3D9TextureRenderTarget.TryCreate(16, 12, device, null, out var target,
+            MilPixelFormat.Bgr32Bpp101010);
+
+        Assert.AreEqual((Direct3D9Factory.UnsupportedOperationHResult, true), (result, target is null));
+    }
+
+    [TestMethod]
     public void WhenValidTextureRenderTargetIsDisposedThenTextureIsMadeEvictableInsideDeviceScopeBeforeBaseTarget()
     {
         using FakeTextureObject textureObject = new();

@@ -1,16 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputType>Exe</OutputType>
+    <EnableMSTestRunner>true</EnableMSTestRunner>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <EnableMSTestV2CopyResources>false</EnableMSTestV2CopyResources>
+    <ComAcceptanceSandbox Condition="'$(ComAcceptanceSandbox)' == ''">false</ComAcceptanceSandbox>
     <RunSettingsFilePath>$(MSBuildThisFileDirectory)acceptance.runsettings</RunSettingsFilePath>
     <AotRuntimeIdentifier Condition="'$(AotRuntimeIdentifier)' == ''">win-x64</AotRuntimeIdentifier>
-    <AotDllPath Condition="'$(AotDllPath)' == ''">$(WpfGfxShapePublishRoot)WpfGfxShape/Release/$(AotRuntimeIdentifier)/wpfgfx_cor3.dll</AotDllPath>
+    <AotDllPath Condition="'$(AotDllPath)' == ''">$(MSBuildThisFileDirectory)../../artifacts/publish/WpfGfxShape/Release/$(AotRuntimeIdentifier)/wpfgfx_cor3.dll</AotDllPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MSTest" Version="4.0.1" />
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
-    <AssemblyMetadata Include="AotDllPath" Value="$([System.IO.Path]::GetFullPath('$(AotDllPath)'))" />
+    <Using Include="System.IO" />
+    <None Include="../WpfGfxShape.WpfReference/TestResults/original-wpf-e07cbceaf453471dacb4cb12c99bdbc2.json" Link="ReferenceData/original-wpf.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../WpfGfxShape.WpfReference/TestResults/source-clip-intersection-9ea80318e1d241db98efb079ef626374.json" Link="ReferenceData/source-clip-intersection.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../WpfGfxShape.WpfReference/TestResults/glyph-arial-original.json" Link="ReferenceData/glyph-arial-original.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(AotDllPath)" Link="Native/wpfgfx_cor3.dll" CopyToPublishDirectory="PreserveNewest" Condition="'$(ComAcceptanceSandbox)' == 'true'" />
+    <AssemblyMetadata Include="ComAcceptanceSandbox" Value="$(ComAcceptanceSandbox)" />
+    <AssemblyMetadata Include="CalibrationResultsPath" Value="$(MSBuildThisFileDirectory)TestResults" Condition="'$(ComAcceptanceSandbox)' != 'true'" />
+    <AssemblyMetadata Include="AotDllPath" Value="$([System.IO.Path]::GetFullPath('$(AotDllPath)'))" Condition="'$(ComAcceptanceSandbox)' != 'true'" />
+    <AssemblyMetadata Include="CalibrationResultsPath" Value="Results" Condition="'$(ComAcceptanceSandbox)' == 'true'" />
+    <AssemblyMetadata Include="AotDllPath" Value="Native/wpfgfx_cor3.dll" Condition="'$(ComAcceptanceSandbox)' == 'true'" />
   </ItemGroup>
+  <Import Project="ComAcceptance.Package.targets" />
 </Project>

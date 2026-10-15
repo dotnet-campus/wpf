@@ -105,13 +105,13 @@ public sealed class GeneratedProtocolTests
     }
 
     [TestMethod]
-    public void WhenCommandIsUnknownThenUnknownPacketIsReturned()
+    public void WhenCommandIsUnknownThenMalformedPacketIsReturned()
     {
         GeneratedProtocolRouter router = CreateRouter();
 
         int result = router.ProcessPacket([0xFE, 0, 0, 0]);
 
-        Assert.AreEqual(Direct3D9Factory.UceUnknownPacketHResult, result);
+        Assert.AreEqual(Direct3D9Factory.UceMalformedPacketHResult, result);
     }
 
     [TestMethod]

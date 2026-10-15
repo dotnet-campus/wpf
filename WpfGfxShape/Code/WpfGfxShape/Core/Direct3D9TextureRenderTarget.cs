@@ -100,6 +100,9 @@ internal sealed unsafe class Direct3D9TextureRenderTarget : IDisposable
         }
     }
 
+    internal Direct3D9SurfaceRenderTarget SurfaceRenderTarget => _surfaceRenderTarget
+        ?? throw new ObjectDisposedException(nameof(Direct3D9TextureRenderTarget));
+
     internal Direct3D9Texture? GetTextureNoRef()
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
@@ -258,13 +261,22 @@ internal sealed unsafe class Direct3D9TextureRenderTarget : IDisposable
         uint height,
         Direct3D9Device device,
         uint? associatedDisplayIndex,
-        out Direct3D9TextureRenderTarget? renderTarget)
+        out Direct3D9TextureRenderTarget? renderTarget,
+        MilPixelFormat pixelFormat = MilPixelFormat.Pbgra32Bpp)
     {
         ArgumentNullException.ThrowIfNull(device);
         renderTarget = null;
         using Direct3D9DeviceEntryGuard deviceEntry = new(device);
 
-        int result = device.CheckRenderTargetFormat(Format.A8R8G8B8);
+        Format format = pixelFormat switch
+        {
+            MilPixelFormat.Pbgra32Bpp => Format.A8R8G8B8,
+            MilPixelFormat.Prgba128BppFloat => Format.A32B32G32R32f,
+            _ => Format.Unknown
+        };
+        if (format == Format.Unknown)
+            return Direct3D9Factory.UnsupportedOperationHResult;
+        int result = device.CheckRenderTargetFormat(format);
         if (result < 0)
         {
             return result;
@@ -273,7 +285,7 @@ internal sealed unsafe class Direct3D9TextureRenderTarget : IDisposable
         Direct3D9TextureRenderTarget? candidate = null;
         try
         {
-            result = TryInitialize(width, height, device, associatedDisplayIndex, out candidate);
+            result = TryInitialize(width, height, device, associatedDisplayIndex, pixelFormat, format, out candidate);
             if (result < 0)
             {
                 candidate?.Dispose();
@@ -300,11 +312,12 @@ internal sealed unsafe class Direct3D9TextureRenderTarget : IDisposable
         uint width,
         uint height,
         Direct3D9Device device,
-        out SurfaceDesc description)
+        out SurfaceDesc description,
+        Format format = Format.A8R8G8B8)
     {
         ArgumentNullException.ThrowIfNull(device);
         description = new SurfaceDesc(
-            format: Format.A8R8G8B8,
+            format: format,
             type: Resourcetype.Texture,
             usage: D3D9.UsageRendertarget,
             pool: Pool.Default,
@@ -339,6 +352,8 @@ internal sealed unsafe class Direct3D9TextureRenderTarget : IDisposable
         uint height,
         Direct3D9Device device,
         uint? associatedDisplayIndex,
+        MilPixelFormat pixelFormat,
+        Format format,
         out Direct3D9TextureRenderTarget? renderTarget)
     {
         renderTarget = null;
@@ -347,7 +362,7 @@ internal sealed unsafe class Direct3D9TextureRenderTarget : IDisposable
             return Direct3D9Factory.GenericFailureHResult;
         }
 
-        int result = GetSurfaceDescription(width, height, device, out SurfaceDesc description);
+        int result = GetSurfaceDescription(width, height, device, out SurfaceDesc description, format);
         if (result < 0)
         {
             return result;
@@ -381,7 +396,7 @@ internal sealed unsafe class Direct3D9TextureRenderTarget : IDisposable
                 device,
                 MultisampleType.MultisampleNone,
                 renderTargetSurface: levelZeroSurface,
-                pixelFormat: MilPixelFormat.Pbgra32Bpp,
+                pixelFormat: pixelFormat,
                 width: width,
                 height: height,
                 associatedDisplayIndex: associatedDisplayIndex);

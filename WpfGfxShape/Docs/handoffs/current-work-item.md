@@ -1,28 +1,25 @@
-# 当前最高优先级：DrawingImage设备自适应中间面与TileBrush消费闭环
+# 当前工作项：文档治理收口与完整模块恢复
 
-> 执行约束见 [`current-execution-rules.md`](current-execution-rules.md)；唯一 COM 项目直接加载生产 Native AOT DLL。
-> 最新发布、SHA256 与 TRX 只维护于 [`current-stable-baseline.md`](current-stable-baseline.md)，本文件不累积验证历史。
+## 本轮范围
 
-## 当前状态
+仅修改 Docs 文档与索引；不改生产、测试、配置，不执行终端/脚本、构建、发布或测试。
+文档治理完成后由父级另行委派独立复核；本页不将维护当作生产完成。
 
-S-20261009-231 已将 DrawingSnapshot 分辨率改为 viewbox/viewport/stretch 及设备矩阵基向量长度，不再直接按内容 DIP 分配；修复 source 深度拒绝的活动集合残留。DrawingImage 作为 ImageBrush/opacity mask source 已接通共同 drawing 快照、延迟中间面 realization、viewbox 转换、临时 source 及失败逆序释放。
+## 真实恢复点
 
-S-20261009-232 完成稳定基线文档去重及交接整理，起始重新发布后全量 686/686 通过；未修改生产代码，不作为生产缺口关闭进度。完成事实见 [`文档整理归档`](completed-work/S-20261009-232-STABLE-BASELINE-DOCUMENT-CLEANUP.md)。
+GenProto 新证据恢复的有限执行已结束，不能继续以“重跑有限全量/恢复同一缺目录”作为默认下一轮。
+身份、原始结果与未恢复历史原物只见[状态源](current-stable-baseline.md)和[恢复记录](../investigations/genproto-evidence-recovery.md)。
+恢复生产时，监督者按[总计划](../remaining-gap-closure-plan.md)委派实际代码代理，推进完整 generated protocol / 真实消费者与资源寿命模块；允许紧密耦合工作跨阶段，不把文档、计数、单例补测当模块交付。
 
-原批准模块仍 Active：目标 clip 裁剪、绝对 viewbox 子区域的中间面 mapping、跨 tile/flip 接缝与资源遮罩回调失败联合验收尚未闭合。基础 tile 内像素通过不等于完整 tile/flip 合同；当前仍可能按全部映射内容分配巨大中间面。没有外部阻塞。
+## 模块完成条件（不能因本轮权限缩小）
 
-## 唯一下一动作
+- [A/B/C 合同](../plan-module-contracts.md)逐条落实，完整 ProcessCreate/InitializePen、producer/consumer 与 physical/required 闭包。
+- 成功、失败、取消、线程、callback/OOM、资源拥有及逆序清理共同验收；glyph 复杂消费和严格 raw 不豁免。
+- 真实生产导出/COM/消费者验证，发布、同 SHA 本族/related/full/strict 及 identity 分开关联。
+- 七阶段正式门和独立 E2E-01–09 矩阵不降级；外部确缺按[唯一交付清单](../all-completion-external-prerequisites.md)登记，不停掉可自主完成部分。
 
-**一次完成原生 TileBrush 中间面尺寸/变换/clip 合同 → 目标 clip 驱动的 DrawingImage 中间面裁剪与坐标 mapping → 绝对/相对 viewbox、跨 tile/flip 与非均匀/旋转映射 → 资源遮罩回调失败释放的生产闭环。** 不拆成仅定位、仅补测或仅接线的独立轮次。
+## 停止与交接
 
-1. 先发布 Release/win-x64 并全量测试；从 WpfGfx 读取 TileBrush/intermediate 尺寸、mapping 与裁剪原生证据，每次不超过 400 行，区分已有基向量分辨率实现与尚未直译的设备 aligned 裁剪。
-2. 用真实 generated 报文建立目标 clip、大内容缩小、小内容放大、绝对 viewbox 子区域、相对 viewbox、跨 tile/flip 接缝、旋转/非均匀映射及 mask source 的行为 Red；跨 tile 必须在相邻 tile 和接缝两侧采样。
-3. 联合实现实际 device mapping、目标 clip 驱动的中间面范围与尺寸、内容坐标和像素变换；统一快照及原始 drawing 设备容差，不用固定尺寸上限掩盖溢出、过量分配或画质问题。
-4. 联合验证 source 循环/深度拒绝、目标外与空内容零解码、首错传播、回调替换/关闭、重入、失败重试、临时 bitmap 及 stroke→fill 逆序释放，不以成功像素代替生命周期验收。
-5. 重新发布并完成定向/全量验收，归档每次发布与对应 hash/TRX。独立完成归档记录已关闭合同与残留边界；整节替换稳定基线，更新下一整块生产任务。只有明确阻塞才允许缩小范围，并写明证据与后续合并闭环。
-
-## 验收与边界
-
-- 同一生产闭环同时具备 clip/viewbox 正确像素、跨 tile/flip 正确映射、设备尺度适配与失败释放证明，才可报告对应合同关闭；不能仅凭测试数增长宣布模块完成。
-- 非默认 DrawingGroup 完整状态、曲线恢复/完整拓扑精度、MSVC 对象 ABI、非圆 dash/marker、完整层栈、UCE 及 PresentationCore E2E 未关闭。
-- 阶段 1–3 Closed、阶段 4 Active、阶段 5–7 Pending；Ledger `RepairRequiredPartial`，不能替换原库，不报告整体百分比。
+旧 delivery 缺物不得伪造恢复；不得改期待 hash、required、golden 或 skip 掩盖失败。
+模块发现真实阻塞时，记录原始证据、交付边界和重新合并条件，由监督者重新分派；不另建竞争恢复入口。
+本轮治理的复核范围及未核验项见[报告](../docs-governance-report.md)。

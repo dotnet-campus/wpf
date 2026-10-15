@@ -80,8 +80,10 @@ internal static class SoftwareBooleanContours
                 double interval = cut - previous;
                 previous = cut;
                 if (start == end) continue;
-                var middle = new MilPoint2D((start.X + end.X) / 2, (start.Y + end.Y) / 2);
-                double distance = Math.Min(length * interval * 1e-5, 0.25);
+                // Classify against the original edge, before workspace rounding moves the endpoints.
+                double midpoint = cut - interval * 0.5;
+                var middle = new MilPoint2D(edge.A.X + midpoint * dx, edge.A.Y + midpoint * dy);
+                double distance = Math.Min(length * interval * 1e-5, 1e-4);
                 bool insideLeft = Inside(new(middle.X - dy / length * distance, middle.Y + dx / length * distance));
                 bool insideRight = Inside(new(middle.X + dy / length * distance, middle.Y - dx / length * distance));
                 if (insideLeft != insideRight) boundary.Add(insideLeft ? new(start, end) : new(end, start));

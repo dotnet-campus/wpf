@@ -9,6 +9,36 @@ namespace WpfGfxShape.ComAcceptance;
 public sealed unsafe class UceChannelTests
 {
     [TestMethod]
+    [DataRow(68, unchecked((int)0x88980403))]
+    [DataRow(69, unchecked((int)0x88980403))]
+    [DataRow(70, unchecked((int)0x88980403))]
+    [DataRow(71, unchecked((int)0x88980403))]
+    [DataRow(72, 0)]
+    public void WhenWindowSettingsPacketHasNativeSizeThenProductionAcceptsOnlyCompletePacket(int length, int expected)
+    {
+        var api = new Api();
+        nint connection = 0, channel = 0;
+        try
+        {
+            Assert.AreEqual(0, api.Create(1, &connection));
+            Assert.AreEqual(0, api.CreateChannel(connection, 0, &channel));
+            uint target = 0;
+            Assert.AreEqual(0, api.CreateResource(channel, 46, &target));
+            byte* packet = stackalloc byte[72];
+            new Span<byte>(packet, 72).Clear();
+            *(uint*)packet = 0x33; *(uint*)(packet + 4) = target;
+            Assert.AreEqual(0, api.Send(packet, (uint)length, 0, channel));
+            Assert.AreEqual(0, api.Close(channel));
+            Assert.AreEqual(expected, api.Commit(channel));
+        }
+        finally
+        {
+            if (channel != 0) api.DestroyChannel(channel);
+            if (connection != 0) api.Disconnect(connection);
+        }
+    }
+
+    [TestMethod]
     public void WhenResourceIsAddedTwiceThenOnlyFinalReleaseDeletesIt()
     {
         var api = new Api();
@@ -473,8 +503,7 @@ public sealed unsafe class UceChannelTests
 
         internal Api()
         {
-            string path = typeof(UceChannelTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-                .Single(attribute => attribute.Key == "AotDllPath").Value!;
+            string path = AcceptancePaths.AotDll;
             // Native AOT remains mapped until the test runner exits.
             nint module = NativeLibrary.Load(path);
             CreateEvent = (delegate* unmanaged[Stdcall]<EventDescriptor*, nint*, int>)NativeLibrary.GetExport(module, "MILCreateEventProxy");

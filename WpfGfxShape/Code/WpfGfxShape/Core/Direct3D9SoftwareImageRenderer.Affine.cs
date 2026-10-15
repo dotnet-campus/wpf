@@ -46,9 +46,10 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
 
     private int RealizeTransformed(nint source, MilRectD rectangle, GeneratedImageTransform transform, bool isMilSource)
     {
-        if (_floating) return RealizeFloat(source, rectangle, transform, isMilSource);
+        if (_floating && _context.WorkingFormat == SoftwareImageWorkingFormat.Native)
+            return RealizeFloat(source, rectangle, transform, isMilSource);
         MilRectD bounds = transform.Apply(rectangle);
-        if (_context.WrapMode == MilBitmapWrapMode.Extend && _context.GeometryMask is null && _context.SourceCoverage is null && ScalingMode != 3 && transform.IsPositiveAxisAligned && bounds.X == Math.Truncate(bounds.X)
+        if (!_floating && _context.WrapMode == MilBitmapWrapMode.Extend && _context.GeometryMask is null && _context.SourceCoverage is null && ScalingMode != 3 && transform.IsPositiveAxisAligned && bounds.X == Math.Truncate(bounds.X)
             && bounds.Y == Math.Truncate(bounds.Y) && bounds.Width == Math.Truncate(bounds.Width)
             && bounds.Height == Math.Truncate(bounds.Height))
             return Draw(source, bounds, 0, 0, isMilSource);
@@ -118,7 +119,16 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
 
     private void BlendAffineSpan(byte[] destination, int offset, uint count, int x, int y)
     {
-        for (uint i = 0; i < count; i++, offset += 4)
+        // CBilinearSpan quantizes the IPC matrix before walking a span, not each transformed pixel.
+        long m11 = (long)MathF.Round((float)_deviceToSource.ScaleX * 65536);
+        long m12 = (long)MathF.Round((float)_deviceToSource.M12 * 65536);
+        long m21 = (long)MathF.Round((float)_deviceToSource.M21 * 65536);
+        long m22 = (long)MathF.Round((float)_deviceToSource.ScaleY * 65536);
+        long dx = (long)MathF.Round(((float)_deviceToSource.X + ((float)_deviceToSource.ScaleX + (float)_deviceToSource.M21) * 0.5f - 0.5f) * 65536);
+        long dy = (long)MathF.Round(((float)_deviceToSource.Y + ((float)_deviceToSource.M12 + (float)_deviceToSource.ScaleY) * 0.5f - 0.5f) * 65536);
+        long u = x * m11 + y * m21 + dx;
+        long v = x * m12 + y * m22 + dy;
+        for (uint i = 0; i < count; i++, offset += _floating ? 16 : 4, u += m11, v += m12)
         {
             int coverage = _context.Antialias ? _coverage!.GetCoverage(x + (int)i, y)
                 : _coverage!.GetAliasedCoverage(x + (int)i, y);
@@ -127,8 +137,6 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
                     : mask.GetAliasedCoverage(x + (int)i, y)) + 32) >> 6;
             if (coverage == 0) continue;
             var point = SamplePoint(x + i + 0.5, y + 0.5);
-            long u = (long)Math.Round((point.X - 0.5) * 65536);
-            long v = (long)Math.Round((point.Y - 0.5) * 65536);
             var texels = Direct3D9SoftwareBilinearSpan.Select64BitFallbackTexels(u, v, _sourceWidth, _sourceHeight, _context.WrapMode);
             uint sample = Direct3D9SoftwareBilinearSpan.InterpolateBilinearArgb(
                 ReadAffinePixel(texels.X1, texels.Y1), ReadAffinePixel(texels.X2, texels.Y1),
@@ -141,12 +149,36 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
             }
             if (_context.AlphaScale != 1)
             {
+                int factor = (int)MathF.Floor(Math.Clamp(_context.AlphaScale, 0, 1) * 65536 + 0.5f);
                 uint scaled = 0;
                 for (int component = 0; component < 4; component++)
-                    scaled |= (uint)MathF.Round((byte)(sample >> (component * 8)) * _context.AlphaScale) << (component * 8);
+                    scaled |= (uint)(((byte)(sample >> (component * 8)) * factor + 32768) >> 16) << (component * 8);
                 sample = scaled;
             }
             if (_context.Effects is { } effects) sample = effects.Apply(sample, x + (int)i, y);
+            if (_context.GlyphAlpha is { } glyph)
+            {
+                if (!_floating && CompositingMode == MilCompositingMode.SourceOver && coverage == 64)
+                {
+                    uint background = MemoryMarshal.Read<uint>(destination.AsSpan(offset, 4));
+                    uint blended = glyph.ApplyGrayscaleOver(x + (int)i, y, sample, background);
+                    MemoryMarshal.Write(destination.AsSpan(offset, 4), in blended);
+                    continue;
+                }
+                sample = glyph.ApplyGrayscale(x + (int)i, y, sample);
+            }
+            if (_floating)
+            {
+                uint covered = 0;
+                for (int component = 0; component < 4; component++)
+                    covered |= (uint)(((byte)(sample >> (component * 8)) * coverage + 32) >> 6) << (component * 8);
+                var value = PbgraToFloat(covered);
+                var span = destination.AsSpan(offset, 16);
+                if (CompositingMode == MilCompositingMode.SourceOver)
+                    value += MemoryMarshal.Read<System.Numerics.Vector4>(span) * (1 - value.W);
+                MemoryMarshal.Write(span, in value);
+                continue;
+            }
             int alpha = ((byte)(sample >> 24) * coverage + 32) >> 6;
             for (int component = 0; component < 4; component++)
             {

@@ -1,33 +1,20 @@
-# 当前稳定基线
+# 已测生产身份与有限基线
 
-> 本文只保存恢复工作所需的稳定摘要与最新一份验证基线；更新验证时替换整节，不追加历史。
-> 新完成切片历史见 [`completed-work/`](completed-work/)；旧完成归档 [`progress-completed-work.md`](progress-completed-work.md) 和 HW render-target 历史 [`progress-hw-rendertarget.md`](progress-hw-rendertarget.md) 均保留为冻结历史。
+## 当前已测生产（不等于全局 Green）
 
-## 当前状态
+SHA256：`77394561E16E13DEC82DD194DC5C0090D4A64A5477FEA83D7879DE2369D1D33D`。颜色 ABI 测试修复未修改或重发布生产。
 
-- 当前位于 [`../remaining-gap-closure-plan.md`](../remaining-gap-closure-plan.md) 的阶段 4：冻结并实现 generated protocol；阶段 1 的 HW backend 生命周期和直接设备边界、阶段 2 的 HW 内容管线、阶段 3 的最小软件呈现链均已正式关闭。
-- DirectX 绑定固定为 Silk.NET 2.23.0；Win32 优先 Microsoft.Windows.CsWin32 0.3.298。
-- D3D9/HW 内容管线与最小软件 HWND/GDI 呈现链已形成生产闭环，但 generated protocol、生产 ABI、UCE/资源协议和 PresentationCore E2E 尚未完成。
-- 当前不能替换原 `wpfgfx_cor3.dll`。
-- 当前阶段状态为：正式关闭阶段 3 个、Active 阶段 1 个、Pending 阶段 3 个；阶段 4 当前 Active。由于机器 Ledger 仍为 `RepairRequiredPartial` 且生产完成分母不可确定计算，不维护整体完成百分比。阶段完成条件与剩余大项见 [`../remaining-gap-closure-plan.md`](../remaining-gap-closure-plan.md)。
+- COM full：1415 pass / 32 fail / 1447，0 skip；`Investigations/Color-ABI-regression/Results/com-full/Results/Administrator_EN-DEV-01_2026-10-15_02_37_20.4701392.trx`，同目录 `aot-identity.json`，task `b9e4be771379477f9ee35be64a92223a`。
+- COM related：765/765；task `1f905cb906714eba9754fbb2b3db3d10`；扩展 related 1246 pass / 2 fail / 1248，task `d614b97fb3c94d74a693226e0558b117`。
+- Glyph normal/retry/ownerRelease 非空整面 3/3，红蓝两组、glyph command 两组，共 7/7。coverage quantize 半向上、DrawGeometry padding、RGBA wire 有限闭合；通用 OOM/异常仍 Open，原版未初始化 padding raw 比较不放宽。
+- 普通 related 32/32、独立 ABI 13/13（固定 IEEE bytes、sizeof/offsets 等）；普通全量 4224 pass / 1 fail / 4225，缺系统 10.0.12。GenProto 起始24 pass / 4 fail /28；最终源码后有限全量28/28、0 fail/skip，RunID `b93b5895-7477-4c0c-8add-88bdb46010bc`；[新source映射与历史缺失](../investigations/genproto-evidence-recovery.md)单列，不声称整体全绿。
 
-## 稳定能力摘要
+全部路径与失败边界见[执行报告](../../Investigations/Color-ABI-regression/Results/EXECUTION-REPORT.md)及[独立归档](../investigations/glyph-outline-wip.md)。32 present 失败不全部归环境，也不全部断言生产回归。
 
-- loader、display/device manager、device/resource/use-context、HW render state、surface/texture/swap-chain、registry/display 已形成大量闭环。
-- HW display/window/surface render target、软件 3D fallback、3D geometry renderer、shader/fixed-function pipeline、bitmap color source/cache、software rasterizer/render target、glyph/text 窄路径已有可运行实现。
-- `CSwRenderTargetSurface` 的 pipeline、intermediate buffers、alpha、SetSurface、current clip 与 Clear/32bpp 格式分派已形成闭环，并已接通 compatible DC、top-down DIB、dirty-region BitBlt 与 HWND 生命周期。
-- 直接设备边界已覆盖大量 capability、资源创建/更新、状态设置、绘制、render-target、GPU marker query、错误映射与释放后保护。
-- generated protocol 已冻结完整 command/resource ID、SDK fingerprint、32 位 handle，并形成 transport/channel 五类核心命令、九类基础值资源、六类 2D transform、六类 2D geometry、七类 brush、七类 dash/pen/drawing、`GuidelineSet`/`BitmapCache`、Visual/Target 核心状态、代表性 render-data 指令流以及 Visual3D/Viewport3DVisual 状态命令的 data/factory/update/notification/duplicate/delete 生产闭环。
-- 3D rotation/camera/model/light/geometry/material/Transform3D 已有强类型状态、factory/update 和引用生命周期；动画 line/rectangle/image/video、rounded rectangle、ellipse 与 PushOpacityAnimate 已有 record 解析。render-data 保留 nullable slots 和独立数据快照；不能把协议状态验收等同于完整绘制执行。
-- DrawingImage 已作为 ImageBrush/opacity mask source 接通延迟中间面；source 分辨率使用 viewbox/viewport/stretch 及设备矩阵基向量长度，大内容缩小、小内容放大与基础 tile/flip 像素已有验收。
-- 详细完成事实统一查询独立完成归档，不在本文复制历史验证或旧下一动作。
+## 历史身份（不是现状）
 
-## 最近验证基线
+1DAA… 的 1429/1429 是修改前有限 Green，原始 RunID `2b2deb74-0bc7-45af-94f7-78fa02a9e3d8`，task `563fbdcb56144acdbc574fa3c0e0fb2e`，位于 `Investigations/Perf-async/finite-final-full/Results`。7C62… 的 1405/1440、35 fail 是早期 glyph 失败快照，不能继续称最新结果。旧 unit 27/29 已由 related 32/32 与独立 ABI 13/13 替代。
 
-- 最新复验：S-20261009-232（文档整理，未修改生产代码）；生产能力继承 [`S-20261009-231`](completed-work/S-20261009-231-DRAWINGIMAGE-DEVICE-RESOLUTION.md)。本轮发布明细见 [`文档整理归档`](completed-work/S-20261009-232-STABLE-BASELINE-DOCUMENT-CLEANUP.md)。
-- 发布：`dotnet publish WpfGfxShape/Code/WpfGfxShape/WpfGfxShape.csproj -c Release -r win-x64`，成功。
-- 产物：`WpfGfxShape/artifacts/publish/WpfGfxShape/Release/win-x64/wpfgfx_cor3.dll`。
-- 全量 COM 验收：686/686 通过，0 失败、0 跳过，耗时 2s。
-- SHA256：`CD2BCD99F8E0EE4AB75B6C8798D149BEFA05508A8B2EF5BC6AD919ADA26AC801`（本轮测试实际加载产物，与上一生产切片相同）。
-- TRX：`WpfGfxShape/Tests/WpfGfxShape.ComAcceptance/TestResults/com-acceptance.trx`；Run ID：`50515a34-a07e-463f-a406-7690810007c5`。该固定路径后续测试会覆盖，历史以各切片归档为准。
-- 未关闭：目标 clip 裁剪、绝对 viewbox 子区域及跨 tile/flip 接缝；不能宣称完整原生 intermediate 直译或模块关闭。阶段 4 Active，不能替换原库。
+Missing2（player）/Extra0、LifecyclePassed=true 仅上次 strict 已测；没有在当前 SHA 伪造 strict 新测，PE/AllAbi 总门仍不关闭。
+
+[总计划](../remaining-gap-closure-plan.md)七阶段和[四项外部输入](../all-completion-external-prerequisites.md)保持。DEC-0004 进程驻留已决；unload 不适用，资源/线程/callback/初始化失败清理仍验收。正式总门 Red，无整体完成或替换资格。

@@ -149,6 +149,7 @@ internal abstract class GeneratedValueResource : GeneratedUpdatableResource
 internal sealed class GeneratedValueResource<T> : GeneratedValueResource where T : unmanaged
 {
     internal GeneratedValueResource(MilResourceType resourceType) : base(resourceType) { }
+    internal GeneratedValueResource<T> CaptureValue() => new(ResourceType) { Value = Value };
     internal T Value { get; private set; }
 
     internal override int ProcessUpdate(GeneratedProtocolHandleTable handleTable, ReadOnlySpan<byte> value)
@@ -241,6 +242,7 @@ internal static class GeneratedResourceFactory
     {
         resource = resourceType switch
         {
+            MilResourceType.D3DImage => new GeneratedD3DImageResource(),
             MilResourceType.DoubleBufferedBitmap => new GeneratedDoubleBufferedBitmapResource(),
             MilResourceType.PixelShader => new GeneratedPixelShaderResource(),
             MilResourceType.ImplicitInputBrush => new GeneratedImplicitInputBrushResource(),
@@ -313,7 +315,7 @@ internal static class GeneratedResourceFactory
             MilResourceType.Viewport3DVisual => new GeneratedViewport3DVisualResource(),
             MilResourceType.Visual3D => new GeneratedVisual3DResource(),
             MilResourceType.RenderTarget or MilResourceType.HwndRenderTarget or MilResourceType.GenericRenderTarget => new GeneratedTargetResource(resourceType),
-            MilResourceType.GlyphRun => new GeneratedProtocolResource(resourceType),
+            MilResourceType.GlyphRun => new GeneratedGlyphRunResource(),
             > MilResourceType.Null and < MilResourceType.Last => new GeneratedProtocolResource(resourceType),
             _ => null
         };

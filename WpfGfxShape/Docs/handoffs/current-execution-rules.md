@@ -3,6 +3,12 @@
 > 本文只保存每轮恢复工作都必须遵守的执行约束，不记录完成历史或下一目标。
 > 当前入口见 [`../next-session-handoff.md`](../next-session-handoff.md)。
 
+## 当前独立审计职责
+
+本轮执行者仅修改 Docs，不改代码/测试/配置，不执行终端脚本，不构建、测试或发布。监督者按总计划委派实际代码代理交付跨阶段完整模块，不自行以文档治理替代生产实现。一般执行合同禁止终端和脚本；专用 publish/build/test 及沙箱内执行编译验收应用允许，但本轮不调用。当前阶段、SHA、计数及证据适用范围只在[状态源](current-stable-baseline.md)维护，本文不复制。
+
+[DEC-0004](../decisions/DEC-0004-process-lifetime-module.md)规定 DLL 进程寿命驻留，unload/reload/热替换不适用，无须批准；资源释放/关闭/线程/callback 清理及最终兼容原 WPF 库验收不减。七阶段、A/B/C 及独立 E2E-01–09 不得删减；[主题合同](../plan-module-contracts.md)保留完整条件，[外部清单](../all-completion-external-prerequisites.md)只维护交付内容。有限 GenProto、隔离布局或 physical hash 不冒充完整消费者闭包。
+
 ## 每轮执行规则
 
 - 用户再次明确纠正推进粒度：不得继续以某一种端帽、单个参数、少量测试或复验作为默认交付。必须优先移除阻碍真实生产链路执行的核心未实现分支，一轮推进紧密耦合的生产方法族和端到端生命周期。测试数量增长不等于生产完成进度；以关闭核心缺口和模块完成条件衡量交付。局部修改仅作为模块内部步骤，不单独宣布本轮完成，不以无外部阻塞为由连续顺延相同核心缺口。
@@ -22,8 +28,13 @@
 - 每轮完成事实必须在 `completed-work/` 中创建一个新的独立历史文档；不得追加 `progress-completed-work.md`，也不得拆分或迁移该旧文件。
 - 每次实际发布 Native AOT DLL 都必须在本轮 `completed-work/` 文档记录：发布序号、完整命令、目标项目/配置/RID、成功或失败及可核实的诊断、产物路径；测试取得的 SHA256 和 TRX 必须对应具体发布，未取得时明确注明。不得只记录 build 或测试结果而遗漏发布动作。
 
+## 存储回收约束
+
+- 只回收可确证为本轮自动生成、可再现的独立执行器/依赖副本；先Copy可列举原证据至瘦档并回读SHA核验，再以MSBuild内置文件任务显式列表Delete。禁止Exec、脚本、整目录删除含唯一证据、删除未知repo文件、总计划authority或冻结档。保留源码、原TRX/log/json/SHA/identity、生产DLL和正式publish。
+- 无空间测量证据不报告释放字节或剩余容量；以实际构建与结果回收区分恢复范围。恢复记录见[独立档](completed-work/Storage-recovery-r28-final-source-validation.md)，不等于全阶段完成。
+
 ## 当前禁止扩展边界
 
-没有明确原生契约前，不得虚构或扩展：effects/UCE/资源协议、生产 ABI、完整 glyph 私有模型、shader bytecode、GDI presenter、software-DC present context、兼容 DC/DIB、`Reset/ResetEx`、registry WOW64 view、surface ScrollBlt、software dirty 通知、普通 render-target dummy 解绑、完整 layer stack、几何 mask/effect、普通 scene 生命周期。
+任何协议、ABI、glyph 私有模型、shader、presenter、设备/层/scene 生命周期扩展都必须先回读原生定义与调用者。旧轮次“禁止某整域”不是永久停工门：已有明确合同的核心方法族按总计划推进，无证据的 vtable/包头/Reset/WOW64/ScrollBlt 等不得猜实现。
 
-Dummy back-buffer 的初始化、失败释放、析构顺序与测试隔离已闭合；当前 render-target 非拥有身份和 scene/失败清理状态机也已有明确原生证据。后续只可按独立验证切片逐步实现当前身份、`ReleaseUseOfRenderTarget` 与 present 失败解绑，不得脱离对应原生调用顺序扩展普通 scene 或 render-target 生命周期。
+已有 dummy back-buffer、render-target 身份与 scene/失败清理证据按原档范围使用，不反复领取为新模块。完整生产族仍须按对应原生调用顺序合并消费者、失败恢复与寿命验收，不以“独立小切片”永久限制交付粒度。

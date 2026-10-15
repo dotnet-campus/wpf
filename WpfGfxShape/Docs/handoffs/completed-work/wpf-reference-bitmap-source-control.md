@@ -1,0 +1,15 @@
+# 原版校准：BitmapSource与DrawingImage source对照
+
+在原版source17/18的180组fixture新增1×1、96DPI、不透明红Pbgra32 BitmapSource，克隆同一ImageBrush属性，保持目标几何、pen、VisualTransform、consumer/scaling/mask层级；原始DrawingImage仍为正式预期。每组保存两种source的完整4×4输出及其是否一致。不是中间面实际读回，不能直接推断其内部参数。
+
+原版2/2通过。180组有150相同、30不同；每source/affine/scaling组15项中，source17不同3、source18不同2。不能把两类source当作行为等价或换用BitmapSource golden。
+
+COM校准报告关联原版BitmapSource对照与真实AOT DrawingImage直接Pbgra32，AotMatchesBitmapOnly=0，即没有主实验不匹配原版DrawingImage却整图匹配原版BitmapSource的fixture。此证据否定简单的source类型误用解释，但不排除共同采样公式错误。
+
+450组主实验仍86不同；直接Pbgra32180组仍86不同、格式判定差0；实色目标180组全部一致。未修改生产算法/既有预期，未发布。当前产物SHA2562922882594988716E869AE2CE853D397FCDAA29C02C3F785271056781DECCAC8。
+
+新原版固定文件Tests/WpfGfxShape.WpfReference/TestResults/original-wpf-310e860ca22f4ac7868490178bd0e5c6.json，SHA256 A672207FF5EF1FCCE4CD4727116F0694D14DB38CA7016D7E13174721DBA560C5。原版DLL SHA256501A1CD67D51BB1663870B12AF0F8C0BA29B3D37B8B509BE896D2AAF32DB214A。
+
+最终COM890通过1失败0跳过、总891、2秒；TRX Tests/WpfGfxShape.ComAcceptance/TestResults/com-acceptance.trx，Run ID82b5ef7f-d258-46db-805c-e8b8e956be82。报告Tests/WpfGfxShape.ComAcceptance/TestResults/wpf-calibration-47249619473b42bfa730cbd6b3dcb459.json。
+
+剩余生产根因尚未确定，非新稳定基线。下一步应获取/验证realization surface尺寸与pixel-to-device独立契约，或将普通BitmapSource相同参数直接接入AOT对照，用单项差异追踪源surface到采样span，不能继续以颜色近似/总数推断修复。保持HDR、1e10和1e-7断言。

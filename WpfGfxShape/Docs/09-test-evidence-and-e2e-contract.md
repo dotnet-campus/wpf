@@ -35,7 +35,7 @@ WpfGfxShape/
 - 一个生产项目仍是唯一生产构建边界；上述均为独立测试/工具承载。
 - 测试不得 `ProjectReference` 原 WPF项目，也不得递归构建原 WPF。
 - 原实现只能通过冻结的原生 DLL/独立 adapter 进入差分。
-- ABI/loader/crash/unload 测试必须在独立托管子进程中通过真实 P/Invoke 进入发布 DLL，不能仅调用内部普通方法。
+- ABI/loader/crash 测试必须在独立托管子进程中通过真实 P/Invoke 进入发布 DLL，不能仅调用内部普通方法。
 - 测试使用 `NativeLibrary.SetDllImportResolver` 将固定库名解析到发布 DLL 绝对路径，并校验实际模块路径和 SHA-256。
 - PresentationCore E2E 原则上不修改其 MilCore P/Invoke 声明；通过隔离部署和进程边界选择 original/candidate。
 
@@ -108,7 +108,7 @@ artifacts/test-results/<work-package>/<run-id>/
 - fail-fast/crash/dump；
 - COM final release/线程终止；
 - callback detach race；
-- `FreeLibrary`/reload；
+- 生产DLL的`FreeLibrary`/reload/热替换不适用（[用户明确合同](decisions/DEC-0004-process-lifetime-module.md)），不属于必跑子进程场景，不记通过或阻塞；
 - device loss/driver reset；
 - process-exit 与强制终止。
 
@@ -220,7 +220,7 @@ Comparator 独立读取 original/candidate 结果，应用预先批准的比较�
 
 ### `E2E-09` lifecycle closure
 
-- 多 Dispatcher；重复创建/关闭；显式关闭；finalizer/SafeHandle；进程退出；受官方支持范围内 unload/reload；失败注入和后台线程静止。
+- 多 Dispatcher；重复创建/关闭；显式关闭；finalizer/SafeHandle；进程退出；COM Release、channel/player关闭、初始化失败资源清理、失败注入、后台线程退出和callback静止。unload/reload/热替换按[已生效产品合同](decisions/DEC-0004-process-lifetime-module.md)不适用（用户明确无此需求），不记通过或阻塞。
 - 只有所有目标架构/配置和批准环境矩阵通过后才可称完整替换。
 
 ## 10. 环境标签与能力检测
@@ -232,7 +232,7 @@ Comparator 独立读取 original/candidate 结果，应用预先批准的比较�
 - `D3D9Hardware`、`D3D9Ex`；
 - `WIC`、`DWrite`、`WMP`、`EVR`、`DXVA`；
 - `RdpSession`、`ForceSoftware`；
-- `SupportsNativeAotUnload`（只能由官方/运行证据设定）。
+生产DLL不要求`SupportsNativeAotUnload`能力；卸载项登记为“不适用（用户明确无此需求）”，不套用下述能力缺失阻塞规则，既有false不改写为通过。
 
 缺少能力的结果是 `NotRun-CapabilityMissing`，不是 pass。工作包 done 条件若要求该能力，则仍保持 blocked。
 
@@ -299,7 +299,7 @@ Comparator 独立读取 original/candidate 结果，应用预先批准的比较�
 - PresentationCore candidate 隔离加载的具体机制；
 - 大型原 DLL/媒体/图像工件是否提交仓库或保存在受控外部存储；
 - ARM64 与硬件/媒体测试机器供给；ARM64 ABI 测试代码已就绪，但真实 ARM64 Windows 运行证据仍缺失；
-- 目标 .NET 10 SDK 的 Windows x86 Native AOT shared-library 支持证据；当前状态为 `BlockedByPlatformEvidence`；
-- 官方支持范围内的 Native AOT unload/reload 与 crash/fail-fast 场景。
+- Windows x86完整ABI/配置/E2E矩阵；[Shared发布/有限生命周期证据已取得](investigations/x86-shared-unload-actual-verification-20261014.md)，不再标Shared支持未知；
+- crash/fail-fast 场景。unload/reload/热替换按[产品合同](decisions/DEC-0004-process-lifetime-module.md)不适用，已移出未关闭项；最终兼容原WPF库的完整验收仍必需。
 
 内部 `NativeAotAbiProbe.Invoke(...)` 测试只计 T1，不得登记为 ABI 通过。

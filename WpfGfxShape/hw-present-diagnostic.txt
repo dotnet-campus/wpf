@@ -1,0 +1,80 @@
+HW present hr=0x00000000 processed=False kind=Operational focus=0x5EE1AEC target=0x5EE1AEC focusValid=0x1 targetValid=0x1
+HW present hr=0x00000000 processed=False kind=Operational focus=0x5EF1AEC target=0x5EF1AEC focusValid=0x1 targetValid=0x1
+HW present hr=0x00000000 processed=False kind=Operational focus=0x5F01AEC target=0x5F01AEC focusValid=0x1 targetValid=0x1
+HW present hr=0x00000000 processed=False kind=Operational focus=0x5F11AEC target=0x5F11AEC focusValid=0x1 targetValid=0x1
+HW present hr=0x00000000 processed=False kind=Operational focus=0x5F21AEC target=0x5F21AEC focusValid=0x1 targetValid=0x1
+HW present hr=0x00000000 processed=False kind=Operational focus=0x5F31AEC target=0x5F31AEC focusValid=0x1 targetValid=0x1
+HW present hr=0x00000000 processed=False kind=Operational focus=0x5F41AEC target=0x5F41AEC focusValid=0x1 targetValid=0x1
+HW present hr=0x00000000 processed=False kind=Operational focus=0x5F51AEC target=0x5F51AEC focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xC4B235C override=0xC4B235C
+HW present hr=0x00000000 processed=False kind=Operational focus=0xC4B235C target=0xC4B235C focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xC4C235C override=0xC4C235C
+HW present hr=0x00000000 processed=False kind=Operational focus=0xC4C235C target=0xC4C235C focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xC4D235C override=0xC4D235C
+HW present hr=0x00000000 processed=False kind=Operational focus=0xC4D235C target=0xC4D235C focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xC4E235C override=0xC4E235C
+HW present hr=0x00000000 processed=False kind=Operational focus=0xC4E235C target=0xC4E235C focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xC4F235C override=0xC4F235C
+HW present hr=0x00000000 processed=False kind=Operational focus=0xC4F235C target=0xC4F235C focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xC50235C override=0xC50235C
+HW present hr=0x00000000 processed=False kind=Operational focus=0xC50235C target=0xC50235C focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xC51235C override=0xC51235C
+HW present hr=0x00000000 processed=False kind=Operational focus=0xC51235C target=0xC51235C focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xC52235C override=0xC52235C
+HW present hr=0x00000000 processed=False kind=Operational focus=0xC52235C target=0xC52235C focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0x1490916 override=0x1490916
+HW present hr=0x00000000 processed=False kind=Operational focus=0x1490916 target=0x1490916 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0x14A0916 override=0x14A0916
+HW present hr=0x00000000 processed=False kind=Operational focus=0x14A0916 target=0x14A0916 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0x14B0916 override=0x14B0916
+HW present hr=0x00000000 processed=False kind=Operational focus=0x14B0916 target=0x14B0916 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0x14C0916 override=0x14C0916
+HW present hr=0x00000000 processed=False kind=Operational focus=0x14C0916 target=0x14C0916 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0x14D0916 override=0x14D0916
+HW present hr=0x00000000 processed=False kind=Operational focus=0x14D0916 target=0x14D0916 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0x14E0916 override=0x14E0916
+HW present hr=0x00000000 processed=False kind=Operational focus=0x14E0916 target=0x14E0916 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0x14F0916 override=0x14F0916
+HW present hr=0x00000000 processed=False kind=Operational focus=0x14F0916 target=0x14F0916 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0x1500916 override=0x1500916
+HW present hr=0x00000000 processed=False kind=Operational focus=0x1500916 target=0x1500916 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xF2613C6 override=0xF2613C6
+HW present hr=0x00000000 processed=False kind=Operational focus=0xF2613C6 target=0xF2613C6 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xF2713C6 override=0xF2713C6
+HW present hr=0x00000000 processed=False kind=Operational focus=0xF2713C6 target=0xF2713C6 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xF2813C6 override=0xF2813C6
+HW present hr=0x00000000 processed=False kind=Operational focus=0xF2813C6 target=0xF2813C6 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xF2913C6 override=0xF2913C6
+HW present hr=0x00000000 processed=False kind=Operational focus=0xF2913C6 target=0xF2913C6 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xF2A13C6 override=0xF2A13C6
+HW present hr=0x00000000 processed=False kind=Operational focus=0xF2A13C6 target=0xF2A13C6 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xF2B13C6 override=0xF2B13C6
+HW present hr=0x00000000 processed=False kind=Operational focus=0xF2B13C6 target=0xF2B13C6 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xF2C13C6 override=0xF2C13C6
+HW present hr=0x00000000 processed=False kind=Operational focus=0xF2C13C6 target=0xF2C13C6 focusValid=0x1 targetValid=0x1
+RT read=0x8876086C pixel=0x00000000
+RAW present=0x08760878 processed=False focus=0xF2D13C6 override=0xF2D13C6
+HW present hr=0x00000000 processed=False kind=Operational focus=0xF2D13C6 target=0xF2D13C6 focusValid=0x1 targetValid=0x1

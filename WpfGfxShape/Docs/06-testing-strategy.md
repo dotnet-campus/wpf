@@ -63,7 +63,7 @@ publish → 独立托管测试进程 → DllImport resolver → 真实导出 →
 - x86 若进入支持矩阵，使用与真实 WPF 调用方一致的 P/Invoke 声明验证代表签名和连续调用稳定性；
 - 并发首次调用与重复调用；
 - 错误架构、缺失 DLL/symbol、加载路径；
-- 所有 crash/fail-fast/卸载测试在隔离托管子进程运行。
+- 所有 crash/fail-fast 测试在隔离托管子进程运行；生产DLL的unload/reload/热替换按[已生效产品合同](decisions/DEC-0004-process-lifetime-module.md)不适用，不记通过或阻塞，资源清理合同不减。
 
 不再要求 C++ 动态 caller、静态 import caller、`.lib` 链接或纯原生消费者证据。
 
@@ -127,7 +127,7 @@ E2E 不等待批次 14 才首次出现：
 | `E2E-06` | 硬件/HWND | 硬件 bitmap 和 HWND present、SW fallback | D3D9 设备/交换链/呈现 |
 | `E2E-07` | D3DImage | front-buffer callback、detach、device loss | 用户 surface 与跨线程 callback |
 | `E2E-08` | 媒体 | open/event/frame/close/shutdown/process-exit | AV/WMP/EVR/DXVA 状态机 |
-| `E2E-09` | 生命周期收口 | 多 Dispatcher、显式关闭、process exit、受支持 unload/reload | 完整候选替换的生命周期证据 |
+| `E2E-09` | 生命周期收口 | 多 Dispatcher、显式关闭、process exit、资源释放/线程退出/callback静止；unload/reload/热替换不适用 | 完整候选替换的生命周期证据 |
 
 每一级必须保留原 DLL与 candidate 的结果。较低级通过不能替代后续级别。
 

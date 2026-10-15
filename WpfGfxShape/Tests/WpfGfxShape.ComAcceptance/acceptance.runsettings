@@ -1,4 +1,18 @@
 <RunSettings>
+  <RunConfiguration>
+    <EnvironmentVariables>
+      <WPFGFX_HW_DIAGNOSTICS>1</WPFGFX_HW_DIAGNOSTICS>
+    </EnvironmentVariables>
+  </RunConfiguration>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="blame" enabled="True">
+        <Configuration>
+          <CollectDump DumpType="Mini" />
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
   <LoggerRunSettings>
     <Loggers>
       <Logger friendlyName="trx" enabled="True">

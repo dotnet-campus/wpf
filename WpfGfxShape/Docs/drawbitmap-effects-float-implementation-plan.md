@@ -1,4 +1,6 @@
-# DrawBitmap：效果列表与浮点目标实现方案
+# DrawBitmap：效果列表与浮点目标实现方案（历史）
+
+> 历史设计/执行长档；下文续接和测试数字仅属当时，不是当前计划。保留原条件与证据，不恢复旧小切片。当前恢复只见[唯一入口](next-session-handoff.md)，完整合同见[主题合同](plan-module-contracts.md)。
 
 ## 目标和约束
 

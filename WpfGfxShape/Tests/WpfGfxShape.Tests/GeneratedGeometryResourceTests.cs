@@ -7,6 +7,39 @@ namespace WpfGfxShape.Tests;
 public sealed class GeneratedGeometryResourceTests
 {
     [TestMethod]
+    public void WhenGeometryGraphIsCapturedThenDownstreamMutationDoesNotChangeCapturedValues()
+    {
+        var (table, router) = CreateContext();
+        _ = router.ProcessPackets(
+        [
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(1, MilResourceType.LineGeometry),
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(2, MilResourceType.GeometryGroup),
+            GeneratedProtocolPacketWriter.WriteLineGeometry(1, new(2, 3), new(4, 5)),
+            GeneratedProtocolPacketWriter.WriteGeometryGroup(2, MilFillMode.Winding, 0, 1)
+        ]);
+        int result = FrozenGeometry.CapturePure(Get<GeneratedGeometryGroupResource>(table, 2), [], out var snapshot);
+        using var captured = snapshot;
+        _ = router.ProcessPacket(GeneratedProtocolPacketWriter.WriteLineGeometry(1, new(20, 30), new(40, 50)));
+        var group = (GeneratedGeometryGroupResource)captured!.Geometry!;
+        Assert.AreEqual((0, (new MilPoint2D(2, 3), new MilPoint2D(4, 5))),
+            (result, ((GeneratedLineGeometryResource)group.Children[0]).CurrentValue));
+    }
+
+    [TestMethod]
+    public void WhenGeometryCaptureEncountersCycleThenActiveSetIsRestored()
+    {
+        var (table, router) = CreateContext();
+        _ = router.ProcessPackets(
+        [
+            GeneratedProtocolPacketWriter.WriteChannelCreateResource(1, MilResourceType.GeometryGroup),
+            GeneratedProtocolPacketWriter.WriteGeometryGroup(1, MilFillMode.Alternate, 0, 1)
+        ]);
+        HashSet<GeneratedProtocolResource> active = [];
+        int result = FrozenGeometry.CapturePure(Get<GeneratedGeometryGroupResource>(table, 1), active, out var captured);
+        Assert.AreEqual((Direct3D9Factory.NotImplementedHResult, 0, true), (result, active.Count, captured is null));
+    }
+
+    [TestMethod]
     public void WhenGeometryCommandLayoutsAreMeasuredThenNativeSizesAndOffsetsMatch()
     {
         Assert.AreEqual(

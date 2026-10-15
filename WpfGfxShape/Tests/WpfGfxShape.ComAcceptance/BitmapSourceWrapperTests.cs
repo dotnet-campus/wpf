@@ -7,7 +7,7 @@ namespace WpfGfxShape.ComAcceptance;
 [DoNotParallelize]
 public sealed unsafe class BitmapSourceWrapperTests
 {
-    private static nint Module => NativeLibrary.Load(typeof(BitmapSourceWrapperTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!);
+    private static nint Module => NativeLibrary.Load(AcceptancePaths.AotDll);
 
     [TestMethod]
     public void WhenSourceIsNullThenWrapperRejectsIt()

@@ -1,0 +1,6 @@
+<Project DefaultTargets="Build">
+  <Target Name="Build">
+    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Restore;Build;Test" Properties="Configuration=Release;ComAcceptanceSandbox=false;TestingPlatformCommandLineArguments=--filter FullyQualifiedName~WhenStage4 --report-trx --report-trx-filename stage4-stable-directed.trx" />
+    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Test" Properties="Configuration=Release;ComAcceptanceSandbox=false;TestingPlatformCommandLineArguments=--report-trx --report-trx-filename stage4-stable-full.trx" />
+  </Target>
+</Project>

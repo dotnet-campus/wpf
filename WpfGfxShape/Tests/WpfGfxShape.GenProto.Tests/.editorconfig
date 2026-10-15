@@ -1,0 +1,3 @@
+[*.cs]
+# Historical C# prime sources must retain their original implementation.
+dotnet_diagnostic.SYSLIB1045.severity = warning

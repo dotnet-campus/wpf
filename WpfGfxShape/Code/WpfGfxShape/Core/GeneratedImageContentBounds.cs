@@ -12,6 +12,64 @@ internal static class GeneratedImageContentBounds
         return success;
     }
 
+    internal static bool TryGet(FrozenVisualTree visual, out MilRectD bounds)
+    {
+        MilRectD? accumulated = null;
+        bool success = VisitFrozen(visual, GeneratedImageTransform.Identity, ref accumulated, 0);
+        bounds = accumulated ?? default;
+        return success;
+    }
+
+    private static bool VisitFrozen(FrozenVisualTree visual, GeneratedImageTransform transform,
+        ref MilRectD? bounds, int depth)
+    {
+        if (depth > 256 || !ReadInstructions(visual.Instructions, 0, false, transform, ref bounds)) return false;
+        foreach (var child in visual.Children)
+        {
+            if (child.Effect is not null || child.HasUnsupportedEffect) return false;
+            MilRectD? childBounds = null;
+            if (!VisitFrozen(child, GeneratedImageTransform.Identity, ref childBounds, depth + 1)
+                || !TryClip(child.Clip?.Geometry, GeneratedImageTransform.Identity, null, out var childClip)) return false;
+            var childTransform = transform.Prepend(new(1, 1, child.Offset.X, child.Offset.Y)).Prepend(child.Transform);
+            if (childBounds is { } inner)
+            {
+                if (childClip is { } clipping) inner = Intersect(inner, clipping);
+                if (!Accumulate(inner, childTransform, ref bounds)) return false;
+            }
+        }
+        return true;
+    }
+
+    internal static int GetVisualOuterBounds(FrozenVisualTree visual, out MilRectD bounds)
+    {
+        bounds = default;
+        if (visual.Effect is not null || visual.HasUnsupportedEffect || !TryGet(visual, out var inner)
+            || !TryClip(visual.Clip?.Geometry, GeneratedImageTransform.Identity, null, out var clip))
+            return Direct3D9Factory.NotImplementedHResult;
+        if (clip is { } clipping) inner = Intersect(inner, clipping);
+        MilRectD? outer = null;
+        if (!Accumulate(inner, GeneratedImageTransform.Identity.Prepend(new(1, 1, visual.Offset.X, visual.Offset.Y))
+            .Prepend(visual.Transform), ref outer)) return Direct3D9Factory.InvalidArgumentHResult;
+        bounds = outer ?? default;
+        return 0;
+    }
+
+    internal static int GetVisualOuterBounds(GeneratedVisualResource visual, out MilRectD bounds)
+    {
+        bounds = default;
+        if (visual.Effect is not null || !TryGet(visual, out var inner)
+            || !TryClip(visual.Clip, GeneratedImageTransform.Identity, null, out var clip))
+            return Direct3D9Factory.NotImplementedHResult;
+        if (!GeneratedImageTransform.TryResolve(visual.Transform, out var local))
+            return Direct3D9Factory.NonInvertibleMatrixHResult;
+        if (clip is { } clipping) inner = Intersect(inner, clipping);
+        MilRectD? outer = null;
+        if (!Accumulate(inner, GeneratedImageTransform.Identity.Prepend(new(1, 1, visual.Offset.X, visual.Offset.Y)).Prepend(local), ref outer))
+            return Direct3D9Factory.InvalidArgumentHResult;
+        bounds = outer ?? default;
+        return 0;
+    }
+
     internal static bool TryGetMaskScope(IReadOnlyList<GeneratedRenderDataInstruction> instructions, int start, out MilRectD bounds)
     {
         MilRectD? accumulated = null;
@@ -65,7 +123,7 @@ internal static class GeneratedImageContentBounds
                             || !TryGetDrawing(drawingInstructions, out var content)) return false;
                         if (content.Width <= 0 || content.Height <= 0) break;
                     }
-                    else if (instruction.ResourceSlots[0] is not (GeneratedBitmapSourceResource or GeneratedDoubleBufferedBitmapResource)) return false;
+                    else if (instruction.ResourceSlots[0] is not (GeneratedBitmapSourceResource or GeneratedDoubleBufferedBitmapResource or GeneratedD3DImageResource)) return false;
                     var rect = MemoryMarshal.Read<MilRectD>(instruction.Data.Span);
                     if (instruction.Kind == GeneratedRenderDataKind.DrawImageAnimate
                         && instruction.ResourceSlots[1] is GeneratedValueResource<MilRectD> animated) rect = animated.Value;
@@ -78,6 +136,13 @@ internal static class GeneratedImageContentBounds
                         if (clip is { } clipping) image = Intersect(image, clipping);
                         if (!Accumulate(image, GeneratedImageTransform.Identity, ref bounds)) return false;
                     }
+                    break;
+                case GeneratedRenderDataKind.DrawGlyphRun:
+                    if (instruction.ResourceSlots[0] is null
+                        || instruction.ResourceSlots[1] is not GeneratedGlyphRunResource glyph) break;
+                    var glyphBounds = current.Apply(glyph.Command.Bounds);
+                    if (clip is { } glyphClip) glyphBounds = Intersect(glyphBounds, glyphClip);
+                    if (!Accumulate(glyphBounds, GeneratedImageTransform.Identity, ref bounds)) return false;
                     break;
                 case GeneratedRenderDataKind.DrawGeometry:
                     if (instruction.ResourceSlots[2] is not { } geometry) break;
@@ -123,9 +188,14 @@ internal static class GeneratedImageContentBounds
         {
             if (!ReadInstructions(data.Instructions, 0, false, transform, ref bounds)) return false;
         }
-        else if (visual.Content is not null) return false;
+        else if (visual.Content is not null)
+        {
+            if (!GeneratedDrawingInstructions.TryRead(visual.Content, out var instructions)
+                || !ReadInstructions(instructions, 0, false, transform, ref bounds)) return false;
+        }
         foreach (var child in visual.Children)
         {
+            if (child.Effect is not null) return false;
             MilRectD? childBounds = null;
             if (!Visit(child, GeneratedImageTransform.Identity, ref childBounds, depth + 1)) return false;
             if (!TryClip(child.Clip, GeneratedImageTransform.Identity, null, out var childClip)) return false;

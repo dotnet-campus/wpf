@@ -15,4 +15,13 @@ internal readonly record struct SoftwareImageDrawingContext(
     MilBitmapWrapMode WrapMode = MilBitmapWrapMode.Extend,
     bool ExtendThroughGeometry = false,
     float AlphaScale = 1,
-    MilColorF BorderColor = default);
+    MilColorF BorderColor = default,
+    GeneratedImageTransform? EffectToDevice = null,
+    GeneratedGlyphAlpha? GlyphAlpha = null,
+    SoftwareImageWorkingFormat WorkingFormat = SoftwareImageWorkingFormat.Native);
+
+internal enum SoftwareImageWorkingFormat
+{
+    Native,
+    DrawingImagePbgra32
+}

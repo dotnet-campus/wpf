@@ -63,7 +63,7 @@ internal sealed unsafe class SystemWicBitmap : IDisposable
         }
     }
 
-    internal nint Create(uint width, uint height)
+    internal nint Create(uint width, uint height, bool floating = false)
     {
         nint factory = 0, bitmap = 0;
         try
@@ -71,7 +71,7 @@ internal sealed unsafe class SystemWicBitmap : IDisposable
             Guid clsid = new("cacaf262-9370-4615-a13b-9f5539da4c0a");
             Guid iid = new("ec5ec8a9-c395-4314-9c77-54d7a935ff70");
             Marshal.ThrowExceptionForHR(CoCreateInstance(&clsid, 0, 1, &iid, &factory));
-            Guid format = new("6fddc324-4e03-4bfe-b185-3d77768dc910");
+            Guid format = new(floating ? "6fddc324-4e03-4bfe-b185-3d77768dc91a" : "6fddc324-4e03-4bfe-b185-3d77768dc910");
             Marshal.ThrowExceptionForHR(((delegate* unmanaged[Stdcall]<nint, uint, uint, Guid*, uint, nint*, int>)(*(void***)factory)[17])(factory, width, height, &format, 2, &bitmap));
             return bitmap;
         }

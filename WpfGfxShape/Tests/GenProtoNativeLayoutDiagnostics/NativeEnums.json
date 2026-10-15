@@ -1,0 +1,1109 @@
+{
+  "header": "d:\\lindexi\\Code\\dotnetcampus\\WpfLab\\WpfGfxShape\\src/Microsoft.DotNet.Wpf/src/WpfGfx/include/processed/wgx_core_types.h",
+  "headerSha256": "9E2D6AF944AAFD8108B476A88465F69D191FF22C3051323115675E6BD8792629",
+  "path": "d:\\lindexi\\Code\\dotnetcampus\\WpfLab\\WpfGfxShape\\WpfGfxShape/Tests/GenProtoNativeLayoutDiagnostics/NativeEnums.inc",
+  "expressionsSha256": "3A9DC610738B2F233AD075D15696FAA944B078F5A3363F18C6CE88B522B9B7E0",
+  "nativeCompilerExecuted": false,
+  "expressions": [
+    {
+      "Name": "enum:MilColorInterpolationMode.width",
+      "Expression": "sizeof(MilColorInterpolationMode::Enum)"
+    },
+    {
+      "Name": "enum:MilColorInterpolationMode.ScRgbLinearInterpolation",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilColorInterpolationMode::ScRgbLinearInterpolation)"
+    },
+    {
+      "Name": "enum:MilColorInterpolationMode.SRgbLinearInterpolation",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilColorInterpolationMode::SRgbLinearInterpolation)"
+    },
+    {
+      "Name": "enum:MilColorInterpolationMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilColorInterpolationMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilBrushMappingMode.width",
+      "Expression": "sizeof(MilBrushMappingMode::Enum)"
+    },
+    {
+      "Name": "enum:MilBrushMappingMode.Absolute",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBrushMappingMode::Absolute)"
+    },
+    {
+      "Name": "enum:MilBrushMappingMode.RelativeToBoundingBox",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBrushMappingMode::RelativeToBoundingBox)"
+    },
+    {
+      "Name": "enum:MilBrushMappingMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBrushMappingMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilGradientSpreadMethod.width",
+      "Expression": "sizeof(MilGradientSpreadMethod::Enum)"
+    },
+    {
+      "Name": "enum:MilGradientSpreadMethod.Pad",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilGradientSpreadMethod::Pad)"
+    },
+    {
+      "Name": "enum:MilGradientSpreadMethod.Reflect",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilGradientSpreadMethod::Reflect)"
+    },
+    {
+      "Name": "enum:MilGradientSpreadMethod.Repeat",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilGradientSpreadMethod::Repeat)"
+    },
+    {
+      "Name": "enum:MilGradientSpreadMethod.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilGradientSpreadMethod::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilStretch.width",
+      "Expression": "sizeof(MilStretch::Enum)"
+    },
+    {
+      "Name": "enum:MilStretch.None",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilStretch::None)"
+    },
+    {
+      "Name": "enum:MilStretch.Fill",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilStretch::Fill)"
+    },
+    {
+      "Name": "enum:MilStretch.Uniform",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilStretch::Uniform)"
+    },
+    {
+      "Name": "enum:MilStretch.UniformToFill",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilStretch::UniformToFill)"
+    },
+    {
+      "Name": "enum:MilStretch.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilStretch::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilTransparency.width",
+      "Expression": "sizeof(MilTransparency::FlagsEnum)"
+    },
+    {
+      "Name": "enum:MilTransparency.Opaque",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTransparency::Opaque)"
+    },
+    {
+      "Name": "enum:MilTransparency.ConstantAlpha",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTransparency::ConstantAlpha)"
+    },
+    {
+      "Name": "enum:MilTransparency.PerPixelAlpha",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTransparency::PerPixelAlpha)"
+    },
+    {
+      "Name": "enum:MilTransparency.ColorKey",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTransparency::ColorKey)"
+    },
+    {
+      "Name": "enum:MilTransparency.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTransparency::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilWindowLayerType.width",
+      "Expression": "sizeof(MilWindowLayerType::Enum)"
+    },
+    {
+      "Name": "enum:MilWindowLayerType.NotLayered",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowLayerType::NotLayered)"
+    },
+    {
+      "Name": "enum:MilWindowLayerType.SystemManagedLayer",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowLayerType::SystemManagedLayer)"
+    },
+    {
+      "Name": "enum:MilWindowLayerType.ApplicationManagedLayer",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowLayerType::ApplicationManagedLayer)"
+    },
+    {
+      "Name": "enum:MilWindowLayerType.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowLayerType::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilWindowTargetCachingMode.width",
+      "Expression": "sizeof(MilWindowTargetCachingMode::Enum)"
+    },
+    {
+      "Name": "enum:MilWindowTargetCachingMode.NotCached",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowTargetCachingMode::NotCached)"
+    },
+    {
+      "Name": "enum:MilWindowTargetCachingMode.Cached",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowTargetCachingMode::Cached)"
+    },
+    {
+      "Name": "enum:MilWindowTargetCachingMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowTargetCachingMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilTileMode.width",
+      "Expression": "sizeof(MilTileMode::Enum)"
+    },
+    {
+      "Name": "enum:MilTileMode.None",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTileMode::None)"
+    },
+    {
+      "Name": "enum:MilTileMode.Tile",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTileMode::Tile)"
+    },
+    {
+      "Name": "enum:MilTileMode.FlipX",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTileMode::FlipX)"
+    },
+    {
+      "Name": "enum:MilTileMode.FlipY",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTileMode::FlipY)"
+    },
+    {
+      "Name": "enum:MilTileMode.FlipXY",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTileMode::FlipXY)"
+    },
+    {
+      "Name": "enum:MilTileMode.Extend",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTileMode::Extend)"
+    },
+    {
+      "Name": "enum:MilTileMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTileMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilHorizontalAlignment.width",
+      "Expression": "sizeof(MilHorizontalAlignment::Enum)"
+    },
+    {
+      "Name": "enum:MilHorizontalAlignment.Left",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilHorizontalAlignment::Left)"
+    },
+    {
+      "Name": "enum:MilHorizontalAlignment.Center",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilHorizontalAlignment::Center)"
+    },
+    {
+      "Name": "enum:MilHorizontalAlignment.Right",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilHorizontalAlignment::Right)"
+    },
+    {
+      "Name": "enum:MilHorizontalAlignment.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilHorizontalAlignment::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilVerticalAlignment.width",
+      "Expression": "sizeof(MilVerticalAlignment::Enum)"
+    },
+    {
+      "Name": "enum:MilVerticalAlignment.Top",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilVerticalAlignment::Top)"
+    },
+    {
+      "Name": "enum:MilVerticalAlignment.Center",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilVerticalAlignment::Center)"
+    },
+    {
+      "Name": "enum:MilVerticalAlignment.Bottom",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilVerticalAlignment::Bottom)"
+    },
+    {
+      "Name": "enum:MilVerticalAlignment.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilVerticalAlignment::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilPenCap.width",
+      "Expression": "sizeof(MilPenCap::Enum)"
+    },
+    {
+      "Name": "enum:MilPenCap.Flat",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPenCap::Flat)"
+    },
+    {
+      "Name": "enum:MilPenCap.Square",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPenCap::Square)"
+    },
+    {
+      "Name": "enum:MilPenCap.Round",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPenCap::Round)"
+    },
+    {
+      "Name": "enum:MilPenCap.Triangle",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPenCap::Triangle)"
+    },
+    {
+      "Name": "enum:MilPenCap.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPenCap::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilPenJoin.width",
+      "Expression": "sizeof(MilPenJoin::Enum)"
+    },
+    {
+      "Name": "enum:MilPenJoin.Miter",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPenJoin::Miter)"
+    },
+    {
+      "Name": "enum:MilPenJoin.Bevel",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPenJoin::Bevel)"
+    },
+    {
+      "Name": "enum:MilPenJoin.Round",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPenJoin::Round)"
+    },
+    {
+      "Name": "enum:MilPenJoin.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPenJoin::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilCombineMode.width",
+      "Expression": "sizeof(MilCombineMode::Enum)"
+    },
+    {
+      "Name": "enum:MilCombineMode.Union",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCombineMode::Union)"
+    },
+    {
+      "Name": "enum:MilCombineMode.Intersect",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCombineMode::Intersect)"
+    },
+    {
+      "Name": "enum:MilCombineMode.Xor",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCombineMode::Xor)"
+    },
+    {
+      "Name": "enum:MilCombineMode.Exclude",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCombineMode::Exclude)"
+    },
+    {
+      "Name": "enum:MilCombineMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCombineMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilEdgeMode.width",
+      "Expression": "sizeof(MilEdgeMode::Enum)"
+    },
+    {
+      "Name": "enum:MilEdgeMode.Unspecified",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEdgeMode::Unspecified)"
+    },
+    {
+      "Name": "enum:MilEdgeMode.Aliased",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEdgeMode::Aliased)"
+    },
+    {
+      "Name": "enum:MilEdgeMode.Last",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEdgeMode::Last)"
+    },
+    {
+      "Name": "enum:MilEdgeMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEdgeMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilBitmapScalingMode.width",
+      "Expression": "sizeof(MilBitmapScalingMode::Enum)"
+    },
+    {
+      "Name": "enum:MilBitmapScalingMode.Unspecified",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapScalingMode::Unspecified)"
+    },
+    {
+      "Name": "enum:MilBitmapScalingMode.LowQuality",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapScalingMode::LowQuality)"
+    },
+    {
+      "Name": "enum:MilBitmapScalingMode.HighQuality",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapScalingMode::HighQuality)"
+    },
+    {
+      "Name": "enum:MilBitmapScalingMode.Linear",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapScalingMode::Linear)"
+    },
+    {
+      "Name": "enum:MilBitmapScalingMode.Fant",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapScalingMode::Fant)"
+    },
+    {
+      "Name": "enum:MilBitmapScalingMode.NearestNeighbor",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapScalingMode::NearestNeighbor)"
+    },
+    {
+      "Name": "enum:MilBitmapScalingMode.Last",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapScalingMode::Last)"
+    },
+    {
+      "Name": "enum:MilBitmapScalingMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapScalingMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilClearTypeHint.width",
+      "Expression": "sizeof(MilClearTypeHint::Enum)"
+    },
+    {
+      "Name": "enum:MilClearTypeHint.Auto",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilClearTypeHint::Auto)"
+    },
+    {
+      "Name": "enum:MilClearTypeHint.Enabled",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilClearTypeHint::Enabled)"
+    },
+    {
+      "Name": "enum:MilClearTypeHint.Last",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilClearTypeHint::Last)"
+    },
+    {
+      "Name": "enum:MilClearTypeHint.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilClearTypeHint::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilCachingHint.width",
+      "Expression": "sizeof(MilCachingHint::Enum)"
+    },
+    {
+      "Name": "enum:MilCachingHint.Unspecified",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCachingHint::Unspecified)"
+    },
+    {
+      "Name": "enum:MilCachingHint.Cache",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCachingHint::Cache)"
+    },
+    {
+      "Name": "enum:MilCachingHint.Last",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCachingHint::Last)"
+    },
+    {
+      "Name": "enum:MilCachingHint.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCachingHint::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilTextRenderingMode.width",
+      "Expression": "sizeof(MilTextRenderingMode::Enum)"
+    },
+    {
+      "Name": "enum:MilTextRenderingMode.Auto",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTextRenderingMode::Auto)"
+    },
+    {
+      "Name": "enum:MilTextRenderingMode.Aliased",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTextRenderingMode::Aliased)"
+    },
+    {
+      "Name": "enum:MilTextRenderingMode.Grayscale",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTextRenderingMode::Grayscale)"
+    },
+    {
+      "Name": "enum:MilTextRenderingMode.ClearType",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTextRenderingMode::ClearType)"
+    },
+    {
+      "Name": "enum:MilTextRenderingMode.Last",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTextRenderingMode::Last)"
+    },
+    {
+      "Name": "enum:MilTextRenderingMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTextRenderingMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilTextHintingMode.width",
+      "Expression": "sizeof(MilTextHintingMode::Enum)"
+    },
+    {
+      "Name": "enum:MilTextHintingMode.Auto",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTextHintingMode::Auto)"
+    },
+    {
+      "Name": "enum:MilTextHintingMode.Fixed",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTextHintingMode::Fixed)"
+    },
+    {
+      "Name": "enum:MilTextHintingMode.Animated",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTextHintingMode::Animated)"
+    },
+    {
+      "Name": "enum:MilTextHintingMode.Last",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTextHintingMode::Last)"
+    },
+    {
+      "Name": "enum:MilTextHintingMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilTextHintingMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilKernelType.width",
+      "Expression": "sizeof(MilKernelType::Enum)"
+    },
+    {
+      "Name": "enum:MilKernelType.Gaussian",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilKernelType::Gaussian)"
+    },
+    {
+      "Name": "enum:MilKernelType.Box",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilKernelType::Box)"
+    },
+    {
+      "Name": "enum:MilKernelType.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilKernelType::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilEdgeProfile.width",
+      "Expression": "sizeof(MilEdgeProfile::Enum)"
+    },
+    {
+      "Name": "enum:MilEdgeProfile.Linear",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEdgeProfile::Linear)"
+    },
+    {
+      "Name": "enum:MilEdgeProfile.CurvedIn",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEdgeProfile::CurvedIn)"
+    },
+    {
+      "Name": "enum:MilEdgeProfile.CurvedOut",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEdgeProfile::CurvedOut)"
+    },
+    {
+      "Name": "enum:MilEdgeProfile.BulgedUp",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEdgeProfile::BulgedUp)"
+    },
+    {
+      "Name": "enum:MilEdgeProfile.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEdgeProfile::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:ShaderEffectShaderRenderMode.width",
+      "Expression": "sizeof(ShaderEffectShaderRenderMode::Enum)"
+    },
+    {
+      "Name": "enum:ShaderEffectShaderRenderMode.Auto",
+      "Expression": "static_cast\u003Cunsigned int\u003E(ShaderEffectShaderRenderMode::Auto)"
+    },
+    {
+      "Name": "enum:ShaderEffectShaderRenderMode.SoftwareOnly",
+      "Expression": "static_cast\u003Cunsigned int\u003E(ShaderEffectShaderRenderMode::SoftwareOnly)"
+    },
+    {
+      "Name": "enum:ShaderEffectShaderRenderMode.HardwareOnly",
+      "Expression": "static_cast\u003Cunsigned int\u003E(ShaderEffectShaderRenderMode::HardwareOnly)"
+    },
+    {
+      "Name": "enum:ShaderEffectShaderRenderMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(ShaderEffectShaderRenderMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilEffectRenderingBias.width",
+      "Expression": "sizeof(MilEffectRenderingBias::Enum)"
+    },
+    {
+      "Name": "enum:MilEffectRenderingBias.Performance",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEffectRenderingBias::Performance)"
+    },
+    {
+      "Name": "enum:MilEffectRenderingBias.Quality",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEffectRenderingBias::Quality)"
+    },
+    {
+      "Name": "enum:MilEffectRenderingBias.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilEffectRenderingBias::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilGlyphRun.width",
+      "Expression": "sizeof(MilGlyphRun::FlagsEnum)"
+    },
+    {
+      "Name": "enum:MilGlyphRun.Sideways",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilGlyphRun::Sideways)"
+    },
+    {
+      "Name": "enum:MilGlyphRun.HasOffsets",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilGlyphRun::HasOffsets)"
+    },
+    {
+      "Name": "enum:MilGlyphRun.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilGlyphRun::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilMessageClass.width",
+      "Expression": "sizeof(MilMessageClass::Enum)"
+    },
+    {
+      "Name": "enum:MilMessageClass.Invalid",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMessageClass::Invalid)"
+    },
+    {
+      "Name": "enum:MilMessageClass.SyncFlushReply",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMessageClass::SyncFlushReply)"
+    },
+    {
+      "Name": "enum:MilMessageClass.Tier",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMessageClass::Tier)"
+    },
+    {
+      "Name": "enum:MilMessageClass.CompositionDeviceStateChange",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMessageClass::CompositionDeviceStateChange)"
+    },
+    {
+      "Name": "enum:MilMessageClass.PartitionIsZombie",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMessageClass::PartitionIsZombie)"
+    },
+    {
+      "Name": "enum:MilMessageClass.SyncModeStatus",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMessageClass::SyncModeStatus)"
+    },
+    {
+      "Name": "enum:MilMessageClass.Presented",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMessageClass::Presented)"
+    },
+    {
+      "Name": "enum:MilMessageClass.RenderStatus",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMessageClass::RenderStatus)"
+    },
+    {
+      "Name": "enum:MilMessageClass.BadPixelShader",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMessageClass::BadPixelShader)"
+    },
+    {
+      "Name": "enum:MilMessageClass.Last",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMessageClass::Last)"
+    },
+    {
+      "Name": "enum:MilMessageClass.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMessageClass::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilSegmentType.width",
+      "Expression": "sizeof(MilSegmentType::Enum)"
+    },
+    {
+      "Name": "enum:MilSegmentType.None",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilSegmentType::None)"
+    },
+    {
+      "Name": "enum:MilSegmentType.Line",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilSegmentType::Line)"
+    },
+    {
+      "Name": "enum:MilSegmentType.Bezier",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilSegmentType::Bezier)"
+    },
+    {
+      "Name": "enum:MilSegmentType.QuadraticBezier",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilSegmentType::QuadraticBezier)"
+    },
+    {
+      "Name": "enum:MilSegmentType.Arc",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilSegmentType::Arc)"
+    },
+    {
+      "Name": "enum:MilSegmentType.PolyLine",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilSegmentType::PolyLine)"
+    },
+    {
+      "Name": "enum:MilSegmentType.PolyBezier",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilSegmentType::PolyBezier)"
+    },
+    {
+      "Name": "enum:MilSegmentType.PolyQuadraticBezier",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilSegmentType::PolyQuadraticBezier)"
+    },
+    {
+      "Name": "enum:MilSegmentType.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilSegmentType::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilCoreSeg.width",
+      "Expression": "sizeof(MilCoreSeg::FlagsEnum)"
+    },
+    {
+      "Name": "enum:MilCoreSeg.TypeLine",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCoreSeg::TypeLine)"
+    },
+    {
+      "Name": "enum:MilCoreSeg.TypeBezier",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCoreSeg::TypeBezier)"
+    },
+    {
+      "Name": "enum:MilCoreSeg.TypeMask",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCoreSeg::TypeMask)"
+    },
+    {
+      "Name": "enum:MilCoreSeg.IsAGap",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCoreSeg::IsAGap)"
+    },
+    {
+      "Name": "enum:MilCoreSeg.SmoothJoin",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCoreSeg::SmoothJoin)"
+    },
+    {
+      "Name": "enum:MilCoreSeg.Closed",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCoreSeg::Closed)"
+    },
+    {
+      "Name": "enum:MilCoreSeg.IsCurved",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCoreSeg::IsCurved)"
+    },
+    {
+      "Name": "enum:MilCoreSeg.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCoreSeg::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.width",
+      "Expression": "sizeof(MilRTInitialization::FlagsEnum)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.Default",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::Default)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.SoftwareOnly",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::SoftwareOnly)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.HardwareOnly",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::HardwareOnly)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.Null",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::Null)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.TypeMask",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::TypeMask)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.PresentImmediately",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::PresentImmediately)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.PresentRetainContents",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::PresentRetainContents)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.NeedDestinationAlpha",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::NeedDestinationAlpha)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.SingleThreadedUsage",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::SingleThreadedUsage)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.RenderNonClient",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::RenderNonClient)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.DisableDisplayClipping",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::DisableDisplayClipping)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.ForceCompatible",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::ForceCompatible)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.DisableMultimonDisplayClipping",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::DisableMultimonDisplayClipping)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.IsDisableMultimonDisplayClippingValid",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::IsDisableMultimonDisplayClippingValid)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.DisableDirtyRectangles",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::DisableDirtyRectangles)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.UseRefRast",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::UseRefRast)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.UseRgbRast",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::UseRgbRast)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.PresentUsingMask",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::PresentUsingMask)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.PresentUsingHal",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::PresentUsingHal)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.PresentUsingBitBlt",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::PresentUsingBitBlt)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.PresentUsingAlphaBlend",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::PresentUsingAlphaBlend)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.PresentUsingUpdateLayeredWindow",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::PresentUsingUpdateLayeredWindow)"
+    },
+    {
+      "Name": "enum:MilRTInitialization.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRTInitialization::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilPresentationResults.width",
+      "Expression": "sizeof(MilPresentationResults::Enum)"
+    },
+    {
+      "Name": "enum:MilPresentationResults.VSync",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPresentationResults::VSync)"
+    },
+    {
+      "Name": "enum:MilPresentationResults.NoPresent",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPresentationResults::NoPresent)"
+    },
+    {
+      "Name": "enum:MilPresentationResults.VSyncUnsupported",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPresentationResults::VSyncUnsupported)"
+    },
+    {
+      "Name": "enum:MilPresentationResults.Dwm",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPresentationResults::Dwm)"
+    },
+    {
+      "Name": "enum:MilPresentationResults.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPresentationResults::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilRenderOptionFlags.width",
+      "Expression": "sizeof(MilRenderOptionFlags::FlagsEnum)"
+    },
+    {
+      "Name": "enum:MilRenderOptionFlags.BitmapScalingMode",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRenderOptionFlags::BitmapScalingMode)"
+    },
+    {
+      "Name": "enum:MilRenderOptionFlags.EdgeMode",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRenderOptionFlags::EdgeMode)"
+    },
+    {
+      "Name": "enum:MilRenderOptionFlags.CompositingMode",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRenderOptionFlags::CompositingMode)"
+    },
+    {
+      "Name": "enum:MilRenderOptionFlags.ClearTypeHint",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRenderOptionFlags::ClearTypeHint)"
+    },
+    {
+      "Name": "enum:MilRenderOptionFlags.TextRenderingMode",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRenderOptionFlags::TextRenderingMode)"
+    },
+    {
+      "Name": "enum:MilRenderOptionFlags.TextHintingMode",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRenderOptionFlags::TextHintingMode)"
+    },
+    {
+      "Name": "enum:MilRenderOptionFlags.Last",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRenderOptionFlags::Last)"
+    },
+    {
+      "Name": "enum:MilRenderOptionFlags.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilRenderOptionFlags::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilBitmapWrapMode.width",
+      "Expression": "sizeof(MilBitmapWrapMode::Enum)"
+    },
+    {
+      "Name": "enum:MilBitmapWrapMode.Extend",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapWrapMode::Extend)"
+    },
+    {
+      "Name": "enum:MilBitmapWrapMode.FlipX",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapWrapMode::FlipX)"
+    },
+    {
+      "Name": "enum:MilBitmapWrapMode.FlipY",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapWrapMode::FlipY)"
+    },
+    {
+      "Name": "enum:MilBitmapWrapMode.FlipXY",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapWrapMode::FlipXY)"
+    },
+    {
+      "Name": "enum:MilBitmapWrapMode.Tile",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapWrapMode::Tile)"
+    },
+    {
+      "Name": "enum:MilBitmapWrapMode.Border",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapWrapMode::Border)"
+    },
+    {
+      "Name": "enum:MilBitmapWrapMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilBitmapWrapMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilWindowProperties.width",
+      "Expression": "sizeof(MilWindowProperties::FlagsEnum)"
+    },
+    {
+      "Name": "enum:MilWindowProperties.RtlLayout",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowProperties::RtlLayout)"
+    },
+    {
+      "Name": "enum:MilWindowProperties.Redirected",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowProperties::Redirected)"
+    },
+    {
+      "Name": "enum:MilWindowProperties.Compositited",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowProperties::Compositited)"
+    },
+    {
+      "Name": "enum:MilWindowProperties.PresentUsingGdi",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowProperties::PresentUsingGdi)"
+    },
+    {
+      "Name": "enum:MilWindowProperties.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilWindowProperties::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilPathGeometryFlags.width",
+      "Expression": "sizeof(MilPathGeometryFlags::FlagsEnum)"
+    },
+    {
+      "Name": "enum:MilPathGeometryFlags.HasCurves",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathGeometryFlags::HasCurves)"
+    },
+    {
+      "Name": "enum:MilPathGeometryFlags.BoundsValid",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathGeometryFlags::BoundsValid)"
+    },
+    {
+      "Name": "enum:MilPathGeometryFlags.HasGaps",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathGeometryFlags::HasGaps)"
+    },
+    {
+      "Name": "enum:MilPathGeometryFlags.HasHollows",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathGeometryFlags::HasHollows)"
+    },
+    {
+      "Name": "enum:MilPathGeometryFlags.IsRegionData",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathGeometryFlags::IsRegionData)"
+    },
+    {
+      "Name": "enum:MilPathGeometryFlags.Mask",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathGeometryFlags::Mask)"
+    },
+    {
+      "Name": "enum:MilPathGeometryFlags.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathGeometryFlags::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilPathFigureFlags.width",
+      "Expression": "sizeof(MilPathFigureFlags::FlagsEnum)"
+    },
+    {
+      "Name": "enum:MilPathFigureFlags.HasGaps",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathFigureFlags::HasGaps)"
+    },
+    {
+      "Name": "enum:MilPathFigureFlags.HasCurves",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathFigureFlags::HasCurves)"
+    },
+    {
+      "Name": "enum:MilPathFigureFlags.IsClosed",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathFigureFlags::IsClosed)"
+    },
+    {
+      "Name": "enum:MilPathFigureFlags.IsFillable",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathFigureFlags::IsFillable)"
+    },
+    {
+      "Name": "enum:MilPathFigureFlags.IsRectangleData",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathFigureFlags::IsRectangleData)"
+    },
+    {
+      "Name": "enum:MilPathFigureFlags.Mask",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathFigureFlags::Mask)"
+    },
+    {
+      "Name": "enum:MilPathFigureFlags.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilPathFigureFlags::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilDashStyle.width",
+      "Expression": "sizeof(MilDashStyle::Enum)"
+    },
+    {
+      "Name": "enum:MilDashStyle.Solid",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilDashStyle::Solid)"
+    },
+    {
+      "Name": "enum:MilDashStyle.Dash",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilDashStyle::Dash)"
+    },
+    {
+      "Name": "enum:MilDashStyle.Dot",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilDashStyle::Dot)"
+    },
+    {
+      "Name": "enum:MilDashStyle.DashDot",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilDashStyle::DashDot)"
+    },
+    {
+      "Name": "enum:MilDashStyle.DashDotDot",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilDashStyle::DashDotDot)"
+    },
+    {
+      "Name": "enum:MilDashStyle.Custom",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilDashStyle::Custom)"
+    },
+    {
+      "Name": "enum:MilDashStyle.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilDashStyle::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilFillMode.width",
+      "Expression": "sizeof(MilFillMode::Enum)"
+    },
+    {
+      "Name": "enum:MilFillMode.Alternate",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilFillMode::Alternate)"
+    },
+    {
+      "Name": "enum:MilFillMode.Winding",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilFillMode::Winding)"
+    },
+    {
+      "Name": "enum:MilFillMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilFillMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilGradientWrapMode.width",
+      "Expression": "sizeof(MilGradientWrapMode::Enum)"
+    },
+    {
+      "Name": "enum:MilGradientWrapMode.Extend",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilGradientWrapMode::Extend)"
+    },
+    {
+      "Name": "enum:MilGradientWrapMode.Flip",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilGradientWrapMode::Flip)"
+    },
+    {
+      "Name": "enum:MilGradientWrapMode.Tile",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilGradientWrapMode::Tile)"
+    },
+    {
+      "Name": "enum:MilGradientWrapMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilGradientWrapMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilStretchMode.width",
+      "Expression": "sizeof(MilStretchMode::Enum)"
+    },
+    {
+      "Name": "enum:MilStretchMode.None",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilStretchMode::None)"
+    },
+    {
+      "Name": "enum:MilStretchMode.Fill",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilStretchMode::Fill)"
+    },
+    {
+      "Name": "enum:MilStretchMode.Uniform",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilStretchMode::Uniform)"
+    },
+    {
+      "Name": "enum:MilStretchMode.UniformToFill",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilStretchMode::UniformToFill)"
+    },
+    {
+      "Name": "enum:MilStretchMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilStretchMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.width",
+      "Expression": "sizeof(MilCompositingMode::Enum)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.SourceOver",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositingMode::SourceOver)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.SourceCopy",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositingMode::SourceCopy)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.SourceAdd",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositingMode::SourceAdd)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.SourceAlphaMultiply",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositingMode::SourceAlphaMultiply)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.SourceInverseAlphaMultiply",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositingMode::SourceInverseAlphaMultiply)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.SourceUnder",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositingMode::SourceUnder)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.SourceOverNonPremultiplied",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositingMode::SourceOverNonPremultiplied)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.SourceInverseAlphaOverNonPremultiplied",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositingMode::SourceInverseAlphaOverNonPremultiplied)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.DestInvert",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositingMode::DestInvert)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.Last",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositingMode::Last)"
+    },
+    {
+      "Name": "enum:MilCompositingMode.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositingMode::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilCompositionDeviceState.width",
+      "Expression": "sizeof(MilCompositionDeviceState::Enum)"
+    },
+    {
+      "Name": "enum:MilCompositionDeviceState.Normal",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositionDeviceState::Normal)"
+    },
+    {
+      "Name": "enum:MilCompositionDeviceState.NoDevice",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositionDeviceState::NoDevice)"
+    },
+    {
+      "Name": "enum:MilCompositionDeviceState.Occluded",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositionDeviceState::Occluded)"
+    },
+    {
+      "Name": "enum:MilCompositionDeviceState.Last",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositionDeviceState::Last)"
+    },
+    {
+      "Name": "enum:MilCompositionDeviceState.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilCompositionDeviceState::FORCE_DWORD)"
+    },
+    {
+      "Name": "enum:MilMarshalType.width",
+      "Expression": "sizeof(MilMarshalType::Enum)"
+    },
+    {
+      "Name": "enum:MilMarshalType.Invalid",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMarshalType::Invalid)"
+    },
+    {
+      "Name": "enum:MilMarshalType.SameThread",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMarshalType::SameThread)"
+    },
+    {
+      "Name": "enum:MilMarshalType.CrossThread",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMarshalType::CrossThread)"
+    },
+    {
+      "Name": "enum:MilMarshalType.FORCE_DWORD",
+      "Expression": "static_cast\u003Cunsigned int\u003E(MilMarshalType::FORCE_DWORD)"
+    }
+  ]
+}

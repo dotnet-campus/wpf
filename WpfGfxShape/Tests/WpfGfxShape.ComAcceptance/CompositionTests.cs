@@ -13,7 +13,7 @@ public sealed unsafe partial class CompositionTests
     [DataRow(false, true)]
     public void WhenCopyForwardIsComposedThenVisualDrawImageConsumesFrontBufferAcrossFrames(bool failWithLockedTarget, bool removeRootChannel)
     {
-        string path = typeof(CompositionTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
         var present = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "WgxConnection_SameThreadPresent");
         var createConnection = (delegate* unmanaged[Stdcall]<byte, nint*, int>)NativeLibrary.GetExport(module, "WgxConnection_Create");
@@ -874,7 +874,7 @@ public sealed unsafe partial class CompositionTests
 
     private static void VerifySharedTarget(nint connection, nint sourceChannel, uint visual, nint factory, nint firstOutput)
     {
-        string path = typeof(CompositionTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
         var createChannel = (delegate* unmanaged[Stdcall]<nint, nint, nint*, int>)NativeLibrary.GetExport(module, "MilConnection_CreateChannel");
         var destroy = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "MilConnection_DestroyChannel");

@@ -28,8 +28,7 @@ public sealed class DoubleBufferedBitmapTests
     [DataRow("WgxConnection_SameThreadPresent")]
     public void WhenDoubleBufferedModuleIsPublishedThenRequiredProductionEntryExists(string exportName)
     {
-        string path = typeof(DoubleBufferedBitmapTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-            .Single(attribute => attribute.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         using (var file = File.OpenRead(path))
         using (var pe = new PEReader(file))
         {

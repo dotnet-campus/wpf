@@ -129,7 +129,7 @@ public sealed unsafe partial class CompositionEffectsTests
     [DataRow(false, 96f, 1u, 0u, 1d, 0u, 0xffff0000u, false, false, 0u, 0d, 0d, 1u, 0, -1, 0, false, false, true, true, false, true, false, 1d, false, true, true, 0, 0u, 0u, 10d, 0u, 0, 3)]
     public void WhenImageMaskSourceIsLockedThenLayerIsDiscardedAndRetryPreservesMapping(bool relativeViewbox, float dpi, uint stretch, uint alignmentX, double viewportHeight, uint first, uint second, bool relativeViewport = false, bool relativeTransforms = false, uint tileMode = 0, double viewportX = 0, double viewportY = 0, uint maskHeight = 1, int clipKind = 0, int combineMode = -1, int operandKind = 0, bool affineCombination = false, bool clearSource = false, bool geometryFill = false, bool scopedGeometry = false, bool translucentGeometry = false, bool solidGeometry = false, bool nullPenBrush = false, double penThickness = 2, bool penThicknessAnimation = false, bool strokePen = false, bool strokeOnly = false, int lineKind = 0, uint lineCap = 0, uint segmentFlags = 0, double miterLimit = 10, uint lineJoin = 0, int dashKind = 0, int nestedLayers = 0)
     {
-        string path = typeof(CompositionEffectsTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
         var connect = (delegate* unmanaged[Stdcall]<byte, nint*, int>)NativeLibrary.GetExport(module, "WgxConnection_Create");
         var disconnect = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "WgxConnection_Disconnect");
@@ -286,7 +286,7 @@ public sealed unsafe partial class CompositionEffectsTests
                     byte* solidPacket = stackalloc byte[48]; new Span<byte>(solidPacket, 48).Clear();
                     *(uint*)solidPacket = 0x7e; *(uint*)(solidPacket + 4) = fillBrush;
                     *(double*)(solidPacket + 8) = translucentGeometry ? 0.5 : 1;
-                    *(float*)(solidPacket + 16) = 1; *(float*)(solidPacket + 20) = 1;
+                    *(float*)(solidPacket + 28) = 1; *(float*)(solidPacket + 16) = 1;
                     Assert.AreEqual(0, send(solidPacket, 48, 0, channel));
                 }
                 if (nullPenBrush || penThickness != 2 || penThicknessAnimation || strokePen)

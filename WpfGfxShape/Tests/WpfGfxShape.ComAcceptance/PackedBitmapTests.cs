@@ -26,7 +26,7 @@ public sealed unsafe class PackedBitmapTests
             uint* colors = stackalloc uint[] { 0xff000000, 0xffffffff };
             var initialize = (delegate* unmanaged[Stdcall]<nint, uint*, uint, int>)(*(void***)palette)[4];
             Assert.AreEqual(0, initialize(palette, colors, 2));
-            string path = typeof(PackedBitmapTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!;
+            string path = AcceptancePaths.AotDll;
             nint module = NativeLibrary.Load(path);
             var create = (delegate* unmanaged[Stdcall]<uint, uint, double, double, Guid*, nint, nint*, int>)NativeLibrary.GetExport(module, "MILSwDoubleBufferedBitmapCreate");
             var getBack = (delegate* unmanaged[Stdcall]<nint, nint*, uint*, int>)NativeLibrary.GetExport(module, "MILSwDoubleBufferedBitmapGetBackBuffer");
@@ -87,7 +87,7 @@ public sealed unsafe class PackedBitmapTests
         nint owner = 0, bitmap = 0, mil = 0, bitmapLock = 0;
         try
         {
-            string path = typeof(PackedBitmapTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "AotDllPath").Value!;
+            string path = AcceptancePaths.AotDll;
             nint module = NativeLibrary.Load(path);
             var create = (delegate* unmanaged[Stdcall]<uint, uint, double, double, Guid*, nint, nint*, int>)NativeLibrary.GetExport(module, "MILSwDoubleBufferedBitmapCreate");
             var getBack = (delegate* unmanaged[Stdcall]<nint, nint*, uint*, int>)NativeLibrary.GetExport(module, "MILSwDoubleBufferedBitmapGetBackBuffer");

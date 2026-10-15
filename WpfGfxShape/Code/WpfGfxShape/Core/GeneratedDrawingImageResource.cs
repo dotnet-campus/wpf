@@ -27,6 +27,8 @@ internal static partial class GeneratedProtocolPacketWriter
 internal sealed class GeneratedDrawingImageResource : GeneratedDrawingDependencyResource
 {
     internal GeneratedDrawingImageResource() : base(MilResourceType.DrawingImage) { }
+    internal static GeneratedDrawingImageResource CreateStatic(GeneratedProtocolResource drawing)
+        => new() { Drawing = drawing };
 
     internal GeneratedProtocolResource? Drawing { get; private set; }
 

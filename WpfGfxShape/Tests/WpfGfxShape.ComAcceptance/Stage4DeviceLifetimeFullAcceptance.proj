@@ -1,0 +1,5 @@
+<Project DefaultTargets="Build">
+  <Target Name="Build">
+    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Test" Properties="Configuration=Release;ComAcceptanceSandbox=false;TestingPlatformCommandLineArguments=--report-trx --results-directory ../../Investigations/S-20261014-005-TRANSACTION/device-full --report-trx-filename device-full.trx" />
+  </Target>
+</Project>

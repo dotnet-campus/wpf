@@ -1,6 +1,14 @@
 # Ledger 状态视图
 
+## 2026-10-13 实际复验警示
+
+证据 `../../Docs/handoffs/completed-work/S-20261013-SAMPLER-PROTOCOL-BASELINE-REVALIDATION.md`：SHA BB8B9B9B504C8903275C4C98D4F28119359201B79F2A339D3CFF96457B967934，RunID c4f48c60-b6a8-4100-b5b1-a736be341dd7；普通4197/4197，COM1275/25/1300，0跳过/abort。24项glyph失败未解释、旧FLOAT57/450独立，公开WhenPublic*无失败。不晋升稳定或Closed；机器ledger原有RepairRequiredPartial不因文档同步变为修复。
+
 > 派生视图；`records.jsonl`、`groups.jsonl`、`work-packages.jsonl`、`evidence.jsonl` 为事实源。
+
+## 当前验收门禁警示
+
+归档 `../../Docs/handoffs/completed-work/S-20261012-246-PRESENT-OCCLUSION-NATIVE-CONTROL.md`：SHA CEA705677144815991C54627503B3ACDDABDC63A8AA854615698025F9A1DF9B0，RunID958c41c3-6935-4538-bf0d-168606d435c2，report wpf-calibration-5b470d80dd8c488eb79bb3d4def85de1.json。COM1286/9/1295；LockScreenBackstopFrame实测覆盖导致公开8例未通过，原生fixture Ex对照也Occluded。不是稳定或Closed；不改变下述机器ledger缺失事实。
 
 ## 当前快照
 

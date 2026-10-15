@@ -4,7 +4,8 @@ internal static class SoftwareStrokeWidening
 {
     internal static bool TryCreate(IEnumerable<SoftwareStrokeContours.Figure> figures, GeneratedPenResource pen,
         GeneratedImageTransform transform, out SoftwareImageCoverage? coverage, out MilRectD bounds,
-        bool createCoverage = true, GeneratedImageTransform? toleranceTransform = null)
+        bool createCoverage = true, GeneratedImageTransform? toleranceTransform = null,
+        Direct3D9SurfaceRect? clip = null, List<SoftwareStrokeContours.Figure>? outputContours = null)
     {
         coverage = null; bounds = default;
         var arcTransform = toleranceTransform ?? transform;
@@ -22,7 +23,13 @@ internal static class SoftwareStrokeWidening
         {
             if (createCoverage)
             {
-                if (!SoftwarePathCoverage.TryCreatePolygon(points.ToArray(), transform, out var path) || path is null) return false;
+                var devicePoints = points.Select(point =>
+                {
+                    var device = transform.Apply(point.X, point.Y);
+                    return new MilPoint2D(device.X, device.Y);
+                }).ToArray();
+                if (!SoftwarePathCoverage.TryCreateFigures([devicePoints], MilFillMode.Winding, out var path, clip)
+                    || path is null) return false;
                 parts.Add(new(path));
             }
             foreach (var p in points)
@@ -31,6 +38,22 @@ internal static class SoftwareStrokeWidening
                 if (!double.IsFinite(device.X) || !double.IsFinite(device.Y)) return false;
                 left = Math.Min(left, device.X); top = Math.Min(top, device.Y);
                 right = Math.Max(right, device.X); bottom = Math.Max(bottom, device.Y);
+            }
+            if (outputContours is not null)
+            {
+                var contour = points.Select(point =>
+                {
+                    var device = transform.Apply(point.X, point.Y);
+                    return new MilPoint2D(device.X, device.Y);
+                }).ToArray();
+                double area = 0;
+                for (int i = 0; i < contour.Length; i++)
+                {
+                    var a = contour[i]; var b = contour[(i + 1) % contour.Length];
+                    area += a.X * b.Y - a.Y * b.X;
+                }
+                if (area < 0) Array.Reverse(contour);
+                outputContours.Add(new(contour, true));
             }
             return true;
         }
@@ -54,6 +77,38 @@ internal static class SoftwareStrokeWidening
             int count = points.Length;
             if (figure.Closed && count > 1 && points[0] == points[^1]) count--;
             if (count == 0) continue;
+            if (outputContours is null && figure.Closed && count == 4 && pen.LineJoin == MilPenJoin.Miter
+                && pen.MiterLimit >= Math.Sqrt(2) && pen.DashStyle is not { Dashes.Length: > 0 }
+                && !distinctJoins.Take(count).Any(smooth => smooth)
+                && Enumerable.Range(0, count).All(i =>
+                    (points[i].X == points[(i + 1) % count].X) != (points[i].Y == points[(i + 1) % count].Y)))
+            {
+                double minX = points.Take(count).Min(point => point.X), maxX = points.Take(count).Max(point => point.X);
+                double minY = points.Take(count).Min(point => point.Y), maxY = points.Take(count).Max(point => point.Y);
+                if (maxX > minX && maxY > minY
+                    && points.Take(count).Distinct().Count() == 4
+                    && points.Take(count).All(point => (point.X == minX || point.X == maxX) && (point.Y == minY || point.Y == maxY)))
+                {
+                    // CRectangle widens simple circular miter pens as outer/inner alternate contours.
+                    List<MilPoint2D> outer = [new(minX - radius, minY - radius), new(maxX + radius, minY - radius),
+                        new(maxX + radius, maxY + radius), new(minX - radius, maxY + radius)];
+                    if (!Polygon(outer)) return false;
+                    if (createCoverage && radius * 2 < maxX - minX && radius * 2 < maxY - minY)
+                    {
+                        MilPoint2D[] inner = [new(minX + radius, minY + radius), new(maxX - radius, minY + radius),
+                            new(maxX - radius, maxY - radius), new(minX + radius, maxY - radius)];
+                        MilPoint2D[] ToDevice(IEnumerable<MilPoint2D> contour) => contour.Select(point =>
+                        {
+                            var device = transform.Apply(point.X, point.Y);
+                            return new MilPoint2D(device.X, device.Y);
+                        }).ToArray();
+                        if (!SoftwarePathCoverage.TryCreateFigures([ToDevice(outer), ToDevice(inner)], MilFillMode.Alternate, out var path, clip)
+                            || path is null) return false;
+                        parts[^1] = new(path);
+                    }
+                    continue;
+                }
+            }
             if (count == 1 || points.All(point => point == points[0]))
             {
                 var center = points[0];

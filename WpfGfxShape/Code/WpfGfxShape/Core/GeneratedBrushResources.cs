@@ -122,6 +122,7 @@ internal abstract class GeneratedBrushResource : GeneratedDependencyResource
 internal sealed class GeneratedSolidColorBrushResource : GeneratedBrushResource
 {
     internal GeneratedSolidColorBrushResource() : base(MilResourceType.SolidColorBrush) { }
+    internal GeneratedSolidColorBrushResource CaptureValue() => new() { Value = CurrentValue };
     internal (double Opacity, MilColorF Color) Value { get; private set; }
     private GeneratedValueResource<double>? _opacityAnimation;
     private GeneratedValueResource<MilColorF>? _colorAnimation;
@@ -249,15 +250,133 @@ internal sealed class GeneratedImageBrushResource : GeneratedTileBrushResource {
 internal sealed class GeneratedDrawingBrushResource : GeneratedTileBrushResource { internal GeneratedDrawingBrushResource() : base(MilResourceType.DrawingBrush, IsDrawing) { } }
 internal sealed class GeneratedVisualBrushResource : GeneratedTileBrushResource { internal GeneratedVisualBrushResource() : base(MilResourceType.VisualBrush, static type => type == MilResourceType.Visual) { } }
 
-internal sealed class GeneratedBitmapCacheBrushResource : GeneratedBrushResource
+internal sealed partial class GeneratedBitmapCacheBrushResource : GeneratedBrushResource
 {
     internal GeneratedBitmapCacheBrushResource() : base(MilResourceType.BitmapCacheBrush) { }
     internal GeneratedProtocolResource? BitmapCache { get; private set; }
     internal GeneratedProtocolResource? InternalTarget { get; private set; }
+    private double _opacity;
+    private GeneratedValueResource<double>? _opacityAnimation;
+    internal double CurrentOpacity => _opacityAnimation?.Value ?? _opacity;
+    internal GeneratedProtocolResource? Transform { get; private set; }
+    internal GeneratedProtocolResource? RelativeTransform { get; private set; }
+    private nint _bitmap;
+    private CacheKey? _key;
+    private bool _capturing;
+    private readonly record struct CacheKey(int BrushChange, GeneratedVisualResource? Target, int TargetChange,
+        GeneratedBitmapCacheResource? Config, int ConfigChange, double Scale, bool Snaps, bool ClearType,
+        MilRectD Inner, MilRectD Consumer, GeneratedImageTransform Transform, double DpiX, double DpiY,
+        bool Floating, uint ScalingMode);
+
+    private void InvalidateCache()
+    {
+        nint bitmap = _bitmap;
+        _bitmap = 0;
+        _key = null;
+        Direct3D9Factory.Release(bitmap);
+    }
+
+    internal int AcquireCacheBitmap(MilRectD consumerBounds, GeneratedImageTransform targetTransform,
+        double dpiX, double dpiY, bool floating, uint scalingMode, out nint bitmap)
+    {
+        bitmap = 0;
+        int hr = FrozenCacheRequest.CapturePure(this, [], out var request);
+        if (hr < 0) return hr;
+        using (request)
+            return request!.RealizeFrozen(consumerBounds, targetTransform, dpiX, dpiY, floating, scalingMode, out bitmap);
+    }
+
+    internal int RealizeFrozen(FrozenCacheRequest request, MilRectD consumerBounds,
+        GeneratedImageTransform targetTransform, double dpiX, double dpiY, bool floating,
+        uint scalingMode, out nint bitmap)
+    {
+        bitmap = 0;
+        if (_capturing) return Direct3D9Factory.NotImplementedHResult;
+        if (!double.IsFinite(dpiX) || !double.IsFinite(dpiY) || dpiX <= 0 || dpiY <= 0)
+            return Direct3D9Factory.InvalidArgumentHResult;
+        var root = request.Target;
+        var config = request.Config;
+        double scale = request.Scale;
+        if (!double.IsFinite(scale)) return Direct3D9Factory.InvalidArgumentHResult;
+        if (request.Snaps || request.ClearType)
+            return Direct3D9Factory.NotImplementedHResult;
+        MilRectD inner = default;
+        if (request.Tree is { } tree && !GeneratedImageContentBounds.TryGet(tree, out inner))
+            return Direct3D9Factory.NotImplementedHResult;
+        var key = new CacheKey(request.BrushChange, root, request.TargetChange, config, request.ConfigChange,
+            scale, request.Snaps, request.ClearType,
+            inner, consumerBounds, targetTransform, dpiX, dpiY, floating, scalingMode);
+        if (_key == key && _bitmap != 0)
+        {
+            Direct3D9Factory.AddRef(_bitmap);
+            bitmap = _bitmap;
+            return 0;
+        }
+        _capturing = true;
+        nint candidate = 0, target = 0;
+        GeneratedVisualRenderer.VisualSnapshot? snapshot = null;
+        try
+        {
+            double sx = scale * dpiX / 96, sy = scale * dpiY / 96;
+            bool empty = root is null || inner.Width <= 0 || inner.Height <= 0 || scale == 0;
+            double w = empty ? 1 : Math.Max(1, Math.Ceiling(inner.Width * sx));
+            double h = empty ? 1 : Math.Max(1, Math.Ceiling(inner.Height * sy));
+            if (!double.IsFinite(w) || !double.IsFinite(h) || w > int.MaxValue || h > int.MaxValue)
+                return Direct3D9Factory.InvalidArgumentHResult;
+            int hr;
+            if (empty)
+                hr = WpfGfxShape.Abi.BitmapRenderTargetExports.CreateDrawingIntermediate(1, 1, out target, out candidate, floating);
+            else
+            {
+                hr = GeneratedVisualRenderer.DrawingSnapshot.RealizeTree(request.Tree!, inner,
+                    new(sx, sy, -inner.X * sx, -inner.Y * sy), (uint)w, (uint)h, scalingMode, true, out var drawing);
+                if (hr >= 0 && drawing is not null) snapshot = new(drawing);
+                if (hr >= 0 && snapshot is not null) hr = snapshot.Realize(out candidate, floating);
+            }
+            if (hr < 0) return hr;
+            if (candidate == 0) return Direct3D9Factory.WgxInvalidCallHResult;
+            if (!IsReleased && ChangeCount == key.BrushChange && ReferenceEquals(InternalTarget, root)
+                && ReferenceEquals(BitmapCache, config) && (root?.ChangeCount ?? 0) == key.TargetChange
+                && (config?.ChangeCount ?? 0) == key.ConfigChange)
+            {
+                Direct3D9Factory.AddRef(candidate);
+                nint previous = _bitmap;
+                _bitmap = candidate;
+                _key = key;
+                Direct3D9Factory.Release(previous);
+            }
+            bitmap = candidate;
+            candidate = 0;
+            return 0;
+        }
+        finally
+        {
+            snapshot?.Dispose();
+            Direct3D9Factory.Release(candidate);
+            Direct3D9Factory.Release(target);
+            _capturing = false;
+        }
+    }
+
+    protected override void OnFinalRelease()
+    {
+        InvalidateHardwareCache();
+        InvalidateCache();
+        base.OnFinalRelease();
+    }
+
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
     {
         if (value.Length != 28) return Direct3D9Factory.UceMalformedPacketHResult; GeneratedProtocolResource?[] dependencies = new GeneratedProtocolResource?[5];
         if (!TryResolve(table, MemoryMarshal.Read<uint>(value[8..]), MilResourceType.DoubleResource, out dependencies[0]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[12..]), IsTransform, out dependencies[1]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[16..]), IsTransform, out dependencies[2]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[20..]), MilResourceType.BitmapCache, out dependencies[3]) || !TryResolve(table, MemoryMarshal.Read<uint>(value[24..]), MilResourceType.Visual, out dependencies[4])) return Direct3D9Factory.UceMalformedPacketHResult;
-        return CommitDependencies(dependencies, () => { BitmapCache = dependencies[3]; InternalTarget = dependencies[4]; });
+        double opacity = MemoryMarshal.Read<double>(value);
+        return CommitDependencies(dependencies, () =>
+        {
+            InvalidateCache();
+            _opacity = opacity;
+            _opacityAnimation = dependencies[0] as GeneratedValueResource<double>;
+            Transform = dependencies[1]; RelativeTransform = dependencies[2];
+            BitmapCache = dependencies[3]; InternalTarget = dependencies[4];
+        });
     }
 }

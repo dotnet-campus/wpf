@@ -4,6 +4,8 @@ internal readonly record struct GeneratedImageTransform(double ScaleX, double Sc
 {
     internal static GeneratedImageTransform Identity => new(1, 1, 0, 0);
     internal bool IsPositiveAxisAligned => M12 == 0 && M21 == 0 && ScaleX > 0 && ScaleY > 0;
+    internal double XLength => Math.Sqrt(ScaleX * ScaleX + M12 * M12);
+    internal double YLength => Math.Sqrt(M21 * M21 + ScaleY * ScaleY);
 
     internal GeneratedImageTransform Prepend(GeneratedImageTransform local) => new(
         local.ScaleX * ScaleX + local.M12 * M21,
@@ -12,6 +14,23 @@ internal readonly record struct GeneratedImageTransform(double ScaleX, double Sc
         local.X * M12 + local.Y * ScaleY + Y,
         local.ScaleX * M12 + local.M12 * ScaleY,
         local.M21 * ScaleX + local.ScaleY * M21);
+
+    internal bool TryDecompose(out GeneratedImageTransform scale, out GeneratedImageTransform rest)
+    {
+        float m11 = (float)ScaleX, m12 = (float)M12;
+        float m21 = (float)M21, m22 = (float)ScaleY;
+        float x = MathF.Sqrt(m11 * m11 + m12 * m12);
+        float y = MathF.Sqrt(m21 * m21 + m22 * m22);
+        if (float.IsNaN(x)) x = 0;
+        if (float.IsNaN(y)) y = 0;
+        scale = new(x, y, 0, 0);
+        rest = default;
+        if (!(x > 0) || !(y > 0) || !float.IsFinite(x) || !float.IsFinite(y)) return false;
+        float inverseX = 1f / x, inverseY = 1f / y;
+        rest = new(m11 * inverseX, m22 * inverseY, (float)X, (float)Y,
+            m12 * inverseX, m21 * inverseY);
+        return rest.IsFinite;
+    }
 
     internal (double X, double Y) Apply(double x, double y) =>
         (x * ScaleX + y * M21 + X, x * M12 + y * ScaleY + Y);

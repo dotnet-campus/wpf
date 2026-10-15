@@ -1,7 +1,72 @@
-# wpfgfx 原生到 C# 文件映射
+# wpfgfx 原生到 C# 文件映射（历史证据长档）
+
+> 状态：历史逐轮映射，不是当前实现/运行状态源。下文所有“最新/当前”和阶段边界只代表各次阅读时刻，彼此不可拼接。本文长档保留追溯，不机械重写历史 SHA 或失败。
+> 恢复只从[唯一入口](next-session-handoff.md)开始；当前运行事实只认[基线](handoffs/current-stable-baseline.md)，模块条件见[主题合同](plan-module-contracts.md)。按本文具名主题查历史源码映射，不从任何“下一步”领取工作。
+
+## 最新块A映射与身份（阶段4 Active）
+
+FrozenShaderInvocation → effect command/constants/samplerInfo/handles/shader bytes与内部依赖引用提前捕获；并非 FrozenBrush/FrozenVisualTree 整树捕获。SoftwareBrushRealization.Capture仍进入cache/visual realization；GeneratedVisualRenderer.CaptureContents仍在内容捕获后读live Children。完整两阶段及公开callback/CopyPixels证据未闭合。交接SHA `E798360D7B3C0E5C0254016C917D4F6803692B786D346A0FC0EAD78FD339BE32`，普通4199、COM1346全过，RunID `3322e91f-f596-412a-94a8-62cc2b23b96f`，report `37d0765da7b84724ae03961e4c583128`；不是本轮复验，见 `handoffs/completed-work/S-STAGE4-A-INVOCATION-IDENTITY-SYNC.md`。下文旧状态不覆盖此最新身份。
+
+## 最新代码回读与实测身份
+
+见 `handoffs/completed-work/S-20261013-COMFULL-FAILURE-READBACK.md`，SHA `DB52FF9502F45A7B43CDD910A876390B27FCDE4F77A5218F8B2C53E2FE512C55`，COM1322/12/1334、RunID `9f178940-f12c-451c-8b77-922b2cd8bbc8`、report `c07d711980dc49c8987344f5697c73e6`已回读。clientchannel.cpp:921–969短read先出队后mincopy → UceChannelExports.PeekNextMessage/SameThreadChannel.PeekMessage现有64字节FIFO；56字节托管prefix不改变消费。GeneratedSoftwareShaderEffect已接软件执行，但Capture仍拒绝非implicit sampler；GeneratedHardwareShaderEffect仍逐次创建shader、失败直接返回。此前“完全未执行软件effect”描述不能代表当前代码；完整冻结、perdevicecache与错误政策尚无本次闭合证明。无生产修改，阶段4Active。
+
+## 当前Visual/Cache sampler映射（有限闭环待完成）
+
+GeneratedHardwareShaderEffect / GeneratedHardwareShaderSampler / SoftwareBrushRealization 已有真实双输入Visual/Cache消费；76 DWORD/sourceMutation/nullcache原expected通过为用户交接验收，见 `handoffs/completed-work/S-20261013-VISUAL-CACHE-76DWORD-HANDOFF.md`。不能再将27 DWORD创建失败描述为当前阻塞。本轮同SHA定向3/3、普通4197/4197、COM1302/1/1303，新report6a14f127c9d94aebacebc51fa483ebb4已实际回读。root范围、冻结/refs/重试、缓存无重复绘制证明仍未完成。GeneratedHardwareShaderEffect.RenderFrozen shader创建失败直接返回，尚无BadShader接线；GeneratedVisualRenderer.Capture:531拒绝effect，SoftwareOnly也E_NOTIMPL，不能标Closed。具体原生policy及独立软件compiler探索问题见归档，无生产修改或新发布。
+
+## 最新sampler生产映射（未关闭）
+
+ShaderEffect.cpp两阶段合同 → GeneratedHardwareShaderSampler新增SoftwareBrushRealization/GeneratedImageMask/SoftwareImageRenderSession真实ImageBrush绘制及Direct3D9InteropColorSource上传；tile/stretch/opacity/一般仿射复用，目标float工作格式保持。GeneratedVisualRenderer.Capture明确拒绝未执行effect。VisualBrush/BitmapCacheBrush及新增第二输入专项验收仍Partial。证据 `handoffs/completed-work/S-20261013-IMAGE-SAMPLER-REALIZATION-PARTIAL.md`，最终SHA DBE21C3D0DDEC3B01A4DFB101614C3CE9E4FDEAB5B2A4ECDA9F876B721C11F21；普通4197/4197，COM1299/1/1300，无新增回归，阶段4 Active。
+
+## 历史sampler实际复验（未关闭）
+
+证据 `handoffs/completed-work/S-20261013-SAMPLER-PROTOCOL-BASELINE-REVALIDATION.md`：普通4197/4197；COM1275/25/1300，0跳过/abort。SHA BB8B9B9B504C8903275C4C98D4F28119359201B79F2A339D3CFF96457B967934，RunID c4f48c60-b6a8-4100-b5b1-a736be341dd7。24项glyph像素失败根因未确认，另1项既有FLOAT57/450。公开WhenPublic*无失败；不沿用历史锁屏8失败。GeneratedHardwareShaderSampler仍仅D3DImage、None tile、opacity1、正轴对齐；普通ImageBrush/VisualBrush/BitmapCacheBrush通用realization未交付，阶段4 Active。
 
 > 本文只记录当前状态和已确认事实，不记录逐轮增量、历史测试数字或下一步任务。
 > 当前工作入口见 [`next-session-handoff.md`](next-session-handoff.md)，剩余缺口顺序见 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md)，新完成历史见 [`handoffs/completed-work/`](handoffs/completed-work/)，旧完成归档保留在 [`handoffs/progress-completed-work.md`](handoffs/progress-completed-work.md)。
+
+## 当前Shader映射：真实公开pass-through已验收，完整族Partial
+
+`GeneratedHardwareShaderEffect.cs`已有真实GPU消费者，`GeneratedHardwareBitmapOperations`及`Direct3D9SurfaceRenderTarget`消费设备cache入口；不再把shader资源描述为只有typed状态。生产临时回读/绝对路径诊断已移除。公开HWND shaderEffect=true连续两帧及设备换色Passed；padding/Ddx仍明确E_NOTIMPL，完整sampler/constants、失败/引用寿命与HDR格式表未关闭。证据 `handoffs/completed-work/S-20261012-244-SHADER-CACHE-PUBLIC-HWND-REVALIDATION.md`。阶段4 Active。
+
+## 历史Media映射：授权generated软件消费者子项已收口
+
+`Core/Av/SystemMediaSource.cs`、`SystemVideoSample.cs`、`SystemMediaModule.cs`及GeneratedMediaPlayerResource组成真实系统来源/通知/sample/软件Visual消费者。公开provider独立引用归零、callback close/Release/rebind/unsubscribe、系统binding版本及进程拥有模块寿命证据见 `handoffs/completed-work/S-20261012-MEDIA-LIFECYCLE-FINITE-CLOSEOUT.md`有限表。本轮普通4182/4182、媒体加SHA49/49，最新COM全量RunID `3dfa7504-ee23-432d-8cc0-2e3154c94b54`，1293/1/1294；报告5ceda4865cc24c73868a5f814014617a，SHA `47DB2B69098DCA6BE0629F22FEDC704A98350B368E0274D567CD9F24A360AF1B`。不等于完整原生AV/HW兼容，E_UNEXPECTED未复现不是根因修复。shader的generated资源仍只有typed状态/factory，真实消费者尚待实现。
+
+## 历史Media映射（Partial，完整回归无新增失败）
+
+`GeneratedMediaPlayerResource.cs`同源重绑先注销旧订阅再订阅新来源，避免删除刚安装订阅。公开同player三色Open替换、真实callback驱动Visual像素及parallel通过。归档 `handoffs/completed-work/S-20261012-MEDIA-REBIND-PARALLEL-FULL.md`；SHA `0D661C9C2290E6904729844269FEBC1D4319B3AAF24371D990F500B1A80064B8`，普通4182/4182、COM1283/1/1284无abort，RunID `4a35af6b-5264-4c7a-a50f-a0412680d4f3`。其余完整media寿命门禁仍开放，不标Complete。
+
+## 历史Media映射修正（Partial，Red）
+
+`Core/Av/SystemMediaSource.cs`已有公开media wrapper和真实系统eventproxy→订阅→`GeneratedMediaPlayerResource` pending→composition请求。`MediaExportsTests.cs`/`MediaExportsTests.SolidFrame.cs`以真实callback通知等待驱动公开像素消费。路径修正32/32及单红帧通过；新增绿/蓝多player顺序运行引出测试主机崩溃，未完成其余生命周期验收。最新SHA `BCF685CAC08AC5CAF20553851F23C9CF1E0028C440C72E11025E1F21A8694A19`，全量RunID `fd55b88c-e96f-4947-95e6-acf847a9ccf6`中止。证据`handoffs/completed-work/S-20261012-MEDIA-ASYNC-NOTIFICATION-RETEST-RED.md`。以下旧映射摘要是历史。
+
+## Media与事件代理历史映射（Partial）
+
+`core/av/eventproxy.cpp` / `eventproxy.h` → `Core/Av/EventProxy.cs`：callback锁外调用，描述符以非零CAS引用保护；公开COM阻塞callback并发进入及终结释放验收通过。SystemVideoSample已接公开Visual消费真实自有AVI两个FFFF0000；固定(有视频1/无音频0/2×1)元数据在测试中有界等待，超时失败。当前GeneratedMediaPlayerResource仍同步检测newFrame，并非system异步桥；source wrapper/公开media creation/替换关闭与锁失败sample重试未收口。当前SHA `4D5FD8A5B5FBF346E0AE855EEC1F56F1AA25544C2519A392AF11D1D6B78BB0C9`，最终全量1277/1/1278 RunID `5c6a6623-02b1-4108-bdcb-f960fb99b32e`；独立证据 `handoffs/completed-work/S-20261012-MEDIA-EVENTPROXY-LOCKFREE-PARTIAL.md`。
+
+## 系统媒体软件采样历史前置
+
+`core/av/internal.h:35–89`、`core/av/evrpresenter.cpp:2896–2993` → `Core/Av/SystemVideoSample.cs`：系统provider QI/GetSurfaceRenderer、BeginRender(NULL)、IWGXBitmapSource/renderer拥有与EndRender逆序释放。真实系统初始状态托管验证通过，不是有效视频像素或公开资源消费者。最新发布SHA `81078D6BCE323650DDFFD801AB023DCB8EAF1A9F79A20B739CB3C75423F634EB`，COM全量RunID `cddbce62-ad55-4723-80de-723aa946a8a7`，详见 `handoffs/completed-work/S-20261012-SYSTEM-VIDEO-SAMPLE-PRODUCTION-PARTIAL.md`。
+
+## 历史代码验证绑定
+
+manager时序与测试ABI修复当前发布SHA `B68BB90B6B920F53D04689B422C3FB4D411C04E5A2CFAFB01B9FBC15A3D0AC03`；COM全量RunID `7d52dc95-d9ef-4702-b064-bffacd46bec1`，1275通过/1严格FLOAT失败。完整证据 `handoffs/completed-work/S-20261012-MANAGER-ABI-FULL-REVALIDATION.md`。此身份不晋升任何Partial文件族。
+
+## HWND设备创建合同（修复已真实像素验收，文件族Partial）
+
+`core/hw/d3ddevicemanager.cpp:1295-1331,1435-1467` → `Core/Direct3D9Objects.cs` / `Abi/HardwareRenderTargetExports.cs`：公开target destination HWND同时进入CreateDevice focusWindow与hDeviceWindow，secondary swapchain保持同一目标；空窗口offscreen默认合同不变。实际公开资源协议呈现、两处窗口位置、两帧GetPixel原expected通过。原生Occluded恢复语义保留processed=false。证据 `handoffs/completed-work/S-20261012-HWND-FOCUS-PRESENT-ROOTCAUSE.md`。
+
+## D3DImage（Partial，未 Closed）
+
+最新映射及验收边界见 `handoffs/completed-work/S-20261012-MANAGER-AVAILABILITY-BOUNDS-BUILD.md`：Direct3D9DeviceManager / Direct3D9Objects / HardwareRenderTargetExports 已接通公开目标生命周期通知；GeneratedHardwareVisualRenderer修复整数source矩形传参，D3DImageTests真实callback内detach与平衡引用、shared像素通过。仍欠并发注销、callback内替换/关闭、真实loss/recover/fallback和独立bounds输出完整验收。以下旧“未验收”描述不覆盖本段新增事实。
+
+`core/resources/d3dimage.cpp` → `Core/GeneratedD3DImageResource.cs`；`core/hw/InteropDeviceBitmap.cpp` → `Abi/InteropDeviceBitmapExports.cs`：真实外部D3D9 surface身份、HW前buffer StretchRect脏区、软件快照消费者和公开Detach保留前buffer已有实际验收。Present捕获interop临时COM引用并检查回调后替换/释放；SameThreadChannel精确包长转移所有权已修正。HW color-source实际复用、device-manager注册注销、独立interop bounds、真实availability/fallback恢复和公开回调重入/事件/借用引用/失败重试完整矩阵仍未验收，不扩展合同、不宣称Closed。订阅通知已增加非零CAS COM引用保护；真实surface拥有、detach后快照存活、锁定读取失败重试及present成功/丢包event已有验收，但实际manager通知/并发销毁和availability公开回调重入仍未验收。最新证据 `handoffs/completed-work/S-20261012-001-D3DIMAGE-SUBSCRIPTION-OWNERSHIP.md`，机器视图 `../Ledger/views/d3dimage-module-current.md`。
+
+## GlyphRun generated软件消费者与真实字体生命周期（范围验收完成，文件族Partial）
+
+`core/glyph/glyphruncore.cpp:50-155`、`core/resources/glyphrunslave.cpp:151-175`、`include/Generated/wgx_commands.h:443-458` → `Core/GeneratedGlyphRunResource.cs`：76字节原版命令和紧密数组载荷、真实IDWriteFont CreateFontFace、字体转移引用、替换/失败逆序释放和最终释放保护。`SameThreadChannel`接通失败partition/open batch丢弃清理；`GeneratedDrawingInstructions`接通GlyphRunDrawing→DrawGlyphRun槽顺序。公开AOT COM创建/替换/截断/丢弃验收已有证据。`GeneratedGlyphAlpha`、`GeneratedVisualRenderer`、`GeneratedImageContentBounds`已接通真实DirectWrite analysis/alpha、中心子像素灰度/gamma、glyph bounds及两条软件像素消费者；完整surface、clip/opacity/translation、brush/fontface替换、锁失败重试、float HDR和整数over已验收。`SameThreadChannel`修复自动创建handle时字体转移引用重复释放；句柄释放保活、通道/连接关闭及自动handle真实像素验收通过。系统字体路径未注册公共回调，不虚构glyph重入；合法传输Dispose回调复用实际通道重入合同。该软件离屏消费者范围已完成验收，不宣称所有脚本/ClearType显示目标/动画缓存/所有brush与仿射或整个原生文件族Closed。证据见`handoffs/completed-work/S-20261012-GLYPH-PIXEL-CLOSEOUT.md`，ledger当前映射见`../Ledger/views/glyph-module-current.md`。
 
 ## 状态定义
 
@@ -37,7 +102,17 @@
 
 `core/sw/swlib/swsurfrt.cpp:635-687`、`core/api/api_rendercontext.h:20-106` → `Abi/BitmapRenderTargetExports.Drawing.cs`：读取Release上下文前缀，目标尺寸与当前裁剪无交集时在效果捕获、源读取和目标锁之前成功退出；目标和源引用在效果列表回调前持有，失败及成功均逆序释放。Partial：尚无专门效果回调释放调用者引用验收；完整IShapeData/画刷/DrawPath及内部层指针ABI消费者未闭合，不以托管SoftwareImageRenderSession代替原生合同。
 
+## 当前稳定化证据与阶段4映射边界
+
+S-20261012-MASK-ROLLBACK-DECODER-STABILIZATION：GeneratedVisualRenderer撤回全局nearest与Visual固定linear，恢复按消费者scalingMode捕获mask；drawingcontext.cpp:3895–4005的nearest仅约束物化层1:1合成，既有EndOpacityLayer保持不变。CompositionEffectsTests.FloatMaskSpan恢复FLOAT端点/增量累计且严格距离<1e-7不变。CompositionTests.DrawingLifecycle六项真实系统WIC/IStream首错STG_E_READFAULT与重试像素已在生产AOT直接COM验收；三项mask改为固定原版Pbgra32全surface合同，非float golden。
+
+当前全量1170/1，新增9项全通过，source17/18 float投影57/450、Pbgra32 0/180；最新发布/SHA/TRX身份只见handoffs/current-stable-baseline.md。以下历史摘要中“decoder首错仍缺”已由上述六项实际范围取代，不晋升完整方法族。D3DImage的CInteropDeviceBitmap身份/factory/消费者、glyph真实字形私有模型、media真实provider/sample/composition、shader真实bytecode/GPU消费及双缓冲全格式/替换/失败合同仍Partial或未实现；阶段4 Active。逐项源码、E_NOTIMPL及依赖见独立归档的最终检查表；其中双缓冲仍有可安全推进的生产模块且未确认外部阻塞，不能将全部剩余族概括为不能安全扩展。本次仅同步文档，无新生产实现、发布或测试执行。
+
 ## 平铺遮罩与层位图共同消费
+
+当前核实的生产补充（Partial）：`Core/GeneratedImageTransform.cs` 的TryDecompose使用FLOAT分量/MathF.Sqrt/逆尺度与rest；`Core/GeneratedVisualRenderer.cs` 保留两次FLOAT尺度应用和brush rest，`Core/GeneratedImageMask.cs`、`Core/SoftwareBrushRealization.cs`独立传递原始消费者world bounds。Prepend/逆变换仍有double运算，不能宣称完整原始FLOAT坐标链等价。`Core/SoftwareImageRenderSession.cs`校验目标buffer指针、stride/有效size及宽高/行字节/面积的int表示边界；`Core/Direct3D9SoftwareImageRenderer.ImageMask.cs`校验tile读取边界，并在Pbgra32目标上先使用浮点分区生成/累加再交既有消费者量化。直接FLOAT rest传递候选与分区提前字节量化均不属于当前保留实现。旋转无回调、读取重入关闭/替换、实际填充锁冲突释放重试及非透明周期完整surface有代表性COM验收；不等于decoder首错注入。真实float/HDR golden、同版本绑定/颜色源合同、旋转tile/mapping/span、mask作用域与全族失败路径仍未闭合；source17/18差分未减少。
+
+`core/resources/ViewportAlignedIntermediateRealizer.cpp:677-755,1090-1175` → `Core/GeneratedVisualRenderer.cs`的DrawingSnapshot、`Core/GeneratedImageMask.cs`和`Core/Direct3D9SoftwareImageRenderer.ImageMask.cs`：DrawingImage保留viewport透明padding和原网格整数裁剪；可分配tile在模式1/2/3共享重复纹理网格，避免nearest局部分区旋转产生重复覆盖。完整同尺寸tile通过AddRef复用；filtered Border、nearest/超大分区Extend及禁用重复预过滤进入fill/stroke/mask消费者。旋转padding的独立反算、tile/flip归属和真实嵌套过滤生命周期已有COM验收。S-20261009-242依据ViewportAlignedIntermediateRealizer.cpp:1000–1085、DeviceAlignedIntermediateRealizer.cpp:271–338及BrushIntermediateRealizer.h:29接入二维2048/2046尺寸限制，capture和tile消费者共用限幅，双向映射按最终尺寸重算；百万viewport及半tile HDR独立oracle通过。Partial：完整尺寸/映射方法族、tile shift及DeviceAligned方向选择、任意仿射原生差分尚未闭合；不是整个原生intermediate模块完成。
 
 `core/resources/ViewportAlignedIntermediateRealizer.cpp:480-735`、`core/sw/swlib/bilinearspan.cpp:10-55`、`core/common/typeconvert.inl:38-80` → GeneratedImageMask与SoftwareImageRenderer.ImageMask/Affine/Float：Tile/FlipX/FlipY/FlipXY保存快照、物化viewport基础tile并通过既有texel选择/软件扫描重复和翻转。Partial：完整浮点/DPI/仿射/预滤差分仍缺，Extend未接通。真实IStream/系统WIC遮罩读取的重入、通道/连接销毁、删除、替换、帧快照及最终释放已有代表性验收，不等于完整联合生命周期合同。
 
@@ -84,7 +159,7 @@ Partial，已实现并通过真实线程组件测试。文件映射：`core/av/S
 
 ## 软件双缓冲位图生产模块
 
-`core/sw/swlib/doublebufferedbitmap.cpp`及四个MILSwDoubleBufferedBitmap导出 → `Abi/DoubleBufferedBitmapExports.cs`；`common/scanop/writeprotectedbitmap.cpp`及位图/锁窄路径 → `Abi/SoftwareBitmap.cs`；`core/resources/doublebufferedbitmapres.cpp` → `Core/GeneratedDoubleBufferedBitmapResource.cs`：Partial，现有位图/格式/引用测试已在新DLL验收，并有Visual/render-data DrawImage前缓冲两帧像素窄路径E2E。已有MIL范围字节对齐非索引格式分配、保护页、IWICBitmap/锁、五项脏区、CopyForward及资源引用/事件清理；Abi/BitmapFormatConverter.cs接入原生WPF WIC转换替代手写预乘。SoftwareBitmap.Mil.cs新增独立IWGXBitmapSource/Bitmap/Lock地址与统一IUnknown；palette副本、1/2/4位MSB复制及非对齐锁写回已接入。IWGX脏标记采用无原生缓存注册分支，不含原生缓存容器。前缓冲生产消费者具备整数平移1:1及整数边界双线性放大路径；`swrast.cpp:225-295`/`bilinearspan.cpp:407-454,790-848`对应SoftwareImageRenderer经SoftwareBilinearSpan完成像素中心16.16采样/Extend/插值。缩小预滤波、非整数覆盖率及复杂Visual状态仍未支持；全格式、源替换和完整失败生命周期E2E尚未完成。不能将窄路径像素验收等同完整翻译。
+`core/sw/swlib/doublebufferedbitmap.cpp`及四个MILSwDoubleBufferedBitmap导出 → `Abi/DoubleBufferedBitmapExports.cs`；`common/scanop/writeprotectedbitmap.cpp`及位图/锁窄路径 → `Abi/SoftwareBitmap.cs`；`core/resources/doublebufferedbitmapres.cpp` → `Core/GeneratedDoubleBufferedBitmapResource.cs`：Partial，现有位图/格式/引用测试已在新DLL验收，并有Visual/render-data DrawImage前缓冲两帧像素窄路径E2E。已有MIL范围字节对齐非索引格式分配、保护页、IWICBitmap/锁、五项脏区、CopyForward及资源引用/事件清理；Abi/BitmapFormatConverter.cs接入原生WPF WIC转换替代手写预乘。SoftwareBitmap.Mil.cs新增独立IWGXBitmapSource/Bitmap/Lock地址与统一IUnknown；palette副本、1/2/4位MSB复制及非对齐锁写回已接入。IWGX脏标记采用无原生缓存注册分支，不含原生缓存容器。前缓冲生产消费者具备整数平移1:1及整数边界双线性放大路径；`swrast.cpp:225-295`/`bilinearspan.cpp:407-454,790-848`对应SoftwareImageRenderer经SoftwareBilinearSpan完成像素中心16.16采样/Extend/插值。已完成授权28格式真实WIC字节合同、palette、前缓冲Visual消费/替换和CopyForward真实锁冲突、重复事件通知/关闭、partition首错与丢包引用清理联合验收，定向29/29。最新全量1199通过/1失败/1200，RunID d9790bb9-8f27-42e0-9cc4-8488d1d2f592；AOT SHA256 A88BC8331CEAB4E276C8F87AE02CCF69E938687DCD8F2EF8C5D40C6D5AD6307D；报告wpf-calibration-dc37bbf41a724fd69418bbd189997d7b.json，详见S-20261012-DBB-PALETTE-COPYFAIL-LIFECYCLE独立归档。缩小预滤波、非整数覆盖率、原生缓存容器与复杂Visual通用消费者不在本次关闭范围；文件族保持Partial，不将上述验收等同完整翻译。
 
 ## ManagedStreamWrapper 生产 COM 导出
 
@@ -105,6 +180,10 @@ Partial，已实现并通过真实线程组件测试。文件映射：`core/av/S
 ## VideoSlave/composition 方法族
 
 `core/resources/videoslave.cpp` → `Core/Av/VideoSlave.cs`（GeneratedMediaPlayerResource partial）；`core/uce/composition.cpp` 的 RegisterVideo/UnregisterVideo/BeginProcessVideo/EndProcessVideo → `Core/Av/VideoComposition.cs`。编码前验证合同：`VideoSlaveTests` 覆盖完整单源注册、两级失败、sample Begin/End、消费者通知与最后释放。provider/renderer/scheduler 是尚未迁移的外部依赖合同；不得将组件验收标记为真实媒体播放或改变旧 COM 命令接收边界。
+
+## MILMedia公开方法族前置
+
+`core/api/exports.cpp:198–419`、`include/wgx_render.h:728–836` → `Abi/MediaExports.cs`：21个公开生产导出，真实IMILMedia Stdcall调用/byte bool/借用引用/HRESULT原样传播。唯一COM测试项目MediaExportsTests定向31/31，其中10项消费固定同版本系统WPF创建的真实WMP媒体对象。发布SHA D491C68EBE5C74EB4A59A24A62B5CE31D63F0C5C829949C7F23A4740528BA3A4；全量1275/1/1276。映射仍Partial：未实现候选媒体factory、播放、sample或provider/composition/Visual闭环，不把系统媒体查询等同完整媒体迁移。事实见S-20261012-MEDIA-EXPORTS-SYSTEM-SOURCE-PARTIAL。
 
 ## MediaPlayer 已确认边界
 

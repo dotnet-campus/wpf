@@ -9,7 +9,8 @@ internal static unsafe class NativeStrokeReader
         => Widen(shape, pen, matrix, out coverage, out _);
 
     internal static int Widen(nint shape, nint pen, Matrix4x4 matrix, out SoftwareImageCoverage? coverage,
-        out MilRectD bounds, bool createCoverage = true, GeneratedImageTransform? toleranceTransform = null)
+        out MilRectD bounds, bool createCoverage = true, GeneratedImageTransform? toleranceTransform = null,
+        Direct3D9SurfaceRect? clip = null)
     {
         coverage = null;
         bounds = default;
@@ -213,7 +214,7 @@ internal static unsafe class NativeStrokeReader
             transform = transform.Prepend(penToShape);
         }
         return SoftwareStrokeWidening.TryCreate(figures, style, transform, out coverage, out bounds,
-            createCoverage, toleranceTransform)
+            createCoverage, toleranceTransform, clip)
             ? 0 : Direct3D9Factory.NotImplementedHResult;
     }
 }

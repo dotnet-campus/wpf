@@ -10,8 +10,7 @@ public sealed unsafe class DoubleBufferedBitmapBehaviorTests
     [TestMethod]
     public void WhenOwnerIsReleasedThenBackBufferAndLockRetainPixels()
     {
-        string path = typeof(DoubleBufferedBitmapBehaviorTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-            .Single(attribute => attribute.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
         var create = (delegate* unmanaged[Stdcall]<uint, uint, double, double, Guid*, nint, nint*, int>)NativeLibrary.GetExport(module, "MILSwDoubleBufferedBitmapCreate");
         var getBack = (delegate* unmanaged[Stdcall]<nint, nint*, uint*, int>)NativeLibrary.GetExport(module, "MILSwDoubleBufferedBitmapGetBackBuffer");
@@ -50,8 +49,7 @@ public sealed unsafe class DoubleBufferedBitmapBehaviorTests
     [DataRow("6fddc324-4e03-4bfe-b185-3d77768dc90b", 6u, 14u)]
     public void WhenFormatHasPaddingThenCopyPixelsOmitsRowPadding(string formatId, uint rowBytes, uint expectedSize)
     {
-        string path = typeof(DoubleBufferedBitmapBehaviorTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-            .Single(attribute => attribute.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
         var create = (delegate* unmanaged[Stdcall]<uint, uint, double, double, Guid*, nint, nint*, int>)NativeLibrary.GetExport(module, "MILSwDoubleBufferedBitmapCreate");
         var getBack = (delegate* unmanaged[Stdcall]<nint, nint*, uint*, int>)NativeLibrary.GetExport(module, "MILSwDoubleBufferedBitmapGetBackBuffer");
@@ -91,8 +89,7 @@ public sealed unsafe class DoubleBufferedBitmapBehaviorTests
     [TestMethod]
     public void WhenCopyForwardIsSubmittedThenDuplicatedCompletionEventIsSignaled()
     {
-        string path = typeof(DoubleBufferedBitmapBehaviorTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-            .Single(attribute => attribute.Key == "AotDllPath").Value!;
+        string path = AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
         var create = (delegate* unmanaged[Stdcall]<uint, uint, double, double, Guid*, nint, nint*, int>)NativeLibrary.GetExport(module, "MILSwDoubleBufferedBitmapCreate");
         var createConnection = (delegate* unmanaged[Stdcall]<byte, nint*, int>)NativeLibrary.GetExport(module, "WgxConnection_Create");

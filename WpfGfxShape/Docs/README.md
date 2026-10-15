@@ -1,73 +1,34 @@
-# WpfGfxShape 迁移文档索引
+# WpfGfxShape 文档分层索引
 
-## 推荐阅读顺序
+唯一恢复入口：[next-session-handoff.md](next-session-handoff.md)。本索引不保存运行数字；“当前/最新”只由[状态源](handoffs/current-stable-baseline.md)解释。
 
-1. [`00-migration-charter.md`](00-migration-charter.md) — 不可违反原则与跨会话协议
-2. [`next-session-handoff.md`](next-session-handoff.md) — 当前唯一下一工作切片
-3. [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) — 与当前实现同步的阶段状态、剩余缺口和关闭顺序
-4. [`native-to-managed-file-map.md`](native-to-managed-file-map.md) — 当前原生职责到托管文件的事实映射
-5. [`03-migration-order.md`](03-migration-order.md) — 原始批次、Ledger 和工作包规范
-6. [`06-testing-strategy.md`](06-testing-strategy.md) — 测试层级、渐进 E2E 和证据门禁
-7. [`09-test-evidence-and-e2e-contract.md`](09-test-evidence-and-e2e-contract.md) — harness 与 evidence 契约
-8. 与当前工作切片直接相关的专题文档
+## 现行
 
-## 文档职责与有效性
+- [执行规则](handoffs/current-execution-rules.md)、[状态源](handoffs/current-stable-baseline.md)、[工作项](handoffs/current-work-item.md)。
+- [总计划](remaining-gap-closure-plan.md)：七阶段正式完成条件；[主题合同](plan-module-contracts.md)：A/B/C、消费者差集与 E2E 独立矩阵。
+- [外部输入](all-completion-external-prerequisites.md)、[方法族边界](publicabi-family-delivery-plan.md)、[文件映射导航](native-to-managed-file-map.md)。
 
-| 文档 | 当前身份与职责 |
-|---|---|
-| [`00-migration-charter.md`](00-migration-charter.md) | **强制权威规范**：最高原则、项目边界与交接硬规则；不维护当前进度 |
-| [`01-native-source-topology.md`](01-native-source-topology.md) | **稳定事实基线**：当前原生生产边界、主要源码域、生成/资源和外部供应拓扑 |
-| [`02-abi-and-managed-callers.md`](02-abi-and-managed-callers.md) | **权威静态事实基线**：当前 DLL 身份、106/107/99/8/7 ABI 基线、所有权和调用方边界 |
-| [`03-migration-order.md`](03-migration-order.md) | **权威实施规范**：当前迁移顺序原则、编码/验证门禁和证据触发型分支；不维护唯一下一动作 |
-| [`04-nativeaot-project-shape.md`](04-nativeaot-project-shape.md) | **当前项目形态基线**：四项目结构、构建隔离、Native AOT、依赖和架构边界 |
-| [`05-silknet-directx-assessment.md`](05-silknet-directx-assessment.md) | **当前互操作规范**：Silk.NET 2.23.0 与 CsWin32 的采用边界、ABI 核对和禁止事项 |
-| [`06-testing-strategy.md`](06-testing-strategy.md) | **权威规范**：单元、ABI、差分、集成和 E2E 测试分层；不维护最近运行数字 |
-| [`07-scope-and-ledger-schema.md`](07-scope-and-ledger-schema.md) | **权威规范**：“整个 wpfgfx”的生产分母与 Ledger schema；当前 Ledger 状态另见其事实源 |
-| [`08-abi-manifest-spec.md`](08-abi-manifest-spec.md) | **权威规范**：导出、类型、callback、COM 和二进制 ABI manifest schema |
-| [`09-test-evidence-and-e2e-contract.md`](09-test-evidence-and-e2e-contract.md) | **权威规范**：测试承载、运行目录、Evidence ID 和 E2E 可执行契约 |
-| [`10-session-continuity-protocol.md`](10-session-continuity-protocol.md) | **强制权威规范**：跨会话领取、独立完成历史、决策、失败和中断协议 |
-| [`11-first-coding-step.md`](11-first-coding-step.md) | **历史完成结果**：记录构建隔离边界和已废弃启动方案，不含可执行待办 |
-| [`migration-master-plan.md`](migration-master-plan.md) | 初始总体规划基线；其中阶段状态不代表当前执行状态 |
-| [`session-roadmap.md`](session-roadmap.md) | 初始分轮规划基线；实际领取顺序不以其旧状态为准 |
-| [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) | 当前中长期缺口分类、阶段状态、依赖顺序、进入条件和完成条件；生产分母不可计算时不维护整体百分比 |
-| [`next-session-handoff.md`](next-session-handoff.md) | 当前唯一入口；只保存恢复顺序和文档导航 |
-| [`handoffs/current-execution-rules.md`](handoffs/current-execution-rules.md) | 当前每轮执行规则与禁止扩展边界 |
-| [`handoffs/current-stable-baseline.md`](handoffs/current-stable-baseline.md) | 当前阶段、稳定能力摘要和最近验证基线 |
-| [`handoffs/current-work-item.md`](handoffs/current-work-item.md) | 当前唯一工作切片及完成条件 |
-| [`native-to-managed-file-map.md`](native-to-managed-file-map.md) | 当前原生职责到主要 C# 文件的事实对照表 |
-| [`decisions/README.md`](decisions/README.md) | 已接受决策与待裁决 P0 索引 |
-| [`handoffs/README.md`](handoffs/README.md) | 不可覆盖的历史交接快照索引 |
+## 决策与稳定规范（不是运行状态）
 
-## 调查底稿
+- [决策索引](decisions/README.md)：DEC-0001–0004；驻留合同优先于历史卸载要求。
+- [章程](00-migration-charter.md)、[源码拓扑](01-native-source-topology.md)、[ABI/调用方](02-abi-and-managed-callers.md)、[迁移顺序](03-migration-order.md)。
+- [项目形态](04-nativeaot-project-shape.md)、[互操作](05-silknet-directx-assessment.md)、[Ledger schema](07-scope-and-ledger-schema.md)、[ABI schema](08-abi-manifest-spec.md)、[连续性协议](10-session-continuity-protocol.md)。
 
-调查文档保存证据、推断、过程和未决项；稳定结论应吸收到上表权威文档，不在多个文件各自维护不同规则。
+## 方法（不维护当前 SHA 或计数）
 
-| 文档 | 主题 |
-|---|---|
-| [`investigations/02a-native-export-surface.md`](investigations/02a-native-export-surface.md) | 原生导出面 |
-| [`investigations/02b-managed-callers.md`](investigations/02b-managed-callers.md) | 托管调用方与加载边界 |
-| [`investigations/03a-generated-model-and-protocol.md`](investigations/03a-generated-model-and-protocol.md) | 生成模型、命令/资源协议 |
-| [`investigations/03b-file-ledger-and-batches.md`](investigations/03b-file-ledger-and-batches.md) | 文件台账与依赖批次底稿 |
-| [`investigations/04a-build-isolation.md`](investigations/04a-build-isolation.md) | 仓库构建继承与隔离 |
-| [`investigations/04b-nativeaot-exports.md`](investigations/04b-nativeaot-exports.md) | Native AOT shared library 与 C 导出 |
-| [`investigations/05-planning-audit-and-source-revalidation.md`](investigations/05-planning-audit-and-source-revalidation.md) | 既有规划的源码复核、执行边界审计与本轮偏差记录 |
+- [测试分层](06-testing-strategy.md)、[证据/E2E契约](09-test-evidence-and-e2e-contract.md)。
+- [生产 COM 方法](com-nativeaot-testing-method.md)、[标准 MTP 沙箱操作](com-acceptance-sandbox-operations.md)。
+- probe/旧 ABI Host 仅机制证据；生产 COM 唯一项目直接加载 AOT，不恢复自建 Host。
 
-## 当前状态摘要
+## 历史、冻结与撤销（按需查证，不是默认恢复路线）
 
-- 当前位于 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 的阶段 1：继续关闭 HW backend 生命周期和直接设备边界。
-- 每轮只执行 [`next-session-handoff.md`](next-session-handoff.md) 指定的一个可独立验证切片。
-- 当前尚不能替换原 `wpfgfx_cor3.dll`：生产 ABI、generated protocol、UCE/资源协议、完整内容管线和 PresentationCore E2E 尚未闭环。
-- 当前代码和测试结构以 `WpfGfxShape.slnx` 中的生产、主测试、ABI Host、ABI 集成测试四个项目为准。
-- 原生职责到托管文件的当前状态以 [`native-to-managed-file-map.md`](native-to-managed-file-map.md) 为准。
-- 初始规划文档中的旧工作包状态、`Done` 标记和早期下一目标不得覆盖当前交接与缺口关闭计划。
+- [历史隔离索引](history-index.md)：旧总体/分轮计划、撤销入口及冻结例外。
+- [完成证据目录](completed-work/README.md)、[交接归档索引](handoffs/README.md)、[旧完成档规则](handoffs/completed-work/README.md)。
+- [调查分类索引](investigations/README.md)：全部调查主题、历史 WIP、原始证据与辅助工程。
+- 历史原始 SHA、失败、阶段边界保持原义，不批量替换成新值。
 
-## 维护规则
+## 维护
 
-- 原则只在 `00-migration-charter.md` 修改；用户明确批准后才能改变。
-- 当前中长期缺口顺序只在 `remaining-gap-closure-plan.md` 维护。
-- 当前唯一动作只在 `handoffs/current-work-item.md` 维护；`next-session-handoff.md` 只维护恢复顺序和导航。
-- 当前文件映射事实只在 `native-to-managed-file-map.md` 维护。
-- 原始批次和工作包规范保留在 `migration-master-plan.md` 与 `03-migration-order.md`，但其中旧状态不代表当前状态。
-- 测试规则在 `06-testing-strategy.md` 和 `09-test-evidence-and-e2e-contract.md` 维护。
-- 调查文档保留历史证据，不作为下一轮任务入口。
-- 未 build/publish/test 的结论必须继续标记为未验证。
+状态只更新状态源；计划维护条件，工作项维护恢复点，方法维护规则。
+长篇稳定规范按章节引用，不复制完成条件；冻结长档不机械拆改。
+本轮修改及长度、例外与待独立复核项见[治理报告](docs-governance-report.md)。

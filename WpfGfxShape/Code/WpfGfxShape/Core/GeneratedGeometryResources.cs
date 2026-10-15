@@ -182,7 +182,7 @@ internal abstract class GeneratedGeometryResource : GeneratedDependencyResource
     protected static bool IsValid(MilCombineMode value) => value is >= MilCombineMode.Union and <= MilCombineMode.Exclude;
 }
 
-internal sealed class GeneratedLineGeometryResource : GeneratedGeometryResource
+internal sealed partial class GeneratedLineGeometryResource : GeneratedGeometryResource
 {
     internal GeneratedLineGeometryResource() : base(MilResourceType.LineGeometry) { }
     internal (MilPoint2D StartPoint, MilPoint2D EndPoint) Value { get; private set; }
@@ -214,7 +214,7 @@ internal sealed class GeneratedLineGeometryResource : GeneratedGeometryResource
     private static GeneratedProtocolResource[] Present(GeneratedProtocolResource?[] dependencies) => dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray();
 }
 
-internal sealed class GeneratedRectangleGeometryResource : GeneratedGeometryResource
+internal sealed partial class GeneratedRectangleGeometryResource : GeneratedGeometryResource
 {
     internal GeneratedRectangleGeometryResource() : base(MilResourceType.RectangleGeometry) { }
     internal (double RadiusX, double RadiusY, MilRectD Rect) Value { get; private set; }
@@ -254,7 +254,7 @@ internal sealed class GeneratedRectangleGeometryResource : GeneratedGeometryReso
     private static GeneratedProtocolResource[] Present(GeneratedProtocolResource?[] dependencies) => dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray();
 }
 
-internal sealed class GeneratedEllipseGeometryResource : GeneratedGeometryResource
+internal sealed partial class GeneratedEllipseGeometryResource : GeneratedGeometryResource
 {
     internal GeneratedEllipseGeometryResource() : base(MilResourceType.EllipseGeometry) { }
     internal (double RadiusX, double RadiusY, MilPoint2D Center) Value { get; private set; }
@@ -294,7 +294,7 @@ internal sealed class GeneratedEllipseGeometryResource : GeneratedGeometryResour
     private static GeneratedProtocolResource[] Present(GeneratedProtocolResource?[] dependencies) => dependencies.Where(static item => item is not null).Cast<GeneratedProtocolResource>().ToArray();
 }
 
-internal sealed class GeneratedGeometryGroupResource : GeneratedGeometryResource
+internal sealed partial class GeneratedGeometryGroupResource : GeneratedGeometryResource
 {
     internal GeneratedGeometryGroupResource() : base(MilResourceType.GeometryGroup) { }
     internal MilFillMode FillRule { get; private set; }
@@ -323,7 +323,7 @@ internal sealed class GeneratedGeometryGroupResource : GeneratedGeometryResource
     }
 }
 
-internal sealed class GeneratedCombinedGeometryResource : GeneratedGeometryResource
+internal sealed partial class GeneratedCombinedGeometryResource : GeneratedGeometryResource
 {
     internal GeneratedCombinedGeometryResource() : base(MilResourceType.CombinedGeometry) { }
     internal MilCombineMode CombineMode { get; private set; }
@@ -345,7 +345,7 @@ internal sealed class GeneratedCombinedGeometryResource : GeneratedGeometryResou
     }
 }
 
-internal sealed class GeneratedPathGeometryResource : GeneratedGeometryResource
+internal sealed partial class GeneratedPathGeometryResource : GeneratedGeometryResource
 {
     internal GeneratedPathGeometryResource() : base(MilResourceType.PathGeometry) { }
     internal MilFillMode FillRule { get; private set; }

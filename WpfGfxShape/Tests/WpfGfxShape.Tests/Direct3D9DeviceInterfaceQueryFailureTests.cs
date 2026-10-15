@@ -408,6 +408,24 @@ public sealed unsafe class Direct3D9DeviceInterfaceQueryFailureTests
         }
     }
 
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+    private static int SetPointer(IDirect3DDevice9* device, void* value) => 0;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+    private static int SetState(IDirect3DDevice9* device, uint state, uint value) => 0;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+    private static int SetStageState(IDirect3DDevice9* device, uint stage, uint state, uint value) => 0;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+    private static int SetTransform(IDirect3DDevice9* device, Transformstatetype state, void* value) => 0;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+    private static int SetTexture(IDirect3DDevice9* device, uint stage, IDirect3DBaseTexture9* texture) => 0;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+    private static int SetStream(IDirect3DDevice9* device, uint stream, IDirect3DVertexBuffer9* buffer, uint offset, uint stride) => 0;
+
     private struct FakeDeviceObject : IDisposable
     {
         private nint _memory;
@@ -418,7 +436,7 @@ public sealed unsafe class Direct3D9DeviceInterfaceQueryFailureTests
 
         public FakeDeviceObject(delegate* unmanaged[Stdcall]<void*, uint> release)
         {
-            _memory = (nint) NativeMemory.AllocZeroed((nuint) sizeof(nint) * 20);
+            _memory = (nint) NativeMemory.AllocZeroed((nuint) sizeof(nint) * 135);
             void** memory = (void**) _memory;
             Device = (IDirect3DDevice9*) memory;
             DeviceEx = (IDirect3DDevice9Ex*) memory;
@@ -428,6 +446,16 @@ public sealed unsafe class Direct3D9DeviceInterfaceQueryFailureTests
             vtable[2] = (void*) release;
             vtable[7] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, Caps9*, int>) &GetCreatedDeviceCaps;
             vtable[18] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, uint, BackbufferType, IDirect3DSurface9**, int>) &GetBackBuffer;
+            vtable[39] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, void*, int>) &SetPointer;
+            vtable[44] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, Transformstatetype, void*, int>) &SetTransform;
+            vtable[49] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, void*, int>) &SetPointer;
+            vtable[57] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, uint, int>) &SetState;
+            vtable[65] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, IDirect3DBaseTexture9*, int>) &SetTexture;
+            vtable[67] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, uint, uint, int>) &SetStageState;
+            vtable[69] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, uint, uint, int>) &SetStageState;
+            vtable[100] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, IDirect3DVertexBuffer9*, uint, uint, int>) &SetStream;
+            vtable[104] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, void*, int>) &SetPointer;
+            vtable[107] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, void*, int>) &SetPointer;
 
             _dummyBackBufferMemory = (nint) NativeMemory.AllocZeroed((nuint) sizeof(nint) * 4);
             void** dummyBackBufferMemory = (void**) _dummyBackBufferMemory;

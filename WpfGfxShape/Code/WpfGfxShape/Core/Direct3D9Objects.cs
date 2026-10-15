@@ -204,7 +204,8 @@ internal sealed unsafe class Direct3D9Objects : IDisposable
         return CheckDeviceType(adapterOrdinal, Devtype.Hal, displayFormat, Format.X8R8G8B8);
     }
 
-    internal Direct3D9Device CreateDevice(uint adapterOrdinal = D3D9.AdapterDefault, Devtype deviceType = Devtype.Hal)
+    internal Direct3D9Device CreateDevice(uint adapterOrdinal = D3D9.AdapterDefault, Devtype deviceType = Devtype.Hal, nint focusWindow = 0,
+        Direct3D9DeviceManager? manager = null)
     {
         Direct3D9AdapterCapabilities capabilities = GetAdapterCapabilities(adapterOrdinal, deviceType);
         uint behaviorFlags = unchecked((uint) (D3D9.CreateFpuPreserve
@@ -219,20 +220,29 @@ internal sealed unsafe class Direct3D9Objects : IDisposable
             backBufferFormat: Format.X8R8G8B8,
             backBufferCount: 1,
             swapEffect: Swapeffect.Discard,
+            hDeviceWindow: focusWindow,
             windowed: true,
             enableAutoDepthStencil: false,
             autoDepthStencilFormat: Format.Unknown);
 
-        return CreateDevice(
-            new Direct3D9DeviceCreationParameters(
-                adapterOrdinal,
-                deviceType,
-                behaviorFlags,
-                presentParameters,
-                DisplayMode: capabilities.DisplayMode,
-                Capabilities: capabilities.Caps),
-            unusableNotification: null,
-            disposedNotification: null);
+        Direct3D9DeviceCreationParameters creationParameters = new(
+            adapterOrdinal, deviceType, behaviorFlags, presentParameters,
+            FocusWindow: focusWindow, DisplayMode: capabilities.DisplayMode,
+            Capabilities: capabilities.Caps);
+        if (manager is not null) return manager.CreateDevice(creationParameters);
+
+        Direct3D9Device device = CreateDevice(creationParameters,
+            unusableNotification: null, disposedNotification: null);
+        try
+        {
+            Marshal.ThrowExceptionForHR(InitializeRenderState(device));
+            return device;
+        }
+        catch
+        {
+            device.Dispose();
+            throw;
+        }
     }
 
     internal Direct3D9DeviceManager CreateDeviceManager(Direct3D9DisplaySetManager displaySetManager)
@@ -253,20 +263,7 @@ internal sealed unsafe class Direct3D9Objects : IDisposable
             maximumMultisampleTypeProvider: Direct3D9MultisampleSupportFactory.ReadConfiguredMaximum,
             checkDeviceMultisampleType: CheckDeviceMultisampleType,
             initializeDynamicBuffers: device => device.InitializeDynamicBuffers(),
-            initializeRenderState: device => Direct3D9DefaultState.Initialize(
-                device.Capabilities,
-                device.ForceSetRenderState,
-                device.ForceSetTextureStageState,
-                device.ForceSetSamplerState,
-                device.ForceSetTransform,
-                device.SetMaterial,
-                stage => device.ForceSetTexture(stage, null),
-                () => device.ForceSetPixelShader(null),
-                () => device.ForceSetStreamSource(null, 0),
-                stream => device.SetStreamSource(stream, null, 0, 0),
-                () => device.ForceSetIndices(null),
-                device.ResetScissorAndClipCache,
-                () => device.ForceSetDepthStencilSurface(null, 0, 0)),
+            initializeRenderState: InitializeRenderState,
             initializeTextPixelShaders: device => device.InitializeTextPixelShadersFromResources(),
             ensureSoftwareRasterizerRegistered: () => displaySetManager
                 .DangerousGetLatestDisplaySet()
@@ -276,6 +273,35 @@ internal sealed unsafe class Direct3D9Objects : IDisposable
             getDeviceCaps: GetDeviceCaps,
             checkRenderTargetFormat: (device, format) => device.CheckRenderTargetFormat(format, _ => 0, out _));
     }
+
+    internal Direct3D9DeviceManager CreateHardwareTargetDeviceManager() => new(
+        CreateManagedDevice,
+        GetAdapterCount,
+        GetAdapterDisplayMode,
+        CheckDeviceType,
+        checkDeviceFormat: CheckDeviceFormat,
+        checkDeviceMultisampleType: CheckDeviceMultisampleType,
+        initializeDynamicBuffers: device => device.InitializeDynamicBuffers(),
+        initializeRenderState: InitializeRenderState,
+        initializeTextPixelShaders: device => device.InitializeTextPixelShadersFromResources(),
+        adapterDisplayModeProbe: adapterOrdinal => GetAdapterDisplayMode(adapterOrdinal, out _),
+        getDeviceCaps: GetDeviceCaps);
+
+    private static int InitializeRenderState(Direct3D9Device device) =>
+        Direct3D9DefaultState.Initialize(
+            device.Capabilities,
+            device.ForceSetRenderState,
+            device.ForceSetTextureStageState,
+            device.ForceSetSamplerState,
+            device.ForceSetTransform,
+            device.SetMaterial,
+            stage => device.ForceSetTexture(stage, null),
+            () => device.ForceSetPixelShader(null),
+            () => device.ForceSetStreamSource(null, 0),
+            stream => device.SetStreamSource(stream, null, 0, 0),
+            () => device.ForceSetIndices(null),
+            device.ResetScissorAndClipCache,
+            () => device.ForceSetDepthStencilSurface(null, 0, 0));
 
     private int RegisterSoftwareDevice(nint getSoftwareInfo)
     {

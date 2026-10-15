@@ -92,10 +92,10 @@ internal static unsafe partial class BitmapRenderTargetExports
         return CreateBitmapTarget(width, height, format, dpiX, dpiY, output);
     }
 
-    internal static int CreateDrawingIntermediate(uint width, uint height, out nint target, out nint bitmap)
+    internal static int CreateDrawingIntermediate(uint width, uint height, out nint target, out nint bitmap, bool floating = true)
     {
         nint value = 0;
-        int hr = CreateBitmapTarget(width, height, 16, 96, 96, &value);
+        int hr = CreateBitmapTarget(width, height, floating ? 26u : 16u, 96, 96, &value);
         target = value;
         bitmap = hr >= 0 ? ((Instance*)value)->Bitmap : 0;
         if (bitmap != 0) Direct3D9Factory.AddRef(bitmap);

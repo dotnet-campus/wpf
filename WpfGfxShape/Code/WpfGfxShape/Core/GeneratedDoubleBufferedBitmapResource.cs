@@ -22,12 +22,25 @@ internal readonly struct MilDoubleBufferedBitmapCopyCommand
 
 internal sealed partial class GeneratedDoubleBufferedBitmapResource() : GeneratedProtocolResource(MilResourceType.DoubleBufferedBitmap)
 {
-    private nint _bitmap;
+    private FrozenComSlot? _sourceSlot;
+    private nint _bitmap => _sourceSlot?.Pointer ?? 0;
+
+    internal FrozenBitmapLease? PinBitmapSource(out nint source)
+    {
+        FrozenBitmapLease? lease = _sourceSlot?.Pin();
+        source = lease is null ? 0 : DoubleBufferedBitmapExports.GetBitmapSourceNoAddRef(lease.Pointer, _useBackBuffer);
+        return lease;
+    }
     private bool _useBackBuffer;
 
     internal bool HasContent => _bitmap != 0;
 
-    internal nint AcquireBitmapSource() => _bitmap == 0 ? 0 : DoubleBufferedBitmapExports.AcquireBitmapSource(_bitmap, _useBackBuffer);
+    internal nint AcquireBitmapSource()
+    {
+        using FrozenBitmapLease? lease = PinBitmapSource(out nint source);
+        Direct3D9Factory.AddRef(source);
+        return source;
+    }
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
     private static partial int SetEvent(nint handle);
@@ -46,10 +59,11 @@ internal sealed partial class GeneratedDoubleBufferedBitmapResource() : Generate
         {
             var update = MemoryMarshal.Read<MilDoubleBufferedBitmapCommand>(packet);
             if (update.Bitmap == 0) return Direct3D9Factory.InvalidArgumentHResult;
-            nint previous = _bitmap;
-            _bitmap = (nint)update.Bitmap;
+            var next = new FrozenComSlot((nint)update.Bitmap);
+            FrozenComSlot? previous = _sourceSlot;
+            _sourceSlot = next;
             _useBackBuffer = update.UseBackBuffer != 0;
-            Direct3D9Factory.Release(previous);
+            previous?.Retire();
             NotifyChanged();
             return 0;
         }
@@ -71,8 +85,8 @@ internal sealed partial class GeneratedDoubleBufferedBitmapResource() : Generate
 
     protected override void OnFinalRelease()
     {
-        nint bitmap = _bitmap;
-        _bitmap = 0;
-        Direct3D9Factory.Release(bitmap);
+        FrozenComSlot? previous = _sourceSlot;
+        _sourceSlot = null;
+        previous?.Retire();
     }
 }
