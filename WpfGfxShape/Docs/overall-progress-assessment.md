@@ -1,5 +1,7 @@
-# 已撤销
+# 已归类：overall-progress-assessment
 
-该文档已撤销，不作为当前状态或进度依据。
+本页仅为冻结历史引用保留路径与锚点，不是恢复入口。
 
-请从 [`next-session-handoff.md`](next-session-handoff.md) 恢复工作；阶段状态与剩余大项见 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md)。
+正文已移至[history/plans/overall-progress-assessment.md](history/plans/overall-progress-assessment.md)；恢复从[唯一入口](next-session-handoff.md)开始。
+
+<a id="已撤销"></a>

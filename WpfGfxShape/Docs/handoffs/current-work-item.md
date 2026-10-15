@@ -3,12 +3,12 @@
 ## 本轮范围
 
 仅修改 Docs 文档与索引；不改生产、测试、配置，不执行终端/脚本、构建、发布或测试。
-文档治理完成后由父级另行委派独立复核；本页不将维护当作生产完成。
+本轮已由独立文档执行者复核正式条件并完成现行长文拆分，结果见[治理报告](../docs-governance-report.md)；不再将同一文档复核重复挂为待办，不把维护当生产完成。
 
 ## 真实恢复点
 
 GenProto 新证据恢复的有限执行已结束，不能继续以“重跑有限全量/恢复同一缺目录”作为默认下一轮。
-身份、原始结果与未恢复历史原物只见[状态源](current-stable-baseline.md)和[恢复记录](../investigations/genproto-evidence-recovery.md)。
+身份、原始结果与未恢复历史原物只见[状态源](current-stable-baseline.md)和[恢复记录](../investigations/active/genproto-evidence-recovery.md)。
 恢复生产时，监督者按[总计划](../remaining-gap-closure-plan.md)委派实际代码代理，推进完整 generated protocol / 真实消费者与资源寿命模块；允许紧密耦合工作跨阶段，不把文档、计数、单例补测当模块交付。
 
 ## 模块完成条件（不能因本轮权限缩小）

@@ -6,11 +6,11 @@
 
 | 文件 | 保留内容与失效部分 |
 |---|---|
-| [migration-master-plan](migration-master-plan.md) | 初始工作包树及§9最终完成定义保留；旧阶段、百分比、unload Blocked 不作当前门 |
-| [session-roadmap](session-roadmap.md) | 初始分轮计划已退出当前调度；旧固定下一包/探针轮次不可执行 |
-| [DrawBitmap方案](drawbitmap-effects-float-implementation-plan.md) | 历史设计与S-130–161续接；旧测试分母/续接不是当前任务 |
-| [旧映射长档](native-to-managed-file-map.md) | 各次源码阅读与产物身份追溯；多个“最新”属于历史，不是当前实现清单 |
-| [首包完成结果](11-first-coding-step.md) | 只保存启动边界及废弃方案，不领取WP-00A |
+| [migration-master-plan](history/plans/migration-master-plan.md) | 初始工作包树及§9最终完成定义保留；旧阶段、百分比、unload Blocked 不作当前门 |
+| [session-roadmap](history/plans/session-roadmap.md) | 初始分轮计划已退出当前调度；旧固定下一包/探针轮次不可执行 |
+| [DrawBitmap方案](history/plans/drawbitmap-effects-float-implementation-plan.md) | 历史设计与S-130–161续接；旧测试分母/续接不是当前任务 |
+| [旧映射长档](history/plans/native-to-managed-file-map.md) | 各次源码阅读与产物身份追溯；多个“最新”属于历史，不是当前实现清单 |
+| [首包完成结果](history/plans/11-first-coding-step.md) | 只保存启动边界及废弃方案，不领取WP-00A |
 
 ## 冻结证据：不改原文
 
@@ -28,9 +28,13 @@
 
 ## 已撤销/退出当前入口
 
-- [overall-progress-assessment](overall-progress-assessment.md)已撤销，不恢复百分比看板。
+- [overall-progress-assessment](history/plans/overall-progress-assessment.md)已撤销，不恢复百分比看板。
 - session-roadmap 与 migration-master-plan 不再作为当前领取入口；仅在本隔离层查阅或从正式条件引用精确章节。
 
 ## 调查隔离
 
 [调查索引](investigations/README.md)按专题分类；WIP/repair-plan 标题不是授权任务。稳定规则归决策/方法，运行事实归状态源。
+
+## 实际归类
+
+[历史方案目录](history/plans/README.md)保存已迁移正文；原路径只留兼容锚点。[调查状态](investigations/status-index.md)区分未闭合同、有限专项、替代方案和审计来源。

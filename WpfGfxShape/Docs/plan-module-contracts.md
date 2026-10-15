@@ -21,7 +21,7 @@
 
 - 历史 CLR/冻结输入 authority、ARM64 独立布局及真实执行。
 - core managed field/enum/pack/size、X86 runtime 或固定宽度独立推导。
-- generated/mapping/consumer physical record 闭包、ProcessCreate/InitializePen。
+- generated/mapping/consumer physical record 闭包；ProcessCreate 错误/引用/关闭及 InitializePen ABI/dash/stride，全族物理 records 依赖签名和逐 required 更新。
 - 有限全量测试不替代 physical/required、satisfied 与 stage4Closed 的正式关闭。
 
 ## 消费者差集（原计划逐项保留）
@@ -64,7 +64,7 @@ D3DImage 必须真实 HW color-source 复用、manager adapter 通知、interop 
 [唯一外部清单](all-completion-external-prerequisites.md)维护具体包内容与验收。player 包头/dispatch/destroy 缺合同不猜布局。
 其余生产消费者、政策消费/恢复、UCE/资源失败清理、呈现失败因果/恢复、glyph 完整寿命、异步 perf、GenProto 可自主部分与 E2E 接线不得因外部确缺全部停工。
 [DEC-0004](decisions/DEC-0004-process-lifetime-module.md)明确驻留，unload/reload/热替换不适用（非通过）；Release、关闭、线程退出、callback 静止及初始化失败清理仍验收。
-[x86 独立有限证据](investigations/x86-shared-unload-actual-verification-20261014.md)不外推完整 ABI/配置/E2E，不删除 Win32。
+[x86 独立有限证据](investigations/audits/x86-shared-unload-actual-verification-20261014.md)不外推完整 ABI/配置/E2E，不删除 Win32。
 阶段6依生产 meta/factory/bitmap/stream/WIC/codec 桥、真实导出与 DLL 合同；阶段7依完整命令/资源链及同 PresentationCore 隔离路径。
 
 ## 独立 E2E-01–09（逐项，不合并降级）
@@ -83,3 +83,16 @@ D3DImage 必须真实 HW color-source 复用、manager adapter 通知、interop 
 
 各项均须[测试分层](06-testing-strategy.md)与[可执行证据契约](09-test-evidence-and-e2e-contract.md)规定的独立输入、输出、原版/候选身份、能力/架构/配置矩阵。E2E-00 probe 不替代任何一项。
 最终替换资格是兼容原 WPF 库的交付验收，不是运行期换掉已加载 DLL。
+
+## 全迁移完成标准
+
+承接历史总规划§9保留合同，全部同时满足：
+- 完整机器 Ledger 中所有生产范围项有最终状态和证据。
+- 全部目标架构/配置 ABI、布局、COM、callback、resource、version、symbol 兼容。
+- 所有逐文件实现可追溯，无未记录重构或算法替换。
+- 原/候选规定差分全矩阵通过。
+- 真实 PresentationCore E2E 全矩阵通过。
+- 所有适用 P0 门关闭，或用户批准明确范围例外；DEC-0004 将模块卸载改为不适用而非测试通过，不免除资源清理、x86及其余门。
+- 只有此后才可描述为 wpfgfx_cor3.dll 兼容替代；现代化、性能优化、架构重构另立计划与基线。
+
+原权威追溯：[历史总规划§9](history/plans/migration-master-plan.md#9-完成标准)，仅查条件来源，不恢复其旧状态或下一包。

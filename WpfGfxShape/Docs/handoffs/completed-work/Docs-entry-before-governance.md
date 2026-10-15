@@ -1,6 +1,6 @@
 # 治理前入口快照（历史冻结）
 
-以下为治理前 next-session-handoff.md 原文；其中“当前”仅指归档时，不参与恢复调度。恢复只从 [唯一入口](../../next-session-handoff.md) 开始。
+以下保存治理前 next-session-handoff.md 正文内容（相对链接已适配目录，并非逐字节原文）；其中“当前”仅指归档时，不参与恢复调度。恢复只从 [唯一入口](../../next-session-handoff.md) 开始。
 
 # 当前交接：颜色 ABI 回归已测，正式总门 Red
 

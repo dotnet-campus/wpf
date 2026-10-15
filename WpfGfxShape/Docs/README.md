@@ -6,17 +6,22 @@
 
 - [执行规则](handoffs/current-execution-rules.md)、[状态源](handoffs/current-stable-baseline.md)、[工作项](handoffs/current-work-item.md)。
 - [总计划](remaining-gap-closure-plan.md)：七阶段正式完成条件；[主题合同](plan-module-contracts.md)：A/B/C、消费者差集与 E2E 独立矩阵。
-- [外部输入](all-completion-external-prerequisites.md)、[方法族边界](publicabi-family-delivery-plan.md)、[文件映射导航](native-to-managed-file-map.md)。
+- [外部输入](all-completion-external-prerequisites.md)、[方法族边界](publicabi-family-delivery-plan.md)；文件映射按历史隔离索引查证。
 
 ## 决策与稳定规范（不是运行状态）
 
 - [决策索引](decisions/README.md)：DEC-0001–0004；驻留合同优先于历史卸载要求。
-- [章程](00-migration-charter.md)、[源码拓扑](01-native-source-topology.md)、[ABI/调用方](02-abi-and-managed-callers.md)、[迁移顺序](03-migration-order.md)。
-- [项目形态](04-nativeaot-project-shape.md)、[互操作](05-silknet-directx-assessment.md)、[Ledger schema](07-scope-and-ledger-schema.md)、[ABI schema](08-abi-manifest-spec.md)、[连续性协议](10-session-continuity-protocol.md)。
+- 章程：[实现/ABI](charter-implementation-contract.md)、[工具/文档/例外](charter-evidence-and-continuity.md)；[旧锚点索引](00-migration-charter.md)。
+- [源码拓扑](01-native-source-topology.md)、[ABI/调用方](02-abi-and-managed-callers.md)、[迁移门禁](migration-implementation-gates.md)、[耦合域/例外](migration-coupled-domains.md)；[迁移旧锚点](03-migration-order.md)。
+- [项目形态](04-nativeaot-project-shape.md)、[互操作](05-silknet-directx-assessment.md)。
+- Ledger：[范围/ID](ledger-scope-and-identity.md)、[字段/状态/完成](ledger-records-and-acceptance.md)；[旧锚点](07-scope-and-ledger-schema.md)。
+- ABI：[entry/类型](abi-entry-and-type-schema.md)、[寿命/binary/验收](abi-lifetime-binary-and-gates.md)；[旧锚点](08-abi-manifest-spec.md)。
+- 连续性：[恢复/收尾](continuity-recovery-and-closeout.md)、[失败/决策](continuity-failures-and-decisions.md)；[旧锚点](10-session-continuity-protocol.md)。
 
 ## 方法（不维护当前 SHA 或计数）
 
-- [测试分层](06-testing-strategy.md)、[证据/E2E契约](09-test-evidence-and-e2e-contract.md)。
+- 测试：[分层/批次门禁](testing-levels-and-gates.md)、[比较/失败/完成](testing-comparison-and-acceptance.md)；[旧锚点](06-testing-strategy.md)。
+- 证据：[运行/隔离/比较](evidence-run-contract.md)、[独立E2E-00–09](e2e-executable-contracts.md)、[能力/失败/状态](evidence-capabilities-and-failures.md)；[旧锚点](09-test-evidence-and-e2e-contract.md)。
 - [生产 COM 方法](com-nativeaot-testing-method.md)、[标准 MTP 沙箱操作](com-acceptance-sandbox-operations.md)。
 - probe/旧 ABI Host 仅机制证据；生产 COM 唯一项目直接加载 AOT，不恢复自建 Host。
 
@@ -30,5 +35,9 @@
 ## 维护
 
 状态只更新状态源；计划维护条件，工作项维护恢复点，方法维护规则。
-长篇稳定规范按章节引用，不复制完成条件；冻结长档不机械拆改。
-本轮修改及长度、例外与待独立复核项见[治理报告](docs-governance-report.md)。
+现行长规范按语义主题承载，编号原页保留所有旧章标题兼容跳转；主导航直达主题，不删正式条件。冻结长档不机械拆改。
+本轮修改、长度、历史例外与文本/渲染核验边界见[最终治理报告](docs-governance-report.md)；正式条件逐条承接见[source → current追溯](governance-authority-traceability.md)。
+
+## 目录整理导航
+
+[调查独立状态索引](investigations/status-index.md)、[历史方案](history/plans/README.md)、[完成档状态](completed-work/status-index.md)、[交接状态](handoffs/status-index.md)；[实际迁移报告](docs-organization-report.md)。

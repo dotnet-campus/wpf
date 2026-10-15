@@ -78,7 +78,7 @@
 重要生命周期事实：
 
 - `MILMediaClose`、`MILMediaShutdown`、`MILMediaProcessExitHandler` 是不同动作；
-- DLL 显式卸载和进程终止 detach 行为不同；
+- 历史 DLL 显式卸载与进程终止 detach 行为不同；生产 DLL 按[DEC-0004](decisions/DEC-0004-process-lifetime-module.md)驻留，卸载/重载/热替换不适用，资源清理仍验收；
 - attach 或 MediaSystem 部分初始化的现有异常行为不得在首次迁移时自行“改进”；
 - callback detach 必须阻止新进入、处理在途调用并释放 context。
 

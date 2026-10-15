@@ -13,7 +13,7 @@
 
 ## 尚待裁决的 P0
 
-- Windows x86完整ABI/配置/E2E矩阵（[Shared发布与有限生命周期已实测](../investigations/x86-shared-unload-actual-verification-20261014.md)，不是支持未知）；
+- Windows x86完整ABI/配置/E2E矩阵（[Shared发布与有限生命周期已实测](../investigations/audits/x86-shared-unload-actual-verification-20261014.md)，不是支持未知）；
 - AOT-safe COM-like vtable/object。
 
 上述不得在没有官方和运行证据时标记 Accepted。

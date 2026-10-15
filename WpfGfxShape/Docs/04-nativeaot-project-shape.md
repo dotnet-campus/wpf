@@ -1,11 +1,11 @@
-# 当前 .NET 10 Native AOT 项目形态
+# .NET 10 Native AOT 项目边界与历史承载示意
 
-> 本文记录当前项目结构和稳定项目边界，不维护当前工作切片、完成比例或测试流水。
+> 本文维护稳定项目边界；旧项目结构只作历史示意，不作当前项目枚举。不维护当前工作切片、完成比例或测试流水。
 > 当前恢复入口见 [`next-session-handoff.md`](next-session-handoff.md)，最近构建和测试结果见 [`handoffs/current-stable-baseline.md`](handoffs/current-stable-baseline.md)。
 
 ## 1. 当前解决方案结构
 
-`WpfGfxShape.slnx` 当前包含四个项目：
+以下为早期四项目承载结构示意，不是当前项目枚举或创建指令。生产 COM 验收唯一使用 `Tests/WpfGfxShape.ComAcceptance` 标准 MTP 直接加载 AOT；独立 PublicAbi 是公开 ABI 客户端，不是被禁的自建 COM Host；GenProto 为独立有限证据测试。不得恢复旧 Host 或修改 slnx，见[方法](com-nativeaot-testing-method.md)。
 
 ```text
 WpfGfxShape/
@@ -73,7 +73,7 @@ WpfGfxShape/
 
 ## 5. ABI 测试承载
 
-当前 ABI Host/集成测试用于验证非生产 probe 和 Native AOT 加载机制，包括：
+以下旧 ABI Host/集成测试描述仅限历史非生产 probe 机制，不是生产 COM 方案，不授权新增/恢复 Host。其历史验证范围包括：
 
 - 独立进程加载；
 - 绝对路径 DLL 解析；
@@ -96,9 +96,9 @@ WpfGfxShape/
 
 已经形成稳定承载：
 
-- 独立解决方案和四项目结构；
+- 局部独立项目边界（早期四项目示意不作当前数量）；
 - 局部构建隔离；
-- 生产项目、主测试和 ABI Host/集成测试；
+- 生产项目及测试承载；旧 ABI Host 仅为机制历史，生产 COM 规则另见方法页；
 - Native AOT probe 机制；
 - 大量 D3D9/HW 和部分 software 生产实现。
 

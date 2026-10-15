@@ -91,6 +91,6 @@ Silk.NET 类型或 API 首次进入生产路径前必须核对：
 
 ## 6. 当前状态
 
-D3D9/HW 底座已大量使用 Silk.NET 2.23.0 并通过主测试、ABI 测试和解决方案构建。该事实只证明已覆盖调用点，不表示整个 Silk.NET API 面、完整 HW backend、生产 ABI 或最终替换已经完成。
+本页不声明最近运行通过；实际调用点与证据适用范围只见[基线](handoffs/current-stable-baseline.md)。已覆盖调用点的有限证据不能证明整个 Silk.NET API 面、完整 HW backend、生产 ABI 或最终替换。
 
 新增或修改绑定时，验证结果写入 `handoffs/current-stable-baseline.md`，完成切片在 `handoffs/completed-work/` 创建独立历史文件。

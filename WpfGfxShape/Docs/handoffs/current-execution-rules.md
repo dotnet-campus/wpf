@@ -17,7 +17,7 @@
 
 - 先扫描当前入口与工作切片，再选择一个可独立验证的原生大块切片，完成近似直译、测试、构建和文档同步。默认以完整原生方法、紧密耦合的方法族、完整生命周期或可端到端验证的生产闭环为一轮粒度；除非存在明确技术阻塞，不再把同一闭环拆成仅定位、仅计数、仅分配、仅转换、仅接线等连续小切片。
 - 交接文档中的“唯一下一动作”必须持续遵守上述大块粒度。若因原生证据缺失、风险边界或外部阻塞而缩小任务，必须同时记录阻塞证据、当前可交付边界以及后续如何重新合并成完整闭环；不得只因实现方便而规划小任务。
-- COM 测试只写一个 `Tests/WpfGfxShape.ComAcceptance` 单元测试项目，直接加载生产 AOT DLL。禁止创建/恢复 ComAcceptance.Host；禁止创建或修改任何 .slnx。不得恢复用户删除的旧测试方案。
+- COM 测试只写一个 `Tests/WpfGfxShape.ComAcceptance` 标准 MTP 单元测试项目，直接加载生产 AOT DLL；标准沙箱 exe 不是自建 Host，独立 PublicAbi 公开 ABI 客户端不在 Host 禁令内，不替代唯一 COM 验收。禁止创建/恢复 ComAcceptance.Host；禁止创建或修改任何 .slnx。不得恢复用户删除的旧测试方案。
 - 生产 COM 导出采用 TDD：单元测试进程直接用生产项目的 Native AOT DLL，不引用生产托管程序集、不启动自定义子进程、不调用内部实现冒充验收。直接按 csproj 构建/测试，不自动启动发布命令。完整测试方法统一维护于 [`../com-nativeaot-testing-method.md`](../com-nativeaot-testing-method.md)。
 - 原生证据只从 `src/Microsoft.DotNet.Wpf/src/WpfGfx/` 枚举和读取；每次最多读取 400 行。
 - Silk.NET ABI 或类型存疑时读取本地 Silk.NET 2.23.0 源码。

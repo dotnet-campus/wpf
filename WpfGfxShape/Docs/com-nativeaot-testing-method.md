@@ -8,11 +8,11 @@
 
 本机与沙箱必须共用测试和原断言。沙箱构建使用 `ComAcceptanceSandbox=true`，AcceptancePaths 从 `AppContext.BaseDirectory` 解析 `Native/wpfgfx_cor3.dll` 和 `Results`，拒绝 rooted/越界路径，在加载前核对 PE 无 CLR、架构与 `aot.sha256`。本机继续使用显式绝对发布路径。包是框架依赖应用，远端需对应 .NET 10 Windows Desktop runtime。
 
-完整命令、工作目录、25 文件白名单和上传/回收规范见 [`com-acceptance-sandbox-operations.md`](com-acceptance-sandbox-operations.md)。生产与包 publish 是独立显式动作，测试不自动 publish。本轮仅文档收口，没有新发布。
+完整命令、工作目录、显式文件白名单和上传/回收规范见 [`com-acceptance-sandbox-operations.md`](com-acceptance-sandbox-operations.md)。生产与包 publish 是独立显式动作，测试不自动 publish。本轮仅文档收口，没有新发布。
 
-本机标准 MTP Test 命令（只记录，非本轮执行）：在 `WpfGfxShape/Tests/WpfGfxShape.ComAcceptance/` 为工作目录执行 `dotnet test --project WpfGfxShape.ComAcceptance.csproj -c Release -- --report-trx --report-trx-filename local-final-full.trx`。结果以实际输出路径为准，禁止覆盖冻结证据。
+本机标准 MTP Test 参数说明（仅供专用能力使用，不授权终端，非本轮执行）：在 `WpfGfxShape/Tests/WpfGfxShape.ComAcceptance/` 为工作目录执行 `dotnet test --project WpfGfxShape.ComAcceptance.csproj -c Release -- --report-trx --report-trx-filename local-final-full.trx`。结果以实际输出路径为准，禁止覆盖冻结证据。
 
-项目级 `global.json` 的 `test.runner=Microsoft.Testing.Platform` 需要 SDK 从当前工作目录发现；从仓库根只传 csproj 不会采用该文件。本轮专用测试入口定向实际失败于 .NET 10 MTP 禁止 VSTest target，未运行用例，不得报定向 Green。项目级 SDK version=10.0.107/allowPrerelease=true/rollForward=latestFeature 与根相同，但没有根的 paths（.dotnet/$host$），所以实际 SDK 解析一致性未验证。本轮保留该 MTP opt-in 文件、不做未经验证的删改，也不升级 SDK；正确目录的命令尚未由本轮工具验证，不能称专用 dotnet test 兼容已解决。已验证的直接标准 exe 入口不依赖该 runner 选择。
+项目级 MTP runner 的 SDK 查找与工作目录有关，传 csproj 路径不等于切换发现起点。历史包工程曾发生 VSTest target 失败且用例未启动；不计为行为 Red/Green。SDK paths/runner 的实际选择须执行代理保留原始证据，本轮未重新验证，不删改配置或升级 SDK。沙箱直接标准 exe 入口不依赖 SDK runner 选择。
 
 运行身份、计数、strict适用版本及真实失败只见[唯一状态源](handoffs/current-stable-baseline.md)。同步perf等旧全量Green不代表当前回归；原始证据按[历史隔离索引](history-index.md)保留。本文不维护逐轮结果。
 
@@ -28,7 +28,7 @@
 
 ## 原生边界：生产 DLL 导出与 COM
 
-所有模块验收均在唯一测试运行器进程中加载生产项目发布的 Native AOT DLL，测试不得直接访问生产内部 C# 实现。“全走 COM”指使用真实原生互操作边界，而不是把原生所有入口改造成 COM 方法：
+所有生产 COM 模块验收均在唯一标准 MTP 测试运行器进程中加载生产项目发布的 Native AOT DLL，测试不得直接访问生产内部 C# 实现。独立 PublicAbi 客户端是公开 ABI 消费者，不是被禁止的自建 COM Host，也不替代唯一 COM 验收项目。“全走 COM”指使用真实原生互操作边界，而不是把原生所有入口改造成 COM 方法：
 
 - 原生 COM 对象（如 IWICBitmap、IWICBitmapLock、IStream）通过真实 COM vtable 调用，遵守 QI、AddRef、Release 和调用约定。
 - 原生 DLL 导出（如 connection/channel/resource、命令提交、位图创建）按原签名调用导出函数，使用原生规定的句柄与参数；不再包装自定义 COM 接口。

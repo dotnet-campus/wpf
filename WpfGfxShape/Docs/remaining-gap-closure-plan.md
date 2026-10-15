@@ -34,11 +34,13 @@
 |---|---|
 | 七阶段正式门 | 本页“七阶段正式完成条款” |
 | A/B/C 与真实消费者差集 | [主题合同](plan-module-contracts.md)同名主题 |
-| E2E-01–09独立矩阵 | [逐项导航](plan-module-contracts.md#独立-e2e-0109逐项不合并降级)、[原契约](09-test-evidence-and-e2e-contract.md) |
-| 测试完成定义 | [测试策略§12](06-testing-strategy.md#12-完成定义) |
-| 生产Ledger完成定义 | [Ledger§11](07-scope-and-ledger-schema.md#11-完成定义) |
-| 全迁移定义（历史计划中的保留合同，不恢复旧状态） | [原总规划§9](migration-master-plan.md#9-完成标准) |
+| E2E-01–09独立矩阵 | [逐项导航](plan-module-contracts.md#独立-e2e-0109逐项不合并降级)、[独立可执行合同](e2e-executable-contracts.md) |
+| 测试完成定义 | [测试策略§12](testing-comparison-and-acceptance.md#12-完成定义) |
+| 生产Ledger完成定义 | [Ledger§11](ledger-records-and-acceptance.md#11-完成定义) |
+| 全迁移定义（历史§9保留合同的现行承接） | [全部完成标准](plan-module-contracts.md#全迁移完成标准)，历史来源仅按需追溯 |
 | 最高原则 | [章程](00-migration-charter.md) |
+
+[source → current逐条文本核对](governance-authority-traceability.md)记录历史§9、阶段1–7与独立E2E-01–09的具体条款承接及来源边界，不维护运行状态。
 
 ## 持续收口与最终门
 
