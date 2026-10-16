@@ -52,6 +52,8 @@
 
 ### `E2E-08` media
 
+当前[独立方法族报告](completed-work/PresentationCore-media-E2E08-finite-closeout.md)已证10.0.1/x64两PCM AVI四帧全字节零差、公开事件/引用替换/回调关闭及有限拥有链清理。系统媒体服务双身份与候选UCE/VideoDrawing/RTB分工明确；仅有限Closed，HW媒体/长时持续/架构配置及下列完整合同仍Open，不与PRERELEASE record player混用。
+
 - 受控小媒体资产、系统组件清单。
 - open/event/frame/position/stop/close/shutdown/process-exit；apartment/state/event thread/timeout/callback。
 - 组件缺失明确环境结果，不混实现失败。

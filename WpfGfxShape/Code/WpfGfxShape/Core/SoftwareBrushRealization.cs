@@ -41,7 +41,7 @@ internal sealed unsafe class SoftwareBrushRealization : IDisposable
             int hr = GeneratedImageMask.CaptureVisualBrush(visual, transform, scalingMode, bounds, deviceClip, out snapshot);
             if (hr < 0) return hr;
         }
-        else if (resource is GeneratedImageBrushResource image)
+        else if (resource is GeneratedImageBrushResource or GeneratedDrawingBrushResource && resource is GeneratedTileBrushResource image)
         {
             if (!GeneratedImageMask.TryCapture(image, transform, scalingMode, out snapshot, bounds, deviceClip, worldBounds: bounds))
                 return Direct3D9Factory.NotImplementedHResult;

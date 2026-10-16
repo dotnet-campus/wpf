@@ -52,12 +52,9 @@ public class NativeCompilerLayoutTests
         if (runtimeExecuted)
         {
             nint handle = NativeLibrary.Load(dll);
-            try
-            {
-                var read = Marshal.GetDelegateForFunctionPointer<ReadLayout>(NativeLibrary.GetExport(handle, "Stage4ReadLayout"));
-                CollectionAssert.AreEqual(actual, Enumerable.Range(0, 26).Select(i => read((uint)i)).ToArray());
-            }
-            finally { NativeLibrary.Free(handle); }
+            // Native diagnostic modules remain resident for the lifetime of the test process.
+            var read = Marshal.GetDelegateForFunctionPointer<ReadLayout>(NativeLibrary.GetExport(handle, "Stage4ReadLayout"));
+            CollectionAssert.AreEqual(actual, Enumerable.Range(0, 26).Select(i => read((uint)i)).ToArray());
         }
         string archive = Path.Combine(Root, "WpfGfxShape/Investigations/GenProtoEvidence", "native-compiler-" + architecture + "-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(archive);

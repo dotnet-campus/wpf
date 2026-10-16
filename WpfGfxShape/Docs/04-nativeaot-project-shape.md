@@ -1,5 +1,7 @@
 # .NET 10 Native AOT 项目边界与历史承载示意
 
+> [DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)覆盖本页旧ARM64真实环境/发布必需门：当前仅x86/x64全部正式矩阵，ARM64编译/布局/运行NA-UserScopeDecision，非Passed、不阻塞或索取。
+
 > 本文维护稳定项目边界；旧项目结构只作历史示意，不作当前项目枚举。不维护当前工作切片、完成比例或测试流水。
 > 当前恢复入口见 [`next-session-handoff.md`](next-session-handoff.md)，最近构建和测试结果见 [`handoffs/current-stable-baseline.md`](handoffs/current-stable-baseline.md)。
 

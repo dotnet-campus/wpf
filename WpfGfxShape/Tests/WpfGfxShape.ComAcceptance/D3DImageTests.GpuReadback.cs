@@ -19,7 +19,7 @@ public sealed unsafe partial class D3DImageTests
 
     private static void RunNativeReadbackControl(bool observeDesktop)
     {
-        nint window = CreateWindowExW(8, "EDIT", "Native GPU readback control", 0x90000000, 0, 0, 32, 16, 0, 0, 0, 0);
+        nint window = CreateOutputWindow("Native GPU readback control", 40, 40);
         nint factory = 0, device = 0;
         try
         {
@@ -34,8 +34,7 @@ public sealed unsafe partial class D3DImageTests
             {
                 EstablishObservableWindow(window);
                 Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, nint, nint, nint, int>)(*(void***)device)[17])(device, 0, 0, window, 0));
-                ProcessWindowMessages(window);
-                Assert.AreEqual(0, DwmFlush());
+                CompleteNativePresent(device, window);
                 DiagnoseNativePresent(window, device, false);
                 AssertCombinedPixel(window, 0x00563412);
             }

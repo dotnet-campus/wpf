@@ -1,5 +1,7 @@
 # 测试策略：比较、失败、矩阵与完成定义
 
+> 最新矩阵按[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)：Debug/Release × x86/x64及全部ABI/失败/寿命/E2E/strict/full条件。下文ARM64实机/编译/布局要求全部NA-UserScopeDecision，非Passed、不阻塞；x86不能降为可选或仅有限支持结果。精确runtime patch口径见[唯一审计](windowsdesktop-version-provenance.md)，10.0.12未证用户指定，不改golden。
+
 [测试策略](06-testing-strategy.md)§6–14正式主题合同，不维护当前数字。
 
 ## 6. 数值、几何与像素比较

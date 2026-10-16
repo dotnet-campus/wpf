@@ -2,7 +2,13 @@
 
 本页不是恢复入口。工作只从[唯一入口](next-session-handoff.md)恢复，状态只认[当前基线](handoffs/current-stable-baseline.md)。历史页中的“当前/最新/下一步”均绑定当时身份，不具有调度效力。
 
-## 历史规划（不恢复旧状态；保留正式合同）
+## 最新范围覆盖索引
+
+[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)覆盖 history/plans/migration-master-plan、旧架构决议/ARM64布局探查、全部completed-work/handoffs/investigations中的ARM64必需门：当前NA-UserScopeDecision，不是Passed，不再要求工具链或实机。冻结MSB8020、MissingExecution、原required和报告数字原样保留；仅x86/x64全部正式门继续。Ledger原ARM64字段由决议显式解释覆盖，不改Satisfied，parent仍Blocked。
+
+[版本来源审计](windowsdesktop-version-provenance.md)索引原10.0.12校准路径、采集器与后续“目标版本”表述：历史身份不改；未证用户固定patch，当前版本口径待澄清，不把旧“缺10.0.12”当永久用户输入。原10.0.1 Pcore Green及失败结果均保留。
+
+## 历史规划（不恢复旧状态；保留经当前决议修订后的正式合同）
 
 | 文件 | 保留内容与失效部分 |
 |---|---|

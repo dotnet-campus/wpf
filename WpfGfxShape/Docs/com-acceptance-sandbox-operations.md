@@ -20,7 +20,7 @@
 
 ## 沙箱直接 exe（无需 SDK runner/Host）
 
-以包根为执行目录，执行文件相对路径 `WpfGfxShape.ComAcceptance.exe`；沙箱专用执行能力的 sourceDirectory 仅设包目录。
+以包根为执行目录，执行文件相对路径 `WpfGfxShape.ComAcceptance.exe`；沙箱专用执行能力的 sourceDirectory 仅设包目录。不得改为历史 `WpfGfxShape.NativeCaller.exe` / `StaticNativeCaller.exe`，也不得上传 `.coding-agent/sandbox-results` 回收目录作为现行包。历史 caller 的启动/CRT 诊断不构成生产验收；定位结果见[独立报告](../Investigations/NativeCallerStartup/README.md)。
 
 - 全量参数：`--report-trx --report-trx-filename sandbox-full.trx`。
 - 路径/身份/白名单定向参数：`--filter FullyQualifiedName~AcceptancePathsTests --report-trx --report-trx-filename closure-paths.trx`。

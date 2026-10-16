@@ -96,16 +96,22 @@ internal sealed class FrozenGeometry : IDisposable
 
 internal sealed partial class GeneratedLineGeometryResource
 {
+    internal static GeneratedLineGeometryResource CreateStatic(MilPoint2D start, MilPoint2D end)
+        => new() { Value = (start, end) };
     internal GeneratedLineGeometryResource CaptureValue() => new() { Value = CurrentValue };
     internal void SetStaticTransform(GeneratedProtocolResource transform) => Transform = transform;
 }
 internal sealed partial class GeneratedRectangleGeometryResource
 {
+    internal static GeneratedRectangleGeometryResource CreateStatic(MilRectD rectangle, double radiusX, double radiusY)
+        => new() { Value = (radiusX, radiusY, rectangle) };
     internal GeneratedRectangleGeometryResource CaptureValue() => new() { Value = CurrentValue };
     internal void SetStaticTransform(GeneratedProtocolResource transform) => Transform = transform;
 }
 internal sealed partial class GeneratedEllipseGeometryResource
 {
+    internal static GeneratedEllipseGeometryResource CreateStatic(MilPoint2D center, double radiusX, double radiusY)
+        => new() { Value = (radiusX, radiusY, center) };
     internal GeneratedEllipseGeometryResource CaptureValue() => new() { Value = CurrentValue };
     internal void SetStaticTransform(GeneratedProtocolResource transform) => Transform = transform;
 }

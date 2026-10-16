@@ -74,6 +74,17 @@ internal sealed class FrozenBrush : IDisposable
             candidate._owner?.AddRef();
             switch (candidate.Source)
             {
+                case GeneratedDrawingDependencyResource drawingResource when brush is GeneratedDrawingBrushResource:
+                    active ??= [];
+                    if (active.Count >= 256 || !active.Add(drawingResource)) return Direct3D9Factory.NotImplementedHResult;
+                    try
+                    {
+                        int hr = FrozenVisualTree.CaptureDrawingPure(drawingResource, active, out var drawing);
+                        if (hr < 0) return hr;
+                        candidate.Drawing = drawing;
+                    }
+                    finally { active.Remove(drawingResource); }
+                    break;
                 case GeneratedVisualResource visual:
                     active ??= [];
                     int visualResult = FrozenVisualTree.CapturePure(visual, active, out var tree);
@@ -108,7 +119,7 @@ internal sealed class FrozenBrush : IDisposable
                     candidate._selectedSource = candidate._bitmap?.Pointer ?? 0;
                     break;
             }
-            candidate.HasContent = candidate.Source is GeneratedDrawingImageResource or GeneratedVisualResource
+            candidate.HasContent = candidate.Drawing is not null || candidate.Visual is not null
                 || candidate._selectedSource != 0;
             snapshot = candidate;
             captured = true;

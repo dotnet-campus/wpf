@@ -8,6 +8,7 @@ internal sealed class SameThreadPartition
     internal readonly GeneratedProtocolChannelRegistry Channels = new();
     internal readonly GeneratedTargetRegistry Targets = new();
     internal int Failure;
+    internal static bool RenderWithoutDisplays;
     internal readonly Av.VideoComposition? Videos;
 
     internal SameThreadPartition(PartitionScheduler? scheduler = null)
@@ -21,7 +22,7 @@ internal sealed class SameThreadPartition
         int result = Videos?.BeginProcessVideo(false) ?? 0;
         try
         {
-            if (result >= 0) result = Targets.Render();
+            if (result >= 0 && (RenderWithoutDisplays || ChannelGraphicsCapabilities.HasDisplays())) result = Targets.Render();
             if (result < 0 && Failure >= 0) Failure = result;
             return result;
         }
@@ -161,6 +162,11 @@ internal sealed class SameThreadChannel
     {
         byte[] message = new byte[64];
         BinaryPrimitives.WriteUInt32LittleEndian(message, type);
+        PostMessage(message);
+    }
+
+    private void PostMessage(byte[] message)
+    {
         lock (_messages)
         {
             if (_destroyed) return;
@@ -393,8 +399,22 @@ internal sealed class SameThreadChannel
                             result = packet.Length == 8 ? 0 : Direct3D9Factory.UceMalformedPacketHResult;
                             if (result >= 0) Partition.RegisterNotifications(this, BinaryPrimitives.ReadInt32LittleEndian(packet.AsSpan(4)) != 0);
                         }
+                        else if (command == MilCommand.PartitionNotifyPolicyChangeForNonInteractiveMode)
+                        {
+                            result = packet.Length == 8 ? 0 : Direct3D9Factory.UceMalformedPacketHResult;
+                            if (result >= 0) SameThreadPartition.RenderWithoutDisplays = BinaryPrimitives.ReadInt32LittleEndian(packet.AsSpan(4)) != 0;
+                        }
+                        else if (command == MilCommand.ChannelRequestTier)
+                        {
+                            result = packet.Length == 8 ? 0 : Direct3D9Factory.UceMalformedPacketHResult;
+                            if (result >= 0) PostMessage(ChannelGraphicsCapabilities.CreateTierMessage(BinaryPrimitives.ReadInt32LittleEndian(packet.AsSpan(4))));
+                        }
                         else result = _router.ProcessPacket(packet);
-                        if (Partition.Failure >= 0) Partition.Failure = result;
+                        if (result < 0 && Partition.Failure >= 0)
+                        {
+                            PartitionScheduler.RecordCommandFailure(_channel, packet, result);
+                            Partition.Failure = result;
+                        }
                     }
                 }
                 catch (OutOfMemoryException error) { PreserveFailure(error); }

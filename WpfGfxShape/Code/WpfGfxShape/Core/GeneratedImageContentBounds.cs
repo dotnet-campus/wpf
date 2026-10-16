@@ -33,6 +33,8 @@ internal static class GeneratedImageContentBounds
             var childTransform = transform.Prepend(new(1, 1, child.Offset.X, child.Offset.Y)).Prepend(child.Transform);
             if (childBounds is { } inner)
             {
+                if (child.Blur is { } blur) inner = blur.Inflate(inner);
+                if (child.Shadow is { } shadow) inner = shadow.Inflate(inner);
                 if (childClip is { } clipping) inner = Intersect(inner, clipping);
                 if (!Accumulate(inner, childTransform, ref bounds)) return false;
             }
@@ -46,6 +48,8 @@ internal static class GeneratedImageContentBounds
         if (visual.Effect is not null || visual.HasUnsupportedEffect || !TryGet(visual, out var inner)
             || !TryClip(visual.Clip?.Geometry, GeneratedImageTransform.Identity, null, out var clip))
             return Direct3D9Factory.NotImplementedHResult;
+        if (visual.Blur is { } blur) inner = blur.Inflate(inner);
+        if (visual.Shadow is { } shadow) inner = shadow.Inflate(inner);
         if (clip is { } clipping) inner = Intersect(inner, clipping);
         MilRectD? outer = null;
         if (!Accumulate(inner, GeneratedImageTransform.Identity.Prepend(new(1, 1, visual.Offset.X, visual.Offset.Y))
@@ -158,7 +162,25 @@ internal static class GeneratedImageContentBounds
                     if (clip is { } geometryClip) geometryBounds = Intersect(geometryBounds, geometryClip);
                     if (!Accumulate(geometryBounds, GeneratedImageTransform.Identity, ref bounds)) return false;
                     break;
-                default: return false;
+                default:
+                    if (!GeneratedPrimitiveGeometry.IsPrimitive(instruction.Kind)) return false;
+                    var primitive = GeneratedPrimitiveGeometry.Create(instruction, out var brush, out var primitivePen);
+                    if (primitive is null) break;
+                    try
+                    {
+                        GeneratedProtocolResource?[] slots = [brush, primitivePen, primitive];
+                        var expanded = new GeneratedRenderDataInstruction(GeneratedRenderDataKind.DrawGeometry,
+                            slots.OfType<GeneratedProtocolResource>().ToArray(), ReadOnlyMemory<byte>.Empty, slots);
+                        MilRectD? primitiveBounds = null;
+                        if (!ReadInstructions([expanded], 0, false, current, ref primitiveBounds)) return false;
+                        if (primitiveBounds is { } local)
+                        {
+                            if (clip is { } primitiveClip) local = Intersect(local, primitiveClip);
+                            if (!Accumulate(local, GeneratedImageTransform.Identity, ref bounds)) return false;
+                        }
+                    }
+                    finally { primitive.Release(); }
+                    break;
             }
         }
         return !stopAtPop && stack.Count == 0;

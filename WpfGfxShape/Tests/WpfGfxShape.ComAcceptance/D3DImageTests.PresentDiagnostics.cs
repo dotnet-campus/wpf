@@ -79,17 +79,12 @@ public sealed unsafe partial class D3DImageTests
             }
         }
         finally { if (desktop != 0) CloseDesktop(desktop); }
-        int clear = ((delegate* unmanaged[Stdcall]<nint, uint, nint, uint, uint, float, uint, int>)(*(void***)device)[43])(device, 0, 0, 1, 0xff123456, 1, 0);
+        LogNativeSwapChain(window, device);
         int cooperative = ((delegate* unmanaged[Stdcall]<nint, int>)(*(void***)device)[3])(device);
-        int present = extended
-            ? ((delegate* unmanaged[Stdcall]<nint, nint, nint, nint, nint, uint, int>)(*(void***)device)[121])(device, 0, 0, window, 0, 0)
-            : ((delegate* unmanaged[Stdcall]<nint, nint, nint, nint, nint, int>)(*(void***)device)[17])(device, 0, 0, window, 0);
-        ProcessWindowMessages(window);
-        int flush = DwmFlush();
         nint dc = GetDC(window);
         uint pixel;
         try { pixel = GetPixel(dc, 16, 8); }
         finally { if (dc != 0) ReleaseDC(window, dc); }
-        Console.WriteLine($"PresentCondition observationId={observationId} utc={DateTimeOffset.UtcNow:O} process={Environment.ProcessId} session={System.Diagnostics.Process.GetCurrentProcess().SessionId} production={path} sha256={Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)))} target=0x{window:X} ownerPid={owner} ownerThread={thread} root=0x{GetAncestor(window, 2):X} visible={IsWindowVisible(window)} iconic={IsIconic(window)} foreground=0x{GetForegroundWindow():X} client=({client.Left},{client.Top},{client.Right},{client.Bottom}) converted={converted} screen=({point.X},{point.Y}) cover=0x{covering:X} coverOwnerPid={coverOwner} coverOwnerThread={coverThread} coverRoot=0x{GetAncestor(covering, 2):X} coverClass={coverClass} coverTitle={title} coverBounds=({bounds.Left},{bounds.Top},{bounds.Right},{bounds.Bottom}) inputDesktop={desktopName} inputDesktopError={desktopError} nativeControl=d3d9.dll Ex={extended} clear=0x{clear:X8} cooperative=0x{cooperative:X8} rawPresent=0x{present:X8} flush=0x{flush:X8} pixel=0x{pixel:X8} expected=0x00563412 conditionSatisfied={clear == 0 && present == 0 && pixel == 0x00563412}");
+        Console.WriteLine($"PresentCondition observationId={observationId} utc={DateTimeOffset.UtcNow:O} process={Environment.ProcessId} session={System.Diagnostics.Process.GetCurrentProcess().SessionId} production={path} sha256={Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)))} target=0x{window:X} ownerPid={owner} ownerThread={thread} root=0x{GetAncestor(window, 2):X} visible={IsWindowVisible(window)} iconic={IsIconic(window)} foreground=0x{GetForegroundWindow():X} client=({client.Left},{client.Top},{client.Right},{client.Bottom}) converted={converted} screen=({point.X},{point.Y}) cover=0x{covering:X} coverOwnerPid={coverOwner} coverOwnerThread={coverThread} coverRoot=0x{GetAncestor(covering, 2):X} coverClass={coverClass} coverTitle={title} coverBounds=({bounds.Left},{bounds.Top},{bounds.Right},{bounds.Bottom}) inputDesktop={desktopName} inputDesktopError={desktopError} nativeControl=d3d9.dll Ex={extended} readOnly=True cooperative=0x{cooperative:X8} pixel=0x{pixel:X8}");
     }
 }

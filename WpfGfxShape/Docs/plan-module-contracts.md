@@ -19,7 +19,7 @@
 
 ## C GenProto required
 
-- 历史 CLR/冻结输入 authority、ARM64 独立布局及真实执行。
+- 历史 CLR/冻结输入 authority；正式布局/执行仅x86/x64。ARM64按[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)不适用，非Passed、不阻塞。全部其他required/physical条件保留；精确runtime patch口径见[单一审计](windowsdesktop-version-provenance.md)。
 - core managed field/enum/pack/size、X86 runtime 或固定宽度独立推导。
 - generated/mapping/consumer physical record 闭包；ProcessCreate 错误/引用/关闭及 InitializePen ABI/dash/stride，全族物理 records 依赖签名和逐 required 更新。
 - 有限全量测试不替代 physical/required、satisfied 与 stage4Closed 的正式关闭。

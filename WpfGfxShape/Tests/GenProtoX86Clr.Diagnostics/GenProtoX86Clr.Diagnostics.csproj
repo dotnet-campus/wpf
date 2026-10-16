@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PlatformTarget>x86</PlatformTarget>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <NoWarn>$(NoWarn);CS0649</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Investigations/GenProtoEvidence/wirecompiler-abd8fbc0efa14a51bb9ab47a0621f6fe/ManagedFields.cs" Link="ManagedFields.cs" />
+    <None Include="../../Investigations/GenProtoEvidence/wirecompiler-abd8fbc0efa14a51bb9ab47a0621f6fe/ManagedFields.cs" Link="Inputs/ManagedFields.cs" CopyToPublishDirectory="Always" />
+    <None Include="../../Investigations/GenProtoEvidence/wirecompiler-abd8fbc0efa14a51bb9ab47a0621f6fe/report.json" Link="Inputs/wire.json" CopyToPublishDirectory="Always" />
+    <None Include="../../Investigations/GenProtoEvidence/native-core-Win32-25f6b1ee1b98411d82ebc4e6f6da25bb/report.json" Link="Inputs/native.json" CopyToPublishDirectory="Always" />
+    <AssemblyMetadata Include="RuntimeIdentifier" Value="$(RuntimeIdentifier)" />
+  </ItemGroup>
+</Project>

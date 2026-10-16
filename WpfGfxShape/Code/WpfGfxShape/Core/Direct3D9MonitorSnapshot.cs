@@ -77,7 +77,7 @@ internal static unsafe class Direct3D9MonitorSnapshotFactory
             dpiAwarenessContexts.Add(0);
         }
 
-        return Enumerate(devices.Devices, dpiAwarenessContexts.MoveToImmutable(), EnumerateSystemMonitors);
+        return Enumerate(devices.Devices, dpiAwarenessContexts.ToImmutable(), EnumerateSystemMonitors);
     }
 
     private static MonitorSnapshotBuilder? FindByName(MonitorSnapshotBuilder[] snapshots, string deviceName)

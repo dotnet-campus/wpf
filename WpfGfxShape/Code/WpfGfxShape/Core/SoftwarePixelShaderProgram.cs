@@ -127,6 +127,12 @@ internal sealed class SoftwarePixelShaderProgram
 
     internal uint Execute(float u, float v, ReadOnlySpan<Vector4> constants, SoftwareShaderSampler[] samplers)
     {
+        Vector4 output = ExecuteFloat(u, v, constants, samplers);
+        return Pack(output.Z) | (Pack(output.Y) << 8) | (Pack(output.X) << 16) | (Pack(output.W) << 24);
+    }
+
+    internal Vector4 ExecuteFloat(float u, float v, ReadOnlySpan<Vector4> constants, SoftwareShaderSampler[] samplers)
+    {
         Span<Vector4> registers = stackalloc Vector4[74];
         registers.Clear();
         constants.CopyTo(registers.Slice(14, constants.Length));
@@ -190,9 +196,8 @@ internal sealed class SoftwarePixelShaderProgram
             Write(registers, destination, instruction.Destination, result);
         }
         var output = registers[54];
-        output = new((killedComponents & 1) != 0 ? 0 : output.X, (killedComponents & 2) != 0 ? 0 : output.Y,
+        return new((killedComponents & 1) != 0 ? 0 : output.X, (killedComponents & 2) != 0 ? 0 : output.Y,
             (killedComponents & 4) != 0 ? 0 : output.Z, (killedComponents & 8) != 0 ? 0 : output.W);
-        return Pack(output.Z) | (Pack(output.Y) << 8) | (Pack(output.X) << 16) | (Pack(output.W) << 24);
     }
 
     private static void Write(Span<Vector4> registers, int destination, uint token, Vector4 result)
@@ -265,6 +270,7 @@ internal sealed class SoftwarePixelShaderProgram
 
 internal sealed record SoftwareShaderSampler(uint[] Pixels, int Width, int Height, bool Linear)
 {
+    internal Vector4[]? FloatPixels { get; init; }
     internal Vector4 Sample(float u, float v)
     {
         float x = u*Width, y = v*Height;
@@ -280,6 +286,7 @@ internal sealed record SoftwareShaderSampler(uint[] Pixels, int Width, int Heigh
     private static int Convert(float value) => float.IsNaN(value) || value >= 2147483648f || value < -2147483648f ? int.MinValue : (int)MathF.Round(value,MidpointRounding.ToEven);
     private Vector4 Texel(int x, int y)
     {
+        if (FloatPixels is { } floating) return floating[y * Width + x];
         uint pixel = Pixels[y*Width+x];
         return new Vector4((pixel >> 16) & 255, (pixel >> 8) & 255, pixel & 255, pixel >> 24)/255;
     }

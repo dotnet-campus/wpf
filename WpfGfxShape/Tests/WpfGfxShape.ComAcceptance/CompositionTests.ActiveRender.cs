@@ -252,7 +252,7 @@ public sealed unsafe partial class CompositionTests
     [DataRow(3, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 2u, false, true)]
     [DataRow(8, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 3u, false, true)]
     [DataRow(9, true, 3, false, false, true, false, false, false, false, false, false, false, -1, false, 0, 0, false, true, 1u, false, true)]
-    public void WhenDecoderReadsDuringRenderThenReentrantLifecyclePreservesActivePixels(int action, bool imageMask = false, int geometryKind = 0, bool outsideTarget = false, bool failFill = false, bool solidFill = false, bool pathGeometry = false, bool widePath = false, bool reversePath = false, bool gapPath = false, bool ellipseGeometry = false, bool roundedGeometry = false, bool groupGeometry = false, int combinedMode = -1, bool curvedPath = false, int curveMode = 0, int deviceMode = 0, bool drawingImage = false, bool drawingBrushSource = false, uint scalingMode = 0, bool filteredDrawing = false, bool tiledDrawing = false, bool callbackBaseline = false, bool failDecoder = false, int lateMutation = 0, bool cacheTransaction = false, bool cacheConsumer = false)
+    public void WhenDecoderReadsDuringRenderThenReentrantLifecyclePreservesActivePixels(int action, bool imageMask = false, int geometryKind = 0, bool outsideTarget = false, bool failFill = false, bool solidFill = false, bool pathGeometry = false, bool widePath = false, bool reversePath = false, bool gapPath = false, bool ellipseGeometry = false, bool roundedGeometry = false, bool groupGeometry = false, int combinedMode = -1, bool curvedPath = false, int curveMode = 0, int deviceMode = 0, bool drawingImage = false, bool drawingBrushSource = false, uint scalingMode = 0, bool filteredDrawing = false, bool tiledDrawing = false, bool callbackBaseline = false, bool failDecoder = false, int lateMutation = 0, bool cacheTransaction = false, bool cacheConsumer = false, bool blurLifetime = false, double blurRadius = 0)
     {
         string path = AcceptancePaths.AotDll;
         bool decoderFailure = false;
@@ -798,6 +798,17 @@ public sealed unsafe partial class CompositionTests
                 Assert.AreEqual(0, send(content, 12, 0, channel));
                 visual = outer;
             }
+            if (blurLifetime)
+            {
+                uint blur = 0;
+                Assert.AreEqual(0, createResource(channel, 36, &blur));
+                byte* blurPacket = stackalloc byte[28]; new Span<byte>(blurPacket, 28).Clear();
+                *(uint*)blurPacket = 0x6e; *(uint*)(blurPacket + 4) = blur;
+                *(double*)(blurPacket + 8) = blurRadius;
+                Assert.AreEqual(0, send(blurPacket, 28, 0, channel));
+                uint* effectBinding = stackalloc uint[] { 0x1d, visual, blur };
+                Assert.AreEqual(0, send(effectBinding, 12, 0, channel));
+            }
             uint* options = stackalloc uint[] { 0x21, visual, 1, 0, 0, scalingMode, 0, 0, 0 };
             Assert.AreEqual(0, send(options, 36, 0, channel));
             TargetPacket targetPacket = new() { Type = 0x34, Handle = destination, Target = (ulong)target, Width = 2, Height = 1 };
@@ -875,9 +886,29 @@ public sealed unsafe partial class CompositionTests
                 Assert.AreEqual(0, send(offset, 24, 0, channel));
                 Assert.AreEqual(0, close(channel)); Assert.AreEqual(0, commit(channel));
             }
+            (uint, uint) blurred = default;
+            if (blurLifetime)
+            {
+                if (blurRadius > 0)
+                {
+                    Assert.AreEqual(0, present(connection));
+                    blurred = Read(output);
+                    Assert.AreNotEqual((0u, 0u), blurred);
+                    Write(output, 0, 0);
+                }
+                nint targetLock = 0;
+                try
+                {
+                    Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, uint, nint*, int>)(*(void***)output)[8])(output, 0, 2, &targetLock));
+                    Assert.AreEqual(unchecked((int)0x88982F0D), present(connection));
+                    Assert.AreEqual(0, calls);
+                }
+                finally { Release(targetLock); }
+                Assert.AreEqual((0u, 0u), Read(output));
+            }
             armed = true;
             Assert.AreEqual(action == 6 ? unchecked((int)0x88982F0D) : 0, present(connection));
-            Assert.AreEqual((callbackBaseline ? 0 : 1, callbackBaseline ? 0 : action == 9 ? cacheConsumer ? unchecked((int)0x80070057) : unchecked((int)0x88980085) : action == 0 ? unchecked((int)0x8000FFFF) : 0, lateMutation == 4 ? (0xff0000ffu, 0xffffffffu) : lateMutation != 0 ? (0xffff0000u, 0xffff0000u) : action == 7 ? (0xffbf4000u, 0xff40bf00u) : filteredDrawing ? (filteredFirstActive, filteredActive) : (0xffff0000u, 0xff00ff00u)), (calls, nestedResult, Read(output)));
+            Assert.AreEqual((callbackBaseline ? 0 : 1, callbackBaseline ? 0 : action == 9 ? cacheConsumer ? unchecked((int)0x80070057) : unchecked((int)0x88980085) : action == 0 ? unchecked((int)0x8000FFFF) : 0, blurLifetime && blurRadius > 0 ? blurred : lateMutation == 4 ? (0xff0000ffu, 0xffffffffu) : lateMutation != 0 ? (0xffff0000u, 0xffff0000u) : action == 7 ? (0xffbf4000u, 0xff40bf00u) : filteredDrawing ? (filteredFirstActive, filteredActive) : (0xffff0000u, 0xff00ff00u)), (calls, nestedResult, Read(output)));
             if (cacheTransaction)
             {
                 decoderFailure = true;
@@ -944,8 +975,20 @@ public sealed unsafe partial class CompositionTests
             {
                 Write(output, 0, 0);
                 Assert.AreEqual(0, present(connection));
-                Assert.AreEqual(imageMask ? (0u, geometryKind == 0 ? 0xff00ff00u : 0xffffffffu)
-                    : filteredDrawing ? (filteredFirstReplacement, filteredReplacement) : (0xff0000ffu, 0xffffffffu), Read(output));
+                if (blurLifetime && blurRadius > 0)
+                {
+                    var replaced = Read(output);
+                    Assert.AreNotEqual(blurred, replaced);
+                    Assert.AreNotEqual((0u, 0u), replaced);
+                    Write(output, 0, 0);
+                    Assert.AreEqual(0, present(connection));
+                    Assert.AreEqual(replaced, Read(output));
+                }
+                else
+                {
+                    Assert.AreEqual(imageMask ? (0u, geometryKind == 0 ? 0xff00ff00u : 0xffffffffu)
+                        : filteredDrawing ? (filteredFirstReplacement, filteredReplacement) : (0xff0000ffu, 0xffffffffu), Read(output));
+                }
             }
         }
         finally

@@ -1,0 +1,23 @@
+<Project DefaultTargets="StageComparison">
+  <PropertyGroup>
+    <Root>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)..\..\'))</Root>
+    <Package>$(Root)artifacts\staging\PresentationCoreE2E\</Package>
+    <Runs>$(Root)Investigations\PresentationCore-render\Results\</Runs>
+  </PropertyGroup>
+  <Target Name="StageComparison">
+    <ItemGroup>
+      <Original Include="$(Runs)nested-original-03\Results\original\*.pbgra32" />
+      <Candidate Include="$(Runs)nested-candidate-03\Results\candidate\*.pbgra32" />
+      <OldOriginal Include="$(Package)Baseline\*-0.pbgra32;$(Package)Baseline\*-1.pbgra32" />
+      <OldCandidate Include="$(Package)ComparisonCandidate\*.pbgra32" />
+    </ItemGroup>
+    <Error Condition="'@(Original->Count())' != '16'" Text="Independent original must supply all sixteen frames." />
+    <Delete Files="@(OldOriginal);@(OldCandidate)" />
+    <Copy SourceFiles="@(Original)" DestinationFolder="$(Package)Baseline" />
+    <Copy SourceFiles="@(Candidate)" DestinationFolder="$(Package)ComparisonCandidate" />
+    <GetFileHash Files="@(Original);@(Candidate)" Algorithm="SHA256">
+      <Output TaskParameter="Items" ItemName="Identity" />
+    </GetFileHash>
+    <WriteLinesToFile File="$(Runs)nested-input-identity-03.txt" Lines="@(Identity->'%(Identity) | %(FileHash)')" Overwrite="true" />
+  </Target>
+</Project>

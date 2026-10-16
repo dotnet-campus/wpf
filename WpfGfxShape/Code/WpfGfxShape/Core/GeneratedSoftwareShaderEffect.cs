@@ -75,12 +75,16 @@ internal sealed unsafe class GeneratedSoftwareShaderEffect : IDisposable
         nint input = 0, output = 0;
         try
         {
-            int hr = _input.Realize(out input, floating: false);
+            bool floating = session.Floating;
+            int hr = _input.Realize(out input, floating: floating);
             if (hr < 0) return hr;
-            uint[] pixels = new uint[checked((int)(Scope.Width * Scope.Height))];
-            fixed (uint* destination = pixels)
+            int count = checked((int)(Scope.Width * Scope.Height));
+            uint[] pixels = floating ? [] : new uint[count];
+            Vector4[] values = floating ? new Vector4[count] : [];
+            fixed (uint* packed = pixels)
+            fixed (Vector4* linear = values)
                 hr = ((delegate* unmanaged[Stdcall]<nint, Direct3D9BitmapSourceRectangle*, uint, uint, byte*, int>)(*(void***)input)[7])
-                    (input, null, checked(Scope.Width * 4), checked((uint)pixels.Length * 4), (byte*)destination);
+                    (input, null, checked(Scope.Width * (floating ? 16u : 4u)), checked((uint)count * (floating ? 16u : 4u)), floating ? (byte*)linear : (byte*)packed);
             if (hr < 0) return hr;
             SoftwareShaderSampler[] samplers = new SoftwareShaderSampler[16];
             Array.Fill(samplers, new([0xffffffff], 1, 1, false));
@@ -88,25 +92,29 @@ internal sealed unsafe class GeneratedSoftwareShaderEffect : IDisposable
             {
                 bool bilinear = _samplerInfo[i * 2 + 1] == 2;
                 if (_implicit[i])
-                    samplers[_samplerInfo[i * 2]] = new(pixels, (int)Scope.Width, (int)Scope.Height, bilinear);
+                    samplers[_samplerInfo[i * 2]] = new(pixels, (int)Scope.Width, (int)Scope.Height, bilinear) { FloatPixels = floating ? values : null };
                 else if (_brushes[i] is { } brush)
                 {
                     hr = GeneratedSoftwareShaderSampler.Realize(brush, Scope.Width, Scope.Height,
-                        bilinear, out var sampler);
+                        bilinear, out var sampler, floating);
                     if (hr < 0) return hr;
                     samplers[_samplerInfo[i * 2]] = sampler;
                 }
                 else samplers[_samplerInfo[i * 2]] = new([0], 1, 1, bilinear);
             }
             hr = SoftwareBitmap.Create(Scope.Width, Scope.Height, 96, 96,
-                new Guid("6fddc324-4e03-4bfe-b185-3d77768dc910"), out output);
+                new Guid(floating ? "6fddc324-4e03-4bfe-b185-3d77768dc91a" : "6fddc324-4e03-4bfe-b185-3d77768dc910"), out output);
             if (hr < 0) return hr;
             var bitmap = (SoftwareBitmap.Bitmap*)output;
             for (uint y = 0; y < Scope.Height; y++)
                 for (uint x = 0; x < Scope.Width; x += 4)
                     for (uint lane = 0; lane < Math.Min(4u, Scope.Width - x); lane++)
-                        ((uint*)(bitmap->Pixels + y * bitmap->Stride))[x + lane] = _program.Execute(
-                            (float)(x + lane) / Scope.Width, (float)y / Scope.Height, _constants, samplers);
+                        if (floating)
+                            ((Vector4*)(bitmap->Pixels + y * bitmap->Stride))[x + lane] = _program.ExecuteFloat(
+                                (float)(x + lane) / Scope.Width, (float)y / Scope.Height, _constants, samplers);
+                        else
+                            ((uint*)(bitmap->Pixels + y * bitmap->Stride))[x + lane] = _program.Execute(
+                                (float)(x + lane) / Scope.Width, (float)y / Scope.Height, _constants, samplers);
             return session.Draw(output, new(0, 0, Scope.Width, Scope.Height), false,
                 context with { WorldToDevice = Scope.OutputTransform });
         }

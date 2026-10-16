@@ -6,7 +6,7 @@ internal static unsafe class GeneratedVisualRenderer
 {
     private readonly record struct ImageDraw(nint Source, MilRectD Rectangle, bool IsMilSource,
         SoftwareImageDrawingContext Context, int LayerAction = 0, double Opacity = 1, SoftwareImageCoverage? Mask = null, float? AlphaMask = null, GeneratedImageMask? ImageMask = null, SoftwareBrushRealization? Brush = null, SoftwareBrushRealization? StrokeBrush = null,
-        SoftwareImageCoverage? StrokeMask = null, MilRectD? Bounds = null, GeneratedNativeStroke? NativeStroke = null, Av.SystemVideoSample? VideoSample = null, GeneratedSoftwareShaderEffect? Effect = null)
+        SoftwareImageCoverage? StrokeMask = null, MilRectD? Bounds = null, GeneratedNativeStroke? NativeStroke = null, Av.SystemVideoSample? VideoSample = null, GeneratedSoftwareShaderEffect? Effect = null, GeneratedSoftwareBlurEffect? Blur = null)
     {
         internal static ImageDraw BeginLayer(double opacity, SoftwareImageCoverage? mask = null, float? alphaMask = null, GeneratedImageMask? imageMask = null)
             => new(0, default, false, default, 1, opacity, mask, alphaMask, imageMask);
@@ -22,12 +22,12 @@ internal static unsafe class GeneratedVisualRenderer
         {
             // Snapshot before invoking target COM: callbacks may replace or delete the scene.
             int hr = FrozenVisualTree.CapturePure(root, [], out var frozen);
-            if (hr < 0) return hr;
+            if (hr < 0) { PartitionScheduler.RecordCommandFailure(0, "FrozenVisualTree.CapturePure"u8, hr); return hr; }
             using var tree = frozen;
             hr = Capture(tree!, draws, GeneratedImageTransform.Identity, new(0, 0, checked((int)width), checked((int)height)), 0);
-            if (hr < 0) return hr;
+            if (hr < 0) { PartitionScheduler.RecordCommandFailure(0, "GeneratedVisualRenderer.Capture"u8, hr); return hr; }
             hr = SoftwareImageRenderSession.Open(target, width, height, out session);
-            if (hr < 0) return hr;
+            if (hr < 0) { PartitionScheduler.RecordCommandFailure(0, "SoftwareImageRenderSession.Open"u8, hr); return hr; }
             foreach (ImageDraw draw in draws)
             {
                 hr = draw.LayerAction switch
@@ -35,6 +35,7 @@ internal static unsafe class GeneratedVisualRenderer
                     1 => session!.BeginLayer(draw.Opacity, draw.Mask, draw.AlphaMask, draw.ImageMask),
                     2 => session!.EndLayer(),
                     4 => draw.Effect!.Draw(session!, draw.Context),
+                    5 => draw.Blur!.Draw(session!, draw.Context),
                     3 => session!.DrawPath(draw.Brush, draw.Mask, draw.StrokeBrush, draw.StrokeMask,
                         draw.Bounds, draw.Context, draw.NativeStroke),
                     _ => session!.Draw(draw.Source, draw.Rectangle, draw.IsMilSource, draw.Context)
@@ -54,6 +55,7 @@ internal static unsafe class GeneratedVisualRenderer
             for (int i = draws.Count - 1; i >= 0; i--)
             {
                 draws[i].Effect?.Dispose();
+                draws[i].Blur?.Dispose();
                 draws[i].StrokeBrush?.Dispose();
                 draws[i].Brush?.Dispose();
                 draws[i].ImageMask?.Dispose();
@@ -117,7 +119,7 @@ internal static unsafe class GeneratedVisualRenderer
         private DrawingSnapshot(List<ImageDraw> draws, MilRectD bounds, uint width, uint height)
         { _draws = draws; Bounds = bounds; Width = width; Height = height; }
 
-        internal static bool TryCapture(GeneratedDrawingImageResource image, MilRectD viewbox, bool relativeViewbox,
+        internal static bool TryCapture(GeneratedProtocolResource image, MilRectD viewbox, bool relativeViewbox,
             MilRectD viewport, GeneratedImageTransform deviceTransform, MilStretch stretch,
             MilHorizontalAlignment alignmentX, MilVerticalAlignment alignmentY, MilTileMode tileMode,
             Direct3D9SurfaceRect? deviceClip, uint scalingMode, double viewportScaleX, double viewportScaleY,
@@ -128,7 +130,7 @@ internal static unsafe class GeneratedVisualRenderer
             snapshot = null;
             GeneratedRenderDataInstruction[] instructions;
             bool read = frozen is not null ? (instructions = frozen.Instructions.ToArray()) is not null
-                : GeneratedDrawingInstructions.TryRead(image.Drawing, out instructions);
+                : GeneratedDrawingInstructions.TryRead(image is GeneratedDrawingImageResource drawingImage ? drawingImage.Drawing : image, out instructions);
             if (!read
                 || !GeneratedImageContentBounds.TryGetDrawing(instructions, out var bounds)) return false;
             if (bounds.Width <= 0 || bounds.Height <= 0) return true;
@@ -156,7 +158,7 @@ internal static unsafe class GeneratedVisualRenderer
                 || bounds.X + bounds.Width <= left || bounds.Y + bounds.Height <= top) return true;
             if (deviceAligned)
                 return TryCaptureDeviceAligned(instructions, new(left, top, right - left, bottom - top),
-                    contentToDevice, deviceClip, scalingMode, renderBounds, out snapshot);
+                    contentToDevice, deviceClip, scalingMode, renderBounds, out snapshot, frozen);
             double xLength = Math.Abs(sx) * viewportScaleX;
             double yLength = Math.Abs(sy) * viewportScaleY;
             if (!(right > left) || !(bottom > top) || !(xLength > 0) || !(yLength > 0)) return true;
@@ -309,7 +311,7 @@ internal static unsafe class GeneratedVisualRenderer
                 }
 
                 if (CaptureInstructions(instructions, draws, mapping,
-                    new(0, 0, (int)candidate.Width, (int)candidate.Height), scalingMode, MilCompositingMode.SourceOver, 0) < 0) return false;
+                    new(0, 0, (int)candidate.Width, (int)candidate.Height), scalingMode, MilCompositingMode.SourceOver, 0, frozen) < 0) return false;
                 snapshot = candidate;
                 return true;
             }
@@ -362,7 +364,7 @@ internal static unsafe class GeneratedVisualRenderer
 
         private static bool TryCaptureDeviceAligned(IReadOnlyList<GeneratedRenderDataInstruction> instructions,
             MilRectD contentClip, GeneratedImageTransform contentToDevice, Direct3D9SurfaceRect? deviceClip,
-            uint scalingMode, MilRectD? renderBounds, out DrawingSnapshot? snapshot)
+            uint scalingMode, MilRectD? renderBounds, out DrawingSnapshot? snapshot, FrozenVisualTree? frozen)
         {
             snapshot = null;
             var ideal = contentToDevice.Apply(contentClip);
@@ -406,7 +408,7 @@ internal static unsafe class GeneratedVisualRenderer
             try
             {
                 if (CaptureInstructions(instructions, draws, mapping, new(0, 0, (int)w, (int)h),
-                    scalingMode, MilCompositingMode.SourceOver, 0) < 0) return false;
+                    scalingMode, MilCompositingMode.SourceOver, 0, frozen) < 0) return false;
                 snapshot = candidate;
                 return true;
             }
@@ -434,10 +436,13 @@ internal static unsafe class GeneratedVisualRenderer
             try
             {
                 var clip = new Direct3D9SurfaceRect(0, 0, (int)width, (int)height);
+                bool shadowOpacity = cacheContents && tree.Shadow is not null && tree.Alpha != 1;
+                if (shadowOpacity) draws.Add(ImageDraw.BeginLayer(Math.Clamp(tree.Alpha, 0, 1)));
                 int hr = cacheContents
                     ? CaptureContents(tree!, draws, mapping, clip, 0, tree!.BitmapScalingMode ?? scalingMode,
                         tree.CompositingMode ?? MilCompositingMode.SourceOver)
                     : Capture(tree!, draws, mapping, clip, 0, scalingMode);
+                if (shadowOpacity) draws.Add(ImageDraw.EndLayer);
                 if (hr < 0) return hr;
                 snapshot = candidate;
                 return 0;
@@ -464,6 +469,7 @@ internal static unsafe class GeneratedVisualRenderer
                         1 => session!.BeginLayer(draw.Opacity, draw.Mask, draw.AlphaMask, draw.ImageMask),
                         2 => session!.EndLayer(),
                         4 => draw.Effect!.Draw(session!, draw.Context),
+                        5 => draw.Blur!.Draw(session!, draw.Context),
                         3 => session!.DrawPath(draw.Brush, draw.Mask, draw.StrokeBrush, draw.StrokeMask, draw.Bounds, draw.Context, draw.NativeStroke),
                         _ => session!.Draw(draw.Source, draw.Rectangle, draw.IsMilSource, draw.Context)
                     };
@@ -482,6 +488,7 @@ internal static unsafe class GeneratedVisualRenderer
             for (int i = _draws.Count - 1; i >= 0; i--)
             {
                 _draws[i].Effect?.Dispose();
+                _draws[i].Blur?.Dispose();
                 _draws[i].StrokeBrush?.Dispose(); _draws[i].Brush?.Dispose();
                 _draws[i].ImageMask?.Dispose(); _draws[i].VideoSample?.Dispose();
                 Direct3D9Factory.Release(_draws[i].Source);
@@ -495,13 +502,25 @@ internal static unsafe class GeneratedVisualRenderer
         Direct3D9SurfaceRect? deviceClip = null, FrozenVisualTree? frozen = null)
     {
         draws.EnsureCapacity(draws.Count + 1);
-        if (brush is GeneratedImageBrushResource image)
+        if (brush is GeneratedTileBrushResource image)
         {
             GeneratedImageMask? mask;
-            bool captured = frozen?.ImageBrush(image) is { } imageBrush
-                ? GeneratedImageMask.TryCaptureFrozen(imageBrush, transform, scalingMode, out mask, contentBounds, deviceClip, infiniteRenderBounds: true)
-                : GeneratedImageMask.TryCapture(image, transform, scalingMode, out mask, contentBounds, deviceClip, infiniteRenderBounds: true);
-            if (!captured) return Direct3D9Factory.NotImplementedHResult;
+            var imageBrush = frozen?.ImageBrush(image);
+            if (image is GeneratedVisualBrushResource visual)
+            {
+                if (contentBounds is not { } bounds) return Direct3D9Factory.NotImplementedHResult;
+                int hr = imageBrush is not null
+                    ? GeneratedImageMask.CaptureVisualBrushFrozen(imageBrush, transform, scalingMode, bounds, deviceClip, out mask)
+                    : GeneratedImageMask.CaptureVisualBrush(visual, transform, scalingMode, bounds, deviceClip, out mask);
+                if (hr < 0) return hr;
+            }
+            else
+            {
+                bool captured = imageBrush is not null
+                    ? GeneratedImageMask.TryCaptureFrozen(imageBrush, transform, scalingMode, out mask, contentBounds, deviceClip, infiniteRenderBounds: true)
+                    : GeneratedImageMask.TryCapture(image, transform, scalingMode, out mask, contentBounds, deviceClip, infiniteRenderBounds: true);
+                if (!captured) return Direct3D9Factory.NotImplementedHResult;
+            }
             if (mask is not null) mask.LayerBounds = deviceClip;
             draws.Add(mask is null ? ImageDraw.BeginLayer(opacity, alphaMask: 0) : ImageDraw.BeginLayer(opacity, imageMask: mask));
             return 0;
@@ -568,11 +587,11 @@ internal static unsafe class GeneratedVisualRenderer
         bool rectangularClip = GeneratedImageClip.TryIntersect(visual.Clip?.Geometry, transform, inheritedClip,
             out Direct3D9SurfaceRect? visualClip);
         if (!rectangularClip) visualClip = inheritedClip;
-        bool hasLayer = visual.Alpha != 1 || visual.AlphaMask is not null;
+        bool hasLayer = (visual.Alpha != 1 && visual.Shadow is null) || visual.AlphaMask is not null;
         if (hasLayer)
         {
             MilRectD? contentBounds = null;
-            if (visual.AlphaMask is GeneratedImageBrushResource)
+            if (visual.AlphaMask is GeneratedTileBrushResource)
             {
                 if (!GeneratedImageContentBounds.TryGet(visual, out var bounds)) return Direct3D9Factory.NotImplementedHResult;
                 contentBounds = bounds;
@@ -606,7 +625,29 @@ internal static unsafe class GeneratedVisualRenderer
             clipLayer = true;
         }
         int contentsResult;
-        if (visual.Effect is { } invocation)
+        if (visual.Blur is not null || visual.Shadow is not null)
+        {
+            var shadow = visual.Shadow;
+            var blur = visual.Blur ?? new FrozenBlurEffect(shadow!.Value.Radius, MilKernelType.Gaussian, shadow.Value.Bias);
+            if (!GeneratedImageContentBounds.TryGet(visual, out var bounds)) return Direct3D9Factory.NotImplementedHResult;
+            var padding = new MilShaderEffectCommand(default, 0, shadow is { } s ? s.Top + blur.Radius : blur.Radius, shadow is { } s2 ? s2.Bottom + blur.Radius : blur.Radius, shadow is { } s3 ? s3.Left + blur.Radius : blur.Radius, shadow is { } s4 ? s4.Right + blur.Radius : blur.Radius,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            contentsResult = GeneratedShaderInputScope.TryCreate(bounds, padding, transform, out var scope);
+            if (contentsResult == Direct3D9Factory.ClippedToEmptyHResult) contentsResult = 0;
+            else if (contentsResult >= 0)
+            {
+                contentsResult = DrawingSnapshot.RealizeTree(visual, bounds, scope.InputTransform,
+                    scope.Width, scope.Height, scalingMode, true, out var drawing);
+                if (contentsResult >= 0 && drawing is not null)
+                {
+                    int radius = (int)Math.Min(100, (float)(uint)Math.Min(uint.MaxValue, blur.Radius)
+                        * Math.Min((float)scope.InputTransform.ScaleX, (float)scope.InputTransform.ScaleY));
+                    draws.Add(new(0, default, false, new(scope.OutputTransform, visualClip, scalingMode, compositing),
+                        LayerAction: 5, Blur: new(new(drawing), scope, blur, radius, shadow)));
+                }
+            }
+        }
+        else if (visual.Effect is { } invocation)
         {
             if (!GeneratedImageContentBounds.TryGet(visual, out var bounds)) return Direct3D9Factory.NotImplementedHResult;
             contentsResult = GeneratedShaderInputScope.TryCreate(bounds, invocation.Data.Command, transform, out var scope);
@@ -665,8 +706,8 @@ internal static unsafe class GeneratedVisualRenderer
                 if (instruction.Kind == GeneratedRenderDataKind.PushOpacityMask)
                 {
                     MilRectD? scopeBounds = null;
-                    if (instruction.ResourceSlots[0] is GeneratedImageBrushResource maskBrush
-                        && (maskBrush.ViewportUnits == MilBrushMappingMode.RelativeToBoundingBox || maskBrush.RelativeTransform is not null))
+                    if (instruction.ResourceSlots[0] is GeneratedTileBrushResource maskBrush
+                        && (maskBrush is GeneratedVisualBrushResource || maskBrush.ViewportUnits == MilBrushMappingMode.RelativeToBoundingBox || maskBrush.RelativeTransform is not null))
                     {
                         if (!GeneratedImageContentBounds.TryGetMaskScope(instructions, instructionIndex + 1, out var bounds))
                             return Direct3D9Factory.NotImplementedHResult;
@@ -744,6 +785,22 @@ internal static unsafe class GeneratedVisualRenderer
                         scalingMode, compositing, GlyphAlpha: alpha), 3, Brush: glyphRealization, Bounds: alpha.Bounds));
                     continue;
                 }
+                if (GeneratedPrimitiveGeometry.IsPrimitive(instruction.Kind))
+                {
+                    var primitive = GeneratedPrimitiveGeometry.Create(instruction, out var primitiveBrush, out var primitivePen);
+                    if (primitive is null) continue;
+                    try
+                    {
+                        GeneratedProtocolResource?[] slots = [primitiveBrush, primitivePen, primitive];
+                        var geometryInstruction = new GeneratedRenderDataInstruction(GeneratedRenderDataKind.DrawGeometry,
+                            slots.OfType<GeneratedProtocolResource>().ToArray(), ReadOnlyMemory<byte>.Empty, slots);
+                        int primitiveResult = CaptureInstructions([geometryInstruction], draws, current, currentClip,
+                            scalingMode, compositing, depth, frozen);
+                        if (primitiveResult < 0) return primitiveResult;
+                    }
+                    finally { primitive.Release(); }
+                    continue;
+                }
                 if (instruction.Kind == GeneratedRenderDataKind.DrawGeometry)
                 {
                     if (instruction.ResourceSlots[2] is not { } liveGeometry) continue;
@@ -790,7 +847,7 @@ internal static unsafe class GeneratedVisualRenderer
                     if (!hasNativeFill)
                         return Direct3D9Factory.NotImplementedHResult;
                     SoftwareImageCoverage? coverage = null;
-                    if (fill is not GeneratedImageBrushResource and not GeneratedSolidColorBrushResource and not GeneratedBitmapCacheBrushResource
+                    if (fill is not GeneratedTileBrushResource and not GeneratedSolidColorBrushResource and not GeneratedBitmapCacheBrushResource
                         || !GeneratedGeometryBounds.TryGet(geometry, GeneratedImageTransform.Identity, out var localBounds, current)
                         || !GeneratedGeometryBounds.TryGet(geometry, current, out var deviceBounds)
                         || (!hasNativeFill && !GeneratedImageClip.TryCreateMask(geometry, current, out coverage)))

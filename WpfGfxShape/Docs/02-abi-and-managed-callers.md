@@ -1,5 +1,7 @@
 # wpfgfx ABI 与托管调用边界基线
 
+> 架构适用性以[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)为准：正式仅x86/x64全部ABI/配置矩阵；下文ARM64字段/技术说明保留，编译/布局/执行验收NA-UserScopeDecision，不是Passed，不构成阻塞。
+
 > 本文保存 ABI、托管调用方、所有权和生命周期的稳定静态基线，不维护生产 ABI 实现进度。
 > ABI manifest schema 见 [`08-abi-manifest-spec.md`](08-abi-manifest-spec.md)，测试门禁见 [`06-testing-strategy.md`](06-testing-strategy.md)。
 

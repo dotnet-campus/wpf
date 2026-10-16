@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "caseId": "E2E-05-fixed-geometry-v1",
+  "scope": "Independent PresentationCore host; limited diagnostic evidence, not E2E-05 acceptance",
+  "source": {
+    "program": "Program.cs (unchanged)",
+    "project": "WpfGfxShape.PresentationCoreE2E.csproj",
+    "staging": "Staging.proj",
+    "targetFramework": "net10.0-windows",
+    "configuration": "Release",
+    "rid": "win-x64",
+    "selfContained": false,
+    "runtimeFrameworkVersion": "10.0.1",
+    "rollForward": "Disable",
+    "globalJsonRequestedSdk": "10.0.107, latestFeature",
+    "localSdkPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301",
+    "localCoreRuntimePath": "C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\10.0.13",
+    "localDesktopRuntimePath": "C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\10.0.13",
+    "localRuntimeIsHistoricalOracle": false,
+    "exactSourceHashes": "artifacts/staging/PresentationCoreE2E/source-identity.txt",
+    "workingTreeAndProductionPublishProvenance": "Not reconciled; productVersion commit alone does not establish source equivalence"
+  },
+  "stagedCandidate": {
+    "source": "artifacts/publish/WpfGfxShape/Release/win-x64/wpfgfx_cor3.dll",
+    "sha256": "F6AA6CFF753B34769C5813C58DDFEAB5356C9F9C481B7AC14435860B105798AB",
+    "executionStatus": "Not run by this maintainer; no inherited results",
+    "productionPublishActionByThisMaintainer": false
+  },
+  "historicalCandidate": {
+    "reportedOriginalSource": "artifacts/publish/WpfGfxShape/Release/win-x64/wpfgfx_cor3.dll (historical; now changed)",
+    "preservedPath": "artifacts/test-results/PresentationCoreE2E/evidence/native/AAB3C60248ED76C710D512D59DB1640F4C7F0E25A053C38B07C7EA4974EC6760.dll",
+    "sha256": "AAB3C60248ED76C710D512D59DB1640F4C7F0E25A053C38B07C7EA4974EC6760",
+    "length": 4091392,
+    "fileVersion": "1.0.0.0",
+    "productVersion": "1.0.0+a9b30a2a30a150cb209fdddab7f771e249061fa7",
+    "changeFrom773945": "Unresolved; no claim about compilation nondeterminism or functional differences"
+  },
+  "historicalRun": {
+    "os": "Microsoft Windows 10.0.26200",
+    "architecture": "X64",
+    "runtime": ".NET 10.0.1",
+    "desktopDirectory": "C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\10.0.1",
+    "desktopFileVersion": "10.0.125.57005",
+    "desktopProductVersion": "10.0.1-servicing.25569.105+fad253f51b461736dfd3cd9c15977bb7493becef",
+    "presentationCoreSha256": "605FD26A2D1DF0D81B3DE3CB233365DC6091EC7C72C48B22FB805819C8F57654",
+    "windowsBaseSha256": "A7BDC35EC37C1DEB33D24D97213BA1077E3051ABB66250913C9C1FA735B0D3BC",
+    "originalNativeSha256": "94C06484D001F33EE651F993ACB257DEBA59F06B4D924C06100B3AFF3ECA680F",
+    "originalTask": null,
+    "candidateTask": "e3403b6184e241c0bfd8d2490d8e4aed",
+    "originalStatus": "Green",
+    "candidateStatus": "Red",
+    "failureStage": "DrawingContext-open / MediaContext.CreateChannels / ConnectChannels / Channel.SyncFlush",
+    "hresult": "0x88980406",
+    "comparisonStatus": "Red: CandidateFailedBeforeCopyPixels",
+    "originalPixelsSha256": "7F55E138C9605464AE90811BD28B5477871BB3E1AA71F5FD3A1C8B052E0C308B",
+    "input": { "width": 32, "height": 32, "dpi": 96, "format": "Pbgra32", "seed": 0, "threshold": 0 },
+    "target10_0_12Acceptance": false,
+    "evidenceRoot": "artifacts/test-results/PresentationCoreE2E/evidence",
+    "rawRuns": ["final-original", "final-candidate", "final-compare"],
+    "nativeLifetime": "Process lifetime; DEC-0004"
+  }
+}

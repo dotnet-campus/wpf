@@ -1,5 +1,7 @@
 # ABI Manifest：callback、COM、binary 与验收
 
+> 当前架构门由[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)覆盖为仅x86/x64全部正式矩阵；ARM64 ABI/编译/布局/运行NA-UserScopeDecision，不是Passed，不减x86/x64 callback/COM/寿命/二进制验收。
+
 [ABI 规范](08-abi-manifest-spec.md)§8–14正式合同。实测状态只认[基线](handoffs/current-stable-baseline.md)及绑定产物的原记录。
 
 ## 8. Callback manifest

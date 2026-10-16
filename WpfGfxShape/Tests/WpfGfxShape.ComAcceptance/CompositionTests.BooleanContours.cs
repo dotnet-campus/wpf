@@ -290,7 +290,8 @@ public sealed unsafe partial class CompositionTests
         int directGeometry = 0, int join = 0, int cap = 0, bool curves = false, bool drawingImage = false, bool drawingMask = false, int affineMode = 0, int sourceMode = 0, int tileMode = 0, float sourceAlpha = 1f / 3, bool floating = false, uint scalingMode = 0, int consumerMode = 0,
         Action<System.Numerics.Vector4, System.Numerics.Vector4>? observePixels = null,
         Action<System.Numerics.Vector4[]>? observeSurface = null,
-        Action<byte[]>? observeBgraSurface = null, bool solidTargetControl = false, bool bitmapSourceControl = false)
+        Action<byte[]>? observeBgraSurface = null, bool solidTargetControl = false, bool bitmapSourceControl = false,
+        System.Numerics.Vector4? sourceColor = null)
     {
         string path = AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
@@ -402,6 +403,11 @@ public sealed unsafe partial class CompositionTests
                 {
                     *(float*)(solid + 28) = sourceMode == 14 ? 0.5f : sourceAlpha;
                     if (floating) *(float*)(solid + 16) = 1.25f;
+                    Assert.AreEqual(0, send(solid, 48, 0, channel));
+                }
+                if (sourceColor is { } color)
+                {
+                    *(System.Numerics.Vector4*)(solid + 16) = color;
                     Assert.AreEqual(0, send(solid, 48, 0, channel));
                 }
                 uint* geometryDrawing = stackalloc uint[] { 0x87, drawing, sourceMode == 11 ? 0u : brush,
@@ -651,6 +657,8 @@ public sealed unsafe partial class CompositionTests
                         *(uint*)(solid + 4) = consumerBrush;
                         *(float*)(solid + 28) = 1;
                         *(float*)(solid + 16) = 1;
+                        *(float*)(solid + 20) = 0;
+                        *(float*)(solid + 24) = 0;
                         Assert.AreEqual(0, send(solid, 48, 0, channel));
                     }
                     if (solidTargetControl)

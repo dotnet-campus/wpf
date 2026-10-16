@@ -95,7 +95,6 @@ public sealed unsafe class GlyphRunTests
             Release(family);
             Release(collection);
             Release(factory);
-            NativeLibrary.Free(module);
         }
     }
 

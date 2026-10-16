@@ -17,6 +17,8 @@ internal sealed class FrozenVisualTree : IDisposable
     internal GeneratedVisualResource Owner { get; private set; } = null!;
     internal GeneratedProtocolResource? AlphaMask { get; private set; }
     internal FrozenShaderInvocation? Effect { get; private set; }
+    internal FrozenBlurEffect? Blur { get; private set; }
+    internal FrozenDropShadowEffect? Shadow { get; private set; }
     internal bool HasUnsupportedEffect { get; private set; }
     internal MilPoint2D Offset { get; private set; }
     internal double Alpha { get; private set; }
@@ -52,7 +54,20 @@ internal sealed class FrozenVisualTree : IDisposable
             hr = candidate.CaptureDependency(visual.AlphaMask, active);
             if (hr < 0) return hr;
             candidate.AlphaMask = candidate.FrozenResource(visual.AlphaMask);
-            candidate.HasUnsupportedEffect = visual.Effect is not (null or GeneratedShaderEffectResource);
+            candidate.HasUnsupportedEffect = visual.Effect is not (null or GeneratedShaderEffectResource or GeneratedBlurEffectResource or GeneratedDropShadowEffectResource);
+            if (visual.Effect is GeneratedDropShadowEffectResource shadow)
+            {
+                candidate.Own(shadow);
+                var shadowData = shadow.Capture();
+                if (!shadowData.IsFinite) return Direct3D9Factory.InvalidArgumentHResult;
+                candidate.Shadow = shadowData;
+            }
+            if (visual.Effect is GeneratedBlurEffectResource blur)
+            {
+                candidate.Own(blur);
+                if (!double.IsFinite(blur.Radius)) return Direct3D9Factory.InvalidArgumentHResult;
+                candidate.Blur = new(blur.Radius, blur.Data.Kernel, blur.Data.Bias);
+            }
             if (visual.Effect is GeneratedShaderEffectResource { Data: { } effectData })
             {
                 candidate.Effect = new FrozenShaderInvocation(effectData, active);

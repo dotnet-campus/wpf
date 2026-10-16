@@ -6,7 +6,7 @@ namespace WpfGfxShape.ComAcceptance;
 
 [TestClass]
 [DoNotParallelize]
-public sealed unsafe class UceChannelTests
+public sealed unsafe partial class UceChannelTests
 {
     [TestMethod]
     [DataRow(68, unchecked((int)0x88980403))]

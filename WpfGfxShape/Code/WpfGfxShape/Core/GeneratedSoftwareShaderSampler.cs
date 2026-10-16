@@ -5,7 +5,7 @@ namespace WpfGfxShape.Core;
 internal static unsafe class GeneratedSoftwareShaderSampler
 {
     internal static int Realize(SoftwareBrushRealization brush, uint width, uint height,
-        bool bilinear, out SoftwareShaderSampler sampler)
+        bool bilinear, out SoftwareShaderSampler sampler, bool floating = false)
     {
         sampler = default;
         nint target = 0, bitmap = 0;
@@ -13,7 +13,7 @@ internal static unsafe class GeneratedSoftwareShaderSampler
         try
         {
             int hr = BitmapRenderTargetExports.CreateDrawingIntermediate(width, height,
-                out target, out bitmap, floating: false);
+                out target, out bitmap, floating: floating);
             if (hr < 0) return hr;
             hr = SoftwareImageRenderSession.Open(target, width, height, out session);
             if (hr < 0) return hr;
@@ -24,6 +24,16 @@ internal static unsafe class GeneratedSoftwareShaderSampler
             if (hr < 0) return hr;
             session.Dispose();
             session = null;
+            if (floating)
+            {
+                System.Numerics.Vector4[] values = new System.Numerics.Vector4[checked((int)(width * height))];
+                fixed (System.Numerics.Vector4* destination = values)
+                    hr = ((delegate* unmanaged[Stdcall]<nint, Direct3D9BitmapSourceRectangle*, uint, uint, byte*, int>)(*(void***)bitmap)[7])
+                        (bitmap, null, checked(width * 16), checked((uint)values.Length * 16), (byte*)destination);
+                if (hr < 0) return hr;
+                sampler = new([], checked((int)width), checked((int)height), bilinear) { FloatPixels = values };
+                return 0;
+            }
             uint[] pixels = new uint[checked((int)(width * height))];
             fixed (uint* destination = pixels)
                 hr = ((delegate* unmanaged[Stdcall]<nint, Direct3D9BitmapSourceRectangle*, uint, uint, byte*, int>)(*(void***)bitmap)[7])

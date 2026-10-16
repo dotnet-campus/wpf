@@ -828,6 +828,11 @@ internal sealed class GeneratedProtocolProductionContext
 
     private int CreateResource(uint handle, MilResourceType resourceType)
     {
+        // Native Channel_CreateResource ignores GlyphRun, even before handle validation.
+        // Only GlyphRun_Create may materialize this resource in the consumer table.
+        if (resourceType == MilResourceType.GlyphRun)
+            return Direct3D9Factory.SuccessHResult;
+
         return TryGetCurrentTable(out GeneratedProtocolHandleTable? table)
             ? table.Create(handle, resourceType)
             : Direct3D9Factory.UceHandleLookupFailedHResult;

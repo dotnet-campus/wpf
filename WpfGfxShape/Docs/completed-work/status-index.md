@@ -2,6 +2,7 @@
 
 [唯一恢复入口](../next-session-handoff.md)；本目录所有交付只在原run范围冻结，不是当前生产状态。
 
+- 最新GenProto有限执行：[x86 CLR wire](GenProto-x86-clr-wire-finite.md)已Satisfied；旧wirecompiler/remaining-wire-mapping中的未执行或下一模块仅属原run，由[当前工作项](../handoffs/current-work-item.md)覆盖，不改冻结原文、不重领x86。
 - 方法族：Command、Geometry、Lock-notify；保留各版本strict分母。
 - 集成/消费者：Four、Player-Hwnd、Tile；有限完成不外推七阶段。
 - 性能：Perf-sync、Perf-async；身份和短包限制见[原索引](README.md)。

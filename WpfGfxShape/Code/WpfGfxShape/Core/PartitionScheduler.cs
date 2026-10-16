@@ -44,9 +44,21 @@ internal sealed class PartitionScheduler : IDisposable
 
     internal int InitializationResult => _initializationResult;
 
+    internal static void RecordCommandFailure(uint channel, ReadOnlySpan<byte> packet, int result)
+    {
+        string message = $"UCE command failure: channel={channel}, thread={Environment.CurrentManagedThreadId}, HRESULT=0x{result:X8}, packet={Convert.ToHexString(packet)}";
+        System.Diagnostics.Trace.TraceError(message);
+        string? path = Environment.GetEnvironmentVariable("WPFGFX_DIAGNOSTIC_LOG");
+        if (!string.IsNullOrWhiteSpace(path))
+            System.IO.File.AppendAllText(path, message + Environment.NewLine);
+    }
+
     internal static int RecordFailure(Exception error)
     {
         System.Diagnostics.Trace.TraceError("UCE failure: {0}", error);
+        string? path = Environment.GetEnvironmentVariable("WPFGFX_DIAGNOSTIC_LOG");
+        if (!string.IsNullOrWhiteSpace(path))
+            System.IO.File.AppendAllText(path, error + Environment.NewLine);
         return error is System.ComponentModel.Win32Exception native
             ? unchecked((int)(0x80070000u | ((uint)native.NativeErrorCode & 0xffff)))
             : error.HResult;
@@ -157,6 +169,8 @@ internal sealed class PartitionScheduler : IDisposable
                 catch (OverflowException error) { result = RecordFailure(error); }
                 finally
                 {
+                    if (result < 0)
+                        RecordCommandFailure(0, ReadOnlySpan<byte>.Empty, result);
                     if (result < 0 && work.Channel.Partition.Failure >= 0) work.Channel.Partition.Failure = result;
                     int failure = work.Channel.Partition.Failure;
                     if (failure < 0) work.Channel.WakeMessageWaiters();

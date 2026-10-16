@@ -1,5 +1,7 @@
 # Silk.NET 2.23.0 与 wpfgfx 平台互操作边界
 
+> 架构适用范围按[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)仅x86/x64全部正式门；本页ARM64差异仅技术记录，不再构成必需验收，NA而非Passed。
+
 > 当前生产 DirectX 绑定固定为 Silk.NET 2.23.0。
 > 本文维护当前采用边界，不再使用旧 Silk.NET 2.11 本地仓库、旧 commit 或 `WP-00G` 作为当前门禁。
 > 当前版本事实以项目包引用和 [`handoffs/current-stable-baseline.md`](handoffs/current-stable-baseline.md) 为准。

@@ -147,6 +147,7 @@ internal static class SoftwareStrokeWidening
             int segments = figure.Closed ? count : count - 1;
             var tangents = new MilPoint2D[segments];
             var normals = new MilPoint2D[segments];
+            var starts = new MilPoint2D[segments, 2];
             for (int i = 0; i < segments; i++)
             {
                 var a = points[i]; var b = points[(i + 1) % count];
@@ -156,8 +157,8 @@ internal static class SoftwareStrokeWidening
                 tangents[i] = new(dx / length, dy / length);
                 var n = new MilPoint2D(-dy / length * radius, dx / length * radius);
                 normals[i] = n;
-                if (!Polygon([new(a.X + n.X, a.Y + n.Y), new(b.X + n.X, b.Y + n.Y),
-                    new(b.X - n.X, b.Y - n.Y), new(a.X - n.X, a.Y - n.Y)])) return false;
+                starts[i, 0] = new(a.X + n.X, a.Y + n.Y);
+                starts[i, 1] = new(a.X - n.X, a.Y - n.Y);
             }
             for (int i = figure.Closed ? 0 : 1; i < (figure.Closed ? count : count - 1); i++)
             {
@@ -192,6 +193,7 @@ internal static class SoftwareStrokeWidening
                 var a = new MilPoint2D(center.X + normals[previous].X * side, center.Y + normals[previous].Y * side);
                 var b = new MilPoint2D(center.X + normals[i].X * side, center.Y + normals[i].Y * side);
                 var corner = new List<MilPoint2D> { center, a };
+                bool extendToOffset = true;
                 if (join == MilPenJoin.Round)
                     AppendArc(corner, center, a, b, cross > 0 ? 1 : -1, arcTransform);
                 else if (join is MilPenJoin.Miter or MilPenJoin.MiterClipped)
@@ -200,7 +202,15 @@ internal static class SoftwareStrokeWidening
                     var miter = new MilPoint2D(a.X + incoming.X * distance, a.Y + incoming.Y * distance);
                     double mx = miter.X - center.X, my = miter.Y - center.Y;
                     if (mx * mx + my * my <= radius * radius * Math.Max(1, pen.MiterLimit) * Math.Max(1, pen.MiterLimit))
+                    {
                         corner.Add(miter);
+                        // MiterTo keeps the miter as the next segment's current outer point.
+                        if (!figure.Closed || i != 0)
+                        {
+                            starts[i, side > 0 ? 0 : 1] = miter;
+                            extendToOffset = false;
+                        }
+                    }
                     else if (join == MilPenJoin.Miter)
                     {
                         // DoLimitedMiter cuts both rails at the nominal radial limit.
@@ -214,8 +224,15 @@ internal static class SoftwareStrokeWidening
                         corner.Add(new(b.X - outgoing.X * offset, b.Y - outgoing.Y * offset));
                     }
                 }
-                corner.Add(b);
+                if (extendToOffset) corner.Add(b);
                 if (!Polygon(corner)) return false;
+            }
+            for (int i = 0; i < segments; i++)
+            {
+                var b = points[(i + 1) % count];
+                var n = normals[i];
+                if (!Polygon([starts[i, 0], new(b.X + n.X, b.Y + n.Y),
+                    new(b.X - n.X, b.Y - n.Y), starts[i, 1]])) return false;
             }
             if (!figure.Closed)
             {

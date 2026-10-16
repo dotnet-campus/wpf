@@ -1,6 +1,6 @@
 # 已归类：migration-master-plan
 
-本页仅为冻结历史引用保留路径与锚点，不是恢复入口。
+本页仅为冻结历史引用保留路径与锚点，不是恢复入口。当前总计划见[剩余关闭总计划](remaining-gap-closure-plan.md)；原ARM64门由[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)覆盖为用户范围不适用（非Passed），仅x86/x64全部正式矩阵继续。精确runtime patch口径见[单一审计](windowsdesktop-version-provenance.md)。
 
 正文已移至[history/plans/migration-master-plan.md](history/plans/migration-master-plan.md)；恢复从[唯一入口](next-session-handoff.md)开始。
 

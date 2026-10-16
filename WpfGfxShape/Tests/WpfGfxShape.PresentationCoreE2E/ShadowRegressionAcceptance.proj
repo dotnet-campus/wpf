@@ -1,0 +1,19 @@
+<Project DefaultTargets="Prepare">
+  <PropertyGroup>
+    <Root>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)..\..\'))</Root>
+    <Runs>$(Root)Investigations\PresentationCore-render\Results\</Runs>
+    <Package>$(Root)artifacts\staging\PresentationCoreE2E\</Package>
+  </PropertyGroup>
+  <Target Name="Prepare">
+    <ItemGroup>
+      <Original Include="$(Runs)shadow-reg-*-original-06\Results\original\*.pbgra32;$(Runs)shadow-reg-primitive-original-06\Results\original\result.json" />
+      <Candidate Include="$(Runs)shadow-reg-*-candidate-06\Results\candidate\*.pbgra32" />
+      <Identities Include="$(Runs)shadow-reg-*-candidate-06\Results\candidate\result.json;$(Runs)dropshadow-final-*-06\Results\*\result.json;$(Package)Candidate\wpfgfx_cor3.dll" />
+    </ItemGroup>
+    <Error Condition="'@(Original)' == '' Or '@(Candidate)' == ''" Text="Independent regression roles are required." />
+    <Copy SourceFiles="@(Original)" DestinationFolder="$(Package)Baseline" />
+    <Copy SourceFiles="@(Candidate)" DestinationFolder="$(Package)ComparisonCandidate" />
+    <GetFileHash Files="@(Original);@(Candidate);@(Identities)" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="Identity" /></GetFileHash>
+    <WriteLinesToFile File="$(Runs)shadow-reg-input-identities-06.txt" Lines="@(Identity->'%(Identity) | %(FileHash)')" Overwrite="true" />
+  </Target>
+</Project>

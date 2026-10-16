@@ -1,0 +1,62 @@
+<Project DefaultTargets="Stage">
+  <PropertyGroup>
+    <Root>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)..\..\'))</Root>
+    <Results>$(Root)artifacts\test-results\PresentationCoreE2E\</Results>
+    <Evidence>$(Results)evidence\</Evidence>
+    <Package>$(Root)artifacts\staging\PresentationCoreE2E\</Package>
+    <DotNetRoot>C:\Program Files\dotnet\</DotNetRoot>
+    <Sdk>$(DotNetRoot)sdk\10.0.301\</Sdk>
+    <Runtime>$(DotNetRoot)shared\Microsoft.NETCore.App\10.0.13\</Runtime>
+    <Desktop>$(DotNetRoot)shared\Microsoft.WindowsDesktop.App\10.0.13\</Desktop>
+    <Candidate>$(Root)artifacts\publish\WpfGfxShape\Release\win-x64\wpfgfx_cor3.dll</Candidate>
+    <BuildOutput>$(Root)artifacts\bin\WpfGfxShape.PresentationCoreE2E\Release\net10.0-windows\win-x64\</BuildOutput>
+  </PropertyGroup>
+  <ItemGroup>
+    <Run Include="original-first;candidate-first;iteration-01;iteration-02;final-original;final-candidate;final-compare" />
+  </ItemGroup>
+  <Target Name="Archive">
+    <ItemGroup>
+      <Raw Include="$(Results)original-first\Results\**\*"><Run>original-first</Run></Raw>
+      <Raw Include="$(Results)candidate-first\Results\**\*"><Run>candidate-first</Run></Raw>
+      <Raw Include="$(Results)iteration-01\Results\**\*"><Run>iteration-01</Run></Raw>
+      <Raw Include="$(Results)iteration-02\Results\**\*"><Run>iteration-02</Run></Raw>
+      <Raw Include="$(Results)final-original\Results\**\*"><Run>final-original</Run></Raw>
+      <Raw Include="$(Results)final-candidate\Results\**\*"><Run>final-candidate</Run></Raw>
+      <Raw Include="$(Results)final-compare\Results\**\*"><Run>final-compare</Run></Raw>
+    </ItemGroup>
+    <GetFileHash Files="@(Raw)" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="Before" /></GetFileHash>
+    <Copy SourceFiles="@(Raw)" DestinationFiles="@(Raw->'$(Evidence)%(Run)\Results\%(RecursiveDir)%(Filename)%(Extension)')" Condition="'%(Raw.Run)' != ''" />
+    <ItemGroup>
+      <Archived Include="@(Raw->'$(Evidence)%(Run)\Results\%(RecursiveDir)%(Filename)%(Extension)')" Condition="'%(Raw.Run)' != ''" />
+    </ItemGroup>
+    <GetFileHash Files="@(Archived)" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="After" /></GetFileHash>
+    <Error Condition="'@(Before->'%(FileHash)')' != '@(After->'%(FileHash)')'" Text="Evidence archive SHA256 verification failed; cleanup is forbidden." />
+    <WriteLinesToFile File="$(Evidence)archive-sha256.txt" Lines="@(Before->'%(Identity) | %(FileHash)')" Overwrite="true" />
+  </Target>
+  <Target Name="Stage">
+    <Error Condition="!Exists('$(Sdk)MSBuild.dll') Or !Exists('$(Runtime)System.Private.CoreLib.dll') Or !Exists('$(Desktop)PresentationCore.dll')" Text="The explicitly pinned local SDK/runtime sources are missing." />
+    <GetFileHash Files="$(Candidate)" Algorithm="SHA256"><Output TaskParameter="Hash" PropertyName="CandidateHash" /></GetFileHash>
+    <Message Importance="high" Text="Formal publish SHA256=$(CandidateHash)" />
+
+    <MSBuild Projects="$(MSBuildThisFileDirectory)WpfGfxShape.PresentationCoreE2E.csproj" Targets="Restore;Build" Properties="Configuration=Release" />
+    <ItemGroup>
+      <App Include="$(BuildOutput)WpfGfxShape.PresentationCoreE2E.exe;$(BuildOutput)WpfGfxShape.PresentationCoreE2E.dll;$(BuildOutput)WpfGfxShape.PresentationCoreE2E.deps.json;$(BuildOutput)WpfGfxShape.PresentationCoreE2E.runtimeconfig.json" />
+      <Source Include="$(MSBuildThisFileDirectory)Program.cs;$(MSBuildThisFileDirectory)NestedScenes.cs;$(MSBuildThisFileDirectory)NestedAcceptance.proj;$(MSBuildThisFileDirectory)WpfGfxShape.PresentationCoreE2E.csproj;$(MSBuildThisFileDirectory)Staging.proj;$(MSBuildThisFileDirectory)manifest.json;$(MSBuildThisFileDirectory)README.md" />
+      <IdentitySource Include="$(Sdk)MSBuild.dll;$(Runtime)System.Private.CoreLib.dll;$(Desktop)PresentationCore.dll;$(Desktop)WindowsBase.dll;$(Desktop)wpfgfx_cor3.dll;$(Candidate);@(Source);@(App)" />
+    </ItemGroup>
+    <Copy SourceFiles="@(App)" DestinationFolder="$(Package)" />
+    <Copy SourceFiles="$(Candidate)" DestinationFolder="$(Package)Candidate" />
+    <GetFileHash Files="$(Package)Candidate\wpfgfx_cor3.dll" Algorithm="SHA256"><Output TaskParameter="Hash" PropertyName="SnapshotHash" /></GetFileHash>
+    <Error Condition="'$(CandidateHash)' != '$(SnapshotHash)'" Text="Published candidate changed while staging the snapshot." />
+    <WriteLinesToFile File="$(Package)manifest.json" Lines="{ &quot;schemaVersion&quot;: 2, &quot;candidateSha256&quot;: &quot;$(SnapshotHash)&quot; }" Overwrite="true" />
+    <Copy SourceFiles="$(Evidence)final-original\Results\original\result.json;$(Evidence)final-original\Results\original\pixels.pbgra32" DestinationFolder="$(Package)Baseline" />
+    <Copy SourceFiles="@(Source)" DestinationFolder="$(Package)Sources" />
+    <GetFileHash Files="@(IdentitySource)" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="Identity" /></GetFileHash>
+    <WriteLinesToFile File="$(Package)source-identity.txt" Lines="SDK=$(Sdk);CoreRuntime=$(Runtime);DesktopRuntime=$(Desktop);HistoricalExecutionRuntime=10.0.1;@(Identity->'%(Identity) | %(FileHash)')" Overwrite="true" />
+    <ItemGroup>
+      <Duplicate Include="@(Run->'$(Results)%(Identity)\WpfGfxShape.PresentationCoreE2E.exe');@(Run->'$(Results)%(Identity)\WpfGfxShape.PresentationCoreE2E.dll');@(Run->'$(Results)%(Identity)\WpfGfxShape.PresentationCoreE2E.pdb');@(Run->'$(Results)%(Identity)\Candidate\wpfgfx_cor3.dll')" />
+    </ItemGroup>
+
+    <Message Importance="high" Text="Staged $(Package). Historical Results preserved and SHA-verified; no candidate execution or production publish." />
+  </Target>
+</Project>

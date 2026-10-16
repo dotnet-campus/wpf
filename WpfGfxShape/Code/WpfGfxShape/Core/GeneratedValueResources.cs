@@ -314,9 +314,9 @@ internal static class GeneratedResourceFactory
             MilResourceType.Visual => new GeneratedVisualResource(),
             MilResourceType.Viewport3DVisual => new GeneratedViewport3DVisualResource(),
             MilResourceType.Visual3D => new GeneratedVisual3DResource(),
-            MilResourceType.RenderTarget or MilResourceType.HwndRenderTarget or MilResourceType.GenericRenderTarget => new GeneratedTargetResource(resourceType),
+            MilResourceType.HwndRenderTarget or MilResourceType.GenericRenderTarget => new GeneratedTargetResource(resourceType),
             MilResourceType.GlyphRun => new GeneratedGlyphRunResource(),
-            > MilResourceType.Null and < MilResourceType.Last => new GeneratedProtocolResource(resourceType),
+            MilResourceType.EtwEventResource => new GeneratedProtocolResource(resourceType),
             _ => null
         };
 

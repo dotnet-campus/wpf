@@ -84,7 +84,7 @@ internal sealed unsafe class GeneratedImageMask : IDisposable
         Stretch = stretch; AlignmentX = alignmentX; AlignmentY = alignmentY; TileMode = tileMode;
     }
 
-    internal static bool TryCapture(GeneratedImageBrushResource brush, GeneratedImageTransform parent, uint scalingMode, out GeneratedImageMask? mask, MilRectD? contentBounds = null, Direct3D9SurfaceRect? deviceClip = null, bool expandTiles = true, MilRectD? renderBounds = null, GeneratedImageTransform? worldTransform = null, bool infiniteRenderBounds = false, MilRectD? worldBounds = null)
+    internal static bool TryCapture(GeneratedTileBrushResource brush, GeneratedImageTransform parent, uint scalingMode, out GeneratedImageMask? mask, MilRectD? contentBounds = null, Direct3D9SurfaceRect? deviceClip = null, bool expandTiles = true, MilRectD? renderBounds = null, GeneratedImageTransform? worldTransform = null, bool infiniteRenderBounds = false, MilRectD? worldBounds = null)
     {
         mask = null;
         int hr = FrozenBrush.CapturePure(brush, out var frozen);
@@ -138,7 +138,7 @@ internal sealed unsafe class GeneratedImageMask : IDisposable
         double viewportScaleY = brushScale.ScaleY * worldScale.ScaleY;
         // Drawing snapshots own integer-grid clipping and flip shifts; oversized grids require local tiles
         // because the native integer clipping guard cannot represent their visible interval.
-        bool requiresLocalTile = brush.Source is not GeneratedDrawingImageResource
+        bool requiresLocalTile = brush.Drawing is null
             || viewport.Width * viewportScaleX > int.MaxValue
             || viewport.Height * viewportScaleY > int.MaxValue;
         if (requiresLocalTile && tileMode != MilTileMode.None && deviceClip is { } clip
@@ -196,7 +196,7 @@ internal sealed unsafe class GeneratedImageMask : IDisposable
                 tileMode = MilTileMode.None;
             }
         }
-        if (brush.Source is GeneratedDrawingImageResource drawingImage)
+        if (brush.Drawing is not null && brush.Source is { } drawingImage)
         {
             var active = _activeDrawings ??= [];
             if (active.Count >= 256 || !active.Add(drawingImage)) return false;
@@ -303,7 +303,7 @@ internal sealed unsafe class GeneratedImageMask : IDisposable
     {
         mask = null;
         if (!brush.HasContent) return 0;
-        if (brush.Visual is not { } root || brush.TileMode != MilTileMode.None)
+        if (brush.Visual is not { } root)
             return Direct3D9Factory.NotImplementedHResult;
         GeneratedVisualRenderer.VisualSnapshot? snapshot = null;
         try
@@ -349,7 +349,8 @@ internal sealed unsafe class GeneratedImageMask : IDisposable
             if (hr < 0) return hr;
             mask = new(0, false, new(0, 0, width, height), viewport, device,
                 Math.Clamp(opacity, 0, 1), scalingMode, false, stretch,
-                alignmentX, alignmentY, MilTileMode.None) { _visual = snapshot };
+                alignmentX, alignmentY, brush.TileMode)
+                { _visual = snapshot, ViewportScaleX = device.XLength, ViewportScaleY = device.YLength };
             snapshot = null;
             return 0;
         }

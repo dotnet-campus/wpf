@@ -16,7 +16,7 @@ public sealed unsafe partial class D3DImageTests
     [DataRow(3u)]
     public void WhenNativeGpuPresentsThenFrontBufferAndClientPixelsAgree(uint swapEffect)
     {
-        nint window = CreateWindowExW(8, "EDIT", "Native present contract", 0x90000000, 0, 0, 32, 16, 0, 0, 0, 0);
+        nint window = CreateOutputWindow("Native present contract", 40, 40);
         nint factory = 0, device = 0, staging = 0;
         try
         {
@@ -29,7 +29,9 @@ public sealed unsafe partial class D3DImageTests
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint, nint, uint, uint, float, uint, int>)(*(void***)device)[43])(device, 0, 0, 1, 0xff123456, 1, 0));
             Assert.AreEqual(0xff123456u, ReadNativeBackBufferPixel(device));
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, nint, nint, nint, int>)(*(void***)device)[17])(device, 0, 0, window, 0));
-            Assert.AreEqual(0, DwmFlush());
+            CompleteNativePresent(device, window);
+            DiagnoseNativePresent(window, device, false);
+            CompleteNativePresent(device, window);
             NativeDisplayMode mode = default;
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint, NativeDisplayMode*, int>)(*(void***)device)[8])(device, 0, &mode));
             // GetFrontBufferData requires display-sized A8R8G8B8 system memory, not a client-sized staging surface.
@@ -44,6 +46,8 @@ public sealed unsafe partial class D3DImageTests
             try { pixel = *(uint*)((byte*)locked.Bits + point.Y * locked.Pitch + point.X * sizeof(uint)); }
             finally { Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, int>)(*(void***)staging)[14])(staging)); }
             Console.WriteLine($"NativePresentContract windowed=1 swapEffect={swapEffect} display={mode.Width}x{mode.Height} format={mode.Format} screen=({point.X},{point.Y}) frontPixel=0x{pixel:X8}");
+            uint duplicatedPixel = ReadDuplicatedDesktopPixel(window);
+            Assert.AreEqual(0x00123456u, duplicatedPixel & 0x00ffffffu);
             Assert.AreEqual(0x00123456u, pixel & 0x00ffffffu);
             AssertCombinedPixel(window, 0x00563412u);
         }

@@ -38,10 +38,10 @@ public sealed class GeneratedDrawingResourceTests
     {
         (GeneratedProtocolHandleTable table, GeneratedProtocolRouter router) = Context(); MilRectD rect = new(1, 2, 3, 4);
         int result = router.ProcessPackets([
-            Create(1, MilResourceType.DoubleResource), Create(2, MilResourceType.RectResource), Create(3, MilResourceType.SolidColorBrush), Create(4, MilResourceType.LineGeometry), Create(5, MilResourceType.GlyphRun), Create(6, MilResourceType.DrawingImage), Create(7, MilResourceType.MediaPlayer),
+            Create(1, MilResourceType.DoubleResource), Create(2, MilResourceType.RectResource), Create(3, MilResourceType.SolidColorBrush), Create(4, MilResourceType.LineGeometry), Create(6, MilResourceType.DrawingImage), Create(7, MilResourceType.MediaPlayer),
             Create(10, MilResourceType.DashStyle), Create(11, MilResourceType.Pen), Create(12, MilResourceType.GeometryDrawing), Create(13, MilResourceType.GlyphRunDrawing), Create(14, MilResourceType.ImageDrawing), Create(15, MilResourceType.VideoDrawing),
             GeneratedProtocolPacketWriter.WriteDashStyle(10, 0.5, [1d, 2d], 1), GeneratedProtocolPacketWriter.WritePen(11, 3, 4, 3, 1, MilPenCap.Round, dashStyle: 10),
-            GeneratedProtocolPacketWriter.WriteGeometryDrawing(12, 3, 11, 4), GeneratedProtocolPacketWriter.WriteGlyphRunDrawing(13, 5, 3), GeneratedProtocolPacketWriter.WriteImageDrawing(14, rect, 6, 2), GeneratedProtocolPacketWriter.WriteVideoDrawing(15, rect, 7, 2)
+            GeneratedProtocolPacketWriter.WriteGeometryDrawing(12, 3, 11, 4), GeneratedProtocolPacketWriter.WriteGlyphRunDrawing(13, 0, 3), GeneratedProtocolPacketWriter.WriteImageDrawing(14, rect, 6, 2), GeneratedProtocolPacketWriter.WriteVideoDrawing(15, rect, 7, 2)
         ]);
         Assert.AreEqual((0, 0.5, 2, MilPenCap.Round, MilPenJoin.Miter, rect), (result, Get<GeneratedDashStyleResource>(table, 10).Offset, Get<GeneratedDashStyleResource>(table, 10).Dashes.Length, Get<GeneratedPenResource>(table, 11).StartLineCap, Get<GeneratedPenResource>(table, 11).LineJoin, Get<GeneratedImageDrawingResource>(table, 14).Rect));
     }

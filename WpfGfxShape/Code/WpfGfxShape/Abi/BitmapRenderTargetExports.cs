@@ -337,10 +337,8 @@ internal static unsafe partial class BitmapRenderTargetExports
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static void QueryCaps(Instance* self, byte common, uint* uniqueness, nint caps)
     {
-        // No display set has been acquired by this software-only factory yet.
-        // Match CMILFactory's failed-display-set fallback rather than report hardware support.
-        *uniqueness = 0;
-        NativeMemory.Clear((void*)caps, 10 * sizeof(uint));
+        ChannelGraphicsCapabilities.Query(common != 0, new Span<byte>((void*)caps, 40), out uint value);
+        *uniqueness = value;
     }
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static int CreateForBitmap(Instance* self, nint bitmap, nint* output)

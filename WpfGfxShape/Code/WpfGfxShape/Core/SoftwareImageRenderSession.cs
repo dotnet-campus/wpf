@@ -13,6 +13,7 @@ internal sealed unsafe class SoftwareImageRenderSession : IDisposable
     private Direct3D9SoftwareImageRenderer? _renderer;
     private uint _width, _height;
     private bool _drawingPath;
+    internal bool Floating { get; private set; }
 
     internal static int Open(nint target, uint width, uint height, out SoftwareImageRenderSession? session)
     {
@@ -45,6 +46,7 @@ internal sealed unsafe class SoftwareImageRenderSession : IDisposable
         hr = ((delegate* unmanaged[Stdcall]<nint, Guid*, int>)(*(void***)_bitmap)[4])(_bitmap, &format);
         if (hr < 0) return hr;
         bool floating = format == new Guid("6fddc324-4e03-4bfe-b185-3d77768dc91a");
+        Floating = floating;
         if (!floating && format != new Guid("6fddc324-4e03-4bfe-b185-3d77768dc910")) return Direct3D9Factory.NotImplementedHResult;
         uint w, h;
         hr = ((delegate* unmanaged[Stdcall]<nint, uint*, uint*, int>)(*(void***)_bitmap)[3])(_bitmap, &w, &h);

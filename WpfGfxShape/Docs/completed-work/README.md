@@ -2,6 +2,10 @@
 
 本目录每份交付档绑定当时产物与执行范围，不维护当前状态。[唯一恢复入口](../next-session-handoff.md)、[状态源](../handoffs/current-stable-baseline.md)。
 
+## 当前导航覆盖（历史原文不改）
+
+最新[GenProto x86 CLR wire有限执行](GenProto-x86-clr-wire-finite.md)已独立Satisfied，身份与数字只见[唯一基线](../handoffs/current-stable-baseline.md)。旧wirecompiler及remaining-wire-mapping档中的x86 CLR未执行/下一任务仅指当时，不作当前待办；其enum、padding结构和VisualCreate有限裁决保留。先前x86 Shared生命周期与CLR布局分开，ARM64及完整ABI/E2E不外推。当前仅继续[packet-specific合法执行与required/physical余项](../handoffs/current-work-item.md)。
+
 ## 有界主题索引
 
 - Command-*、Geometry-*、Lock-notify-*：方法族与当时 strict 缺项。

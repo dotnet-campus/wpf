@@ -158,8 +158,10 @@ public sealed unsafe partial class D3DImageTests
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern nint CreateWindowExW(uint extendedStyle, string className, string title,
         uint style, int x, int y, int width, int height, nint parent, nint menu, nint instance, nint parameter);
-    [DllImport("user32.dll")]
-    private static extern int DestroyWindow(nint window);
+    [DllImport("user32.dll", EntryPoint = "DestroyWindow")]
+    private static extern int DestroyOwnedWindow(nint window);
+    private static int DestroyWindow(nint window)
+        => (windowThread ?? throw new InvalidOperationException()).Invoke(() => DestroyOwnedWindow(window));
     [DllImport("user32.dll")]
     private static extern nint GetDC(nint window);
     [DllImport("user32.dll")]
@@ -291,6 +293,38 @@ public sealed unsafe partial class D3DImageTests
         RunPublicShaderFrames(40, 40, 21, true, 0, true, replaceShader: true);
     }
 
+    /// <summary>Runs the installed original public HWND target independently of the candidate DLL.</summary>
+    [TestMethod]
+    public void WhenOriginalPublicHwndTargetDrawsThenWindowContainsHardwarePixels()
+    {
+        System.Windows.Interop.HwndSource? source = null;
+        using ManualResetEventSlim rendered = new();
+        try
+        {
+            source = (windowThread ?? throw new InvalidOperationException()).Invoke(() =>
+            {
+                string originalPath = Path.Combine(Path.GetDirectoryName(typeof(System.Windows.Media.Visual).Assembly.Location)!, "wpfgfx_cor3.dll");
+                Console.WriteLine($"OriginalWpfTarget module={originalPath} sha256={Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(originalPath)))}");
+                var parameters = new System.Windows.Interop.HwndSourceParameters("Original WPF public HWND target", 32, 16)
+                { PositionX = 40, PositionY = 40, WindowStyle = unchecked((int)0x90000000), ExtendedWindowStyle = 8 };
+                var target = new System.Windows.Interop.HwndSource(parameters);
+                var visual = new System.Windows.Media.DrawingVisual();
+                using (var drawing = visual.RenderOpen())
+                    drawing.DrawRectangle(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x12, 0x34, 0x56)), null, new System.Windows.Rect(0, 0, 32, 16));
+                target.RootVisual = visual;
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ContextIdle, new Action(() => rendered.Set()));
+                return target;
+            });
+            Assert.IsTrue(rendered.Wait(TimeSpan.FromSeconds(10)), "Original dispatcher did not reach ContextIdle.");
+            Assert.AreEqual(0, DwmFlush());
+            AssertCombinedPixel(source.Handle, 0x00563412u);
+        }
+        finally
+        {
+            if (source is not null) windowThread!.Invoke(() => { source.Dispose(); return 0; });
+        }
+    }
+
     private void RunPublicShaderFrames(int x, int y, uint format, bool shared, int callbackMode, bool shaderEffect,
         bool replaceShader = false, bool malformed = false)
     {
@@ -307,8 +341,7 @@ public sealed unsafe partial class D3DImageTests
         var commit = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "MilChannel_CommitChannel");
         var present = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "WgxConnection_SameThreadPresent");
         var dirty = (delegate* unmanaged[Stdcall]<int, int, int, int, nint, int>)NativeLibrary.GetExport(module, "InteropDeviceBitmap_AddDirtyRect");
-        nint window = CreateWindowExW(8, "STATIC", "Hardware D3DImage acceptance", 0x90000000,
-            x, y, 32, 16, 0, 0, 0, 0);
+        nint window = CreateOutputWindow("Hardware D3DImage acceptance", x, y);
         nint d3d = 0, device = 0, surface = 0, bitmap = 0, connection = 0, channel = 0;
         var detach = (delegate* unmanaged[Stdcall]<nint, void>)NativeLibrary.GetExport(module, "InteropDeviceBitmap_Detach");
         int unavailableCallbacks = 0;
@@ -376,6 +409,7 @@ public sealed unsafe partial class D3DImageTests
                 Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint, uint, nint, uint, PresentParameters*, nint, nint*, int>)(*(void***)d3d)[20])(d3d, 0, 1, window, 0x26, &parameters, 0, &device));
             else
                 Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint, uint, nint, uint, PresentParameters*, nint*, int>)(*(void***)d3d)[16])(d3d, 0, 1, window, 0x26, &parameters, &device));
+            PresentNativeControl(window, device, shared);
             DiagnoseNativePresent(window, device, shared);
             uint* caps = stackalloc uint[128];
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint*, int>)(*(void***)device)[7])(device, caps));

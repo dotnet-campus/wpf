@@ -98,17 +98,29 @@ internal sealed class GeneratedImplicitInputBrushResource() : GeneratedEffectRes
 internal sealed class GeneratedBlurEffectResource() : GeneratedEffectResource(MilResourceType.BlurEffect)
 {
     internal MilBlurEffectCommand Data { get; private set; }
+    private GeneratedValueResource<double>? _radiusAnimation;
+    internal double Radius => Math.Max(_radiusAnimation?.Value ?? Data.Radius, 0);
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
     {
         if (!ReadCommand(value, out MilBlurEffectCommand command) || command.Kernel > MilKernelType.Box || command.Bias > MilEffectRenderingBias.Quality
             || !TryResolve(table, command.RadiusAnimation, MilResourceType.DoubleResource, out var animation)) return Malformed;
-        return CommitDependencies([animation], () => Data = command);
+        return CommitDependencies([animation], () =>
+        {
+            Data = command;
+            _radiusAnimation = animation as GeneratedValueResource<double>;
+        });
     }
 }
 
 internal sealed class GeneratedDropShadowEffectResource() : GeneratedEffectResource(MilResourceType.DropShadowEffect)
 {
     internal MilDropShadowEffectCommand Data { get; private set; }
+    private GeneratedValueResource<double>? _depth, _direction, _opacity, _blur;
+    private GeneratedValueResource<MilColorF>? _color;
+    internal FrozenDropShadowEffect Capture() => new(
+        Math.Max(_depth?.Value ?? Data.Depth, 0), _color?.Value ?? Data.Color,
+        _direction?.Value ?? Data.Direction, Math.Clamp(_opacity?.Value ?? Data.Opacity, 0, 1),
+        Math.Max(_blur?.Value ?? Data.BlurRadius, 0), Data.Bias);
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
     {
         if (!ReadCommand(value, out MilDropShadowEffectCommand command) || command.Bias > MilEffectRenderingBias.Quality
@@ -117,7 +129,15 @@ internal sealed class GeneratedDropShadowEffectResource() : GeneratedEffectResou
             || !TryResolve(table, command.DirectionAnimation, MilResourceType.DoubleResource, out var direction)
             || !TryResolve(table, command.OpacityAnimation, MilResourceType.DoubleResource, out var opacity)
             || !TryResolve(table, command.BlurAnimation, MilResourceType.DoubleResource, out var blur)) return Malformed;
-        return CommitDependencies([depth, color, direction, opacity, blur], () => Data = command);
+        return CommitDependencies([depth, color, direction, opacity, blur], () =>
+        {
+            Data = command;
+            _depth = depth as GeneratedValueResource<double>;
+            _color = color as GeneratedValueResource<MilColorF>;
+            _direction = direction as GeneratedValueResource<double>;
+            _opacity = opacity as GeneratedValueResource<double>;
+            _blur = blur as GeneratedValueResource<double>;
+        });
     }
 }
 

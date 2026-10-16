@@ -1,5 +1,7 @@
 # ABI Manifest：来源、entry、参数与类型
 
+> [DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)现行适用仅x86/x64：下文schema保留ARM64字段供历史追溯，不要求新增ARM64布局/调用约定执行证据，适用性NA-UserScopeDecision而非Passed；x86/x64逐项条件完整保留。
+
 [ABI 规范](08-abi-manifest-spec.md)§1–7正式合同，不维护实现进度。
 
 ## 1. 目的

@@ -1,0 +1,22 @@
+<Project DefaultTargets="Prepare">
+  <PropertyGroup>
+    <Root>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)..\..\'))</Root>
+    <Runs>$(Root)Investigations\PresentationCore-render\Results\</Runs>
+    <Package>$(Root)artifacts\staging\PresentationCoreE2E\</Package>
+  </PropertyGroup>
+  <Target Name="Prepare">
+    <GetFileHash Files="$(Package)Candidate\wpfgfx_cor3.dll" Algorithm="SHA256"><Output TaskParameter="Hash" PropertyName="CandidateHash" /></GetFileHash>
+    <Error Condition="'$(CandidateHash)' != '161496D655519FE9964DF2298F995235EB71E3D026341E1B76AEA1DFBDA75BB8'" Text="Final candidate identity changed." />
+    <ItemGroup>
+      <Original Include="$(Runs)final-original-*-04\Results\original\*.pbgra32;$(Runs)final-original-primitive-04\Results\original\result.json" />
+      <Candidate Include="$(Runs)final-candidate-*-04\Results\candidate\*.pbgra32" />
+      <Previous Include="$(Package)ComparisonCandidate\*.pbgra32" />
+    </ItemGroup>
+    <Error Condition="'@(Original)' == '' Or '@(Candidate)' == ''" Text="Both independent roles must run first." />
+    <Delete Files="@(Previous)" />
+    <Copy SourceFiles="@(Original)" DestinationFolder="$(Package)Baseline" />
+    <Copy SourceFiles="@(Candidate)" DestinationFolder="$(Package)ComparisonCandidate" />
+    <GetFileHash Files="@(Original);@(Candidate);$(Package)Candidate\wpfgfx_cor3.dll" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="Identity" /></GetFileHash>
+    <WriteLinesToFile File="$(Runs)final-input-identities-04.txt" Lines="@(Identity->'%(Identity) | %(FileHash)')" Overwrite="true" />
+  </Target>
+</Project>

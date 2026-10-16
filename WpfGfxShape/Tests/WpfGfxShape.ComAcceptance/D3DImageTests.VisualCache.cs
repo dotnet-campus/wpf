@@ -49,7 +49,7 @@ public sealed unsafe partial class D3DImageTests
         var commit = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "MilChannel_CommitChannel");
         var present = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "WgxConnection_SameThreadPresent");
         var dirty = (delegate* unmanaged[Stdcall]<int, int, int, int, nint, int>)NativeLibrary.GetExport(module, "InteropDeviceBitmap_AddDirtyRect");
-        nint window = CreateWindowExW(8, "EDIT", "Two input shader acceptance", 0x90000000, 40, 40, 32, 16, 0, 0, 0, 0);
+        nint window = CreateOutputWindow("Two input shader acceptance", 40, 40);
         nint secondWindow = 0;
         uint secondDestination = 0;
         nint d3d = 0, device = 0, connection = 0, channel = 0;
@@ -66,6 +66,7 @@ public sealed unsafe partial class D3DImageTests
             Assert.AreNotEqual(0, d3d);
             PresentParameters parameters = new() { Width = 32, Height = 16, Count = 1, SwapEffect = 1, Window = window, Windowed = 1 };
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint, uint, nint, uint, PresentParameters*, nint*, int>)(*(void***)d3d)[16])(d3d, 0, 1, window, 0x26, &parameters, &device));
+            PresentNativeControl(window, device, false);
             DiagnoseNativePresent(window, device, false);
             AssertCombinedPixel(window, 0x00563412);
             nint nativeConnection = 0;
@@ -209,16 +210,18 @@ public sealed unsafe partial class D3DImageTests
             *(uint*)(target + 32) = 32; *(uint*)(target + 36) = 16;
             *(float*)(target + 52) = 1;
             Assert.AreEqual(0, send(target, 92, 0, channel));
+            SendOutputWindowSettings(send, channel, destination, window);
             uint* root = stackalloc uint[] { 0x35, destination, visuals[0] };
             Assert.AreEqual(0, send(root, 12, 0, channel));
             if (multipleDevices)
             {
-                secondWindow = CreateWindowExW(8, "EDIT", "Second cache device", 0x90000000, 100, 40, 32, 16, 0, 0, 0, 0);
+                secondWindow = CreateOutputWindow("Second cache device", 100, 40);
                 EstablishObservableWindow(secondWindow);
                 Assert.AreEqual(0, resource(channel, 46, &secondDestination));
                 *(uint*)(target + 4) = secondDestination;
                 *(ulong*)(target + 8) = (ulong)secondWindow;
                 Assert.AreEqual(0, send(target, 92, 0, channel));
+                SendOutputWindowSettings(send, channel, secondDestination, secondWindow);
                 root[1] = secondDestination;
                 Assert.AreEqual(0, send(root, 12, 0, channel));
             }

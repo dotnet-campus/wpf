@@ -17,7 +17,10 @@ internal static unsafe partial class UceChannelExports
         internal PartitionScheduler? Scheduler;
         internal bool Disconnected;
     }
-    private sealed record Channel(Connection Connection, SameThreadChannel State, bool IsRoot);
+    private sealed record Channel(Connection Connection, SameThreadChannel State, bool IsRoot)
+    {
+        internal readonly int Thread = Environment.CurrentManagedThreadId;
+    }
     private static readonly object Gate = new();
     private static readonly Dictionary<nint, Connection> Connections = [];
     private static readonly Dictionary<nint, Channel> Channels = [];
@@ -25,7 +28,14 @@ internal static unsafe partial class UceChannelExports
 
     private static nint NewIdentity() => checked(++_nextIdentity);
     private static bool TryChannel(nint identity, out Channel? channel) =>
-        Channels.TryGetValue(identity, out channel) && channel.Connection.Thread == Environment.CurrentManagedThreadId;
+        Channels.TryGetValue(identity, out channel) && channel.Thread == Environment.CurrentManagedThreadId;
+
+    // MediaSystem serializes its shared service channel, but the last Dispatcher
+    // may close and submit it on a different thread from the one that created it.
+    private static bool TryLifecycleChannel(nint identity, out Channel? channel) =>
+        Channels.TryGetValue(identity, out channel)
+        && (channel.Thread == Environment.CurrentManagedThreadId
+            || (channel.IsRoot && channel.Connection.Scheduler is not null));
 
     [UnmanagedCallersOnly(EntryPoint = "WgxConnection_Create", CallConvs = [typeof(CallConvStdcall)])]
     private static int Create(byte synchronous, nint* output)
@@ -78,7 +88,11 @@ internal static unsafe partial class UceChannelExports
                         if (partition.Failure < 0) return partition.Failure;
                         // Native synchronous composition does not enter CSlaveHWndRenderTarget::Present.
                         int result = partition.Targets.Render(signalPresent: false);
-                        if (result < 0) return result;
+                        if (result < 0)
+                        {
+                            PartitionScheduler.RecordCommandFailure(0, [], result);
+                            return result;
+                        }
                     }
                     finally { partition.FlushPendingBadShaderNotifications(); }
                 }
@@ -111,7 +125,8 @@ internal static unsafe partial class UceChannelExports
         PartitionScheduler? stop = null;
         lock (Gate)
         {
-            if (!Connections.TryGetValue(identity, out Connection? connection) || connection.Thread != Environment.CurrentManagedThreadId) return InvalidArgument;
+            if (!Connections.TryGetValue(identity, out Connection? connection)
+                || (connection.Scheduler is null && connection.Thread != Environment.CurrentManagedThreadId)) return InvalidArgument;
             Connections.Remove(identity);
             connection.Disconnected = true;
             if (!Channels.Values.Any(channel => ReferenceEquals(channel.Connection, connection))) stop = connection.Scheduler;
@@ -129,11 +144,13 @@ internal static unsafe partial class UceChannelExports
         nint created = 0;
         lock (Gate)
         {
-            if (!Connections.TryGetValue(identity, out Connection? connection) || connection.Thread != Environment.CurrentManagedThreadId) return InvalidArgument;
+            if (!Connections.TryGetValue(identity, out Connection? connection)
+                || (connection.Scheduler is null && connection.Thread != Environment.CurrentManagedThreadId)) return InvalidArgument;
             SameThreadPartition? partition = null;
             if (source != 0)
             {
-                if (!TryChannel(source, out Channel? sourceChannel) || !ReferenceEquals(sourceChannel!.Connection, connection)) return InvalidArgument;
+                if (!Channels.TryGetValue(source, out Channel? sourceChannel) || !ReferenceEquals(sourceChannel.Connection, connection)
+                    || (connection.Scheduler is null && sourceChannel.Thread != Environment.CurrentManagedThreadId)) return InvalidArgument;
                 partition = sourceChannel.State.Partition;
             }
             try
@@ -169,8 +186,8 @@ internal static unsafe partial class UceChannelExports
         bool stop = false;
         lock (Gate)
         {
-            if (!Channels.TryGetValue(identity, out Channel? channel)
-                || (channel.Connection.Thread != Environment.CurrentManagedThreadId && channel.Connection.Scheduler?.IsCurrentThread != true)) return InvalidArgument;
+            if (!TryLifecycleChannel(identity, out Channel? channel)
+                && !(channel is not null && channel.Connection.Scheduler?.IsCurrentThread == true)) return InvalidArgument;
             scheduler = channel.Connection.Scheduler;
             try
             {
@@ -378,7 +395,7 @@ internal static unsafe partial class UceChannelExports
     {
         lock (Gate)
         {
-            if (!TryChannel(identity, out Channel? channel)) return InvalidArgument;
+            if (!TryLifecycleChannel(identity, out Channel? channel)) return InvalidArgument;
             try { return channel!.State.CloseBatch(); }
             catch (OutOfMemoryException) { return OutOfMemory; }
         }
@@ -389,7 +406,7 @@ internal static unsafe partial class UceChannelExports
     {
         lock (Gate)
         {
-            if (!TryChannel(identity, out Channel? channel)) return InvalidArgument;
+            if (!TryLifecycleChannel(identity, out Channel? channel)) return InvalidArgument;
             try
             {
                 if (channel!.Connection.Scheduler is null) return channel.State.Commit();
@@ -409,7 +426,7 @@ internal static unsafe partial class UceChannelExports
         PartitionScheduler.Work? work = null;
         lock (Gate)
         {
-            if (!TryChannel(identity, out Channel? channel)) return InvalidArgument;
+            if (!TryLifecycleChannel(identity, out Channel? channel)) return InvalidArgument;
             if (channel!.Connection.Scheduler?.IsCurrentThread == true) return unchecked((int)0x8000FFFF);
             try
             {

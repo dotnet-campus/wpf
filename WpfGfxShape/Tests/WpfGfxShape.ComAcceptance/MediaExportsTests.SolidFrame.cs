@@ -76,6 +76,7 @@ public sealed unsafe partial class MediaExportsTests
         var channelCreate = (delegate* unmanaged[Stdcall]<nint, nint, nint*, int>)NativeLibrary.GetExport(module, "MilConnection_CreateChannel");
         var create = (delegate* unmanaged[Stdcall]<nint, uint, uint*, int>)NativeLibrary.GetExport(module, "MilResource_CreateOrAddRefOnChannel");
         var send = (delegate* unmanaged[Stdcall]<void*, uint, byte, nint, int>)NativeLibrary.GetExport(module, "MilResource_SendCommand");
+        var sendMedia = (delegate* unmanaged[Stdcall]<uint, nint, nint, byte, int>)NativeLibrary.GetExport(module, "MilResource_SendCommandMedia");
         var close = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "MilChannel_CloseBatch");
         var commit = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "MilChannel_CommitChannel");
         var present = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "WgxConnection_SameThreadPresent");
@@ -97,10 +98,10 @@ public sealed unsafe partial class MediaExportsTests
             Assert.AreEqual(0, create(channel, 47, &destination));
             byte* packet = stackalloc byte[60];
             new Span<byte>(packet, 60).Clear();
-            *(uint*)packet = 0x17; *(uint*)(packet + 4) = player;
-            *(ulong*)(packet + 8) = (ulong)source.Media; *(int*)(packet + 16) = 1;
             ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)source.Media)[1])(source.Media);
-            Assert.AreEqual(0, send(packet, 20, 0, channel));
+            int mediaResult = sendMedia(player, source.Media, channel, 1);
+            if (mediaResult < 0) Release(source.Media);
+            Assert.AreEqual(0, mediaResult);
             new Span<byte>(packet, 60).Clear();
             *(uint*)packet = 0x34; *(uint*)(packet + 4) = destination;
             *(ulong*)(packet + 16) = (ulong)target; *(uint*)(packet + 24) = 2; *(uint*)(packet + 28) = 1;
@@ -125,10 +126,10 @@ public sealed unsafe partial class MediaExportsTests
                 if (replace)
                 {
                     new Span<byte>(packet, 60).Clear();
-                    *(uint*)packet = 0x17; *(uint*)(packet + 4) = player;
-                    *(ulong*)(packet + 8) = (ulong)source.Media; *(int*)(packet + 16) = 1;
                     ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)source.Media)[1])(source.Media);
-                    Assert.AreEqual(0, send(packet, 20, 0, channel));
+                    mediaResult = sendMedia(player, source.Media, channel, 1);
+                    if (mediaResult < 0) Release(source.Media);
+                    Assert.AreEqual(0, mediaResult);
                     Assert.AreEqual(0, close(channel));
                     Assert.AreEqual(0, commit(channel));
                     string replacement = Path.Combine(Path.GetTempPath(), $"wpf-replacement-{Guid.NewGuid():N}.avi");

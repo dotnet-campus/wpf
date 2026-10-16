@@ -81,8 +81,32 @@ public sealed unsafe partial class CompositionEffectsTests
              0x03000005, 0x80070800, 0x80e40000, 0xa0000000,
              0x02000001, 0x80080800, 0xa0ff0000, 0xffff], samplerKind: samplerKind);
 
+    [TestMethod]
+    [DataRow(-0.25f)]
+    [DataRow(1.25f)]
+    [DataRow(0.1234567f)]
+    public void WhenSoftwareShaderWritesFloatTargetThenUnsaturatedConstantSurvives(float red)
+        => RunSoftwareShader(red, 0, false, floating: true);
+
+    [TestMethod]
+    [DataRow(0, false)]
+    [DataRow(0, true)]
+    [DataRow(1, false)]
+    [DataRow(1, true)]
+    [DataRow(3, false)]
+    [DataRow(3, true)]
+    [DataRow(4, false)]
+    [DataRow(4, true)]
+    public void WhenFloatShaderSamplesRealConsumerThenHdrAndAlphaSurvive(int samplerKind, bool bilinear)
+        => RunSoftwareShader(1.25f, 0, false,
+            [0xffff0200, 0x0200001f, 0x80000000, 0xb0030000,
+             0x0200001f, 0x90000000, 0xa00f0800,
+             0x0200001f, 0x90000000, 0xa00f0801,
+             0x03000042, 0x800f0800, 0xb0e40000, samplerKind == 0 ? 0xa0e40800u : 0xa0e40801u, 0xffff],
+            samplerKind: samplerKind, floating: true, sampleInput: true, bilinear: bilinear);
+
     private void RunSoftwareShader(float red, uint expected, bool killNegativeW, uint[]? overrideWords = null, bool notification = false,
-        int samplerKind = -1)
+        int samplerKind = -1, bool floating = false, bool sampleInput = false, bool bilinear = false)
     {
         string path = AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
@@ -104,11 +128,11 @@ public sealed unsafe partial class CompositionEffectsTests
             Assert.AreEqual(0, connect(1, &connection));
             Assert.AreEqual(0, createChannel(connection, 0, &channel));
             Assert.AreEqual(0, factoryCreate(&factory, 0x200184C0));
-            Assert.AreEqual(0, targetCreate(factory, 5, 1, 16, 96, 96, 1, &target));
-            Assert.AreEqual(0, targetCreate(factory, 1, 1, 16, 96, 96, 1, &sourceTarget));
+            Assert.AreEqual(0, targetCreate(factory, 5, 1, floating ? 26u : 16u, 96, 96, 1, &target));
+            Assert.AreEqual(0, targetCreate(factory, 1, 1, floating ? 26u : 16u, 96, 96, 1, &sourceTarget));
             Assert.AreEqual(0, getBitmap(sourceTarget, &source));
             Assert.AreEqual(0, getBitmap(target, &output));
-            WritePixel(source, 16, Vector4.One, 0xffffffff);
+            WritePixel(source, floating ? 26u : 16u, sampleInput ? new Vector4(1.25f, -0.25f, 0.1234567f, 0.5f) : Vector4.One, 0xffffffff);
             uint image = 0, data = 0, visual = 0, destination = 0, shader = 0, effect = 0;
             Assert.AreEqual(0, resource(channel, 95, &image));
             Assert.AreEqual(0, resource(channel, 43, &data));
@@ -199,8 +223,8 @@ public sealed unsafe partial class CompositionEffectsTests
             if (samplerKind >= 0)
             {
                 *(uint*)(effectPacket + 72) = 16; *(uint*)(effectPacket + 76) = 8;
-                *(int*)(effectPacket + 98) = 0; *(int*)(effectPacket + 102) = 1;
-                *(int*)(effectPacket + 106) = 1; *(int*)(effectPacket + 110) = 1;
+                *(int*)(effectPacket + 98) = 0; *(int*)(effectPacket + 102) = bilinear ? 2 : 1;
+                *(int*)(effectPacket + 106) = 1; *(int*)(effectPacket + 110) = bilinear ? 2 : 1;
                 *(uint*)(effectPacket + 114) = implicitBrush; *(uint*)(effectPacket + 118) = secondary;
             }
             Assert.AreEqual(0, send(effectPacket, effectLength, 0, channel));
@@ -238,6 +262,16 @@ public sealed unsafe partial class CompositionEffectsTests
                 Assert.AreEqual(0,retrieved);
                 CollectionAssert.AreEqual(new byte[64],new Span<byte>(message,64).ToArray());
                 Assert.AreEqual((byte)0xcc,message[64]);
+            }
+            if (floating)
+            {
+                Guid format;
+                Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, Guid*, int>)(*(void***)output)[4])(output, &format));
+                Assert.AreEqual(new Guid("6fddc324-4e03-4bfe-b185-3d77768dc91a"), format);
+                Vector4* values = stackalloc Vector4[5];
+                Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, uint, uint, byte*, int>)(*(void***)output)[7])(output, 0, 80, 80, (byte*)values));
+                CollectionAssert.AreEqual(Enumerable.Repeat(sampleInput ? new Vector4(1.25f, -0.25f, 0.1234567f, 0.5f) : new Vector4(red, 0, 0, 1), 5).ToArray(), new ReadOnlySpan<Vector4>(values, 5).ToArray());
+                return;
             }
             uint* pixels = stackalloc uint[5];
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, uint, uint, byte*, int>)(*(void***)output)[7])(output, 0, 20, 20, (byte*)pixels));
