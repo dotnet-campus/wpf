@@ -4,7 +4,6 @@
     <Results>$(Root)artifacts\test-results\PresentationCoreE2E\</Results>
     <Evidence>$(Results)evidence\</Evidence>
     <Package Condition="'$(Package)' == ''">$(Root)artifacts\staging\PresentationCoreE2E\</Package>
-    <OriginalDirectory Condition="'$(OriginalDirectory)' == ''">$(Root)Tests\ReferenceData\PresentationCoreE2E\</OriginalDirectory>
     <DotNetRoot>C:\Program Files\dotnet\</DotNetRoot>
     <Sdk>$(DotNetRoot)sdk\10.0.301\</Sdk>
     <Runtime>$(DotNetRoot)shared\Microsoft.NETCore.App\10.0.13\</Runtime>
@@ -50,7 +49,6 @@
     <GetFileHash Files="$(Package)Candidate\wpfgfx_cor3.dll" Algorithm="SHA256"><Output TaskParameter="Hash" PropertyName="SnapshotHash" /></GetFileHash>
     <Error Condition="'$(CandidateHash)' != '$(SnapshotHash)'" Text="Published candidate changed while staging the snapshot." />
     <WriteLinesToFile File="$(Package)manifest.json" Lines="{ &quot;schemaVersion&quot;: 2, &quot;candidateSha256&quot;: &quot;$(SnapshotHash)&quot; }" Overwrite="true" />
-    <Copy SourceFiles="$(OriginalDirectory)result.json;$(OriginalDirectory)pixels.pbgra32" DestinationFolder="$(Package)Baseline" />
     <Copy SourceFiles="@(Source)" DestinationFolder="$(Package)Sources" />
     <GetFileHash Files="@(IdentitySource)" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="Identity" /></GetFileHash>
     <WriteLinesToFile File="$(Package)source-identity.txt" Lines="SDK=$(Sdk);CoreRuntime=$(Runtime);DesktopRuntime=$(Desktop);HistoricalExecutionRuntime=10.0.1;@(Identity->'%(Identity) | %(FileHash)')" Overwrite="true" />

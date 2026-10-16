@@ -3,7 +3,7 @@
 最新合同修订：[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)将下表/历史合同全部ARM64必需门覆盖为用户范围NA（非Passed），当前仅x86/x64完整矩阵；不是无证删除要求。原Ledger字段保留并显式解释覆盖，parent仍Blocked。[DEC-0006](decisions/DEC-0006-installed-official-runtime-contract.md)明确已安装官方完整runtime同版同架构独立对照；10.0.12历史身份不改，不再待澄清或补包，见[版本来源](windowsdesktop-version-provenance.md)。
 
 只追正式条件，不恢复来源中的状态/下一包。按正文操作、结果、失败/寿命与矩阵核对，不以标题相同判等价；这是文本审计，不是生产验收。
-来源：[历史总规划](history/plans/migration-master-plan.md)§9/批次7–14、[阶段独立审计](investigations/audits/S-20261014-008-independent-plan-audit.md)“有限分母与完成定义”、[GenProto冻结审计](handoffs/completed-work/GenProto-finite-closure-audit.md)、[原E2E编号入口](09-test-evidence-and-e2e-contract.md)。现行条款含其链接主题页。
+来源：[历史总规划](history/plans/migration-master-plan.md)§9/批次7–14、[阶段独立审计](investigations/audits/S-20261014-008-independent-plan-audit.md)“有限分母与完成定义”、[GenProto冻结审计（已清理；合同/说明）](history-index.md)、[原E2E编号入口](09-test-evidence-and-e2e-contract.md)。现行条款含其链接主题页。
 旧七阶段未保留独立逐字快照；以现存总计划七行、冻结审计及历史批次交叉核对，不声称重建拆分前全文。原E2E旧章标题保留，但无拆分前版本可逐字diff；以下核对的是仍可读取的历史要求与现行完整操作合同。
 
 | source 条款/必须保留的语义 | current 承载与核对结论 |
@@ -45,4 +45,4 @@
 | 原C authority/ARM64/core managed/X86独立推导 | 主题合同C保留field/enum/pack/size、实机、physical/required；外部包内容只链接唯一清单 |
 | 消费者双缓冲/D3DImage/媒体/FLOAT/glyph/perf | 主题合同六同名子节保留全格式、重入/并发/替换/loss、真实指针、同格式oracle、严格raw与OOM、合法72字节及最终同SHA验收；有限历史不外推 |
 
-结论：上述可读取来源未发现其余正式条件被降级；两处显式缺项已恢复。冻结unload旧门只由既有DEC-0004覆盖，不新增决定；无历史逐字快照的部分不宣称字节级等价。路径/旧编号标题按文本核验，实际渲染边界见[最终报告](docs-governance-report.md)。
+结论：上述可读取来源未发现其余正式条件被降级；两处显式缺项已恢复。冻结unload旧门只由既有DEC-0004覆盖，不新增决定；无历史逐字快照的部分不宣称字节级等价。路径/旧编号标题按文本核验，实际渲染边界见[最终报告（已清理；合同/说明）](history-index.md)。

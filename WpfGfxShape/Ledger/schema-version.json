@@ -1,23 +1,11 @@
 {
   "schemaVersion": "1.0.0",
-  "ledgerStatus": "RepairRequiredPartial",
-  "originWpfRevision": "44615ed4b9f033922b3361ea02c02f173b8bf82e",
-  "originWpfWorkingTree": "NotInspected",
-  "silkNetRevision": "ed4b3c299a44e8b6936f6b1c61c0b119e82237cd",
-  "generatedSession": "SESSION-WP00I-STATIC-EXPANSION-06",
   "encoding": "UTF-8",
   "pathConvention": "OriginWpf-relative-forward-slash",
-  "validationStatus": "IndependentReferenceValidationPassed-ClosureStillBlocked",
-  "actualCounts": {
-    "records": 45,
-    "groups": 9,
-    "evidence": 77,
-    "workPackages": 10
-  },
-  "independentValidationReport": "WpfGfxShape/Investigations/GenProtoEvidence/closure-validation-eeb6b2f515db4b37b5adb87c1b121cf0/report.json",
-  "deferredValidationReason": "Reference existence is not production or evidence closure; external provenance and generated semantic/layout assertions remain required.",
-  "recordCount": 45,
-  "referenceRepairReport": "WpfGfxShape/Investigations/GenProtoEvidence/reference-repair-b730182afec34f6bb3f4eb76f7ef841a/classification.json",
-  "latestDeliveryArchive": "WpfGfxShape/Investigations/GenProtoEvidence/delivery-6a03b29edb064c22a50b7b1985affa62",
-  "stage4Closed": false
+  "originWpfRevision": "44615ed4b9f033922b3361ea02c02f173b8bf82e",
+  "silkNetRevision": "ed4b3c299a44e8b6936f6b1c61c0b119e82237cd",
+  "ledgerStatus": "RepairRequiredPartial",
+  "stage4Closed": false,
+  "evidenceContract": "IDs and subject dependencies only; empty path/hash and executed=false mean no current execution evidence. Pending never satisfies requiredEvidenceIds.",
+  "userScopeAuthority": ["WpfGfxShape/Docs/decisions/DEC-0004-process-lifetime-module.md", "WpfGfxShape/Docs/decisions/DEC-0005-x86-x64-acceptance-scope.md", "WpfGfxShape/Docs/decisions/DEC-0006-installed-official-runtime-contract.md"]
 }

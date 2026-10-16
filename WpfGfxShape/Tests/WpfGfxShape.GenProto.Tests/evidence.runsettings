@@ -1,4 +1,7 @@
 <RunSettings>
+  <RunConfiguration>
+    <ResultsDirectory>../../artifacts/test-results/genproto</ResultsDirectory>
+  </RunConfiguration>
   <LoggerRunSettings>
     <Loggers>
       <Logger friendlyName="trx" enabled="true" />

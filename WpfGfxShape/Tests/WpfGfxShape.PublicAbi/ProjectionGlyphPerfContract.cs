@@ -47,7 +47,13 @@ internal static unsafe partial class Program
     private static void VerifyProjectionGlyphReference()
     {
         using var reference = System.Text.Json.JsonDocument.Parse(File.ReadAllText(
-            Path.Combine(AppContext.BaseDirectory, "ReferenceData", "projection-glyph-reference.json")));
+            projectionGlyphEvidenceInput ?? throw new InvalidOperationException("Supply the current original report as the candidate evidence input.")));
+        var oracle = reference.RootElement;
+        if (oracle.GetProperty("Mode").GetString() != "reference" || !oracle.GetProperty("Passed").GetBoolean()
+            || oracle.GetProperty("SchemaVersion").GetInt32() != 1
+            || oracle.GetProperty("Runtime").GetString() != RuntimeInformation.FrameworkDescription
+            || oracle.GetProperty("OriginalSha256").GetString() != Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(ReferencePath()))))
+            throw new InvalidOperationException("Original evidence schema, role or runtime identity differs.");
         using var actual = System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(Calls));
         foreach (string operation in new[] { "ProjectedBounds", "ProjectedBounds.Null", "GlyphOutline" })
         {

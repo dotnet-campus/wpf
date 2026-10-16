@@ -16,33 +16,35 @@ public class GenerationTests
     private static string Root => typeof(GenerationTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "RepositoryRoot").Value!;
     private static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
     private static string Relative(string path) => Path.GetRelativePath(Root, path).Replace('\\', '/');
-    private static string Archive(string kind) => Path.Combine(Root, "WpfGfxShape", "Investigations", "GenProtoEvidence", kind + "-" + Guid.NewGuid().ToString("N"));
+    private static string Archive(string kind) => Path.Combine(Root, "WpfGfxShape", "artifacts", "genproto", kind + "-" + Guid.NewGuid().ToString("N"));
     private static void Save(string path, object value) => File.WriteAllText(path, JsonSerializer.Serialize(value, new JsonSerializerOptions { WriteIndented = true }));
 
     [TestMethod]
     public void WhenOriginalRspRunsInIsolationThenGeneratedOutputsHaveAuditableDifferentials()
     {
+        Generate();
+    }
+
+    private static string Generate()
+    {
         string archive = Archive("regeneration");
         Directory.CreateDirectory(archive);
         string mcg = Path.Combine(Root, "src/Microsoft.DotNet.Wpf/src/WpfGfx/codegen/mcg");
-        string input = Path.Combine(archive, "authority");
+        string input = mcg;
         string output = Path.Combine(archive, "output");
         Directory.CreateDirectory(output);
-        // Native generators assume the existing product directory skeleton, not existing output content.
-        foreach (string directory in Directory.EnumerateDirectories(Path.Combine(Root, "src/Microsoft.DotNet.Wpf/src"), "*", SearchOption.AllDirectories))
-            Directory.CreateDirectory(Path.Combine(output, "src", Path.GetRelativePath(Path.Combine(Root, "src/Microsoft.DotNet.Wpf/src"), directory)));
+        // Original native sinks require these product directories to exist before opening files.
+        foreach (string directory in new[] { "src/WpfGfx/core/resources", "src/WpfGfx/core/uce", "src/WpfGfx/include/Generated", "src/WpfGfx/exts" })
+            Directory.CreateDirectory(Path.Combine(output, directory));
         var authority = new List<object>();
         foreach (string file in Directory.EnumerateFiles(mcg, "*", SearchOption.AllDirectories))
         {
-            string target = Path.Combine(input, Path.GetRelativePath(mcg, file));
-            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
-            File.Copy(file, target);
-            authority.Add(new { path = Relative(file), sha256 = Hash(file), copySha256 = Hash(target) });
+            authority.Add(new { path = Relative(file), sha256 = Hash(file) });
         }
         foreach (string name in new[] { "CsPrimeParser.cs", "CsPrimeRuntime.cs" })
         {
             string file = Path.Combine(Root, "src/Microsoft.DotNet.Wpf/src/WpfGfx/tools/csp", name);
-            authority.Add(new { path = Relative(file), sha256 = Hash(file), copySha256 = Hash(file) });
+            authority.Add(new { path = Relative(file), sha256 = Hash(file) });
         }
         Save(Path.Combine(archive, "authority.json"), new { version = "44615ed4b9f033922b3361ea02c02f173b8bf82e (Ledger revision; working tree identified by individual SHA256)", files = authority });
         string[] sources = File.ReadAllLines(Path.Combine(input, "main/Resources.rsp"))
@@ -97,13 +99,14 @@ public class GenerationTests
             Assert.AreEqual(0, failures.Count, "Unreviewed differences: " + string.Join(Environment.NewLine, failures));
         }
         finally { context.Unload(); }
+        return archive;
     }
 
     [TestMethod]
     public void WhenRegenerationArchiveIsReviewedThenSummaryAndFamilyBoundariesAreRecorded()
     {
-        string directory = Path.Combine(Root, "WpfGfxShape/Investigations/GenProtoEvidence");
-        var reports = Directory.EnumerateFiles(directory, "results.json", SearchOption.AllDirectories).Order(StringComparer.Ordinal).ToArray();
+        string directory = Generate();
+        string[] reports = [Path.Combine(directory, "results.json")];
         var summaries = new List<object>();
         foreach (string report in reports)
         {

@@ -8,12 +8,9 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
-    <RuntimeFrameworkVersion>10.0.1</RuntimeFrameworkVersion>
-    <RollForward>Disable</RollForward>
+    <RollForward>LatestPatch</RollForward>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../artifacts/publish/WpfGfxShape/Release/win-x64/wpfgfx_cor3.dll" Link="Candidate/wpfgfx_cor3.dll" CopyToOutputDirectory="Always" />
-    <None Include="../ReferenceData/PresentationCoreE2E/pixels.pbgra32" Link="Baseline/pixels.pbgra32" CopyToOutputDirectory="Always" />
-    <None Include="../ReferenceData/PresentationCoreE2E/result.json" Link="Baseline/result.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
 </Project>

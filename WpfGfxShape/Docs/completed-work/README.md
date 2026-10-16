@@ -4,7 +4,7 @@
 
 ## 当前导航覆盖（历史原文不改）
 
-最新[GenProto x86 CLR wire有限执行](GenProto-x86-clr-wire-finite.md)已独立Satisfied，身份与数字只见[唯一基线](../handoffs/current-stable-baseline.md)。旧wirecompiler及remaining-wire-mapping档中的x86 CLR未执行/下一任务仅指当时，不作当前待办；其enum、padding结构和VisualCreate有限裁决保留。先前x86 Shared生命周期与CLR布局分开，ARM64及完整ABI/E2E不外推。当前按[九包总计划](../remaining-gap-closure-plan.md)推进，不仅剩外部输入。全部旧ARM64/卸载必需门与10.0.12唯一目标/待澄清说法分别由DEC-0005/0004/[0006](../decisions/DEC-0006-installed-official-runtime-contract.md)覆盖；冻结原文不改，不记Passed。
+GenProto有限验收过程页与派生Ledger已按用户要求清理，见[清理索引](../history-index.md)。旧Satisfied仅属历史，缺原物不构成当前满足；当前状态只见[唯一基线](../handoffs/current-stable-baseline.md)。用户合同归DEC-0004/0005/0006，生产仍按[唯一总计划](../remaining-gap-closure-plan.md)，不因清理关闭正式门。
 
 ## 有界主题索引
 

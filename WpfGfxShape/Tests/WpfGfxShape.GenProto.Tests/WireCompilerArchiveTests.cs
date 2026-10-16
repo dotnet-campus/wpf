@@ -101,7 +101,7 @@ public class WireCompilerArchiveTests
         File.WriteAllText(path, JsonSerializer.Serialize(output, new JsonSerializerOptions { WriteIndented = true }));
         using var readback = JsonDocument.Parse(File.ReadAllText(path));
         Assert.IsGreaterThan(0, ReadEveryLeaf(readback.RootElement));
-        string ledger = Full("WpfGfxShape/Ledger/wirecompiler-finite-acceptance.json");
+        string ledger = Path.Combine(directory, "wirecompiler-finite-acceptance.json");
         File.WriteAllText(ledger, JsonSerializer.Serialize(new { evidenceId = "EVID-GENPROTO-WIRECOMPILER-FINITE", satisfactionState = "Satisfied", scope = "Independent compiler layout observation and explicit difference review only", path = Relative(path), sha256 = Hash(path), requiredParent = "Blocked", stage4Closed = false, productionExecution = "Blocked", x86ClrExecuted = false, arm64 = "Blocked" }, new JsonSerializerOptions { WriteIndented = true }));
         using var ledgerReadback = JsonDocument.Parse(File.ReadAllText(ledger));
         Assert.AreEqual(Hash(path), ledgerReadback.RootElement.GetProperty("sha256").GetString());

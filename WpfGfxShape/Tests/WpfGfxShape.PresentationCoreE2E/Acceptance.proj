@@ -5,7 +5,12 @@
     <ResultsDirectory Condition="'$(ResultsDirectory)' == ''">$(Root)artifacts\test-results\PresentationCoreE2E\</ResultsDirectory>
     <FramePattern Condition="'$(FramePattern)' == ''">*.pbgra32</FramePattern>
   </PropertyGroup>
-  <Target Name="StageComparison">
+  <Target Name="StageOriginal">
+    <Error Condition="'$(OriginalDirectory)' == ''" Text="Supply this run's original output directory." />
+    <ItemGroup><Oracle Include="$(OriginalDirectory)\*.pbgra32;$(OriginalDirectory)\result.json" /></ItemGroup>
+    <Copy SourceFiles="@(Oracle)" DestinationFolder="$(Package)Baseline" />
+  </Target>
+  <Target Name="StageComparison" DependsOnTargets="StageOriginal">
     <Error Condition="'$(OriginalDirectory)' == '' Or '$(CandidateDirectory)' == '' Or '$(ExpectedFrameCount)' == '' Or '$(ExpectedCandidateHash)' == ''" Text="Supply independent OriginalDirectory, CandidateDirectory, ExpectedFrameCount and ExpectedCandidateHash for this acceptance run." />
     <GetFileHash Files="$(Package)Candidate\wpfgfx_cor3.dll" Algorithm="SHA256"><Output TaskParameter="Hash" PropertyName="CandidateHash" /></GetFileHash>
     <Error Condition="'$(CandidateHash)' != '$(ExpectedCandidateHash)'" Text="Candidate identity differs from this acceptance run." />

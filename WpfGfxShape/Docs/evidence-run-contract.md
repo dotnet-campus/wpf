@@ -63,7 +63,8 @@ Comparator独立读取原/候选，按预先批准规则判等，不让candidate
 - 时间戳可逻辑序号化，不删线程身份/相对顺序/锁/callback数。
 - 地址/PID/时间仅schema明确后规范化。
 - golden专用更新附旧新hash/原因/审阅人或Decision ID，失败不自动覆盖。
-- 原始基线只读，candidate不写original。
+- 当轮 original 生成的动态 oracle/reference 只写 artifacts，candidate 读取该轮实际输入且不写 original；可实时生成的结果不 tracked 保存，不迁回 Tests/ReferenceData，不复制旧 baseline 代替本轮原版实测。
+- 独立不可再生的手工 fixture/golden 与 runtime 产物严格区分。旧冻结文档保持原文，但用户已要求清理的过程原物不保证存在；历史索引解释删除事实，不伪造可用链接或原始 hash。
 - 初始.NET9.0.5来源线索不等于不可变golden，须逐artifact检查SHA/加载/PE；旧调查状态不冒充当前全仓库状态。
 - 当前runtime依[DEC-0006](decisions/DEC-0006-installed-official-runtime-contract.md)使用已安装官方完整包，同版同架构独立原/候选对照；Original角色不是强制重放历史JSON路径。分别记录runtime、PresentationCore/WindowsBase、native实际路径/版本/SHA、进程架构/配置，拒绝候选自充原版及混版依赖；历史golden不覆写。
 - 只读审计记录实际读到的行/字段及抽样边界；既有归并或完成档转述不写成新解析、新运行。smoke、full、strict、GenProto与有限E2E不得混分母或身份。

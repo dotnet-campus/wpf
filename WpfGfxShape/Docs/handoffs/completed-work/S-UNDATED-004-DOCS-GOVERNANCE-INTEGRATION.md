@@ -6,7 +6,7 @@
 
 - 新增[权威条款追溯](../../governance-authority-traceability.md)：历史总规划§9、阶段1–7、E2E-01–09及A/B/C/消费者差集，具体核对操作与验收而非标题。
 - 主题合同C恢复ProcessCreate错误/引用/关闭和InitializePen ABI/dash/stride、physical依赖签名/逐required；耦合域补明5A–C对8A–F的职责与独立验收。
-- README及总计划接入追溯，未新增竞争恢复入口；[最终治理报告](../../docs-governance-report.md)已替换陈旧待办和拆分前长度，记录当前长度/历史例外/证据边界。
+- README及总计划接入追溯，未新增竞争恢复入口；[最终治理报告（已清理；合同/说明）](../../history-index.md)已替换陈旧待办和拆分前长度，记录当前长度/历史例外/证据边界。
 - 回读本轮全部修改文件；四短页没有新增运行数字，生产身份仍只认[基线](../current-stable-baseline.md)，外部包仅引用[唯一页](../../all-completion-external-prerequisites.md)。
 
 ## 核验边界

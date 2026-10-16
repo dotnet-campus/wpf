@@ -1,6 +1,6 @@
 # 最终验收剩余矩阵
 
-本页按正式门验收，不另立任务清单；唯一有界九包见[总计划](remaining-gap-closure-plan.md)。身份/分母只见[基线](handoffs/current-stable-baseline.md)。本轮只编辑 Docs 并只读核验原物，没有代码/配置/Ledger修改或新构建/发布/测试。未证项表示须实际验收或依诊断修复，不预判均为生产缺陷。
+本页按正式门验收，不另立任务清单；唯一有界九包见[总计划](remaining-gap-closure-plan.md)。身份/分母只见[基线](handoffs/current-stable-baseline.md)。本轮执行Docs/Ledger清理及工具验证，没有生产发布或GenProto full；下表有限成果和33失败分账属于历史，不冒充本轮回读原物。未证项表示须实际验收或依诊断修复，不预判均为生产缺陷。
 
 ## 现行适用性
 
@@ -29,11 +29,11 @@
 | 7C / E2E-09 | 两轮各3STA、36帧零差、各joined6 | 全适用架构/配置、持续并发/重复关闭/退出及完整资源/线程/callback合同；不重复领取同一有限场景 | R2/R6/R9，自主 |
 | 历史§9/完整Ledger/P0 | 现有有限Closed/Satisfied、生产身份与原证据保留 | 所有生产范围最终状态/证据、逐文件追溯与偏差、全部适用ABI/差分/E2E/P0同时满足；才取得交付替换资格 | R9，不能靠文档更新关闭 |
 
-两MILCMD required与parent仍 **Blocked**，`parentBlocked=true`、`c5Satisfied=false`、`stage4Closed=false`，总门 **Red**；见[显式覆盖记录](../Ledger/current-user-scope-overrides.json)。
+两MILCMD required与parent仍 **Blocked**，`parentBlocked=true`、`c5Satisfied=false`、`stage4Closed=false`，总门 **Red**；用户范围以[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)为唯一架构决议；驻留与runtime分别归DEC-0004、DEC-0006。已清理overlay不再作为状态或合同来源。
 
 ## 33项失败分账
 
-下表保留既有只读审计按 `artifacts/sandbox-readback/dispatcher-fixed-full/Results/dispatcher-fixed-full.trx` 类名/参数行、Failed条目及选定错误/调用栈的归并；本次再次直接回读RunID及Counters/退出码，未重新逐条复核33项。当前full为1616/1583pass/33fail/0skip，同3F291生产身份，不是本轮重跑：
+下表保留既有只读审计按 `artifacts/sandbox-readback/dispatcher-fixed-full/Results/dispatcher-fixed-full.trx` 类名/参数行、Failed条目及选定错误/调用栈的归并；本轮未重新回读历史运行原物或逐条复核33项。历史full为1616/1583pass/33fail/0skip，绑定当时3F291生产身份，不是当前full或本轮重跑：
 
 | 类别 | 数量 | 既有审计层次 / 后续处理 |
 |---|---:|---|
@@ -49,4 +49,4 @@
 ## 完成标准与来源
 
 [总计划七阶段](remaining-gap-closure-plan.md#七阶段正式完成条款保留不以导航或有限green代替)、[A/B/C及消费者合同](plan-module-contracts.md)、[E2E逐项合同](e2e-executable-contracts.md)、[测试完成定义](testing-comparison-and-acceptance.md#12-完成定义)、[Ledger完成定义](ledger-records-and-acceptance.md#11-完成定义)与[历史§9追溯](governance-authority-traceability.md)均保持，不因本矩阵合包降标准。
-最新40/40仅startup smoke，不给旧full改run；GenProto46/46是此前源码回归，后续C5 audit不是新testfull。历史原文/失败/golden见[隔离索引](history-index.md)，不全局替换。
+历史40/40仅startup smoke，不给旧full改run；GenProto46/46与后续C5 audit均非本轮通过。当前仅做GenProto最小构建及清理工具验证，不运行full；历史GUID依赖尚未恢复。历史原文/失败/golden见[隔离索引](history-index.md)，不全局替换。

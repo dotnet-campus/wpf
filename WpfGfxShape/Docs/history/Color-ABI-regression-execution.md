@@ -48,6 +48,6 @@ GenProto 四失败：ConsumerAssertionTests.WhenRegeneratedProtocolDeclarationsA
 
 新完整归档 `../../GenProtoEvidence/delivery-6a03b29edb064c22a50b7b1985affa62/report.json`，SHA256 `1274062D5CB9C18ED1644F26D269B5193B75E9478AB519FCC818657621D85107`；测量程序集SHA256 `D695CE5E9B82C7376A22773EFC873D040A8CB8F5F2804C58AFFFAAE53F1EBB64`，.NET10.0.13/X64。source report/hash与嵌入报告、Ledger snapshots均实际生成，生产SHA773945…不变。
 
-根因证据：旧closure-fc375…仍保留6 mismatch，指向当前缺失delivery-3e43…及其source树；并非已证内容篡改，也不能证明是移动或root错。当前root正确，独立生成恢复可测映射；不造旧原物、不改旧hash。移除归档测试硬编码ordinary4212/0与虚假publishSucceeded声明；固定名历史COM TRX实际254项，改记historicalComRun而非full。closure新增sourceReportHash严格校验和具体ID/路径诊断，未降低required。详情、确切缺失历史文件及最终证据见[独立恢复记录](../../../Docs/investigations/genproto-evidence-recovery.md)。
+根因证据：旧closure-fc375…仍保留6 mismatch，指向当前缺失delivery-3e43…及其source树；并非已证内容篡改，也不能证明是移动或root错。当前root正确，独立生成恢复可测映射；不造旧原物、不改旧hash。移除归档测试硬编码ordinary4212/0与虚假publishSucceeded声明；固定名历史COM TRX实际254项，改记historicalComRun而非full。closure新增sourceReportHash严格校验和具体ID/路径诊断，未降低required。详情、确切缺失历史文件及最终证据见[独立恢复记录（已按用户清理；仅留说明）](../history-index.md)。
 
 28/28仅有限验证，历史authority/ARM64真实输入、完整physical闭包继续Blocked，stage4Closed=false；七阶段、四外部input、DEC-0004进程驻留决议不变。

@@ -21,3 +21,5 @@
 - AOT-safe COM-like vtable/object。
 
 上述不得在没有官方和运行证据时标记 Accepted。
+
+重复scope overlay已归并DEC-0004/0005/0006并删除；不再重建。旧有限验收JSON和部分过程报告已清理，链接由清理工具修复到决议或清理索引。历史机器Satisfied不是当前通过；GenProto full尚未恢复，整体生产未完成。

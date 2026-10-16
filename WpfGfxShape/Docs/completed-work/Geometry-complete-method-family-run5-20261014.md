@@ -57,7 +57,7 @@
 
 ## Closed/Open与续接
 
-- **有限Closed**：本SHA几何12项公开导出及上述12场景真实原版/候选差分；run3的nonfinite/curves Red已由新产物有限证据取代。旧[WIP页](../investigations/geometry-family-wip.md)留作历史，未抹除失败记录。
+- **有限Closed**：本SHA几何12项公开导出及上述12场景真实原版/候选差分；run3的nonfinite/curves Red已由新产物有限证据取代。旧[WIP页（已清理；合同/说明）](../history-index.md)留作历史，未抹除失败记录。
 - **Open**：strict26缺项、COM full32失败、全部架构/配置/真实PresentationCore消费者、DLL完整资源/初始化/卸载支持、复杂glyph字体依赖及整项目生产闭包。没有本SHA独立related全套报告时，不把旧related861/861或Media2/2拼接为本SHA结果。
 - 旧软件Draw run3候选E6E8FBCD…的4/4仅因果有限Green，完整命令资源中途失败/关闭无泄漏仍Open；历史38清单不覆写。
 - 下一代理正在推进composition锁/事件3项与channel消息通知4项完整批次；当前仅Active，未实读最终产物，不猜Missing19或结果。

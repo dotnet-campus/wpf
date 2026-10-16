@@ -24,7 +24,7 @@ ShaderEffect.cpp两阶段合同 → GeneratedHardwareShaderSampler新增Software
 证据 `handoffs/completed-work/S-20261013-SAMPLER-PROTOCOL-BASELINE-REVALIDATION.md`：普通4197/4197；COM1275/25/1300，0跳过/abort。SHA BB8B9B9B504C8903275C4C98D4F28119359201B79F2A339D3CFF96457B967934，RunID c4f48c60-b6a8-4100-b5b1-a736be341dd7。24项glyph像素失败根因未确认，另1项既有FLOAT57/450。公开WhenPublic*无失败；不沿用历史锁屏8失败。GeneratedHardwareShaderSampler仍仅D3DImage、None tile、opacity1、正轴对齐；普通ImageBrush/VisualBrush/BitmapCacheBrush通用realization未交付，阶段4 Active。
 
 > 本文只记录当前状态和已确认事实，不记录逐轮增量、历史测试数字或下一步任务。
-> 当前工作入口见 [`next-session-handoff.md`](../../next-session-handoff.md)，剩余缺口顺序见 [`remaining-gap-closure-plan.md`](../../remaining-gap-closure-plan.md)，新完成历史见 [`handoffs/completed-work/`](../../handoffs/completed-work/)，旧完成归档保留在 [`handoffs/progress-completed-work.md`](../../handoffs/progress-completed-work.md)。
+> 当前工作入口见 [`next-session-handoff.md`](../../next-session-handoff.md)，剩余缺口顺序见 [`remaining-gap-closure-plan.md`](../../remaining-gap-closure-plan.md)，新完成历史见 [`handoffs/completed-work/`](../../handoffs/completed-work/)，旧完成归档保留在 [`handoffs/progress-completed-work.md`（已清理；合同/说明）](../../history-index.md)。
 
 ## 当前Shader映射：真实公开pass-through已验收，完整族Partial
 

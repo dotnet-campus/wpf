@@ -29,4 +29,4 @@
 ## 总门与历史
 
 C5完整实际闭包、D4及x86/x64全部正式ABI/寿命/七阶段/E2E/strict/full仍未满；两个required/parent Blocked，stage4Closed=false，总门Red。移除ARM64/旧patch/卸载请求没有将其它门降级。
-旧“四类外部输入”、10.0.12唯一目标及ARM64请求在[历史索引](history-index.md)下仅保留当时身份，不作现行交付清单。本轮未改生产/测试/配置、未构建发布测试。
+旧“四类外部输入”、10.0.12唯一目标及ARM64请求在[历史索引](history-index.md)下仅保留当时身份，不作现行交付清单。本轮仅清理Docs/Ledger并验证清理工具，没有生产发布或GenProto full；历史机器验收不是当前证据。

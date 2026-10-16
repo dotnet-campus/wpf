@@ -11,8 +11,8 @@
 - 每个文件只记录一个可独立验证的完成切片，包括原生证据范围、托管差集或修改、所有权与错误语义、测试和构建结果。
 - 历史文件创建后保持不可变；只允许修正明确笔误，并在文件内记录修正原因。
 - 不要求维护集中式逐项索引；需要历史时按目录文件名检索，避免 README 再次增长为长历史文档。
-- 旧归档 [`../progress-completed-work.md`](../progress-completed-work.md) 保留原位作为冻结历史，不拆分、不迁移、不再追加。
-- HW render-target 旧专题历史 [`../progress-hw-rendertarget.md`](../progress-hw-rendertarget.md) 同样保留，不把新完成事实继续写入其中。
+- 旧归档 [`../progress-completed-work.md`（已清理；合同/说明）](../../history-index.md) 已按用户清理，链接仅为清理说明，不重建。
+- HW render-target 旧专题历史 [`../progress-hw-rendertarget.md`（已清理；合同/说明）](../../history-index.md) 同样已清理，不保留竞争汇编。
 
 ## 单文件建议结构
 

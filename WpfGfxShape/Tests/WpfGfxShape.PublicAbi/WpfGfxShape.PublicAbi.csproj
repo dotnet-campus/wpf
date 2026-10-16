@@ -8,7 +8,6 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="ReferenceData/projection-glyph-reference.json" Link="ReferenceData/projection-glyph-reference.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="../../artifacts/sandbox-readback/tile-reference/Results/9d7ee645fe184bd68adec9417170b00c/report.json" Link="ReferenceData/tile-reference.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="../../../src/Microsoft.DotNet.Wpf/src/WpfGfx/include/wgx_sdk_version.h" Link="Contracts/wgx_sdk_version.h" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="../../../src/Microsoft.DotNet.Wpf/src/WpfGfx/core/dll/wpfgfx.def" Link="Contracts/wpfgfx.def" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />

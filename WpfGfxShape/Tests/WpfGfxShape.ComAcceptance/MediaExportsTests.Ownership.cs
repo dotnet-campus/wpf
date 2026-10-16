@@ -50,6 +50,7 @@ public sealed unsafe partial class MediaExportsTests
         Release(queried);
         Stage("beforeInitialSnapshot");
         uint before = Snapshot(), after = 0;
+        Assert.AreEqual(1u, before);
         int sent = int.MinValue;
         int initialized = ((delegate* unmanaged[Stdcall]<int, int>)NativeLibrary.GetExport(module, "MilCompositionEngine_InitializePartitionManager"))(0);
         Assert.AreEqual(0, initialized);
@@ -76,6 +77,7 @@ public sealed unsafe partial class MediaExportsTests
             }
             Stage("beforeTransportAddRef");
             uint transportReferences = addRef(source.Media);
+            Assert.AreEqual(2u, transportReferences);
             calls.Add(new { operation = "transportAddRef", references = transportReferences });
             Stage("beforeSend");
             sent = send(resource, source.Media, channel, 0);
@@ -86,7 +88,7 @@ public sealed unsafe partial class MediaExportsTests
                 Stage("beforeRejectedTransportRelease");
                 calls.Add(new { operation = "rejectedTransportRelease", references = release(source.Media) });
             }
-            if (scenario == "RejectedSend") Assert.IsTrue(sent < 0);
+            if (scenario == "RejectedSend") Assert.AreEqual(unchecked((int)0x80070057), sent);
             else Assert.AreEqual(0, sent);
             if (scenario == "CommittedDestroy")
             {

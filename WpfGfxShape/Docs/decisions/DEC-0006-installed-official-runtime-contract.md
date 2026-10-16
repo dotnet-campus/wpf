@@ -9,4 +9,4 @@
 - 原版/候选须分别记录 runtime、PresentationCore/WindowsBase、native 路径/版本/SHA、进程架构及配置；完整 runtime 不等于只复制一个 DLL。复用已安装官方包，不要求购买或预设两架构均已就绪。
 - 当前版本解释覆盖所有现行文档及其历史承接中“10.0.12 唯一目标”“待澄清 patch”“必须外部提供 10.0.12”的旧说法，不覆盖其他 ABI/寿命/E2E/strict/full 完成条件。
 
-原Ledger外部版本字段由[显式范围覆盖](../../Ledger/current-user-scope-overrides.json)解释，保留原值/失败，不偷偷Satisfied。来源与路径审计：[windowsdesktop-version-provenance](../windowsdesktop-version-provenance.md)。架构范围见 DEC-0005；模块驻留见 DEC-0004。本次仅文档决议，无新构建、发布或测试。
+原 Ledger 的版本合同直接由本决议解释；重复 scope overlay 已归并删除，旧运行结果不构成当前 Satisfied。来源与路径审计：[windowsdesktop-version-provenance](../windowsdesktop-version-provenance.md)。架构范围见 DEC-0005；模块驻留见 DEC-0004。本次仅文档决议，无新构建、发布或测试。

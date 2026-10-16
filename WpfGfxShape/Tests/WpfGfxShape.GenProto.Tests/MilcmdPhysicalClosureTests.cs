@@ -41,9 +41,9 @@ public class MilcmdPhysicalClosureTests
         string[] extensions = [".cs", ".cpp", ".c", ".h", ".hpp", ".inl", ".w", ".xml", ".xsd", ".rsp", ".proj", ".vcxproj", ".csproj", ".props", ".targets", ".cmd", ".pl", ".rc", ".def", ".inc"];
         // Retain the original audit envelope without recursively enrolling unrelated new files.
         using var baseline = JsonDocument.Parse(File.ReadAllText(Full("WpfGfxShape/Investigations/GenProtoEvidence/milcmd-physical-05f3d6983cde4339b77bcf1641a2dc50/source-manifest.json")));
-        var files = baseline.RootElement.GetProperty("files").EnumerateArray().Select(f => Full(f.GetProperty("path").GetString() == "WpfGfxShape/Code/WpfGfxShape/Class1.cs"
-            ? "WpfGfxShape/Tests/ReferenceData/GenProto/EmptyClass1.cs"
-            : f.GetProperty("path").GetString()!)).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var files = baseline.RootElement.GetProperty("files").EnumerateArray()
+            .Where(f => f.GetProperty("path").GetString() != "WpfGfxShape/Code/WpfGfxShape/Class1.cs")
+            .Select(f => Full(f.GetProperty("path").GetString()!)).ToHashSet(StringComparer.OrdinalIgnoreCase);
         foreach (var entry in entryFiles) files.Add(Full(entry.path));
         var lookup = files.GroupBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key!, g => g.ToArray(), StringComparer.OrdinalIgnoreCase);
         var queue = new Queue<string>(files);

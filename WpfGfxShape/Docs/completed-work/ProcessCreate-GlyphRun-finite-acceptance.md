@@ -42,7 +42,7 @@ GenProto **34** 为本轮实际日志证据，并非新 TRX；不套用旧 RunID
 
 ## source → dispatch → consumer → physical 边界
 
-[Ledger 追加记录](../../Ledger/processcreate-factory-evidence-20261015.md)关联有限 native factory source、GeneratedValueResources / GeneratedProtocol dispatch、21 拒绝、76 case 与 ordinary GlyphRun 特例，再指向上述真实报告。
+[Ledger 追加记录（已清理；合同/说明）](../history-index.md)关联有限 native factory source、GeneratedValueResources / GeneratedProtocol dispatch、21 拒绝、76 case 与 ordinary GlyphRun 特例，再指向上述真实报告。
 这是有限签名与物理映射，不是全部 requiredSatisfied，不宣称所有 physical records、独立 field/enum/pack/size、producer/consumer 或 stage4Closed 已满足。GenProto 34 不能替代全 required 逐条裁决；最终同 SHA strict 报告仍缺，不用历史代填。
 
 ## 唯一下一自主生产模块与正式门

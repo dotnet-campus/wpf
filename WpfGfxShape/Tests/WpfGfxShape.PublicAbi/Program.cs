@@ -10,6 +10,7 @@ internal static unsafe partial class Program
     private static nint module;
     private static uint sdkVersion;
     private static bool lifecyclePassed;
+    private static string? projectionGlyphEvidenceInput;
 
     [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern nint LoadLibraryExW(string path, nint file, uint flags);
@@ -26,6 +27,8 @@ internal static unsafe partial class Program
         string results = Path.Combine(AppContext.BaseDirectory, "Results", run);
         Directory.CreateDirectory(results);
         string mode = args.Length == 0 ? "candidate" : args[0];
+        projectionGlyphEvidenceInput = args.Length > 1 && args[1] != "perf-async"
+            ? Path.GetFullPath(args[1], AppContext.BaseDirectory) : null;
         string path = "";
         string[] required = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "Contracts", "wpfgfx.def"))
             .SkipWhile(line => line.Trim() != "EXPORTS").Skip(1)
@@ -85,6 +88,8 @@ internal static unsafe partial class Program
             // NativeAOT unload is not supported by this test contract; process exit is explicit, not an unload claim.
             File.WriteAllText(Path.Combine(results, "report.json"), JsonSerializer.Serialize(new
             {
+                SchemaVersion = 1, Runtime = RuntimeInformation.FrameworkDescription,
+                OriginalSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(ReferencePath()))),
                 RunId = run, Mode = mode, Path = path, Sha256 = sha,
                 Version = File.Exists(path) ? FileVersionInfo.GetVersionInfo(path).FileVersion : null,
                 Architecture = RuntimeInformation.ProcessArchitecture.ToString(), Required = required, Exports = exports,

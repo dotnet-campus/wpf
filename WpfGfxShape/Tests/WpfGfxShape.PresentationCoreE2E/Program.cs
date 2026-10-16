@@ -290,6 +290,7 @@ internal static partial class Program
 
     private static int CompareImages()
     {
+        ValidateBaseline(typeof(System.Windows.Media.Visual).Assembly.Location);
         string root = AppContext.BaseDirectory;
         var results = new List<object>();
         bool passed = true;
@@ -312,6 +313,13 @@ internal static partial class Program
     private static void ValidateBaseline(string pcPath)
     {
         using JsonDocument baseline = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Baseline", "result.json")));
+        var oracle = baseline.RootElement;
+        using var current = JsonDocument.Parse(JsonSerializer.Serialize(new { width = 32, height = 32, dpi = 96, format = "Pbgra32", threshold = 0, seed = 0 }));
+        if (oracle.GetProperty("schemaVersion").GetInt32() != 1
+            || oracle.GetProperty("role").GetString() != "original"
+            || oracle.GetProperty("runtime").GetString() != RuntimeInformation.FrameworkDescription
+            || !JsonElement.DeepEquals(oracle.GetProperty("input"), current.RootElement))
+            throw new InvalidOperationException("Original schema, input or runtime differs.");
         if (baseline.RootElement.GetProperty("status").GetString() != "Green")
             throw new InvalidOperationException("Original did not pass.");
         using FileStream stream = File.OpenRead(pcPath);
@@ -321,6 +329,7 @@ internal static partial class Program
 
     private static int CompareFiles()
     {
+        ValidateBaseline(typeof(System.Windows.Media.Visual).Assembly.Location);
         string root = Path.Combine(AppContext.BaseDirectory, "Results");
         Directory.CreateDirectory(Path.Combine(root, "diff"));
         string originalPath = Path.Combine(AppContext.BaseDirectory, "Baseline", "pixels.pbgra32");

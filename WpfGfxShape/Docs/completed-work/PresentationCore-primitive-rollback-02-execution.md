@@ -43,7 +43,7 @@
 
 两个identity均明确为B9CC DLL；两份TRX ResultSummary均Failed。related筛选为BitmapRenderTargetTests、Geometry或Pen，不与旧765/765或1248分母拼接。full计数虽与历史773945相同，本次身份关联来自新TRX与identity，不是继承旧结果。
 普通Tests既有4224 pass / 1 fail / 4225（指定10.0.12 runtime缺失）及GenProto 28/28为各自独立证据，不是本次B9CC同次回归。
-GenProto [TRX](../../Tests/WpfGfxShape.GenProto.Tests/TestResults/lindexi_DESKTOP-51A5UGG_2026-10-15_10_51_03_net10.0.trx)、[delivery报告](../../Investigations/GenProtoEvidence/delivery-6a03b29edb064c22a50b7b1985affa62/report.json)与[恢复记录](../investigations/active/genproto-evidence-recovery.md)保留；sourceWorkingTree=NotInspected、stage4Closed=false，旧delivery缺物不伪造恢复成功。
+GenProto [TRX](../../Tests/WpfGfxShape.GenProto.Tests/TestResults/lindexi_DESKTOP-51A5UGG_2026-10-15_10_51_03_net10.0.trx)、[delivery报告](../../Investigations/GenProtoEvidence/delivery-6a03b29edb064c22a50b7b1985affa62/report.json)与[恢复记录（已清理；合同/说明）](../history-index.md)保留；sourceWorkingTree=NotInspected、stage4Closed=false，旧delivery缺物不伪造恢复成功。
 
 ## 独立triangle对照的时间边界
 

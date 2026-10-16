@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.Json;
-using System.Xml.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -10,7 +9,7 @@ namespace WpfGfxShape.GenProto.Tests;
 [TestClass]
 public class RequiredIntegrationAuditTests
 {
-    /// <summary>Verifies complete regeneration artifacts and independently executed media ownership results without promoting parent gates.</summary>
+    /// <summary>Verifies regeneration contracts only; real media ownership runs in COM acceptance.</summary>
     [TestMethod]
     public void WhenRequiredDifferencesAreIntegratedThenRawArtifactsAndFiniteScopesAreVerified()
     {
@@ -62,53 +61,9 @@ public class RequiredIntegrationAuditTests
             equivalentCount++;
             differences.Add(new { path = Relative(baseline), generatedSha256 = Hash(generated), baselineSha256 = Hash(baseline), diffSha256 = Hash(diff), exact, newlineOnly, semantic, leavesRead = leaves });
         }
-        var media = new List<object>();
-        var runs = new List<object>();
-        foreach (bool candidate in new[] { true, false })
-        {
-            string side = candidate ? "candidate" : "reference";
-            string directory = Full("WpfGfxShape/Tests/ReferenceData/MediaOwnership/" + side + "-ownership");
-            string trx = Path.Combine(directory, "TestResults", side + "-ownership.trx");
-            var document = XDocument.Load(trx);
-            var counters = document.Descendants().Single(e => e.Name.LocalName == "Counters");
-            Assert.AreEqual(3, (int?)counters.Attribute("total"));
-            Assert.AreEqual(3, (int?)counters.Attribute("passed"));
-            Assert.AreEqual(0, (int?)counters.Attribute("failed"));
-            runs.Add(new { path = Relative(trx), sha256 = Hash(trx), runId = (string?)document.Root!.Attribute("id"), passed = 3 });
-            foreach (string scenario in new[] { "RejectedSend", "UncommittedDestroy", "CommittedDestroy" })
-            {
-                string file = Path.Combine(directory, "Results", $"required-media-{candidate}-{scenario}.json");
-                using var json = JsonDocument.Parse(File.ReadAllText(file));
-                var item = json.RootElement;
-                Assert.AreEqual(1u, item.GetProperty("before").GetUInt32());
-                Assert.AreEqual(1u, item.GetProperty("after").GetUInt32());
-                Assert.IsTrue(item.GetProperty("balanced").GetBoolean());
-                Assert.IsFalse(item.GetProperty("synchronousTransport").GetBoolean());
-                Assert.AreEqual(scenario == "RejectedSend" ? unchecked((int)0x80070057) : 0, item.GetProperty("sent").GetInt32());
-                var transport = item.GetProperty("calls").EnumerateArray().Single(c => c.GetProperty("operation").GetString() == "transportAddRef");
-                Assert.AreEqual(2u, transport.GetProperty("references").GetUInt32());
-                string progress = Path.Combine(directory, "Results", $"required-progress-{candidate}-{scenario}.json");
-                using var stage = JsonDocument.Parse(File.ReadAllText(progress));
-                Assert.AreEqual("afterShutdownAndRootRelease", stage.RootElement.GetProperty("operation").GetString());
-                media.Add(new { path = Relative(file), sha256 = Hash(file), leavesRead = ReadLeaves(item), progressSha256 = Hash(progress), data = item.Clone() });
-            }
-        }
         var required = File.ReadLines(Full("WpfGfxShape/Ledger/evidence.jsonl")).Select(l => JsonSerializer.Deserialize<JsonElement>(l))
             .Where(e => e.GetProperty("evidenceId").GetString() is "EVID-GENPROTO-MILCMD-CLOSURE" or "EVID-GENPROTO-MILCMD-REGEN-DIFF").ToArray();
         Assert.AreEqual(2, required.Length);
-        string destination = Full("WpfGfxShape/Investigations/GenProtoEvidence/required-integration");
-        Directory.CreateDirectory(destination);
-        File.WriteAllText(Path.Combine(destination, "report.json"), JsonSerializer.Serialize(new
-        {
-            executed = true, artifacts, differences, outputs = differences.Count, exactCount, equivalentCount, media, runs, required,
-            testSourceSha256 = Hash(Full("WpfGfxShape/Tests/WpfGfxShape.GenProto.Tests/RequiredIntegrationAuditTests.cs")),
-            testAssemblySha256 = Hash(typeof(RequiredIntegrationAuditTests).Assembly.Location),
-            regenerationScope = "Original Resources.rsp outputs only; full text and Roslyn tokens verified. No ProtocolFingerprint or historical hash equality claim.",
-            mediaScope = "CrossThread public API: rejected transport reference and committed/implicitly flushed destroy balance while caller root stays alive. Not a queue-discard or final destruction oracle.",
-            autonomousRemaining = new[] { "transport packet-specific execution", "media queue-discard independent oracle", "full required physical/assertion mapping reconciliation" },
-            externalRemaining = new[] { "historical generation/build binding", "ARM64 compiler/runtime" },
-            allBlockedExternal = false, parentBlocked = true, stage4Closed = false
-        }, new JsonSerializerOptions { WriteIndented = true }));
-        Console.WriteLine("Required integration: " + destination);
+
     }
 }
