@@ -28,7 +28,7 @@
 
 ### UCE
 
-既有有限 FIFO 像素、首错、disconnect/channel owning、failed transport 释放、FIFO drain/OS 退出、跨 channel callback/initref 证据不自动关闭独立取消及全部异常注入。命令传输 PE 闭包不等于所有失败引用清理。
+既有有限FIFO像素、首错、disconnect/channel owning、failed transport释放、FIFO drain/OS退出、跨channel callback/initref证据不自动关闭全部正式可达异常清理。disconnect不是独立cancel，不能凭空增加取消门；只有具名原生API合同确有取消语义才逐项验收。命令传输PE闭包不等于所有失败引用清理，任意核内OOM/QI未知也不自动升级必需门。
 
 ### DoubleBufferedBitmap / D3DImage
 

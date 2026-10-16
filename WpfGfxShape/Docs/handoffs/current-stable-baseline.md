@@ -1,32 +1,42 @@
-# 唯一当前基线：C5当前源码已测、风险与正式门分离
+# 唯一当前基线：有限成果可复用，正式总门仍 Red
 
-> 当前合同覆盖：[DEC-0005](../decisions/DEC-0005-x86-x64-acceptance-scope.md)正式仅x86/x64全部矩阵；ARM64编译/布局/运行及工具链/实机为NotApplicable-UserScopeDecision，非Passed，不计阻塞。下文ARM64 MissingExecution/MSB8020及原NA=0统计保留历史原义。10.0.12为历史路径绑定，未证用户指定，精确patch口径待澄清，见[版本审计](../windowsdesktop-version-provenance.md)，不再作为永久必需用户包。Ledger原值未改；C5/两required及parent仍因x86/x64完整条件未满Blocked，stage4Closed=false，总门Red。本次未执行任何构建发布测试。
+## 合同
 
-## 最新身份及边界，覆盖以下旧轮
+Windows x86/x64 全配置正式门保留；ARM64 全部验收为 NotApplicable-UserScopeDecision，非 Passed（DEC-0005）。DLL 进程驻留，无 unload/reload/热替换需求（DEC-0004）。
+采用已安装官方完整 runtime，同版同架构独立原版/候选对照（[DEC-0006](../decisions/DEC-0006-installed-official-runtime-contract.md)）；10.0.12 只属历史采集身份，不再待澄清或索取。
+本轮仅过程清理入口编译/实际调用与 Docs 收口，没有生产发布或全量测试；正式生产与 Ledger 保留。清理事实、最小保留输入及删除路径历史解释见[交付记录](../completed-work/process-cleanup.md)。
 
-最终audit程序集SHA `F2590E8CFABD36E4DCE7844CC9467379D2460F430A984D98B4A8AF4D285382FD`，runUtc `2026-10-16T05:25:13.4747388+00:00`，X64；Release build 0 warning/0 error、自包含audit发布与沙箱运行成功。生成报告完整重新解析并逐行比较17,377记录通过；summary完整回读，输入身份216项。无源码未测尾改。
+## 生产与真实回归身份
 
-正式9入口不变；333风险=13适用build声明已证+92 build未知+227 include未知+1缺项目，全部333源行定位，NA=0；319未知不冒称外部或Excluded。原readiness/doneRule不要求保守333穷尽，撤销旧额外门但保留原表及正式Blocked。每个required必要证据/充分性/gap只见[唯一详档](../completed-work/GenProto-C5-final-adjudication.md)，机器表不建立第二份。
+生产 SHA256：`3F291D3E6EF3A74688B8FDCBF124B725DC115D165FAE94DB9B2010BFDCE2570D`。
+下列路径相对于 `WpfGfxShape/artifacts/sandbox-readback/`，不同 run 不混绑。
 
-C5/两个required/父级Blocked、stage4Closed=false。下一仅请求bilinearspan原项目/依赖或权威生成合同及既有外部条件，不继续扫描；无已证必需生产修改。下列生产SHA、历史COM/strict及46/46身份保持，均未重跑；DLL驻留。
+| 证据 | 当前结论与边界 |
+|---|---|
+| `dispatcher-fixed-full/Results/dispatcher-fixed-full.trx` | RunID `262f277c-5f57-44d7-80a2-1ece70cba1e0`；1616 total / 1583 pass / 33 fail / 0 skip，失败退出2；不是最新 startup smoke 的 full |
+| `dispatcher-final-strict/Results/05045b688eca4e9c9ee8b735ed0efe65/report.json` | 同上述生产 SHA；Missing=`MilPlayer_Create, MilPlayer_Process`，Extra=0；严格 PE/总体失败，有限 LifecyclePassed=true，不等于全 ABI |
+| `nativecaller-routing-smoke/TestResults/nativecaller-routing-smoke.trx` | 最新入口启动 smoke，RunID `123659bb-331c-4529-bca2-39cd9346085a`，40/40；只证明路径/身份/EventProxy 选定范围，不是 full/E2E 重跑 |
+| `dispatcher-fixed-compare/Results/dispatcher-comparison.json` | 两轮各3 STA、36帧 threshold=0 零差，两角色各 joined=6；仅该有限 E2E-09 |
 
-## 以下旧轮数字与穷尽任务仅作历史
+本次只读审计回读 full 的 RunID/Counters/失败退出码、strict 的 SHA/Missing/Extra/LifecyclePassed 与 smoke RunID/Counters；33 类归并沿用现行矩阵的既有审计，未重新逐条验证全部失败或机器解析 full。比较 JSON 只抽读，不据此声称重新核验全部帧或退出事件。所核材料未发现替代本基线的更晚完整运行；不据目录名“final/latest”推断新结果。核验定位见[本轮记录](../documentation-readonly-audit.md)。
+生产身份与有限场景链亦见[多 Dispatcher 完成档](../completed-work/PresentationCore-multidispatcher-E2E09-finite-acceptance.md)。
 
-> 当前覆盖本页旧“无机器总裁决”描述：[唯一裁决](../completed-work/GenProto-C5-final-adjudication.md)。正式6+3=9；17,377是审计记录非正式边分母。105 build条件、227精确include适用性未证、1 bilinearspan原项目缺失，逐行见JSON Ordinal17045–17377；332不是已证必需生产修改，也不是全部外部。本轮独立audit最后build退出0/0警告/错误并沙箱运行完成，summary已完整回读；不是新增testfull，既有46/46与生产/COM/strict身份不变。最小精确适用边全集未证，自主全审计未完成；C5/两个required/父级Blocked、stage4Closed=false。
+## 可复用有限成果
 
-[C5 activeincludes最终清单](../completed-work/GenProto-C5-activeincludes.md)、[此前evaluation详档](../completed-work/GenProto-C5-selected-build-evaluation.md)、[原条件逐assertion裁决](../completed-work/GenProto-required-final-reconciliation.md)、[当前Ledger](../../Ledger/mediaown-required-finite-acceptance.json)。正式分母固定6 physical + 3 evidence；C5整体Blocked，不扩边分母。
+- primitive、Image10、nested16、Blur14、Shadow28、媒体4帧与既有 owning/async drain 等有限 Closed 保持，按各完成档原身份使用，不都绑定当前生产 SHA。
+- 原版/候选多 Dispatcher 上述有限场景已闭，不重领相同场景；软件成功不覆盖持续 HW、全格式、失败 refs/callback 和全架构配置。
+- NativeCaller 调试 CRT 截图是历史入口诊断。现行 MTP smoke 已 Green；旧 caller 缺 EXE/项目不列生产必需输入。详见[既有报告](../history/nativecaller-startup.md)。
 
-- 生产保持 `3F291D3E6EF3A74688B8FDCBF124B725DC115D165FAE94DB9B2010BFDCE2570D`。历史COM总1616/通过1583/失败33/跳过0，strict Missing2/player Extra0，非本轮新跑。无生产修改/publish/COMfull，DLL驻留，unload=N/A。
-- **此前源码回归（不是本次CL运行，本次未重跑）**：源码build成功；专项 `12_22_34` 原TRX 2/2，RunID `58846cbb-e699-420c-9824-099094aaf746`；full `12_22_49` 46/46/0 fail/skip，RunID `5cc712a5-0337-4877-ae59-e1a3b47623aa`，TRX SHA `D05E3204B35C2F55BED7BC65153D89E482FCA4BEFA7F8C7449E18FB396BAEB2E`。原路径均为 `Tests/WpfGfxShape.GenProto.Tests/TestResults/lindexi_DESKTOP-51A5UGG_2026-10-16_<时间>_net10.0.trx`。
-- 最终归档专项 `12_23_19` 1/1，RunID `99939695-c22a-44df-b064-1c3f9baed822`；目录 `Investigations/GenProtoEvidence/wirecompiler-delivery-ebf1bb9eb58647d2a68f5b243ce5d768/`，report SHA `6770D6733298D2A40B723A379EBD83B85A6AE80C0E951F296C111549CE4BD954`。完整机器读取C5 115221 leaves/summary11、wire12078/75并核对来源/assembly/full快照。其targeted字段为旧wire-only，不冒称最新专项。
-- 当前test assembly SHA `C11E39974E4EAC04FF714D8CB3AFC99D36F28AA432A4540C86514C099F5A2E86`，MVID `ac2ca61c-15fa-4633-baf8-b05015fda449`。SelectedEvaluationTests source SHA `A30D6F90229BBF44F43C0D1E6EB0B80B1D80874C0E628DB83AAF86B1B1E75173`；ArchiveTests source SHA `EB19E3FBBB9E0B45B2754929EDA595BE936B2D2812AE7484A0A65CCE1B4CCB13`。
-- C5 report SHA `129609D5E8953FEB424DEF7CDE3E07A0E15BA5F07AFE7EF05AF5B09DFEEA2E71`：18 native+2 generator；12 Win32/x64选定v143/14.44.35207/SDK26100路径有效，6 ARM64缺toolchain已分类。888 direct candidates/150 distinct不证明active closure；原721包络及333（332 unknown+1 RealMissing）对账实际写入并读回，不是新required。
-- 首轮full `12_17_52` 45pass/1fail因归档误选delivery目录而缺summary；按测量/归档真实分类修正并完整重验，原失败TRX保留，未skip或放宽。原333未写report已补；最终源码已测，之后仅Docs/Ledger。
-- 既有Ownership6/6、再生378输出/275 byte-exact/378所列范围等价保持有限裁决；原Resources.rsp无ProtocolFingerprint，历史binding未证。consumer/factory/x86/enum/padding结构有限Satisfied不降级。两transport packet/独立discard未证但不自动新增原required门，API功能不批准完整等价。
+## GenProto 与 C5
 
-- 原项目真实selected CL已完成：resources/uce/wpfgfx Debug/Release×Win32/x64共12配置16必要TU，v143/14.44.35207/SDK26100，CL均exit0；原物在工作区根 `artifacts/log/GenProto-C5`。原入口最终exit1是wpfgfx四配置bilinearspan引用GetTargetPath的MSB3202，不是header失败，不是完整生产build。本次只读现有原物并同步文档，没有新CL、测试或机器总裁决报告。
-- 本次16份.i实际检索及固定6 physical+3 evidence有界映射已写独立清单：core/render全部到达；resources/uce的factory/resources/data与factory正文绑定既有P/R/F签名、生成及断言。不是全部333原边逐条裁决，不以888候选或全WPF图扩门。
+最后保留源码 GenProto full **46/46**，RunID `f1dd9225-fc28-441f-954a-6f43b388b047`，TRX `Tests/WpfGfxShape.GenProto.Tests/TestResults/lindexi_DESKTOP-51A5UGG_2026-10-16_16_08_57_net10.0.trx`；本轮完整 XML 解析 counters 与全部46项结果，全 Passed，未重跑。旧12_22_49身份属于此前历史。
+后续 C5 审计 build/run 与 17,377 行完整回读比较是独立审计，不是新的 testfull。审计程序集 SHA `F2590E8CFABD36E4DCE7844CC9467379D2460F430A984D98B4A8AF4D285382FD`；原报告见[唯一详档](../completed-work/GenProto-C5-final-adjudication.md)。
+正式 6 physical+3 evidence；333 保守风险不是必须清零的新增 required，319 未知保留原表。原风险表 NA=0 不是架构适用性裁决。
+selected v143/14.44.35207/SDK26100：12 配置16必要 TU 预处理已真实完成；不是完整对象编译/链接。bilinearspan 四个 x86/x64 配置 GetTargetPath 为 MSB3202，缺原项目来源。
+C1–C4/D1–D3、再生378/275 byte-exact/所列378等价、consumer/factory、x86 CLR/Shared 有限成果保持；D4 历史 binding 与 C5 完整实际 physical-record 闭包未满。
 
-仍可自主执行的正式条件：C5所选project/import/属性/include适用边→既有record/assertion的剩余逐项审计，未到达不Excluded，未知不一律external。真正资料边界是确缺bilinearspan原项目/依赖或权威生成合同，以及D4历史binding；前者阻断原C5完整物理引用记录，后者不能用当前再生替代。补件统一见外部页。不再重复采集同一16 TU或全量重跑，不声称自主余项零。
+## 当前未满
 
-历史authority、ARM64、full10.0.12、官方player协议及DWM/HW可见control前置仍缺。C5未足、两个required及父级Blocked，stage4Closed=false，用户全目标持续、总门Red。
+C5/两个required/parent **Blocked**，stage4Closed=false，总门 **Red**；原ARM64字段由[Ledger范围覆盖](../../Ledger/current-user-scope-overrides.json)显式登记NotApplicable-UserScopeDecision，不改Satisfied。
+普通历史 4224/1/4225 的旧 runtime 绝对路径加载失败现归自主测试工程修复，不再外部等待；本轮未修代码，见[版本来源](../windowsdesktop-version-provenance.md)。
+全项目仍有自主实现/验收，见[唯一九包](../remaining-gap-closure-plan.md)与[最终矩阵](../final-acceptance-remaining-matrix.md)。文档完成不代表生产推进或正式通过。

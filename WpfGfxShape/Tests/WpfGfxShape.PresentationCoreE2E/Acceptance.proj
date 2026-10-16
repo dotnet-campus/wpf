@@ -1,0 +1,26 @@
+<Project DefaultTargets="StageComparison">
+  <PropertyGroup>
+    <Root>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)..\..\'))</Root>
+    <Package Condition="'$(Package)' == ''">$(Root)artifacts\staging\PresentationCoreE2E\</Package>
+    <ResultsDirectory Condition="'$(ResultsDirectory)' == ''">$(Root)artifacts\test-results\PresentationCoreE2E\</ResultsDirectory>
+    <FramePattern Condition="'$(FramePattern)' == ''">*.pbgra32</FramePattern>
+  </PropertyGroup>
+  <Target Name="StageComparison">
+    <Error Condition="'$(OriginalDirectory)' == '' Or '$(CandidateDirectory)' == '' Or '$(ExpectedFrameCount)' == '' Or '$(ExpectedCandidateHash)' == ''" Text="Supply independent OriginalDirectory, CandidateDirectory, ExpectedFrameCount and ExpectedCandidateHash for this acceptance run." />
+    <GetFileHash Files="$(Package)Candidate\wpfgfx_cor3.dll" Algorithm="SHA256"><Output TaskParameter="Hash" PropertyName="CandidateHash" /></GetFileHash>
+    <Error Condition="'$(CandidateHash)' != '$(ExpectedCandidateHash)'" Text="Candidate identity differs from this acceptance run." />
+    <ItemGroup>
+      <Original Include="$(OriginalDirectory)\$(FramePattern)" />
+      <Candidate Include="$(CandidateDirectory)\$(FramePattern)" />
+      <OriginalResult Include="$(OriginalDirectory)\result.json" />
+      <Previous Include="$(Package)Baseline\*.pbgra32;$(Package)ComparisonCandidate\*.pbgra32" />
+    </ItemGroup>
+    <Error Condition="'@(Original->Count())' != '$(ExpectedFrameCount)' Or '@(Candidate->Count())' != '$(ExpectedFrameCount)'" Text="Both independent roles must supply the complete expected frame set." />
+    <Delete Files="@(Previous)" />
+    <Copy SourceFiles="@(Original);@(OriginalResult)" DestinationFolder="$(Package)Baseline" />
+    <Copy SourceFiles="@(Candidate)" DestinationFolder="$(Package)ComparisonCandidate" />
+    <MakeDir Directories="$(ResultsDirectory)" />
+    <GetFileHash Files="@(Original);@(Candidate);@(OriginalResult);$(Package)Candidate\wpfgfx_cor3.dll" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="Identity" /></GetFileHash>
+    <WriteLinesToFile File="$(ResultsDirectory)input-identities.txt" Lines="@(Identity->'%(Identity) | %(FileHash)')" Overwrite="true" />
+  </Target>
+</Project>

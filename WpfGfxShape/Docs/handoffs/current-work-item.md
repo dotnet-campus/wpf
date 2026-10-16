@@ -1,23 +1,31 @@
-# 当前唯一工作项：接收确缺来源后有界复核
+# 当前唯一工作项：剩余 GenProtoEvidence 过程硬依赖治理
 
-> 最新用户范围：[DEC-0005](../decisions/DEC-0005-x86-x64-acceptance-scope.md)。正式仅x86/x64全部矩阵；ARM64编译/运行/布局、工具链/实机为NotApplicable-UserScopeDecision，不是Passed、不再补件或阻塞，无需重新批准。10.0.12精确版本未证用户指定，口径待澄清，见[唯一审计](../windowsdesktop-version-provenance.md)。以下相冲突请求仅历史；bilinearspan/完整physical-record闭包、D4等仍Blocked，parentBlocked=true、stage4Closed=false。本阶段仅Docs/只读，不改源码测试配置或Ledger，不构建发布测试。
+先读[过程清理交付](../completed-work/process-cleanup.md)与 `../../artifacts/process-cleanup/summary.json`。剩余 45,136 文件、26,551 目录、2,503,071,496 bytes；下一单独大批，不是本轮已删除。先分离固定 GUID 输入、目录动态选择、可再生输出，做最小输入迁移再有限删除；本轮不再大范围重构 GenProto。禁止重跑 46 项生成证据，读取既有 16_08_57 TRX 即可。
 
-## 最新裁决，覆盖以下旧任务
+下列生产顺序保留为后续独立范围，不覆盖当前过程清理优先级。
 
-当前audit最终build/run及17,377行报告完整回读比较通过；333风险=13已证build声明+92 build未知+227 include未知+1缺项目，NA=0。原正式6 physical+3 evidence不变。依据group readiness/doneRule及evidence原文，333穷尽不是额外blocking门；未知保留风险原表，不判排除，不必机械清零。完整依据、每个required的充分性与gap见[唯一详档](../completed-work/GenProto-C5-final-adjudication.md)。
+## 合同与边界
 
-本地没有已证必需的生产方法修改，不再派逐边扫描任务。下一有界动作：取得原bilinearspan.vcxproj及实际依赖/来源版本或权威生成合同，仅复核原GUID、既有四配置引用及record归属。缺历史binding、ARM64工具链/真实机器、合法full10.0.12、官方player协议和HW可观测会话权限按[外部页](../all-completion-external-prerequisites.md)交付，不能凭空满足。C5/两个required/父级仍Blocked、stage4Closed=false；不是整体完成。最终源码已测，之后仅Docs/Ledger，生产未改、未生产publish/COMfull、46未重跑、DLL驻留。
+- 正式仅 Windows x86/x64 全配置；ARM64 为 NotApplicable-UserScopeDecision，非 Passed，见 [DEC-0005](../decisions/DEC-0005-x86-x64-acceptance-scope.md)。
+- 已安装官方完整 runtime、同版同架构独立原版/候选对照，见 [DEC-0006](../decisions/DEC-0006-installed-official-runtime-contract.md)。不再询问是否必须 10.0.12。
+- DLL 进程驻留，卸载/重载/热替换不适用；真实资源清理不豁免。
+- 本轮实际编辑清理入口与 Docs，专用编译并调用清理成功；不改生产或 Ledger，不发布生产、不跑 full。下列生产工程工作未在本轮执行。
 
-## 以下旧105/227穷尽任务已撤销，仅保留历史
+## 后续最优立即执行顺序（不是本轮已执行）
 
-> 当前以[唯一机器总裁决](../completed-work/GenProto-C5-final-adjudication.md)覆盖以下旧任务描述。17,377审计记录已实际生成回读，正式入口仍9。下一只处理JSON Ordinal17045–17377中105条build条件与227条include适用性的具体源行/配置证据；另1条bilinearspan外部缺项目。不是333个required；不再泛化全repo扫描或重采同16TU。最小精确适用边全集未证，自主全审计未完成。独立audit程序已最后build及沙箱真实运行，不称testfull。
+1. 有界修复 `Tests/WpfGfxShape.Tests/SystemVideoSampleTests.cs:27–32` 对历史 JSON `NativeDll` 的直接加载；复用官方 runtime 定位/身份校验，分离历史 golden 与运行时路径。保持原断言，不 skip、不篡改 golden。
+2. 在已安装同版官方 runtime 的 x86/x64 真实进程先专项后普通回归；分别记录 runtime/模块/架构/配置身份，消除普通 4224/1/4225 中该工程性失败，不要求旧 patch。
+3. 复用当前正式 MTP 包与原版/native control，逐类处理 33 个 HW/control 失败的前置、可观察输出与真正候选差异；原版/control 失败不等于候选已过，也不能全归环境。
+4. 按[九包总计划](../remaining-gap-closure-plan.md#当前剩余工作唯一有界清单)推进 HW A/B、D3DImage/recovery、持续媒体/寿命，再做最终全配置 ABI/strict/full/E2E。先诊断真实差集，不凭未知虚派生产方法。
+5. 并行接收[唯一外部页](../all-completion-external-prerequisites.md)三项来源，按原合同有界复核 C5/D4/player；不是停工等待所有输入。
 
-依据：[activeincludes最终清单](../completed-work/GenProto-C5-activeincludes.md)、[原条件表](../completed-work/GenProto-required-final-reconciliation.md)、[唯一基线](current-stable-baseline.md)及[Ledger](../../Ledger/mediaown-required-finite-acceptance.json)。正式6 physical+3 evidence不扩；888候选与333审计行不是新required。
+## 不重复领取
 
-已完成：原resources/uce/wpfgfx Debug/Release×Win32/x64共12配置16必要TU的CL预处理原物已存在，本次回读selected输入、结果、hash并检索16份.i。core/render头全部16份实际到达，resources/uce的factory/resources/data声明及factory正文已归属既有owner/signature/generation/consumer/assertion；具体位置只见独立详档。不再领取“尚未执行selected CL”。
+selected v143 的 12 配置 16 必要 TU 预处理已完成；不是完整 native link。bilinearspan 四配置 GetTargetPath 的 MSB3202 是确缺原项目来源，不是 header 失败。
+正式 6 physical+3 evidence 不扩；333 保守风险原表保留，不增穷尽清零门。既有 C1–C4/D1–D3、x86 CLR/Shared、consumer/factory、有限软件效果/owning/多 Dispatcher 不重领。
+当前C5完整实际闭包与D4未满，两required/parent Blocked，stage4Closed=false；[Ledger显式覆盖](../../Ledger/current-user-scope-overrides.json)只撤销ARM64/旧版本派生阻塞，不改Satisfied。
 
-仍可自主：对原适用project/import/属性/include边逐项关联evaluation、.i与既有record/assertion；当前完成的是详档所列有限边，不是全部原333裁决。未到达不能排除，不把剩未知一律归外部。只读现有材料即可继续此正式C5审计，不新增诊断项目、解析器源码、终端脚本或额外全量重跑。
+## 恢复与证据
 
-真实资料边界：wpfgfx四配置GetTargetPath已报MSB3202，缺原bilinearspan项目及依赖/权威生成合同；必要TU预处理成功，不能写成缺header。该来源不能凭空恢复，补件统一见[唯一外部页](../all-completion-external-prerequisites.md)。D4历史binding、ARM64工具链/真实环境另缺；已有原物审计未完成不是同一种外部阻塞。
-
-C1–C4/D1–D3有限Satisfied保持；C5整体及两个required/父级Blocked，stage4Closed=false，总门Red。两transport packet/独立discard未证不新增原生成required；全七阶段/ABI/寿命/E2E继续按原门，不能宣称整体完成或自主余项零。生产未改，无publish/COMfull；此前46/46不是本次CL运行，DLL驻留unload=N/A。
+当前身份只见[基线](current-stable-baseline.md)；原始材料只读。新 smoke 不是 full；GenProto 46/46 是此前源码回归，后续 C5 审计不是新的 testfull。
+本次文档维护不计生产进度，整体任务未完成。

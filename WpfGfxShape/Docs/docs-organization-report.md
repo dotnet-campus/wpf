@@ -1,6 +1,8 @@
 # Docs 实际目录整理报告
 
-本轮是文档归类，不代表生产完成；[唯一入口](next-session-handoff.md)、[状态源](handoffs/current-stable-baseline.md)、[总计划](remaining-gap-closure-plan.md)、[主题合同](plan-module-contracts.md)、[外部前置](all-completion-external-prerequisites.md)均保留。
+本页以下为历史文档归类记录，不是当前过程材料保留承诺；当前唯一整理摘要为[过程清理交付](completed-work/process-cleanup.md)，机器事实只保留 `../artifacts/process-cleanup/summary.json`。旧 eng/docs-organizer 验收路径仅历史定位，不要求恢复过程树，不复制大证据包。当前已按用户授权删除的 Investigations 旧引用以[历史索引](history-index.md)覆盖说明为准。
+
+历史当轮是文档归类，不代表生产完成；[唯一入口](next-session-handoff.md)、[状态源](handoffs/current-stable-baseline.md)、[总计划](remaining-gap-closure-plan.md)、[主题合同](plan-module-contracts.md)、[外部前置](all-completion-external-prerequisites.md)均保留。
 
 ## 分类与数量
 

@@ -13,8 +13,9 @@
 | `DEC-0003` | Accepted | 发布后 ABI 验证以托管 P/Invoke 集成测试为主，删除 C++ NativeCaller | [`DEC-0003-managed-pinvoke-abi-integration-tests.md`](DEC-0003-managed-pinvoke-abi-integration-tests.md) |
 | `DEC-0004` | Accepted（用户明确需求） | 生产DLL进程寿命驻留；unload/reload/热替换不适用 | [`DEC-0004-process-lifetime-module.md`](DEC-0004-process-lifetime-module.md) |
 | `DEC-0005` | Accepted（用户最新明确范围，无需再批准） | 正式验收仅x86/x64；ARM64为NotApplicable-UserScopeDecision | [范围决议](DEC-0005-x86-x64-acceptance-scope.md) |
+| `DEC-0006` | Accepted（用户本轮明确合同） | 已安装官方完整runtime、同版同架构独立对照；10.0.12仅历史路径，非待澄清/必需补包 | [运行时决议](DEC-0006-installed-official-runtime-contract.md) |
 
-## 尚待裁决的 P0
+## 尚待完整验收的 P0
 
 - Windows x86完整ABI/配置/E2E矩阵（[Shared发布与有限生命周期已实测](../investigations/audits/x86-shared-unload-actual-verification-20261014.md)，不是支持未知）；
 - AOT-safe COM-like vtable/object。

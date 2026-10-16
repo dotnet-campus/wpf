@@ -18,6 +18,6 @@
 | `autonomousFormalRemaining` 及原详档称 ARM64 为 formal gap | 仅该架构子句由本决议撤销；其他原条件不豁免 |
 | C5 / 两 required / parent | x86/x64 原 bilinearspan 项目来源、完整实际 physical-record 闭包及 D4 历史 binding 等仍未满，继续 **Blocked**；`parentBlocked=true`、`c5Satisfied=false`、`stage4Closed=false` 保持，总门 Red |
 
-冻结机器报告不是此次范围修订后的重新执行结果。仅文档范围覆盖，不新增或伪造运行证据。历史检索见 [隔离索引](../history-index.md)，当前矩阵见 [最终矩阵](../final-acceptance-remaining-matrix.md)。
+机器字段另有[显式范围覆盖记录](../../Ledger/current-user-scope-overrides.json)，保留原值而非偷偷Satisfied。冻结机器报告不是此次范围修订后的重新执行结果。仅文档范围覆盖，不新增或伪造运行证据。历史检索见 [隔离索引](../history-index.md)，当前矩阵见 [最终矩阵](../final-acceptance-remaining-matrix.md)。
 
 运行时精确版本的独立来源审计见 [单一详档](../windowsdesktop-version-provenance.md)；不得将 ARM64 排除误解为 x86/x64 或版本验收已经通过。

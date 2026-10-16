@@ -1,6 +1,6 @@
 # 测试策略：比较、失败、矩阵与完成定义
 
-> 最新矩阵按[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)：Debug/Release × x86/x64及全部ABI/失败/寿命/E2E/strict/full条件。下文ARM64实机/编译/布局要求全部NA-UserScopeDecision，非Passed、不阻塞；x86不能降为可选或仅有限支持结果。精确runtime patch口径见[唯一审计](windowsdesktop-version-provenance.md)，10.0.12未证用户指定，不改golden。
+> 最新矩阵按[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)：Debug/Release × x86/x64及全部ABI/失败/寿命/E2E/strict/full条件。下文ARM64实机/编译/布局要求全部NA-UserScopeDecision，非Passed、不阻塞；x86不能降为可选或仅有限支持结果。精确runtime patch口径见[唯一审计](windowsdesktop-version-provenance.md)，[DEC-0006](decisions/DEC-0006-installed-official-runtime-contract.md)明确使用已安装官方完整runtime同版同架构独立对照，10.0.12仅历史身份、不再待澄清，不改golden。
 
 [测试策略](06-testing-strategy.md)§6–14正式主题合同，不维护当前数字。
 
@@ -46,8 +46,9 @@
 
 ## 10. 平台矩阵
 
-Debug/Release × x64/ARM64；x86 支持证据取得后补全 stdcall/ESP 及完整矩阵，不由有限结果外推。
+Debug/Release × Windows x86/x64全部适用正式矩阵；x86 stdcall/ESP须真实验收，不是可选。ARM64为NotApplicable-UserScopeDecision，非Passed。
 HW/D3DImage/media 用真实设备组件；SW 有稳定 CPU-only 基线；RDP/ForceSoftware/device loss/组件缺失独立环境维度；交叉编译/PE 不代目标真实执行。
+先有可观察的original/native正常control，再判断候选像素/消费者差异；staging正确色不等于桌面观察链成功。control前置失败既不证明候选通过，也不能将整批失败全归环境或生产。当前具体分账见[验收矩阵](final-acceptance-remaining-matrix.md#33项失败分账)，本方法不维护运行数字。
 
 ## 11. 证据存储
 
@@ -78,4 +79,4 @@ probe 的加载/协议/并发/错误 DLL、symbol、PE、架构/模块路径/ide
 
 ## 14. 架构化承载
 
-ABI 按进程架构选 RID，结果按 RID 隔离。代码支持不等于实测；ARM64 在真实 Windows ARM64 运行，x86 有目标 SDK shared 支持与运行身份；有限证据不关闭全 ABI/E2E。
+ABI按x86/x64真实进程架构选RID，结果按RID隔离。代码支持不等于实测；x86已有Shared有限运行身份，不关闭全ABI/E2E；ARM64按DEC-0005不适用，不列待运行。

@@ -67,7 +67,7 @@ public class RequiredIntegrationAuditTests
         foreach (bool candidate in new[] { true, false })
         {
             string side = candidate ? "candidate" : "reference";
-            string directory = Full("WpfGfxShape/Investigations/MediaOwnershipRetry/" + side + "-ownership");
+            string directory = Full("WpfGfxShape/Tests/ReferenceData/MediaOwnership/" + side + "-ownership");
             string trx = Path.Combine(directory, "TestResults", side + "-ownership.trx");
             var document = XDocument.Load(trx);
             var counters = document.Descendants().Single(e => e.Name.LocalName == "Counters");

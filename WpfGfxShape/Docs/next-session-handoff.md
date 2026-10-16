@@ -1,21 +1,27 @@
 # 当前唯一恢复入口
 
-> 最新覆盖：[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)正式仅x86/x64全部矩阵；ARM64编译/布局/真实运行及工具链/实机不适用（不是Passed），不再阻塞或索取，无需重批。10.0.12来自历史采集资源路径，未证用户固定patch，当前版本口径待澄清，见[唯一审计](windowsdesktop-version-provenance.md)。下方旧ARM64/full10.0.12必需语句失效，历史证据保留。bilinearspan、完整physical-record闭包及D4等x86/x64未满，两required/parent仍Blocked、stage4Closed=false。
+本轮已完成[过程清理交付](completed-work/process-cleanup.md)，清理入口编译并实际调用成功；GenProto 只读完整解析既有 16_08_57 TRX，46/46，不重跑。历史文档审计记录不代表本轮授权。
 
-## 最新正式裁决（覆盖以下旧轮数字与任务）
+## 先读合同
 
-[唯一C5表/详档](completed-work/GenProto-C5-final-adjudication.md)及[Ledger](../Ledger/mediaown-required-finite-acceptance.json)已同步最终已测源码。正式6+3入口；17,377记录，333风险=13适用build声明已证+92 build条件未知+227 include未知+1原项目缺失；319未知，NA=0。完整报告17,377行已机器回读逐行比较通过。最终audit程序集SHA `F2590E8CFABD36E4DCE7844CC9467379D2460F430A984D98B4A8AF4D285382FD`，build 0警告/错误、沙箱X64运行成功；不是GenProto46或COM重跑。
+1. [执行规则](handoffs/current-execution-rules.md)：本轮授权有限过程清理与专用编译/调用；无终端脚本，不改生产/Ledger，不发布生产、不跑全量测试。
+2. [当前基线](handoffs/current-stable-baseline.md)：区分历史 full、同 SHA strict、最新 startup smoke 与 GenProto 回归，不拼运行身份。
+3. [当前工作项](handoffs/current-work-item.md)：先治理剩余 GenProtoEvidence 45,136 文件的过程硬依赖；不重领有限 Closed，不扩大本轮到生产主线。
+4. [唯一剩余总计划](remaining-gap-closure-plan.md)：九个有界完整工作包；[矩阵](final-acceptance-remaining-matrix.md)逐门记验收差集。
 
-原group readiness/doneRule要求实际生成追溯/隔离差分，不授权把保守333候选穷尽设为额外门。风险原文全部保留，不判Excluded，不假清零；撤销下文“下一必须清零105/227”的旧任务。C5/两个required/父级Blocked、stage4Closed=false。下一动作仅接收bilinearspan原项目及依赖/权威生成合同后有界复核；其余历史authority、ARM64真实环境、full10.0.12、player协议、HW可观测权限见外部页。无已证必需生产修改，不虚派扫描或生产任务。生产3F291不变，无生产publish/COMfull，DLL不卸载；无未测尾改。
+## 已生效范围
 
-## 以下为被覆盖的历史恢复描述
+- [DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)：仅 Windows x86/x64 全配置；ARM64 全部验收为 **NotApplicable-UserScopeDecision**，非 Passed，不再阻塞或索取设备。
+- [DEC-0004](decisions/DEC-0004-process-lifetime-module.md)：DLL 加载后进程驻留，无卸载/重载/热替换需求；资源、引用、线程与 callback 清理仍验收。
+- [DEC-0006](decisions/DEC-0006-installed-official-runtime-contract.md)：使用已安装官方完整 runtime，同版同架构原版/候选独立对照。10.0.12 仅历史路径身份，版本口径不再待澄清，不要求另交该版本。
 
-> 最新状态先读[机器总裁决](completed-work/GenProto-C5-final-adjudication.md)，覆盖下述旧“未机器对账/不新增诊断”描述。本轮独立只读audit已构建及沙箱执行、结果回读：正式9入口，17,377审计记录，105 build条件+227 include适用性未证+1缺项目。该332候选不是正式边分母，也不能统称external；最小精确适用边全集未证，自主全审计仍未完成。下一动作仅指向总表具体Ordinal及其缺证，不重跑原46/COM。
+## 当前结论
 
-1. [执行规则](handoffs/current-execution-rules.md)：专用工具、无终端脚本；不新增诊断项目或额外全量重跑，DLL驻留unload=N/A。
-2. [唯一基线](handoffs/current-stable-baseline.md)：此前GenProto46/46源码回归与既有真实CL原物分开，历史COM/strict不是本轮新跑；生产未改。
-3. [C5 activeincludes最终有界清单](completed-work/GenProto-C5-activeincludes.md)与[Ledger](../Ledger/mediaown-required-finite-acceptance.json)：12配置16必要TU预处理成功，已对账所列实际输入至既有owner/signature/generation/consumer/assertion；不冒称全部原边闭包。
-4. [当前工作项](handoffs/current-work-item.md)：固定6 physical+3 evidence；仍可自主逐项审计适用原边，未知不一律external。bilinearspan四配置MSB3202确缺原项目来源，不是header失败；补件只见[唯一外部页](all-completion-external-prerequisites.md)。
-5. [矩阵](final-acceptance-remaining-matrix.md)及[总计划](remaining-gap-closure-plan.md)：C5/两个required及父级Blocked、stage4Closed=false，总门Red；用户整体目标未完成，不减原七阶段/ABI/寿命/E2E。
+**整体未完成，不是只剩外部输入。** x86/x64 全配置 ABI/E2E、持续 HW/D3DImage/shader、device recovery 及正式可达失败/refs/callback 条款仍须实现或验收。
+C5 真实缺 bilinearspan 原来源及完整实际 physical-record 闭包，D4 缺历史 binding；两 required/parent 仍 Blocked，stage4Closed=false，总门 Red。
+C5 333 保守风险不是新增必须清零门；已证 selected CL、x86 CLR、有限软件/媒体/多 Dispatcher 不重领。
 
-既有C1–C4/D1–D3、Ownership、consumer/factory/x86等有限证据保持；历史authority不是当前generator，packet消费不是API功能。ARM64、full10.0.12、官方player协议及DWM/HW可见control前提仍缺。本次只读原物与文档同步，无源码尾改。
+正式入口是 ComAcceptance 标准 MTP；最新 40/40 仅 startup smoke。旧 NativeCaller 截图原物缺失不列生产必需外部输入。
+最少真正用户来源与 x86/x64 验收环境条件只维护于[外部页](all-completion-external-prerequisites.md)。
+[Ledger范围覆盖](../Ledger/current-user-scope-overrides.json)显式保留原ARM64字段、不改Satisfied；父级因x86/x64原条件未满继续Blocked。
+历史主文档的陈旧流水已退出恢复；冻结证据、golden、SHA 和原失败保留于[历史索引](history-index.md)，不冒充本轮执行。

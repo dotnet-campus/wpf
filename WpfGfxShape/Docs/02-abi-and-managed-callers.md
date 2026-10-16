@@ -50,7 +50,7 @@
 
 - x86 原生构建默认 `Stdcall`，公开 `.def` 名未装饰；
 - x64 和 ARM64 使用平台统一 ABI，但不能据此证明 x86 正确；
-- 每个导出必须分别记录 x86/x64/ARM64 的调用约定、参数宽度、结构传递和名称；
+- 每个导出必须分别记录 x86/x64 的调用约定、参数宽度、结构传递和名称；ARM64历史字段保留，正式验收为NotApplicable-UserScopeDecision；
 - COM vtable 调用使用显式 Windows `Stdcall`；
 - bool、BOOL、enum、HRESULT、GUID、RECT、pointer、size_t 和 fixed UInt64 protocol slot 不得混用。
 

@@ -89,10 +89,10 @@ WpfGfxShape/
 ## 6. 架构边界
 
 - x64 是当前主要构建和测试环境；
-- ARM64 必须在真实 ARM64 Windows 环境验证；
+- ARM64编译/布局/真实运行按DEC-0005为NotApplicable-UserScopeDecision，不是Passed，不再索取实机；
 - x86 Native AOT shared-library 支持必须有目标 SDK 和运行证据，不能由普通 RID 或 x64 结果推断；
 - 任一架构通过不能替代其它架构；
-- 平台能力不足时保持明确阻塞并请求范围裁决，不自行删除兼容目标。
+- x86/x64平台能力不足按实际缺项记录，不以有限结果推断完整通过；ARM64已有用户范围裁决，无需重问。
 
 ## 7. 当前完成与未完成
 

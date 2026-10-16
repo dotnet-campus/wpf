@@ -1,6 +1,6 @@
 # NativeCaller
 
-> 历史证据（DEC-0003 已作废）：本目录当前只有此 README，以下项目、源码及运行目标已不存在，不是现行构建/沙箱入口。不得按下文恢复 caller 或对当前生产 DLL 运行旧 probe。现行入口见 [COM 沙箱操作](../../Docs/com-acceptance-sandbox-operations.md)，本次启动诊断见 [独立报告](../../Investigations/NativeCallerStartup/README.md)。下文保留历史原义，含已由 DEC-0004 排除的卸载/重载实验；不代表当前验收要求。
+> 历史证据（DEC-0003 已作废）：本目录当前只有此 README，以下项目、源码及运行目标已不存在，不是现行构建/沙箱入口。不得按下文恢复 caller 或对当前生产 DLL 运行旧 probe。现行入口见 [COM 沙箱操作](../../Docs/com-acceptance-sandbox-operations.md)，本次启动诊断见 [独立报告](../../Docs/history/nativecaller-startup.md)。下文保留历史原义，含已由 DEC-0004 排除的卸载/重载实验；不代表当前验收要求。
 
 本目录承载 `WP-00B-NATIVEAOT-ABI-PROBE-X64` 的 Native AOT x64 ABI 验证，只允许调用非生产导出 `WpfGfxShape_NativeAotAbiProbe_v1`。
 

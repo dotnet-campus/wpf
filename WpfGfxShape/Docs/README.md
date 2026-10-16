@@ -1,8 +1,8 @@
 # WpfGfxShape 文档分层索引
 
-唯一恢复入口：[next-session-handoff.md](next-session-handoff.md)。本索引不保存运行数字；“当前/最新”只由[状态源](handoffs/current-stable-baseline.md)解释。
+唯一恢复入口：[next-session-handoff.md](next-session-handoff.md)。本索引不保存运行数字；“当前/最新”只由[状态源](handoffs/current-stable-baseline.md)解释。本次实际文档修改与只读证据核验见[审计记录](documentation-readonly-audit.md)，不是新的生产或测试完成档。
 
-当前合同优先级：[DEC-0005正式仅x86/x64](decisions/DEC-0005-x86-x64-acceptance-scope.md)覆盖所有旧ARM64架构门；编译/布局/运行/补件均NA而非Passed。原Ledger未偷偷改Satisfied，父级仍Blocked。[WindowsDesktop版本来源单一审计](windowsdesktop-version-provenance.md)：10.0.12历史路径绑定，未证用户强制，精确版本待澄清，不是必需购买/永久补包。以下历史档的相冲突语句不驱动验收。
+当前合同优先级：[DEC-0005正式仅x86/x64](decisions/DEC-0005-x86-x64-acceptance-scope.md)覆盖所有旧ARM64架构门；编译/布局/运行/补件均NA而非Passed。原Ledger未偷偷改Satisfied，父级仍Blocked。[WindowsDesktop版本来源单一审计](windowsdesktop-version-provenance.md)：[DEC-0006](decisions/DEC-0006-installed-official-runtime-contract.md)已定采用已安装官方完整runtime、同版同架构独立对照；10.0.12仅历史身份，不再待澄清或外部补包。以下历史档的相冲突语句不驱动验收。
 
 ## 现行
 
@@ -13,7 +13,7 @@
 
 ## 决策与稳定规范（不是运行状态）
 
-- [决策索引](decisions/README.md)：DEC-0001–0005；驻留合同优先于历史卸载要求。
+- [决策索引](decisions/README.md)：DEC-0001–0006；驻留合同优先于历史卸载要求。
 - 章程：[实现/ABI](charter-implementation-contract.md)、[工具/文档/例外](charter-evidence-and-continuity.md)；[旧锚点索引](00-migration-charter.md)。
 - [源码拓扑](01-native-source-topology.md)、[ABI/调用方](02-abi-and-managed-callers.md)、[迁移门禁](migration-implementation-gates.md)、[耦合域/例外](migration-coupled-domains.md)；[迁移旧锚点](03-migration-order.md)。
 - [项目形态](04-nativeaot-project-shape.md)、[互操作](05-silknet-directx-assessment.md)。

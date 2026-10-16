@@ -34,7 +34,7 @@
 
 稳定边界：固定库名resolver到publish绝对路径；probe覆盖协议/并发/缺DLL与导出/无效PE/错误架构/模块路径/identity，仅E2E-00。
 历史AbiIntegration/AbiIntegration.Host不作为生产COM承载指令；唯一生产ComAcceptance标准MTP直接AOT；独立PublicAbi客户端不是自建COM Host，见[运行合同](evidence-run-contract.md#2-当前与目标承载边界)。
-尚待按正式门取得的能力/裁决（状态不在此重复）：PresentationCore候选隔离加载具体机制、大型原DLL/媒体/图像存储方案、真实ARM64和HW/media运行矩阵、Windows x86完整ABI/config/E2E、crash/fail-fast证据。
+尚待按正式门取得的能力/裁决（状态不在此重复）：PresentationCore候选隔离加载具体机制、大型原DLL/媒体/图像存储方案、x86/x64真实HW/media运行矩阵（ARM64为范围不适用）、Windows x86完整ABI/config/E2E、crash/fail-fast证据。
 具体外部内容只在[唯一外部清单](all-completion-external-prerequisites.md)，不复制包清单；x86 Shared有限证据不外推完整矩阵。
 卸载不适用不再列未关闭项；最终兼容验收不减。
 内部NativeAotAbiProbe.Invoke只计T1，不登记ABI通过。

@@ -13,7 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../artifacts/publish/WpfGfxShape/Release/win-x64/wpfgfx_cor3.dll" Link="Candidate/wpfgfx_cor3.dll" CopyToOutputDirectory="Always" />
-    <None Include="../../artifacts/test-results/PresentationCoreE2E/evidence/final-original/Results/original/pixels.pbgra32" Link="Baseline/pixels.pbgra32" CopyToOutputDirectory="Always" />
-    <None Include="../../artifacts/test-results/PresentationCoreE2E/evidence/final-original/Results/original/result.json" Link="Baseline/result.json" CopyToOutputDirectory="Always" />
+    <None Include="../ReferenceData/PresentationCoreE2E/pixels.pbgra32" Link="Baseline/pixels.pbgra32" CopyToOutputDirectory="Always" />
+    <None Include="../ReferenceData/PresentationCoreE2E/result.json" Link="Baseline/result.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
 </Project>

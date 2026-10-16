@@ -1,6 +1,6 @@
 # 文档治理：source → current 条款追溯
 
-最新合同修订：[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)将下表/历史合同全部ARM64必需门覆盖为用户范围NA（非Passed），当前仅x86/x64完整矩阵；不是无证删除要求。原Ledger字段保留并显式解释覆盖，parent仍Blocked。精确10.0.12未证用户指定，见[版本来源单一审计](windowsdesktop-version-provenance.md)，历史“目标”表述不再自动成为永久外部输入。
+最新合同修订：[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)将下表/历史合同全部ARM64必需门覆盖为用户范围NA（非Passed），当前仅x86/x64完整矩阵；不是无证删除要求。原Ledger字段保留并显式解释覆盖，parent仍Blocked。[DEC-0006](decisions/DEC-0006-installed-official-runtime-contract.md)明确已安装官方完整runtime同版同架构独立对照；10.0.12历史身份不改，不再待澄清或补包，见[版本来源](windowsdesktop-version-provenance.md)。
 
 只追正式条件，不恢复来源中的状态/下一包。按正文操作、结果、失败/寿命与矩阵核对，不以标题相同判等价；这是文本审计，不是生产验收。
 来源：[历史总规划](history/plans/migration-master-plan.md)§9/批次7–14、[阶段独立审计](investigations/audits/S-20261014-008-independent-plan-audit.md)“有限分母与完成定义”、[GenProto冻结审计](handoffs/completed-work/GenProto-finite-closure-audit.md)、[原E2E编号入口](09-test-evidence-and-e2e-contract.md)。现行条款含其链接主题页。
@@ -22,7 +22,7 @@
 | 原阶段4 generated协议及历史批次7 producer/consumer | 七阶段第4行；[C](plan-module-contracts.md#c-genproto-required)、[生成协议测试](testing-comparison-and-acceptance.md#7-生成协议测试)冻结ID/布局/golden/router/factory/负例及隔离重放 |
 | 原C ProcessCreate错误/引用/关闭，InitializePen ABI/dash/stride | 主题合同C本轮显式恢复；逐physical依赖签名/required更新，有限测试不关闭satisfied/stage4Closed |
 | 原阶段5/8A–F connection至命令/消息闭环 | 七阶段第5行；[Resources/UCE](migration-coupled-domains.md#resourcesuce)本轮补明5A=8A、5B=8B–D、5C=8E–F职责及E2E-02/03，禁止未实现命令假成功 |
-| 原阶段5 失败/取消/线程/callback/逆序释放 | 七阶段第5行；[UCE差集](plan-module-contracts.md#uce)独立取消/异常不由FIFO或PE闭包代替 |
+| 原阶段5 失败/取消/线程/callback/逆序释放 | 七阶段第5行；[UCE差集](plan-module-contracts.md#uce)正式可达失败/异常不由FIFO或PE闭包代替；disconnect不是独立cancel，不新增无来源取消门 |
 | 原阶段6A/历史批次12 backend选择/创建释放/外部桥 | 七阶段第6行；主题合同自主依赖生产meta/factory/bitmap/stream/WIC/codec桥；[批次12门](testing-levels-and-gates.md#4-批次门禁)backend selection T3/T4 |
 | 原阶段6B/历史批次13 全公开ABI与8/7差异 | 七阶段第6行；[ABI§11/13](abi-lifetime-binary-and-gates.md)差异裁决、真实语义/全部架构，strict有限集合不等行为通过 |
 | 原阶段6C startup/shutdown/PE/资源/版本/符号/架构 | 七阶段第6行；ABI binary逐格记录、测试生命周期首次/并发/失败/退出；卸载仅依DEC-0004不适用 |

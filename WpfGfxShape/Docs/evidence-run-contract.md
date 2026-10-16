@@ -65,3 +65,5 @@ Comparator独立读取原/候选，按预先批准规则判等，不让candidate
 - golden专用更新附旧新hash/原因/审阅人或Decision ID，失败不自动覆盖。
 - 原始基线只读，candidate不写original。
 - 初始.NET9.0.5来源线索不等于不可变golden，须逐artifact检查SHA/加载/PE；旧调查状态不冒充当前全仓库状态。
+- 当前runtime依[DEC-0006](decisions/DEC-0006-installed-official-runtime-contract.md)使用已安装官方完整包，同版同架构独立原/候选对照；Original角色不是强制重放历史JSON路径。分别记录runtime、PresentationCore/WindowsBase、native实际路径/版本/SHA、进程架构/配置，拒绝候选自充原版及混版依赖；历史golden不覆写。
+- 只读审计记录实际读到的行/字段及抽样边界；既有归并或完成档转述不写成新解析、新运行。smoke、full、strict、GenProto与有限E2E不得混分母或身份。
