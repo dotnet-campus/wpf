@@ -85,7 +85,7 @@ public sealed unsafe class Direct3D9DeviceInterfaceOwnershipTests
         internal FakeDeviceObject(string name)
         {
             _nameHandle = GCHandle.Alloc(name);
-            _memory = (nint) NativeMemory.AllocZeroed((nuint) sizeof(nint) * 4);
+            _memory = (nint) NativeMemory.AllocZeroed((nuint) sizeof(nint) * 5);
             nint* memory = (nint*) _memory;
             Device = (IDirect3DDevice9*) memory;
             DeviceEx = (IDirect3DDevice9Ex*) memory;

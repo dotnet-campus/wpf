@@ -8,6 +8,19 @@ internal static unsafe class NativeShapeReader
         Direct3D9SurfaceRect? clip = null)
     {
         coverage = null;
+        bool TryRasterPoint(double x, double y, out SoftwareFillBezier.Point result)
+        {
+            float px = (float)x, py = (float)y;
+            float rx = (float)transform.ScaleX * 16f * px + (float)transform.M21 * 16f * py
+                + ((float)transform.X - 0.5f) * 16f;
+            float ry = (float)transform.M12 * 16f * px + (float)transform.ScaleY * 16f * py
+                + ((float)transform.Y - 0.5f) * 16f;
+            bool validX = SoftwareFillBezier.TryRound(rx, out int ix);
+            bool validY = SoftwareFillBezier.TryRound(ry, out int iy);
+            result = new(ix, iy);
+            return validX && validY;
+        }
+        static MilPoint2D DevicePoint(SoftwareFillBezier.Point point) => new(point.X / 16.0 + 0.5, point.Y / 16.0 + 0.5);
         if (shape == 0) return 0;
         void** table = *(void***)shape;
         uint count = ((delegate* unmanaged<nint, uint>)table[4])(shape);
@@ -25,11 +38,9 @@ internal static unsafe class NativeShapeReader
             float* point = (float*)start;
             if (!float.IsFinite(point[0]) || !float.IsFinite(point[1]))
                 return Direct3D9Factory.InvalidArgumentHResult;
-            var p = transform.Apply(point[0], point[1]);
-            if (!double.IsFinite(p.X) || !double.IsFinite(p.Y))
-                return Direct3D9Factory.InvalidArgumentHResult;
-            var previous = new MilPoint2D(point[0], point[1]);
-            var points = new List<MilPoint2D> { new(p.X, p.Y) };
+            var previous = new SoftwareBezierFlattener.Point(point[0], point[1]);
+            if (!TryRasterPoint(previous.X, previous.Y, out var firstPoint)) return Direct3D9Factory.InvalidArgumentHResult;
+            var points = new List<MilPoint2D> { DevicePoint(firstPoint) };
             if (((delegate* unmanaged<nint, byte>)methods[15])(figure) != 0)
             {
                 bool last;
@@ -42,25 +53,27 @@ internal static unsafe class NativeShapeReader
                     float* values = (float*)data;
                     if ((type & 3) == 1)
                     {
-                        var end = transform.Apply(values[0], values[1]);
-                        if (!double.IsFinite(end.X) || !double.IsFinite(end.Y))
+                        if (!float.IsFinite(values[0]) || !float.IsFinite(values[1]))
                             return Direct3D9Factory.InvalidArgumentHResult;
-                        points.Add(new(end.X, end.Y));
                         previous = new(values[0], values[1]);
+                        if (!TryRasterPoint(previous.X, previous.Y, out var end)) return Direct3D9Factory.InvalidArgumentHResult;
+                        points.Add(DevicePoint(end));
                     }
                     else if ((type & 3) == 2)
                     {
                         for (int coordinate = 0; coordinate < 6; coordinate++)
                             if (!float.IsFinite(values[coordinate])) return Direct3D9Factory.InvalidArgumentHResult;
-                        foreach (var end in SoftwareBezierFlattener.Flatten(new(previous.X, previous.Y),
-                            new(values[0], values[1]), new(values[2], values[3]), new(values[4], values[5]), transform))
-                        {
-                            var device = transform.Apply(end.X, end.Y);
-                            if (!double.IsFinite(device.X) || !double.IsFinite(device.Y))
-                                return Direct3D9Factory.InvalidArgumentHResult;
-                            points.Add(new(device.X, device.Y));
-                        }
-                        previous = new(values[4], values[5]);
+                        var first = new SoftwareBezierFlattener.Point(values[0], values[1]);
+                        var second = new SoftwareBezierFlattener.Point(values[2], values[3]);
+                        var lastPoint = new SoftwareBezierFlattener.Point(values[4], values[5]);
+                        if (!TryRasterPoint(previous.X, previous.Y, out var startControl)
+                            || !TryRasterPoint(first.X, first.Y, out var firstControl)
+                            || !TryRasterPoint(second.X, second.Y, out var secondControl)
+                            || !TryRasterPoint(lastPoint.X, lastPoint.Y, out var lastControl))
+                            return Direct3D9Factory.InvalidArgumentHResult;
+                        foreach (var end in SoftwareFillBezier.Flatten([startControl, firstControl, secondControl, lastControl]))
+                            points.Add(DevicePoint(end));
+                        previous = lastPoint;
                     }
                     else return Direct3D9Factory.NotImplementedHResult;
                     if (!last && ((delegate* unmanaged<nint, byte>)methods[17])(figure) == 0)
@@ -74,4 +87,5 @@ internal static unsafe class NativeShapeReader
         coverage = new(path);
         return 0;
     }
+
 }

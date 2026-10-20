@@ -128,7 +128,7 @@ internal sealed unsafe class SoftwareBrushRealization : IDisposable
                 try
                 {
                     if (realizer != 0)
-                        ((delegate* unmanaged<nint, void>)(*(void***)realizer)[8])(realizer);
+                        ((delegate* unmanaged[Thiscall]<nint, void>)(*(void***)realizer)[8])(realizer);
                     else FreeRealizationResources();
                 }
                 finally { WpfGfxShape.Abi.NativeImmediateSolidRealization.ReleaseOwner(realizer); }

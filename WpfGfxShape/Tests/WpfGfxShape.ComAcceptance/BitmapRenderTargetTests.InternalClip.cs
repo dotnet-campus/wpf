@@ -12,6 +12,8 @@ public sealed unsafe partial class BitmapRenderTargetTests
     [DataRow(26u, 2f, 3f)]
     [DataRow(16u, -2f, -1f)]
     [DataRow(26u, -2f, -1f)]
+    [DataRow(16u, 1f, 1f)]
+    [DataRow(26u, 1f, 1f)]
     public void WhenInternalBitmapClipHasNoTargetAreaThenLockedTargetIsNotConsumed(uint format, float left, float right)
     {
         var api = new Api();
@@ -29,11 +31,11 @@ public sealed unsafe partial class BitmapRenderTargetTests
             byte* state = stackalloc byte[116];
             new Span<byte>(context, 2048).Clear();
             new Span<byte>(state, 116).Clear();
-            *(float*)(context + 380) = left;
-            *(float*)(context + 388) = right;
-            *(float*)(context + 392) = 1;
-            *(nint*)(context + 400) = (nint)state;
-            *(Matrix4x4*)(context + 408) = Matrix4x4.Identity;
+            *(float*)(context + InternalContextLayout.Clip + 4) = left;
+            *(float*)(context + InternalContextLayout.Clip + 12) = right;
+            *(float*)(context + InternalContextLayout.Clip + 16) = 1;
+            *(nint*)(context + InternalContextLayout.RenderState) = (nint)state;
+            *(Matrix4x4*)(context + InternalContextLayout.WorldToDevice) = Matrix4x4.Identity;
             *(Matrix4x4*)(state + 4) = Matrix4x4.Identity;
             *(uint*)(state + 84) = 1;
             *(float*)(state + 92) = MathF.Sqrt(2);

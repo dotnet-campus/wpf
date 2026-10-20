@@ -52,16 +52,16 @@ internal static unsafe class NativeResourceBrushRealization
         void** table = (void**)RuntimeHelpers.AllocateTypeAssociatedMemory(typeof(NativeResourceBrushRealization), 12 * sizeof(nint));
         table[0] = (delegate* unmanaged[Stdcall]<Instance*, uint>)&AddRef;
         table[1] = (delegate* unmanaged[Stdcall]<Instance*, uint>)&Release;
-        table[2] = (delegate* unmanaged<Instance*, uint, nint>)&Delete;
-        table[3] = (delegate* unmanaged<Instance*, nint, byte>)&NoTiling;
-        table[4] = (delegate* unmanaged<Instance*, byte>)&NoClip;
-        table[5] = (delegate* unmanaged<Instance*, nint, byte>)&NoTiling;
-        table[6] = (delegate* unmanaged<Instance*, uint, uint, nint, nint, nint, int>)&Ensure;
-        table[7] = (delegate* unmanaged<Instance*, void>)&Restore;
-        table[8] = (delegate* unmanaged<Instance*, void>)&Free;
-        table[9] = (delegate* unmanaged<Instance*, byte, nint>)&GetBrush;
-        table[10] = (delegate* unmanaged<Instance*, nint*, int>)&GetEffects;
-        table[11] = (delegate* unmanaged<Instance*, nint>)&GetBrushCore;
+        table[2] = (delegate* unmanaged[Thiscall]<Instance*, uint, nint>)&Delete;
+        table[3] = (delegate* unmanaged[Thiscall]<Instance*, nint, byte>)&NoTiling;
+        table[4] = (delegate* unmanaged[Thiscall]<Instance*, byte>)&NoClip;
+        table[5] = (delegate* unmanaged[Thiscall]<Instance*, nint, byte>)&NoTiling;
+        table[6] = (delegate* unmanaged[Thiscall]<Instance*, uint, uint, nint, nint, nint, int>)&Ensure;
+        table[7] = (delegate* unmanaged[Thiscall]<Instance*, void>)&Restore;
+        table[8] = (delegate* unmanaged[Thiscall]<Instance*, void>)&Free;
+        table[9] = (delegate* unmanaged[Thiscall]<Instance*, nint>)&GetBrushCore;
+        table[10] = (delegate* unmanaged[Thiscall]<Instance*, byte, nint>)&GetBrush;
+        table[11] = (delegate* unmanaged[Thiscall]<Instance*, nint*, int>)&GetEffects;
         return table;
     }
 
@@ -76,7 +76,7 @@ internal static unsafe class NativeResourceBrushRealization
         return (uint)count;
     }
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static nint Delete(Instance* self, uint flags)
     {
         nint result = (nint)self;
@@ -84,13 +84,13 @@ internal static unsafe class NativeResourceBrushRealization
         return result;
     }
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static byte NoTiling(Instance* self, nint context) => 0;
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static byte NoClip(Instance* self) => 0;
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static int Ensure(Instance* self, uint cache, uint display, nint brushContext, nint context, nint creator)
     {
         if (cache is not (0 or uint.MaxValue)) return Direct3D9Factory.NotImplementedHResult;
@@ -100,26 +100,26 @@ internal static unsafe class NativeResourceBrushRealization
     }
 
     // Software intermediates are ordinary bitmaps, so there is no meta texture to restore.
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static void Restore(Instance* self) { }
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static void Free(Instance* self) => GetState(self).Brush.FreeRealizationResources();
 
     private static nint BorrowBrush(Instance* self, byte transparent)
     {
         nint immediate = GetState(self).Brush.Immediate;
         return immediate == 0 ? 0
-            : ((delegate* unmanaged<nint, byte, nint>)(*(void***)immediate)[9])(immediate, transparent);
+            : ((delegate* unmanaged[Thiscall]<nint, byte, nint>)(*(void***)immediate)[10])(immediate, transparent);
     }
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static nint GetBrush(Instance* self, byte transparent) => BorrowBrush(self, transparent);
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static nint GetBrushCore(Instance* self) => BorrowBrush(self, 0);
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static int GetEffects(Instance* self, nint* effects)
     {
         if (effects == null) return unchecked((int)0x80004003);

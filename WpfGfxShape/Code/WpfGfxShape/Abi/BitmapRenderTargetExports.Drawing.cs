@@ -244,7 +244,7 @@ internal static unsafe partial class BitmapRenderTargetExports
                 if (shape != 0 && pen != 0)
                 {
                     int result = NativeStrokeReader.Widen(shape, pen, ((NativeContextPrefix*)context)->WorldToDevice,
-                        out coverage, out _, clip: clip);
+                        out coverage, out _, clip: clip, managedShape: true);
                     if (result < 0) return result;
                 }
                 return ConsumeSoftwareRealization(primitive.Renderer, realizer, brushContext, context, creator,
@@ -310,14 +310,14 @@ internal static unsafe partial class BitmapRenderTargetExports
         GeneratedImageTransform worldToDevice, SoftwareImageCoverage? coverage, SoftwareImageDrawingContext drawing,
         NativeRenderState state)
     {
-        // Offsets are relative to the secondary CMILBrush base in Release/x64.
-        uint space = *(uint*)(brush + 76);
-        Matrix4x4 matrix = *(Matrix4x4*)(brush + 80);
-        nint source = *(nint*)(brush + 208);
-        uint wrap = *(uint*)(brush + 216);
-        float opacity = *(float*)(brush + 236);
+        NativeBitmapBrushLayout* bitmapBrush = (NativeBitmapBrushLayout*)brush;
+        uint space = bitmapBrush->Space;
+        Matrix4x4 matrix = bitmapBrush->Mapping;
+        nint source = bitmapBrush->Source;
+        uint wrap = bitmapBrush->Wrap;
+        float opacity = bitmapBrush->Opacity;
         if (space > 1 || wrap > 5) return NotImplemented;
-        Vector4 border = *(Vector4*)(brush + 220);
+        Vector4 border = bitmapBrush->Border;
         if (!float.IsFinite(opacity)) return InvalidArgument;
         if (source == 0) return 0;
         if (matrix.M13 != 0 || matrix.M14 != 0 || matrix.M23 != 0 || matrix.M24 != 0
@@ -328,9 +328,9 @@ internal static unsafe partial class BitmapRenderTargetExports
             : new GeneratedImageTransform(matrix.M11, matrix.M22, matrix.M41, matrix.M42, matrix.M12, matrix.M21);
         if (space == 1) mapping = worldToDevice.Prepend(mapping);
         if (!mapping.TryInvert(out _)) return 0;
-        if (*(int*)(brush + 200) != 0)
+        if (bitmapBrush->HasSourceClip != 0)
         {
-            Vector2* points = (Vector2*)(brush + 160);
+            Vector2* points = &bitmapBrush->Clip.Data.P0;
             var clipTransform = space == 1 ? worldToDevice : GeneratedImageTransform.Identity;
             var polygon = new MilPoint2D[4];
             if (NativeImmediateSolidRealization.TryGetExactSourceClip(brush, out var rectangle))

@@ -49,13 +49,13 @@ public sealed unsafe partial class CompositionEffectsTests
             Assert.AreEqual(0, resource(channel, 43, &data));
             Assert.AreEqual(0, resource(channel, 39, &visual));
             Assert.AreEqual(0, resource(channel, 47, &destination));
-            byte* sourcePacket = stackalloc byte[16]; new Span<byte>(sourcePacket, 16).Clear();
+            byte* sourcePacket = stackalloc byte[8 + sizeof(nint)]; new Span<byte>(sourcePacket, 8 + sizeof(nint)).Clear();
             *(uint*)sourcePacket = 0x0c; *(uint*)(sourcePacket + 4) = image; *(nint*)(sourcePacket + 8) = color;
             ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)color)[1])(color);
-            Assert.AreEqual(0, send(sourcePacket, 16, 0, channel));
+            Assert.AreEqual(0, send(sourcePacket, (uint)(8 + sizeof(nint)), 0, channel));
             *(uint*)(sourcePacket + 4) = maskImage; *(nint*)(sourcePacket + 8) = mask;
             ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)mask)[1])(mask);
-            Assert.AreEqual(0, send(sourcePacket, 16, 0, channel));
+            Assert.AreEqual(0, send(sourcePacket, (uint)(8 + sizeof(nint)), 0, channel));
             byte* brushPacket = stackalloc byte[148]; new Span<byte>(brushPacket, 148).Clear();
             *(uint*)brushPacket = 0x81; *(uint*)(brushPacket + 4) = brush; *(double*)(brushPacket + 8) = 1;
             *(double*)(brushPacket + 32) = width; *(double*)(brushPacket + 40) = 1;

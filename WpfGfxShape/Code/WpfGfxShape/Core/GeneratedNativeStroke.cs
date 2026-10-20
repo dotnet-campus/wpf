@@ -17,19 +17,19 @@ internal sealed record GeneratedNativeStroke(SoftwareStrokeContours.Figure[] Fig
         matrix.M12 = (float)output.M12; matrix.M21 = (float)output.M21;
         matrix.M41 = (float)output.X; matrix.M42 = (float)output.Y;
         return WpfGfxShape.Abi.NativeStrokeReader.Widen(native.ShapePointer, native.PenPointer,
-            matrix, out _, out bounds, createCoverage: false, toleranceTransform: Transform) >= 0;
+            matrix, out _, out bounds, createCoverage: false, toleranceTransform: Transform, managedShape: true) >= 0;
     }
 
     internal static bool TryCaptureFill(GeneratedProtocolResource geometry, GeneratedImageTransform transform,
         out GeneratedNativeStroke? snapshot)
         => TryCapture(geometry, new GeneratedPenResource(0, 1, MilPenCap.Flat, MilPenCap.Flat,
-            MilPenCap.Flat, MilPenJoin.Miter, null), transform, out snapshot);
+            MilPenCap.Flat, MilPenJoin.Miter, null), transform, out snapshot, fillPrimitive: true);
 
     internal static bool TryCapture(GeneratedProtocolResource geometry, GeneratedPenResource pen,
-        GeneratedImageTransform transform, out GeneratedNativeStroke? snapshot)
+        GeneratedImageTransform transform, out GeneratedNativeStroke? snapshot, bool fillPrimitive = false)
     {
         snapshot = null;
-        if (!SoftwareGroupStrokeContours.TryRead(geometry, out var figures, preserveGaps: true, deviceTransform: transform))
+        if (!SoftwareGroupStrokeContours.TryRead(geometry, out var figures, preserveGaps: true, deviceTransform: transform, fillPrimitive: fillPrimitive))
             return false;
         float width = MathF.Abs((float)pen.CurrentThickness), miter = (float)pen.MiterLimit;
         if (!float.IsFinite(width) || !float.IsFinite(miter)) return false;

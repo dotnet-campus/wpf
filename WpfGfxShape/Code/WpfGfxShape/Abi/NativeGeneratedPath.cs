@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using WpfGfxShape.Core;
+using Pen = WpfGfxShape.Abi.NativePlainPen;
 
 namespace WpfGfxShape.Abi;
 
@@ -31,29 +32,6 @@ internal sealed unsafe class NativeGeneratedPath : IDisposable
         internal byte Closed, StartsAtGap, EndsAtGap, Stop, Fillable;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 96)]
-    private struct Pen
-    {
-        [FieldOffset(0)] internal float Width;
-        [FieldOffset(4)] internal float Height;
-        [FieldOffset(8)] internal float Angle;
-        [FieldOffset(12)] internal MilPenCap Start;
-        [FieldOffset(16)] internal MilPenCap End;
-        [FieldOffset(20)] internal MilPenCap Dash;
-        [FieldOffset(24)] internal MilPenJoin Join;
-        [FieldOffset(28)] internal float Miter;
-        [FieldOffset(32)] internal uint DashStyle;
-        [FieldOffset(36)] internal float Offset;
-        [FieldOffset(40)] internal float* Dashes;
-        [FieldOffset(48)] internal nint InitialAllocation;
-        [FieldOffset(56)] internal uint AllocSize;
-        [FieldOffset(60)] internal uint Capacity;
-        [FieldOffset(64)] internal uint Count;
-        [FieldOffset(72)] internal uint StartMarker;
-        [FieldOffset(76)] internal uint EndMarker;
-        [FieldOffset(80)] internal nint StartShape;
-        [FieldOffset(88)] internal nint EndShape;
-    }
 
     private static readonly void** ShapeTable = CreateShapeTable();
     private static readonly void** FigureTable = CreateFigureTable();
@@ -124,9 +102,9 @@ internal sealed unsafe class NativeGeneratedPath : IDisposable
             {
                 _pen->DashStyle = 5;
                 _pen->Offset = snapshot.Offset;
-                _pen->Count = _pen->Capacity = (uint)snapshot.Dashes.Length;
-                _pen->Dashes = (float*)NativeMemory.Alloc((nuint)snapshot.Dashes.Length, sizeof(float));
-                snapshot.Dashes.AsSpan().CopyTo(new Span<float>(_pen->Dashes, snapshot.Dashes.Length));
+                _pen->Dashes.Count = _pen->Dashes.Capacity = (uint)snapshot.Dashes.Length;
+                _pen->Dashes.Data = (float*)NativeMemory.Alloc((nuint)snapshot.Dashes.Length, sizeof(float));
+                snapshot.Dashes.AsSpan().CopyTo(new Span<float>(_pen->Dashes.Data, snapshot.Dashes.Length));
             }
         }
         catch (OutOfMemoryException) { Dispose(); throw; }
@@ -138,7 +116,7 @@ internal sealed unsafe class NativeGeneratedPath : IDisposable
         Pen* pen = _pen;
         _shape = null;
         _pen = null;
-        if (pen != null) { NativeMemory.Free(pen->Dashes); NativeMemory.Free(pen); }
+        if (pen != null) { NativeMemory.Free(pen->Dashes.Data); NativeMemory.Free(pen); }
         if (shape == null) return;
         if (shape->Figures != null)
         {

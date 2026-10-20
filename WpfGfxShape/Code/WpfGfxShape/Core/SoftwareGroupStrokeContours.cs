@@ -3,11 +3,11 @@ namespace WpfGfxShape.Core;
 internal static class SoftwareGroupStrokeContours
 {
     internal static bool TryRead(GeneratedProtocolResource geometry, out List<SoftwareStrokeContours.Figure> figures,
-        bool preserveGaps = false, GeneratedImageTransform? deviceTransform = null)
+        bool preserveGaps = false, GeneratedImageTransform? deviceTransform = null, bool fillPrimitive = false)
     {
         figures = [];
         return Append(geometry, GeneratedImageTransform.Identity, figures,
-            new HashSet<GeneratedProtocolResource>(), preserveGaps, deviceTransform);
+            new HashSet<GeneratedProtocolResource>(), preserveGaps, deviceTransform, fillPrimitive);
     }
 
     private static void Flatten(List<SoftwareStrokeContours.Figure> figures, GeneratedImageTransform? deviceTransform)
@@ -43,7 +43,7 @@ internal static class SoftwareGroupStrokeContours
 
     private static bool Append(GeneratedProtocolResource geometry, GeneratedImageTransform parent,
         List<SoftwareStrokeContours.Figure> output, HashSet<GeneratedProtocolResource> active,
-        bool preserveGaps, GeneratedImageTransform? deviceTransform)
+        bool preserveGaps, GeneratedImageTransform? deviceTransform, bool fillPrimitive)
     {
         if (!active.Add(geometry) || active.Count > 256) return false;
         try
@@ -53,7 +53,7 @@ internal static class SoftwareGroupStrokeContours
                 if (!GeneratedImageTransform.TryResolve(group.Transform, out var local)) return false;
                 var transform = parent.Prepend(local);
                 foreach (var child in group.Children)
-                    if (!Append(child, transform, output, active, preserveGaps, deviceTransform)) return false;
+                    if (!Append(child, transform, output, active, preserveGaps, deviceTransform, fillPrimitive)) return false;
                 return true;
             }
             if (geometry is GeneratedCombinedGeometryResource combined)
@@ -62,8 +62,8 @@ internal static class SoftwareGroupStrokeContours
                 var transform = parent.Prepend(local);
                 var first = new List<SoftwareStrokeContours.Figure>();
                 var second = new List<SoftwareStrokeContours.Figure>();
-                if (combined.Geometry1 is { } a && !Append(a, transform, first, active, true, deviceTransform)) return false;
-                if (combined.Geometry2 is { } b && !Append(b, transform, second, active, true, deviceTransform)) return false;
+                if (combined.Geometry1 is { } a && !Append(a, transform, first, active, true, deviceTransform, fillPrimitive)) return false;
+                if (combined.Geometry2 is { } b && !Append(b, transform, second, active, true, deviceTransform, fillPrimitive)) return false;
                 Flatten(first, deviceTransform);
                 Flatten(second, deviceTransform);
                 if (!SoftwareBooleanContours.TryCombine(first, FillRule(combined.Geometry1), second,
@@ -74,7 +74,7 @@ internal static class SoftwareGroupStrokeContours
             List<SoftwareStrokeContours.Figure> figures;
             if (geometry is GeneratedPathGeometryResource path)
             {
-                if (!SoftwareStrokeContours.TryRead(path, out figures, preserveGaps)) return false;
+                if (!SoftwareStrokeContours.TryRead(path, out figures, preserveGaps, fillLocalFloat: fillPrimitive)) return false;
             }
             else if (geometry is GeneratedLineGeometryResource line)
             {
@@ -86,12 +86,12 @@ internal static class SoftwareGroupStrokeContours
             }
             else if (geometry is GeneratedRectangleGeometryResource rectangle)
             {
-                if (!SoftwareCurvedStrokeContours.TryRead(rectangle, out var figure, preserveCurves: preserveGaps)) return false;
+                if (!SoftwareCurvedStrokeContours.TryRead(rectangle, out var figure, preserveCurves: preserveGaps, fillPrimitive: fillPrimitive)) return false;
                 figures = [figure];
             }
             else if (geometry is GeneratedEllipseGeometryResource ellipse)
             {
-                if (!SoftwareCurvedStrokeContours.TryRead(ellipse, out var figure, preserveCurves: preserveGaps)) return false;
+                if (!SoftwareCurvedStrokeContours.TryRead(ellipse, out var figure, preserveCurves: preserveGaps, fillPrimitive: fillPrimitive)) return false;
                 figures = [figure];
             }
             else return false;

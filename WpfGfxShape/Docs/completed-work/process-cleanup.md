@@ -27,6 +27,10 @@
 
 GenProto.Tests 最小项目 build 已成功，仅证明编译；没有运行 GenProto full、没有新造 GUID 审计产物、没有生产 publish 或 COM 验收。
 
-## 剩余风险
+## 后续两项目裁决覆盖
+
+本页以上为此前Docs/Ledger批次历史，不是当前测试结构。当前Tests仅Tests与ComAcceptance；旧30项目17目录删除及最终工具执行见[两项目收口记录](two-test-projects-consolidation.md)，不与本页旧文件统计相加。GenProto历史审计已按用户删除，不再日常测试门；核心Ledger保留但非测试强依赖，旧GUID恢复不再当前工作项。产品兼容目标与真实未证项仍保留。
+
+## 剩余风险（历史状态，不恢复已删审计）
 
 GenProto 完整审计对历史 GUID 原物的依赖尚未恢复。历史 46/46、GenerationTests 3/3 及 C5 有限审计不是本轮通过；不 skip、不造报告、不为保持旧 hash 恢复已删树。两个 MILCMD required/parent、C5/D4、完整 ABI/HW/refs/callback/E2E 等正式门仍未关闭，总门 Red，整体生产未完成。清理不降低原 readinessRule/doneRule 或七阶段目标。

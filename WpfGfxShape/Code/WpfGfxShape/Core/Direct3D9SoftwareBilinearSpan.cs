@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace WpfGfxShape.Core;
 
@@ -1118,6 +1119,15 @@ internal static class Direct3D9SoftwareBilinearSpan
         int xFraction,
         int yFraction)
     {
+        // The x86 SSE2 resampler rounds vertically before interpolating horizontally.
+        // Other architectures retain both fractional components until the final rounding.
+        if (RuntimeInformation.ProcessArchitecture == Architecture.X86)
+        {
+            int left = InterpolateLinearChannel(a, c, yFraction);
+            int right = InterpolateLinearChannel(b, d, yFraction);
+            return InterpolateLinearChannel(left, right, xFraction);
+        }
+
         int top = (a << 8) + ((b - a) * xFraction);
         int bottom = (c << 8) + ((d - c) * xFraction);
         return (byte) ((((0x100 - yFraction) * top) + (yFraction * bottom) + 0x8000) >> 16);

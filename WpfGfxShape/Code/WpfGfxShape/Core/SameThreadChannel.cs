@@ -22,8 +22,18 @@ internal sealed class SameThreadPartition
         int result = Videos?.BeginProcessVideo(false) ?? 0;
         try
         {
-            if (result >= 0 && (RenderWithoutDisplays || ChannelGraphicsCapabilities.HasDisplays())) result = Targets.Render();
+            if (result >= 0 && _vblankChannels.Count != 0)
+            {
+                result = DwmFlush();
+                if (result < 0) PartitionScheduler.RecordCommandFailure(0, "DwmFlush"u8, result);
+            }
+            if (result >= 0 && (RenderWithoutDisplays || ChannelGraphicsCapabilities.HasDisplays()))
+            {
+                result = Targets.Render();
+                if (result < 0) PartitionScheduler.RecordCommandFailure(0, "Targets.Render"u8, result);
+            }
             if (result < 0 && Failure >= 0) Failure = result;
+            if (result >= 0) NotifyPresentListeners();
             return result;
         }
         finally
@@ -32,6 +42,67 @@ internal sealed class SameThreadPartition
             FlushPendingBadShaderNotifications();
         }
     }
+
+    private readonly List<(SameThreadChannel Channel, ulong FrameTime)> _presentListeners = [];
+
+    internal void RequestPresentNotification(SameThreadChannel channel, ulong frameTime)
+        => _presentListeners.Add((channel, frameTime));
+
+    internal void RemovePresentNotifications(SameThreadChannel channel)
+        => _presentListeners.RemoveAll(listener => ReferenceEquals(listener.Channel, channel));
+
+    private void NotifyPresentListeners()
+    {
+        if (_presentListeners.Count == 0) return;
+        bool canPresent = Targets.HasPresentableTargets
+            && (RenderWithoutDisplays || ChannelGraphicsCapabilities.HasDisplays());
+        ulong frameTime = 0;
+        foreach (var listener in _presentListeners)
+            if (listener.FrameTime != 0 && (frameTime == 0 || listener.FrameTime < frameTime)) frameTime = listener.FrameTime;
+        foreach (var listener in _presentListeners)
+        {
+            byte[] message = new byte[64];
+            BinaryPrimitives.WriteUInt32LittleEndian(message, 0x0A);
+            // A completed render does not establish a VSync/DWM presentation timestamp.
+            BinaryPrimitives.WriteUInt32LittleEndian(message.AsSpan(8), canPresent ? 2u : 1u);
+            BinaryPrimitives.WriteUInt32LittleEndian(message.AsSpan(12), canPresent ? 60u : 0u);
+            BinaryPrimitives.WriteUInt64LittleEndian(message.AsSpan(16), canPresent ? frameTime : 0);
+            listener.Channel.PostMessage(message);
+        }
+        _presentListeners.Clear();
+    }
+
+    private readonly HashSet<SameThreadChannel> _vblankChannels = [];
+    internal int VBlankChannelCount => _vblankChannels.Count;
+
+    internal int SetVBlankSyncMode(SameThreadChannel channel, bool enable)
+    {
+        if (!enable)
+        {
+            if (_vblankChannels.Remove(channel) && _vblankChannels.Count == 0) timeEndPeriod(1);
+            return 0;
+        }
+        int result = 0;
+        if (!_vblankChannels.Contains(channel))
+        {
+            _vblankChannels.EnsureCapacity(_vblankChannels.Count + 1);
+            if (_vblankChannels.Count == 0 && timeBeginPeriod(1) != 0)
+                result = unchecked((int)0x80004005);
+            if (result >= 0) _vblankChannels.Add(channel);
+        }
+        byte[] message = new byte[64];
+        BinaryPrimitives.WriteUInt32LittleEndian(message, 0x09);
+        BinaryPrimitives.WriteInt32LittleEndian(message.AsSpan(8), result);
+        channel.PostMessage(message);
+        return result;
+    }
+
+    [DllImport("winmm.dll", ExactSpelling = true)]
+    private static extern uint timeBeginPeriod(uint period);
+    [DllImport("winmm.dll", ExactSpelling = true)]
+    private static extern uint timeEndPeriod(uint period);
+    [DllImport("dwmapi.dll", ExactSpelling = true)]
+    private static extern int DwmFlush();
 
     private uint _nextChannel;
     private readonly HashSet<SameThreadChannel> _notifications = [];
@@ -165,7 +236,7 @@ internal sealed class SameThreadChannel
         PostMessage(message);
     }
 
-    private void PostMessage(byte[] message)
+    internal void PostMessage(byte[] message)
     {
         lock (_messages)
         {
@@ -399,6 +470,17 @@ internal sealed class SameThreadChannel
                             result = packet.Length == 8 ? 0 : Direct3D9Factory.UceMalformedPacketHResult;
                             if (result >= 0) Partition.RegisterNotifications(this, BinaryPrimitives.ReadInt32LittleEndian(packet.AsSpan(4)) != 0);
                         }
+                        else if (command == MilCommand.PartitionSetVBlankSyncMode)
+                        {
+                            result = packet.Length == 8
+                                ? Partition.SetVBlankSyncMode(this, BinaryPrimitives.ReadInt32LittleEndian(packet.AsSpan(4)) != 0)
+                                : Direct3D9Factory.UceMalformedPacketHResult;
+                        }
+                        else if (command == MilCommand.PartitionNotifyPresent)
+                        {
+                            result = packet.Length == 12 ? 0 : Direct3D9Factory.UceMalformedPacketHResult;
+                            if (result >= 0) Partition.RequestPresentNotification(this, BinaryPrimitives.ReadUInt64LittleEndian(packet.AsSpan(4)));
+                        }
                         else if (command == MilCommand.PartitionNotifyPolicyChangeForNonInteractiveMode)
                         {
                             result = packet.Length == 8 ? 0 : Direct3D9Factory.UceMalformedPacketHResult;
@@ -524,6 +606,8 @@ internal sealed class SameThreadChannel
         _command = null;
         _commandLength = 0;
         Partition.RegisterNotifications(this, false);
+        Partition.RemovePresentNotifications(this);
+        Partition.SetVBlankSyncMode(this, false);
         lock (_messages)
         {
             _notificationWindow = 0;

@@ -57,7 +57,8 @@ public sealed class AcceptancePathsTests
         string[] actual = Directory.GetFiles(root, "*", SearchOption.AllDirectories)
             .Select(file => Path.GetRelativePath(root, file).Replace('\\', '/'))
             .Where(file => !file.StartsWith("Results/", StringComparison.OrdinalIgnoreCase)
-                && !file.StartsWith("TestResults/", StringComparison.OrdinalIgnoreCase))
+                && !file.StartsWith("TestResults/", StringComparison.OrdinalIgnoreCase)
+                && (!file.StartsWith("ReferenceData/", StringComparison.OrdinalIgnoreCase) || manifest.Contains(file, StringComparer.Ordinal)))
             .Order(StringComparer.Ordinal).ToArray();
         CollectionAssert.AreEqual(manifest.Order(StringComparer.Ordinal).ToArray(), actual);
     }

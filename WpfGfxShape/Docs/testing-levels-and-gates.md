@@ -5,7 +5,7 @@
 ## 1. 测试目标
 
 同时证明：内部文件语义、发布 Windows C ABI、资源/COM/线程/callback/失败等价、同输入的结果与副作用差分、未修改真实 PresentationCore 可观察流程。
-T0–T5 必须分层存在，单层不能代替其它层；真实消费者为托管 P/Invoke，不要求 C++ NativeCaller、静态 import caller、lib 链接或纯原生消费者，见[DEC-0003](decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md)。
+T0–T5是证据分类，不授权额外项目或恢复历史GenProto/Ledger治理门；仅Tests托管与ComAcceptance原生两项目，最新用户组织裁决优先，产品行为目标不变；真实消费者为托管 P/Invoke，不要求 C++ NativeCaller、静态 import caller、lib 链接或纯原生消费者，见[DEC-0003](decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md)。
 
 ## 2. 证据分层
 
@@ -48,7 +48,7 @@ T0–T5 必须分层存在，单层不能代替其它层；真实消费者为托
 
 不修改 MilCore 声明帮助候选；受控隔离部署选择原/候选。
 首个强制真实路径：DrawingVisual → 无字体/媒体依赖确定图形 → RenderTargetBitmap.Render → 规范化像素 → 原版比较。
-现有 PresentationCore.Tests 的初始调查未找到可复用贯通测试，需独立专用 E2E harness，不并入生产。
+现有 PresentationCore.Tests 的初始调查未找到可复用贯通测试，现由ComAcceptance/Pcore辅助源码及同exe角色承载，不独立建第三测试工程，不并入生产。
 
 ## 3. 渐进 E2E 阶梯
 

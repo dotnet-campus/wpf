@@ -16,7 +16,8 @@ internal static class AcceptancePaths
         if (Sandbox) Directory.SetCurrentDirectory(AppContext.BaseDirectory);
     }
 
-    internal static string AotDll => Resolve(Metadata("AotDllPath"), Sandbox, AppContext.BaseDirectory);
+    internal static string AotDll => Path.GetFullPath(Environment.GetEnvironmentVariable("WPFGFX_CANDIDATE_DLL") ?? Resolve(Metadata("AotDllPath"), Sandbox, AppContext.BaseDirectory));
+    internal static string OriginalDll => Path.GetFullPath(Environment.GetEnvironmentVariable("WPFGFX_ORIGINAL_DLL") ?? Path.Combine(Path.GetDirectoryName(typeof(System.Windows.Media.Visual).Assembly.Location)!, "wpfgfx_cor3.dll"));
     internal static bool Sandbox => Metadata("ComAcceptanceSandbox") == "true";
     internal static string Results
     {
@@ -81,6 +82,7 @@ public sealed class AcceptanceInitialization
         File.WriteAllText(Path.Combine(AcceptancePaths.Results, "aot-identity.json"), System.Text.Json.JsonSerializer.Serialize(new
         {
             AotDllPath = AcceptancePaths.AotDll, Sha256 = sha, Sandbox = AcceptancePaths.Sandbox,
+            ProcessArchitecture = RuntimeInformation.ProcessArchitecture.ToString(), PointerSize = IntPtr.Size,
             CalibrationResultsPath = AcceptancePaths.Metadata("CalibrationResultsPath"),
             ResolvedResultsPath = AcceptancePaths.Results, WorkingDirectory = Directory.GetCurrentDirectory(),
             BaseDirectory = AppContext.BaseDirectory, Arguments = Environment.GetCommandLineArgs()

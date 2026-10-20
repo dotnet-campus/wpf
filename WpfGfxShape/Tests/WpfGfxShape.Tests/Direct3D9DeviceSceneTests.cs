@@ -747,7 +747,7 @@ public sealed unsafe class Direct3D9DeviceSceneTests
 
         public FakeDeviceObject()
         {
-            _memory = (nint) NativeMemory.AllocZeroed((nuint) sizeof(nint) * 44);
+            _memory = (nint) NativeMemory.AllocZeroed((nuint) sizeof(nint) * 45);
             void** memory = (void**) _memory;
             Device = (IDirect3DDevice9*) memory;
             void** vtable = memory + 1;

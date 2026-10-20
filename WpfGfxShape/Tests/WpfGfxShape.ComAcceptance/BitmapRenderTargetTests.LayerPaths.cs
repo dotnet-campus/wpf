@@ -32,12 +32,12 @@ public sealed unsafe partial class BitmapRenderTargetTests
             Assert.AreEqual(0, begin(view, (nint)outer, 0, 0, 0, contextClip ? 1 : 0, 0));
             byte* context = stackalloc byte[2048];
             new Span<byte>(context, 2048).Clear();
-            *(int*)(context + 376) = contextClip ? 0 : 1;
-            *(float*)(context + 380) = 8;
-            *(float*)(context + 384) = 0;
-            *(float*)(context + 388) = 9;
-            *(float*)(context + 392) = 2;
-            *(Matrix4x4*)(context + 408) = Matrix4x4.Identity;
+            *(int*)(context + InternalContextLayout.Clip) = contextClip ? 0 : 1;
+            *(float*)(context + InternalContextLayout.Clip + 4) = 8;
+            *(float*)(context + InternalContextLayout.Clip + 8) = 0;
+            *(float*)(context + InternalContextLayout.Clip + 12) = 9;
+            *(float*)(context + InternalContextLayout.Clip + 16) = 2;
+            *(Matrix4x4*)(context + InternalContextLayout.WorldToDevice) = Matrix4x4.Identity;
             Assert.AreEqual(0, api.GetBitmap(target, &output));
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, uint, nint*, int>)(*(void***)output)[8])(output, 0, 2, &heldLock));
             var path = (delegate* unmanaged[Stdcall]<nint, nint, nint, nint, nint, nint, nint, int>)(*(void***)view)[10];
@@ -48,7 +48,7 @@ public sealed unsafe partial class BitmapRenderTargetTests
             Release(heldLock);
             heldLock = 0;
             Assert.AreEqual(0, end(view));
-            *(int*)(context + 376) = 1;
+            *(int*)(context + InternalContextLayout.Clip) = 1;
             // After restoration use a valid no-brush call; sentinel dependencies are only legal in the skipped branch.
             int restored = infinite ? infinitePath(view, (nint)context, 0, 0)
                 : path(view, (nint)context, 0, 0, 0, 0, 0);

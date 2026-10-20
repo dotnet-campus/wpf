@@ -10,7 +10,7 @@ internal static unsafe class NativeStrokeReader
 
     internal static int Widen(nint shape, nint pen, Matrix4x4 matrix, out SoftwareImageCoverage? coverage,
         out MilRectD bounds, bool createCoverage = true, GeneratedImageTransform? toleranceTransform = null,
-        Direct3D9SurfaceRect? clip = null)
+        Direct3D9SurfaceRect? clip = null, bool managedShape = false)
     {
         coverage = null;
         bounds = default;
@@ -33,21 +33,19 @@ internal static unsafe class NativeStrokeReader
         uint* caps = (uint*)(geometry + 3);
         if (caps[0] > 3 || caps[1] > 3 || caps[2] > 3 || caps[3] > 3)
             return Direct3D9Factory.InvalidArgumentHResult;
-        // Release/x64 CPlainPen: CPenGeometry, style/offset, DynArray<REAL>, markers.
-        if (sizeof(nint) != 8) return Direct3D9Factory.NotImplementedHResult;
-        byte* native = (byte*)pen;
-        if (*(uint*)(native + 72) != 0 || *(uint*)(native + 76) != 0
-            || *(nint*)(native + 80) != 0 || *(nint*)(native + 88) != 0)
+        NativePlainPen* native = (NativePlainPen*)pen;
+        if (native->StartMarker != 0 || native->EndMarker != 0
+            || native->StartShape != 0 || native->EndShape != 0)
             return Direct3D9Factory.NotImplementedHResult;
-        uint dashMode = *(uint*)(native + 32);
+        uint dashMode = native->DashStyle;
         if (dashMode > 5) return Direct3D9Factory.InvalidArgumentHResult;
         if (elliptical && dashMode != 0) return Direct3D9Factory.NotImplementedHResult;
         GeneratedDashStyleResource? dashStyle = null;
         if (dashMode != 0)
         {
-            uint countDashes = *(uint*)(native + 64);
-            uint capacity = *(uint*)(native + 60);
-            float* data = *(float**)(native + 40);
+            uint countDashes = native->Dashes.Count;
+            uint capacity = native->Dashes.Capacity;
+            float* data = native->Dashes.Data;
             if (countDashes < 2 || (countDashes & 1) != 0 || countDashes > capacity
                 || countDashes > int.MaxValue || data == null) return Direct3D9Factory.InvalidArgumentHResult;
             var dashes = new double[(int)countDashes];
@@ -56,7 +54,8 @@ internal static unsafe class NativeStrokeReader
                 if (!float.IsFinite(data[i])) return Direct3D9Factory.InvalidArgumentHResult;
                 dashes[i] = data[i];
             }
-            dashStyle = new(*(float*)(native + 36), dashes);
+            if (!float.IsFinite(native->Offset)) return Direct3D9Factory.InvalidArgumentHResult;
+            dashStyle = new(native->Offset, dashes);
         }
         if (matrix.M13 != 0 || matrix.M14 != 0 || matrix.M23 != 0 || matrix.M24 != 0
             || matrix.M31 != 0 || matrix.M32 != 0 || matrix.M33 != 1 || matrix.M34 != 0
@@ -67,15 +66,20 @@ internal static unsafe class NativeStrokeReader
             (MilPenCap)caps[0], (MilPenCap)caps[1], (MilPenCap)caps[2], (MilPenJoin)caps[3], dashStyle);
         var figures = new List<SoftwareStrokeContours.Figure>();
         void** table = *(void***)shape;
-        uint count = ((delegate* unmanaged<nint, uint>)table[4])(shape);
+        uint count = managedShape ? ((delegate* unmanaged<nint, uint>)table[4])(shape)
+            : ((delegate* unmanaged[Thiscall]<nint, uint>)table[4])(shape);
         for (uint i = 0; i < count; i++)
         {
-            nint figure = ((delegate* unmanaged<nint, uint, nint>)table[5])(shape, i);
+            nint figure = managedShape ? ((delegate* unmanaged<nint, uint, nint>)table[5])(shape, i)
+                : ((delegate* unmanaged[Thiscall]<nint, uint, nint>)table[5])(shape, i);
             if (figure == 0) return Direct3D9Factory.InvalidArgumentHResult;
             void** methods = *(void***)figure;
-            if (((delegate* unmanaged<nint, byte>)methods[1])(figure) != 0) continue;
-            bool closed = ((delegate* unmanaged<nint, byte>)methods[4])(figure) != 0;
-            float* start = (float*)((delegate* unmanaged<nint, nint>)methods[22])(figure);
+            byte Flag(int slot) => managedShape ? ((delegate* unmanaged<nint, byte>)methods[slot])(figure)
+                : ((delegate* unmanaged[Thiscall]<nint, byte>)methods[slot])(figure);
+            if (Flag(1) != 0) continue;
+            bool closed = Flag(4) != 0;
+            float* start = (float*)(managedShape ? ((delegate* unmanaged<nint, nint>)methods[22])(figure)
+                : ((delegate* unmanaged[Thiscall]<nint, nint>)methods[22])(figure));
             if (start == null) return Direct3D9Factory.InvalidArgumentHResult;
             var points = new List<MilPoint2D> { new(start[0], start[1]) };
             var joins = new List<bool> { false };
@@ -93,15 +97,16 @@ internal static unsafe class NativeStrokeReader
             if (!float.IsFinite(start[0]) || !float.IsFinite(start[1])) return Direct3D9Factory.InvalidArgumentHResult;
             bool startsAtGap = false, hasGaps = false;
             var runs = new List<SoftwareStrokeContours.Figure>();
-            if (((delegate* unmanaged<nint, byte>)methods[15])(figure) != 0)
+            if (Flag(15) != 0)
             {
                 bool last;
                 do
                 {
                     byte type = 0; nint data = 0;
-                    last = ((delegate* unmanaged<nint, byte*, nint*, byte>)methods[16])(figure, &type, &data) != 0;
+                    last = (managedShape ? ((delegate* unmanaged<nint, byte*, nint*, byte>)methods[16])(figure, &type, &data)
+                        : ((delegate* unmanaged[Thiscall]<nint, byte*, nint*, byte>)methods[16])(figure, &type, &data)) != 0;
                     if (data == 0) return Direct3D9Factory.InvalidArgumentHResult;
-                    bool gap = ((delegate* unmanaged<nint, byte>)methods[7])(figure) != 0;
+                    bool gap = Flag(7) != 0;
                     if (gap)
                     {
                         hasGaps = true;
@@ -147,7 +152,7 @@ internal static unsafe class NativeStrokeReader
                     }
                     else return Direct3D9Factory.NotImplementedHResult;
                     while (joins.Count < points.Count) joins.Add((type & 3) == 2);
-                    joins[^1] = ((delegate* unmanaged<nint, byte>)methods[5])(figure) != 0;
+                    joins[^1] = Flag(5) != 0;
                     if (points.Any(p => !double.IsFinite(p.X) || !double.IsFinite(p.Y)))
                         return Direct3D9Factory.InvalidArgumentHResult;
                     if (gap)
@@ -156,7 +161,7 @@ internal static unsafe class NativeStrokeReader
                         points.Clear(); points.Add(end);
                         joins.Clear(); joins.Add(false);
                     }
-                    if (!last && ((delegate* unmanaged<nint, byte>)methods[17])(figure) == 0)
+                    if (!last && Flag(17) == 0)
                         return Direct3D9Factory.InvalidArgumentHResult;
                 } while (!last);
             }

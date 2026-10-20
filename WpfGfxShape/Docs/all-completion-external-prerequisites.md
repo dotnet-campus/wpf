@@ -10,15 +10,19 @@
 - 历史NativeCaller故障exe/项目：不是现行生产验收必需输入。正式ComAcceptance smoke已Green；只有另行追查历史截图原物才可能需要，不纳入本总目标。
 - 已有generator、输入manifest、selected CL原物及已闭有限软件模块不重复索取。
 
-## 真正缺的三项来源
+## 当前覆盖裁决
+Retail player已按真实retail语义和50组官方差分实现，不再请求PRERELEASE私有协议；非目标私有packet不重加待办。用户两Tests分类覆盖旧GenProto/GUID历史审计及Ledger归档required作为日常测试门，核心产品兼容风险保留。
+保护最小缺口是实际WPF commit901ca941248413c79832d2fdbd709da0c4386353对应的可访问源码/SourceLink/PDB或正式实现映射。已真实HTTPS尝试归档/raw404、API403限流、发布元数据200，不是虚构工具不可用；详见[保护合同](protection-api-contract.md)。不泛称commit不存在或源码私有。
+
+## 历史来源记录（不覆盖上述裁决）
 
 | 最小用户交付 | 具体规格及验收 | 对应原门 / 不可替代 |
 |---|---|---|
 | 原bilinearspan项目及实际依赖/来源版本，或有权威的原生成合同 | `src/Microsoft.DotNet.Wpf/src/WpfGfx/core/sw/bilinearspan/bilinearspan.vcxproj`，保留原目录/版本/可追溯来源及SHA清单，连同实际源、props、targets、引用依赖；若本应生成，交原target/生成器、输入/条件/预期输出并能重现原GUID `{3A6A5D23-CB65-4685-AAC9-0969054701EA}` | R7/C5完整实际physical-record闭包。`core/dll/wpfgfx.vcxproj:142–144`显式引用，四个x86/x64配置GetTargetPath实测MSB3202；不是header失败，同次12配置16TU预处理已成功。不能拼项目/删引用/假Condition绕过，同名.h/.cpp不是项目来源 |
 | 冻结输出的历史authority binding | 可读归档/可访问来源：当年CLR仓库/commit与hash实现/branch/seed/randomization/config、runtime产品/build/位数；冻结generator revision、完整递归输入manifest及Version.xml/Resource.xml/Resources.rsp身份、调用/build条件；独立已知输入→输出及来源说明。未知历史值注明未知，不编commit | R7/D4、REGEN-DIFF。缺的是历史关联，不是再要所有现有inputs；当前生成器/hash/SDK/net48或候选自生向量不能替代当年authority |
-| 官方PRERELEASE record-packet player合同及匹配oracle | `MilPlayer_Create` / `MilPlayer_Process`相关包头/版本/长度、dispatch/允许命令、对象创建/destroy、handle及引用ownership、线程/错误语义、合法原版运行条件及匹配可执行oracle/已知向量；提供有权访问的可追溯来源，不传密钥 | R8/strict仅缺两个导出。普通MediaPlayer/MILMedia*四帧有限Closed是另一合同；不能猜包头、造stub/E_NOTIMPL或用媒体对象代替 |
+| PRERELEASE私有packet | 非目标说明；不请求额外交付 | retail Create/Process已实现且独立差分通过，不阻塞R8/strict |
 
-三项是来源合同，不要求拆成更多采购包；历史 binding 与 bilinearspan 可合并归档，player 须有匹配 oracle。每项可交归档绝对路径、只读共享路径或可访问来源；附版本/架构/来源或授权及路径+SHA256清单，不要求发送密码。收到后必须实际回读、恢复原引用/历史关联或实现协议并验收，才能按原required判充分性。
+历史binding与bilinearspan仅保留产品兼容来源风险，不恢复旧审计测试门。当前保护来源需按上述实际build身份匹配；不请求密码，不以main或标签名称替代版本证明。
 
 ## x86/x64验收环境（条件，不是新增采购包）
 
@@ -29,4 +33,4 @@
 ## 总门与历史
 
 C5完整实际闭包、D4及x86/x64全部正式ABI/寿命/七阶段/E2E/strict/full仍未满；两个required/parent Blocked，stage4Closed=false，总门Red。移除ARM64/旧patch/卸载请求没有将其它门降级。
-旧“四类外部输入”、10.0.12唯一目标及ARM64请求在[历史索引](history-index.md)下仅保留当时身份，不作现行交付清单。本轮仅清理Docs/Ledger并验证清理工具，没有生产发布或GenProto full；历史机器验收不是当前证据。
+旧“四类外部输入”、10.0.12唯一目标及ARM64请求在[历史索引](history-index.md)下仅保留当时身份，不作现行交付清单。本次重新生产发布与标准native打包，托管full4224/4224、原生1676/1635pass/41fail/0skip；历史机器验收不是本次证据。

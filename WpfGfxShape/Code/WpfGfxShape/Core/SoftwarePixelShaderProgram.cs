@@ -23,6 +23,8 @@ internal sealed class SoftwarePixelShaderProgram
     {
         program = null;
         if (bytes.IsEmpty) bytes = MemoryMarshal.AsBytes(Identity);
+        // The servicing software target accepts NOP-padded shaders above one MiB.
+        // CPSTrans's main-branch allocation cap does not apply to this managed interpreter.
         if (bytes.Length % 4 != 0 || bytes.Length < 8) return Rejected;
         var words = MemoryMarshal.Cast<byte, uint>(bytes);
         if (words[0] != 0xffff0200) return Rejected;

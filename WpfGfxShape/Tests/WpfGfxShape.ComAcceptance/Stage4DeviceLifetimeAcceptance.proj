@@ -1,5 +1,0 @@
-<Project DefaultTargets="Build">
-  <Target Name="Build">
-    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Restore;Build;Test" Properties="Configuration=Release;ComAcceptanceSandbox=false;TestingPlatformCommandLineArguments=--filter FullyQualifiedName~WhenStage4|FullyQualifiedName~WhenNativeGpu --report-trx --results-directory ../../Investigations/S-20261014-005-TRANSACTION/device-green --report-trx-filename device-lifetime.trx" />
-  </Target>
-</Project>

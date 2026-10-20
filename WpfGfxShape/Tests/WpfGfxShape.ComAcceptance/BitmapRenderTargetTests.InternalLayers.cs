@@ -65,9 +65,9 @@ public sealed unsafe partial class BitmapRenderTargetTests
             byte* state = stackalloc byte[116];
             new Span<byte>(context, 2048).Clear();
             new Span<byte>(state, 116).Clear();
-            *(int*)(context + 376) = 1;
-            *(nint*)(context + 400) = (nint)state;
-            *(Matrix4x4*)(context + 408) = Matrix4x4.Identity;
+            *(int*)(context + InternalContextLayout.Clip) = 1;
+            *(nint*)(context + InternalContextLayout.RenderState) = (nint)state;
+            *(Matrix4x4*)(context + InternalContextLayout.WorldToDevice) = Matrix4x4.Identity;
             *(uint*)(state + 84) = 1;
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, uint, nint*, int>)(*(void***)output)[8])(output, 0, 2, &heldLock));
             int result = ((delegate* unmanaged[Stdcall]<nint, nint, nint, nint, int>)(*(void***)view)[8])(view, (nint)context, source, 0);

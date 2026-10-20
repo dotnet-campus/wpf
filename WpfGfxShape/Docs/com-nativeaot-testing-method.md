@@ -1,6 +1,6 @@
 # 生产 COM / Native AOT 测试方法
 
-> 用户最新约定：只写一个单元测试项目，直接使用 wpfgfx 生产项目发布的 AOT DLL。不创建 Host，不启动自定义子进程，不创建或修改任何 .slnx。
+> 用户最新约定：全局只保留两类正式项目：托管WpfGfxShape.Tests和真实原生WpfGfxShape.ComAcceptance。后者直接使用生产AOT，原PublicAbi/Pcore/PlayerHwnd/WpfReference已合入其辅助源码；自定义MTP单exe角色隔离原/候选，不新增Host或第三项目。旧“禁止一切角色子进程/必须独立PublicAbi项目”组织口径由本轮裁决覆盖，不删除行为断言。GenProto历史取证和Ledger归档不是日常测试要求。
 
 ## 当前标准 MTP 与沙箱入口
 
@@ -22,13 +22,13 @@
 
 - 测试直接在测试运行器进程内用 NativeLibrary 加载生产 AOT DLL，取得真实导出并调用原生 COM vtable。
 - 不引用生产托管程序集，不调用 internal 实现，不用 ABI probe 代替生产 API。
-- 不创建 ComAcceptance.Host，不复制 Host 文件，不使用 Process.Start，不另建测试解决方案。
+- 不创建ComAcceptance.Host或第三项目；保留同MTP exe原/候选角色隔离，不另建测试解决方案。
 - 不恢复用户删除的旧测试。当前残留旧测试文件不由本项目包含；此项目没有任何 ProjectReference。
 - 直接以 csproj 构建/测试，不依赖 slnx。
 
 ## 原生边界：生产 DLL 导出与 COM
 
-所有生产 COM 模块验收均在唯一标准 MTP 测试运行器进程中加载生产项目发布的 Native AOT DLL，测试不得直接访问生产内部 C# 实现。独立 PublicAbi 客户端是公开 ABI 消费者，不是被禁止的自建 COM Host，也不替代唯一 COM 验收项目。“全走 COM”指使用真实原生互操作边界，而不是把原生所有入口改造成 COM 方法：
+所有生产 COM 模块验收均在唯一标准 MTP 测试运行器进程中加载生产项目发布的 Native AOT DLL，测试不得直接访问生产内部 C# 实现。合入ComAcceptance的PublicAbi角色是公开ABI消费者，不是独立项目或新增Host。“全走 COM”指使用真实原生互操作边界，而不是把原生所有入口改造成 COM 方法：
 
 - 原生 COM 对象（如 IWICBitmap、IWICBitmapLock、IStream）通过真实 COM vtable 调用，遵守 QI、AddRef、Release 和调用约定。
 - 原生 DLL 导出（如 connection/channel/resource、命令提交、位图创建）按原签名调用导出函数，使用原生规定的句柄与参数；不再包装自定义 COM 接口。

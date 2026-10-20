@@ -13,17 +13,17 @@ public sealed unsafe partial class BitmapRenderTargetTests
         internal int Failure, Ensured, EffectsRead;
     }
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static int EnsurePathRealizer(PathRealizer* self, uint cache, uint display, nint brushContext, nint context, nint creator)
     {
         self->Ensured++;
         return self->Failure == 1 ? unchecked((int)0x80070005) : 0;
     }
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static nint GetPathBrush(PathRealizer* self, byte transparent) => self->Brush;
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static int GetPathEffects(PathRealizer* self, nint* effects)
     {
         self->EffectsRead++;
@@ -31,7 +31,7 @@ public sealed unsafe partial class BitmapRenderTargetTests
         return self->Failure == 2 ? unchecked((int)0x80070005) : 0;
     }
 
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static uint GetSolidPathType(nint self) => 1;
 
     private struct PathFigure
@@ -95,6 +95,38 @@ public sealed unsafe partial class BitmapRenderTargetTests
         return self->Segment < 3 ? (byte)1 : (byte)0;
     }
 
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
+    private static uint GetStrokeFigureCount(nint self) => 1;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
+    private static nint GetStrokeFigure(PathShape* self, uint index) => (nint)self->Figure;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
+    private static byte NoStrokeFlag(nint self) => 0;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
+    private static byte IsStrokeClosed(PathFigure* self) => self->Reversal ? (byte)0 : (byte)1;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
+    private static byte IsStrokeGap(PathFigure* self) => self->MiddleGap && self->Segment == 1 ? (byte)1 : (byte)0;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
+    private static nint GetStrokeStart(PathFigure* self) => (nint)self->Points;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
+    private static byte SetFirstStrokeSegment(PathFigure* self) { self->Segment = 0; return 1; }
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
+    private static byte GetStrokeSegment(PathFigure* self, byte* type, nint* points)
+    {
+        *type = 1;
+        *points = (nint)(self->Points + self->Segment + 1);
+        return self->Segment == (self->Reversal ? 1 : 2) ? (byte)1 : (byte)0;
+    }
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
+    private static byte SetNextStrokeSegment(PathFigure* self) { self->Segment++; return self->Segment < 3 ? (byte)1 : (byte)0; }
+
     private static int DrawRealizedPath(nint view, nint context, nint realizer, bool finite, nint shape, nint pen = 0)
         => finite
             ? ((delegate* unmanaged[Stdcall]<nint, nint, nint, nint, nint, nint, nint, int>)(*(void***)view)[10])(view, context, 0, shape, pen, pen != 0 ? realizer : 0, pen == 0 ? realizer : 0)
@@ -154,22 +186,22 @@ public sealed unsafe partial class BitmapRenderTargetTests
             Assert.AreEqual(0, api.GetBitmap(target, &bitmap));
             void** table = stackalloc void*[12];
             new Span<nint>(table, 12).Clear();
-            table[6] = (delegate* unmanaged<PathRealizer*, uint, uint, nint, nint, nint, int>)&EnsurePathRealizer;
-            table[9] = (delegate* unmanaged<PathRealizer*, byte, nint>)&GetPathBrush;
-            table[10] = (delegate* unmanaged<PathRealizer*, nint*, int>)&GetPathEffects;
+            table[6] = (delegate* unmanaged[Thiscall]<PathRealizer*, uint, uint, nint, nint, nint, int>)&EnsurePathRealizer;
+            table[10] = (delegate* unmanaged[Thiscall]<PathRealizer*, byte, nint>)&GetPathBrush;
+            table[11] = (delegate* unmanaged[Thiscall]<PathRealizer*, nint*, int>)&GetPathEffects;
             void** brushTable = stackalloc void*[6];
-            brushTable[3] = (delegate* unmanaged<nint, uint>)&GetSolidPathType;
+            brushTable[3] = (delegate* unmanaged[Thiscall]<nint, uint>)&GetSolidPathType;
             byte* brush = stackalloc byte[24];
             *(void***)brush = brushTable;
-            float* color = (float*)(brush + 8);
+            float* color = (float*)(brush + sizeof(nint));
             color[0] = invalidColor ? float.NaN : 1; color[1] = 0; color[2] = 0; color[3] = 1;
             PathRealizer realizer = new() { Table = table, Brush = nullBrush ? 0 : (nint)brush, Failure = failure };
             byte* context = stackalloc byte[2048];
             byte* state = stackalloc byte[116];
             new Span<byte>(context, 2048).Clear(); new Span<byte>(state, 116).Clear();
-            *(int*)(context + 376) = 1;
-            *(nint*)(context + 400) = (nint)state;
-            *(Matrix4x4*)(context + 408) = Matrix4x4.Identity;
+            *(int*)(context + InternalContextLayout.Clip) = 1;
+            *(nint*)(context + InternalContextLayout.RenderState) = (nint)state;
+            *(Matrix4x4*)(context + InternalContextLayout.WorldToDevice) = Matrix4x4.Identity;
             *(uint*)(state + 96) = aliased ? 0u : 1u;
             void** shapeTable = stackalloc void*[7];
             new Span<nint>(shapeTable, 7).Clear();
@@ -187,6 +219,18 @@ public sealed unsafe partial class BitmapRenderTargetTests
             figureTable[16] = (delegate* unmanaged<PathFigure*, byte*, nint*, byte>)&GetPathSegment;
             figureTable[17] = (delegate* unmanaged<PathFigure*, byte>)&SetNextPathSegment;
             figureTable[22] = (delegate* unmanaged<PathFigure*, nint>)&GetPathStart;
+            if (stroke)
+            {
+                shapeTable[4] = (delegate* unmanaged[Thiscall]<nint, uint>)&GetStrokeFigureCount;
+                shapeTable[5] = (delegate* unmanaged[Thiscall]<PathShape*, uint, nint>)&GetStrokeFigure;
+                figureTable[1] = (delegate* unmanaged[Thiscall]<nint, byte>)&NoStrokeFlag;
+                figureTable[4] = (delegate* unmanaged[Thiscall]<PathFigure*, byte>)&IsStrokeClosed;
+                figureTable[7] = (delegate* unmanaged[Thiscall]<PathFigure*, byte>)&IsStrokeGap;
+                figureTable[15] = (delegate* unmanaged[Thiscall]<PathFigure*, byte>)&SetFirstStrokeSegment;
+                figureTable[16] = (delegate* unmanaged[Thiscall]<PathFigure*, byte*, nint*, byte>)&GetStrokeSegment;
+                figureTable[17] = (delegate* unmanaged[Thiscall]<PathFigure*, byte>)&SetNextStrokeSegment;
+                figureTable[22] = (delegate* unmanaged[Thiscall]<PathFigure*, nint>)&GetStrokeStart;
+            }
             Vector2* points = stackalloc Vector2[] { new(1, 0), new(2, 0), new(2, 1), new(1, 1) };
             if (reversal)
             {
@@ -207,8 +251,8 @@ public sealed unsafe partial class BitmapRenderTargetTests
             {
                 *(uint*)(nativePen + 32) = 5;
                 *(nint*)(nativePen + 40) = (nint)dashes;
-                *(uint*)(nativePen + 60) = 2;
-                *(uint*)(nativePen + 64) = 2;
+                *(uint*)(nativePen + 44 + 2 * sizeof(nint)) = 2;
+                *(uint*)(nativePen + 48 + 2 * sizeof(nint)) = 2;
             }
             nint pen = stroke ? (nint)nativePen : 0;
             PathFigure figure = new() { Table = figureTable, Points = points, MiddleGap = middleGap, Reversal = reversal };

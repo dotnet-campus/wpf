@@ -289,7 +289,8 @@ internal sealed class GeneratedTargetResource : GeneratedProtocolResource
             long height = (long)MemoryMarshal.Read<int>(packet[20..]) - MemoryMarshal.Read<int>(packet[12..]);
             uint nextWidth = (uint)Math.Clamp(width, 0, int.MaxValue);
             uint nextHeight = (uint)Math.Clamp(height, 0, int.MaxValue);
-            if (nextWidth != 0 && nextHeight != 0 && (nextWidth != Width || nextHeight != Height))
+            // Out-of-band settings may arrive before the in-band HwndTargetCreate supplies the HWND.
+            if (_window != 0 && nextWidth != 0 && nextHeight != 0 && (nextWidth != Width || nextHeight != Height))
             {
                 int result = WpfGfxShape.Abi.HardwareRenderTargetExports.Create(_window, nextWidth, nextHeight, out nint next);
                 if (result < 0) return result;
@@ -320,6 +321,8 @@ internal sealed class GeneratedTargetResource : GeneratedProtocolResource
         Direct3D9Factory.Release(previous);
         return 0;
     }
+
+    internal bool CanPresent => _renderingEnabled && _renderTarget != 0 && Width != 0 && Height != 0;
 
     internal unsafe int Render(bool signalPresent = true)
     {

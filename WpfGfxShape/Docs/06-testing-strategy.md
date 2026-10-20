@@ -1,6 +1,11 @@
 # wpfgfx C# NativeAOT 迁移测试与证据策略
 
-权威测试合同由本页与下列主题页共同构成；不维护运行数字。E2E-00 只证明 probe，不能代生产 ABI/E2E。当前只见[基线](handoffs/current-stable-baseline.md)。
+最新用户合同：正式测试仅 `Tests/WpfGfxShape.Tests`（托管单元/组件）与 `Tests/WpfGfxShape.ComAcceptance`（真实AOT ABI/COM/差分/PresentationCore）。T0–T5是证据层次，不是额外项目授权；原PublicAbi/Pcore等辅助源码已迁入后者，同exe角色不是新增Host。删除probe/治理与GenProto历史审计，不再要求恢复旧GUID、Ledger写入归档或逐旧用例迁移。纯协议解析/布局unit保留，生成器历史审计未保留原因见[收口记录](completed-work/two-test-projects-consolidation.md)。本裁决覆盖下列主题页的旧测试组织要求；产品兼容目标、真实失败断言和x86/x64目标不减。当前结果见[基线](handoffs/current-stable-baseline.md)。
+
+## 当前验收与保护专项
+本次最终生产Release/win-x64和标准native包已发布；候选C79CCF1D…未变，托管full4224/4224，原生full1676/1635pass/41fail/0skip，详见[矩阵](final-acceptance-remaining-matrix.md)。不能沿用前轮11失败。Retail player50参数独立差分保留；PRERELEASE私有协议不再外部阻塞。
+保护必须绑定实际WPF build commit，验证false/default与true具体防护、功能返回/异常HRESULT映射、合法与可安全构造边界；不unsafe越界，不以天然数组检查直接证明忽略参数等价，不noop。当前来源未闭及HTTP实证见[独立详档](protection-api-contract.md)，Pcore8仍失败。desktopduplication两项保持真实失败，不skip、不放阈值、不随机追绿。
+x86 Debug生产与验收项目构建成功，不等于ABI/ESP运行通过；x86/x64全部适用配置仍需验收。运行输出仅ignored artifacts/.coding-agent，不写tracked ReferenceData。
 
 ## 1. 测试目标
 [五类问题](testing-levels-and-gates.md#1-测试目标)。

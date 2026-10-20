@@ -34,10 +34,11 @@ public sealed unsafe partial class D3DImageTests
     public void WhenSecondSamplerUsesVisualOrCacheThenNonIdentityShaderCombinesBothInputs(bool cache, uint color, uint expected)
         => RunVisualCacheConsumer(cache, color, expected, false);
 
-    private static void RunVisualCacheConsumer(bool cache, uint color, uint expected, bool geometryConsumer, bool configurationRecovery = false, bool wicSource = false, int callbackAction = -1, bool transactionRecovery = false, bool multipleDevices = false, bool closeSecondFirst = false)
+    private static void RunVisualCacheConsumer(bool cache, uint color, uint expected, bool geometryConsumer, bool configurationRecovery = false, bool wicSource = false, int callbackAction = -1, bool transactionRecovery = false, bool multipleDevices = false, bool closeSecondFirst = false, bool resizeWindow = false, bool official = false)
     {
-        string path = AcceptancePaths.AotDll;
+        string path = official ? AcceptancePaths.OriginalDll : AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
+        if (resizeWindow) LogHardwareModuleIdentity(module, path);
         var create = (delegate* unmanaged[Stdcall]<nint, double, double, uint, delegate* unmanaged[Stdcall]<int, uint, void>, int, nint*, uint*, uint*, int>)NativeLibrary.GetExport(module, "InteropDeviceBitmap_Create");
         var connect = (delegate* unmanaged[Stdcall]<byte, nint*, int>)NativeLibrary.GetExport(module, "WgxConnection_Create");
         var disconnect = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "WgxConnection_Disconnect");
@@ -49,7 +50,9 @@ public sealed unsafe partial class D3DImageTests
         var commit = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "MilChannel_CommitChannel");
         var present = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "WgxConnection_SameThreadPresent");
         var dirty = (delegate* unmanaged[Stdcall]<int, int, int, int, nint, int>)NativeLibrary.GetExport(module, "InteropDeviceBitmap_AddDirtyRect");
+        ExitDiagnostics.Stage("visual CreateOutputWindow before");
         nint window = CreateOutputWindow("Two input shader acceptance", 40, 40);
+        ExitDiagnostics.Stage("visual CreateOutputWindow after");
         nint secondWindow = 0;
         uint secondDestination = 0;
         nint d3d = 0, device = 0, connection = 0, channel = 0;
@@ -61,37 +64,53 @@ public sealed unsafe partial class D3DImageTests
         try
         {
             Assert.AreNotEqual(0, window);
+            ExitDiagnostics.Stage("visual EstablishObservableWindow before");
             EstablishObservableWindow(window);
+            ExitDiagnostics.Stage("visual EstablishObservableWindow after; Direct3DCreate9 before");
             d3d = Direct3DCreate9(32);
+            ExitDiagnostics.Stage("visual Direct3DCreate9 after");
             Assert.AreNotEqual(0, d3d);
             PresentParameters parameters = new() { Width = 32, Height = 16, Count = 1, SwapEffect = 1, Window = window, Windowed = 1 };
+            ExitDiagnostics.Stage("visual CreateDevice before");
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint, uint, nint, uint, PresentParameters*, nint*, int>)(*(void***)d3d)[16])(d3d, 0, 1, window, 0x26, &parameters, &device));
+            ExitDiagnostics.Stage("visual CreateDevice after; PresentNativeControl before");
             PresentNativeControl(window, device, false);
+            ExitDiagnostics.Stage("visual PresentNativeControl after; DiagnoseNativePresent before");
             DiagnoseNativePresent(window, device, false);
+            ExitDiagnostics.Stage("visual DiagnoseNativePresent after; AssertCombinedPixel before");
             AssertCombinedPixel(window, 0x00563412);
+            ExitDiagnostics.Stage("visual AssertCombinedPixel after; connect before");
             nint nativeConnection = 0;
             Assert.AreEqual(0, connect(1, &nativeConnection));
+            ExitDiagnostics.Stage("visual connect after");
             connection = nativeConnection;
             nint nativeChannel = 0;
+            ExitDiagnostics.Stage("visual channelCreate before");
             Assert.AreEqual(0, channelCreate(connection, 0, &nativeChannel));
             channel = nativeChannel;
+            ExitDiagnostics.Stage("visual channelCreate after");
             uint[] visuals = new uint[2];
             uint secondaryImage = 0;
             for (int i = 0; i < 2; i++)
             {
                 nint surface = 0, bitmap = 0;
+                ExitDiagnostics.Stage($"visual surface {i} CreateRenderTarget before");
                 Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint, uint, uint, uint, uint, int, nint*, nint, int>)(*(void***)device)[28])(device, 12, 1, 21, 0, 0, 1, &surface, 0));
                 surfaces[i] = surface;
+                ExitDiagnostics.Stage($"visual surface {i} CreateRenderTarget after; ColorFill before");
                 Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, nint, uint, int>)(*(void***)device)[35])(device, surface, 0, i == 0 ? 0xffff0000u : color));
                 uint width = 0, height = 0;
+                ExitDiagnostics.Stage($"visual surface {i} ColorFill after; InteropDeviceBitmap_Create before");
                 Assert.AreEqual(0, create(surface, 96, 96, 7, &Available, 0, &bitmap, &width, &height));
                 bitmaps[i] = bitmap;
+                ExitDiagnostics.Stage($"visual surface {i} InteropDeviceBitmap_Create after; resources before");
                 uint image = 0, data = 0, visual = 0;
                 Assert.AreEqual(0, resource(channel, 97, &image));
                 Assert.AreEqual(0, resource(channel, 43, &data));
                 Assert.AreEqual(0, resource(channel, 39, &visual));
                 visuals[i] = visual;
                 if (i == 1) secondaryImage = image;
+                ExitDiagnostics.Stage($"visual surface {i} resources after; image command before");
                 ImagePacket update = new() { Type = 0x0a, Handle = image, Interop = (ulong)bitmap };
                 ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)bitmap)[1])(bitmap);
                 Assert.AreEqual(0, send(&update, (uint)sizeof(ImagePacket), 0, channel));
@@ -99,6 +118,7 @@ public sealed unsafe partial class D3DImageTests
                 Assert.AreEqual(0, send(&draw, (uint)sizeof(DrawPacket), 0, channel));
                 uint* content = stackalloc uint[] { 0x22, visual, data };
                 Assert.AreEqual(0, send(content, 12, 0, channel));
+                ExitDiagnostics.Stage($"visual surface {i} draw commands after; dirty before");
                 Assert.AreEqual(0, dirty(0, 0, 12, 1, bitmap));
                 PresentPacket frame = new() { Type = 0x0b, Handle = image };
                 Assert.AreEqual(0, send(&frame, (uint)sizeof(PresentPacket), 0, channel));
@@ -195,12 +215,15 @@ public sealed unsafe partial class D3DImageTests
                 }
                 finally { Release(wicBitmap); }
             }
+            ExitDiagnostics.Stage("visual resources complete; native shader before");
             VerifyTwoInputShaderOnNativeDevice(device);
+            ExitDiagnostics.Stage("visual native shader after; bind effect before");
             uint hardwareMode = 0;
             if (geometryConsumer)
                 hardwareMode = BindHardwareCacheGeometry(resource, send, channel, visuals[0], visuals[1]);
             else
                 BindTwoInputEffect(resource, send, channel, visuals[0], color == 0 ? 0u : visuals[1], cache);
+            ExitDiagnostics.Stage("visual bind effect after; target before");
             uint destination = 0;
             Assert.AreEqual(0, resource(channel, 46, &destination));
             byte* target = stackalloc byte[92];
@@ -225,14 +248,21 @@ public sealed unsafe partial class D3DImageTests
                 root[1] = secondDestination;
                 Assert.AreEqual(0, send(root, 12, 0, channel));
             }
+            ExitDiagnostics.Stage("visual target after; close before");
             Assert.AreEqual(0, close(channel));
-            Assert.AreEqual(0, commit(channel));
+            ExitDiagnostics.Stage("visual close after; commit before");
+            int initialCommitResult = commit(channel);
+            ExitDiagnostics.Stage($"visual commit returned HRESULT=0x{initialCommitResult:X8}");
+            Assert.AreEqual(0, initialCommitResult);
+            ExitDiagnostics.Stage("visual commit after; bitmap0 release before");
             Release(bitmaps[0]);
             bitmaps[0] = 0;
             armed = callbackAction >= 0;
             for (int frame = 0; frame < 2; frame++)
             {
+                ExitDiagnostics.Stage($"visual frame {frame} present before");
                 Assert.AreEqual(0, present(connection), "Two-input Present");
+                ExitDiagnostics.Stage($"visual frame {frame} present after");
                 Assert.AreEqual(0, DwmFlush());
                 AssertCombinedPixel(window, expected);
                 if (callbackAction >= 0)
@@ -250,6 +280,24 @@ public sealed unsafe partial class D3DImageTests
                         Assert.AreEqual(1, callbacks);
                     }
                     return;
+                }
+            }
+            if (resizeWindow)
+            {
+                LogHardwareModuleIdentity(module, path);
+                foreach (int width in new[] { 64, 48, 32 })
+                {
+                    Assert.AreNotEqual(0, windowThread!.Invoke(() => SetWindowPos(window, -1, 40, 40, width, 24, 0x0040)));
+                    Assert.AreNotEqual(0, GetClientRect(window, out WindowRectangle resized));
+                    Assert.AreEqual(width, resized.Right - resized.Left);
+                    Assert.AreEqual(24, resized.Bottom - resized.Top);
+                    SendOutputWindowSettings(send, channel, destination, window);
+                    Assert.AreEqual(0, close(channel));
+                    Assert.AreEqual(0, commit(channel));
+                    Assert.AreEqual(0, present(connection));
+                    Assert.AreEqual(0, DwmFlush());
+                    Console.WriteLine($"HardwareResize official={official} client={width}x24");
+                    AssertCombinedPixel(window, expected);
                 }
             }
             if (multipleDevices)
@@ -372,14 +420,27 @@ public sealed unsafe partial class D3DImageTests
         }
         finally
         {
+            ExitDiagnostics.Stage("visual cleanup destroy channel before");
             if (channel != 0) destroy(channel);
+            ExitDiagnostics.Stage("visual cleanup destroy channel after; disconnect before");
             if (connection != 0) disconnect(connection);
-            for (int i = 1; i >= 0; i--) { Release(bitmaps[i]); Release(surfaces[i]); }
+            ExitDiagnostics.Stage("visual cleanup disconnect after; surfaces before");
+            for (int i = 1; i >= 0; i--)
+            {
+                ExitDiagnostics.Stage($"visual cleanup bitmap {i} before");
+                Release(bitmaps[i]);
+                ExitDiagnostics.Stage($"visual cleanup bitmap {i} after; surface before");
+                Release(surfaces[i]);
+                ExitDiagnostics.Stage($"visual cleanup surface {i} after");
+            }
             Release(transactionBitmap); Release(lazyFrame); Release(lazyStream);
+            ExitDiagnostics.Stage("visual cleanup device before");
             Release(device); Release(d3d);
+            ExitDiagnostics.Stage("visual cleanup device after; windows before");
             if (secondWindow != 0) DestroyWindow(secondWindow);
             if (window != 0) DestroyWindow(window);
             if (lazyStream != 0) Assert.AreEqual(1, streamDisposals);
+            ExitDiagnostics.Stage("visual cleanup complete");
         }
     }
 

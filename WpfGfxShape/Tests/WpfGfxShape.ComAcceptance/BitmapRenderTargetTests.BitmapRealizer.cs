@@ -7,10 +7,39 @@ namespace WpfGfxShape.ComAcceptance;
 
 public sealed unsafe partial class BitmapRenderTargetTests
 {
-    [UnmanagedCallersOnly]
+    private static string CreateSourceClipReference()
+    {
+        string root = Path.GetFullPath(Path.Combine(AcceptancePaths.Results, "source-clip-reference", Guid.NewGuid().ToString("N")));
+        Directory.CreateDirectory(root);
+        using var process = new System.Diagnostics.Process
+        {
+            StartInfo = new System.Diagnostics.ProcessStartInfo(Environment.ProcessPath ?? throw new InvalidOperationException())
+            {
+                UseShellExecute = false,
+                WorkingDirectory = root
+            }
+        };
+        process.StartInfo.Environment["WPFGFX_SOURCE_CLIP_REFERENCE"] = Path.Combine(root, "ReferenceData");
+        process.StartInfo.ArgumentList.Add("--filter");
+        process.StartInfo.ArgumentList.Add("FullyQualifiedName~WhenFiniteShapeIntersectsSourceClipThenOriginalCoverageIsRecorded");
+        process.StartInfo.ArgumentList.Add("--results-directory");
+        process.StartInfo.ArgumentList.Add(Path.Combine(root, "Results"));
+        process.StartInfo.ArgumentList.Add("--report-trx");
+        process.Start();
+        if (!process.WaitForExit(180000))
+        {
+            process.Kill(true);
+            process.WaitForExit();
+            throw new TimeoutException();
+        }
+        Assert.AreEqual(0, process.ExitCode);
+        return Path.Combine(root, "ReferenceData", "source-clip-intersection.json");
+    }
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static uint GetBitmapPathType(nint self) => 4;
 
-    /// <summary>Consumes a Release/x64 bitmap brush boundary through the production private path and verifies mapping, clipping, opacity and retry.</summary>
+    /// <summary>Consumes a Release bitmap brush boundary on either architecture through the production private path and verifies mapping, clipping, opacity and retry.</summary>
     [TestMethod]
     [TestCategory("InternalTargetContract")]
     [DataRow(0u, false, 1f, 16u, 0u)]
@@ -47,6 +76,7 @@ public sealed unsafe partial class BitmapRenderTargetTests
     public void WhenPrivateBitmapBrushIsRealizedThenMappingClipAndOpacityReachPixels(uint wrap, bool worldSpace, float opacity, uint format, uint interpolation,
         bool reverseClip = false, bool emptyClip = false, bool finiteIntersection = false)
     {
+        string? referencePath = finiteIntersection ? CreateSourceClipReference() : null;
         var api = new Api();
         nint factory = 0, sourceTarget = 0, source = 0, milSource = 0, sourceLock = 0;
         nint target = 0, view = 0, bitmap = 0, heldLock = 0;
@@ -68,20 +98,25 @@ public sealed unsafe partial class BitmapRenderTargetTests
             Assert.AreEqual(0, api.GetBitmap(target, &bitmap));
             void** table = stackalloc void*[12];
             new Span<nint>(table, 12).Clear();
-            table[6] = (delegate* unmanaged<PathRealizer*, uint, uint, nint, nint, nint, int>)&EnsurePathRealizer;
-            table[9] = (delegate* unmanaged<PathRealizer*, byte, nint>)&GetPathBrush;
-            table[10] = (delegate* unmanaged<PathRealizer*, nint*, int>)&GetPathEffects;
+            table[6] = (delegate* unmanaged[Thiscall]<PathRealizer*, uint, uint, nint, nint, nint, int>)&EnsurePathRealizer;
+            table[10] = (delegate* unmanaged[Thiscall]<PathRealizer*, byte, nint>)&GetPathBrush;
+            table[11] = (delegate* unmanaged[Thiscall]<PathRealizer*, nint*, int>)&GetPathEffects;
             void** brushTable = stackalloc void*[6];
             new Span<nint>(brushTable, 6).Clear();
-            brushTable[3] = (delegate* unmanaged<nint, uint>)&GetBitmapPathType;
+            brushTable[3] = (delegate* unmanaged[Thiscall]<nint, uint>)&GetBitmapPathType;
             byte* brush = stackalloc byte[240];
             new Span<byte>(brush, 240).Clear();
             *(void***)brush = brushTable;
-            *(uint*)(brush + 76) = worldSpace ? 1u : 0u;
-            *(Matrix4x4*)(brush + 80) = interpolation == 1
+            // Retail CMILBrush-relative offsets, independently verified on both architectures.
+            int matrixOffset = IntPtr.Size == 4 ? 48 : 80;
+            int clipPointsOffset = IntPtr.Size == 4 ? 120 : 160;
+            int useClipOffset = IntPtr.Size == 4 ? 156 : 200;
+            int textureOffset = IntPtr.Size == 4 ? 164 : 208;
+            *(uint*)(brush + matrixOffset - 4) = worldSpace ? 1u : 0u;
+            *(Matrix4x4*)(brush + matrixOffset) = interpolation == 1
                 ? Matrix4x4.CreateTranslation(0.5f, 0, 0) : Matrix4x4.Identity;
             // Source clip is a native CParallelogram, not a bounds rectangle.
-            Vector2* points = (Vector2*)(brush + 160);
+            Vector2* points = (Vector2*)(brush + clipPointsOffset);
             float left = emptyClip ? 10 : worldSpace ? 0 : 1;
             points[0] = new(left, 0); points[1] = new(left + 2, 0);
             points[2] = new(left + 2, 1); points[3] = new(left, 1);
@@ -91,19 +126,19 @@ public sealed unsafe partial class BitmapRenderTargetTests
                 points[2] = new(2.1f, 1.8f); points[3] = new(-0.3f, 1.1f);
             }
             if (reverseClip) (points[1], points[3]) = (points[3], points[1]);
-            *(int*)(brush + 200) = 1;
-            *(nint*)(brush + 208) = milSource;
-            *(uint*)(brush + 216) = wrap;
+            *(int*)(brush + useClipOffset) = 1;
+            *(nint*)(brush + textureOffset) = milSource;
+            *(uint*)(brush + textureOffset + sizeof(nint)) = wrap;
             // Native MilColorF is RGBA scRGB; use an opaque blue border.
-            *(Vector4*)(brush + 220) = new(0, 0, 1, 1);
-            *(float*)(brush + 236) = opacity;
+            *(Vector4*)(brush + textureOffset + sizeof(nint) + 4) = new(0, 0, 1, 1);
+            *(float*)(brush + textureOffset + sizeof(nint) + 20) = opacity;
             PathRealizer realizer = new() { Table = table, Brush = (nint)brush, Failure = 2 };
             byte* context = stackalloc byte[2048];
             byte* state = stackalloc byte[116];
             new Span<byte>(context, 2048).Clear(); new Span<byte>(state, 116).Clear();
-            *(int*)(context + 376) = 1;
-            *(nint*)(context + 400) = (nint)state;
-            *(Matrix4x4*)(context + 408) = finiteIntersection ? Matrix4x4.Identity : Matrix4x4.CreateTranslation(1, 0, 0);
+            *(int*)(context + InternalContextLayout.Clip) = 1;
+            *(nint*)(context + InternalContextLayout.RenderState) = (nint)state;
+            *(Matrix4x4*)(context + InternalContextLayout.WorldToDevice) = finiteIntersection ? Matrix4x4.Identity : Matrix4x4.CreateTranslation(1, 0, 0);
             void** shapeTable = stackalloc void*[7];
             new Span<nint>(shapeTable, 7).Clear();
             shapeTable[4] = (delegate* unmanaged<nint, uint>)&GetPathFigureCount;
@@ -137,7 +172,7 @@ public sealed unsafe partial class BitmapRenderTargetTests
                 byte[] actual = new byte[32];
                 fixed (byte* pixels = actual)
                     Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, uint, uint, byte*, int>)(*(void***)bitmap)[7])(bitmap, 0, 16, 32, pixels));
-                using JsonDocument reference = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "ReferenceData", "source-clip-intersection.json")));
+                using JsonDocument reference = JsonDocument.Parse(File.ReadAllText(referencePath ?? throw new InvalidOperationException()));
                 byte[] expected = reference.RootElement.GetProperty("PixelsBgra").EnumerateArray().Select(value => value.GetByte()).ToArray();
                 CollectionAssert.AreEqual(expected, actual,
                     $"Original [{string.Join(',', expected)}]; AOT [{string.Join(',', actual)}]");

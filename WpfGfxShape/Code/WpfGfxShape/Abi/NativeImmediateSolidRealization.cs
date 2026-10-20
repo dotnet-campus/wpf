@@ -4,7 +4,7 @@ using WpfGfxShape.Core;
 
 namespace WpfGfxShape.Abi;
 
-// Software virtual contract and consumed Release/x64 bitmap prefix, not a complete MSVC object.
+// Software virtual contract with a retail native bitmap prefix and a private precision tail.
 internal static unsafe class NativeImmediateSolidRealization
 {
     [StructLayout(LayoutKind.Sequential)]
@@ -18,25 +18,15 @@ internal static unsafe class NativeImmediateSolidRealization
         internal nint BitmapBrush;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 384)]
+    [StructLayout(LayoutKind.Sequential)]
     private struct BitmapBrush
     {
-        [FieldOffset(0)] internal void** Table;
-        [FieldOffset(76)] internal uint Space;
-        [FieldOffset(80)] internal System.Numerics.Matrix4x4 Mapping;
-        [FieldOffset(160)] internal System.Numerics.Vector2 Clip0;
-        [FieldOffset(168)] internal System.Numerics.Vector2 Clip1;
-        [FieldOffset(176)] internal System.Numerics.Vector2 Clip2;
-        [FieldOffset(184)] internal System.Numerics.Vector2 Clip3;
-        [FieldOffset(200)] internal int HasSourceClip;
-        [FieldOffset(208)] internal nint Source;
-        [FieldOffset(216)] internal uint Wrap;
-        [FieldOffset(236)] internal float Opacity;
-        [FieldOffset(240)] internal GeneratedImageTransform ExactMapping;
-        [FieldOffset(288)] internal MilRectD ExactSourceClip;
-        [FieldOffset(320)] internal GeneratedImageTransform ExactClipMapping;
-        [FieldOffset(368)] internal int HasExactClipMapping;
-        [FieldOffset(376)] internal SoftwareImageWorkingFormat WorkingFormat;
+        internal NativeBitmapBrushLayout Native;
+        internal GeneratedImageTransform ExactMapping;
+        internal MilRectD ExactSourceClip;
+        internal GeneratedImageTransform ExactClipMapping;
+        internal int HasExactClipMapping;
+        internal SoftwareImageWorkingFormat WorkingFormat;
     }
 
     private static readonly void** RealizerTable = CreateRealizerTable();
@@ -52,18 +42,18 @@ internal static unsafe class NativeImmediateSolidRealization
         nint realization = 0;
         try
         {
-            brush->Table = BitmapTable;
-            brush->Mapping = System.Numerics.Matrix4x4.Identity;
+            brush->Native.Table = BitmapTable;
+            brush->Native.Mapping = System.Numerics.Matrix4x4.Identity;
             brush->ExactMapping = mapping ?? GeneratedImageTransform.Identity;
             brush->WorkingFormat = workingFormat;
-            brush->Wrap = (uint)MilBitmapWrapMode.Border;
-            brush->Opacity = opacity;
+            brush->Native.Wrap = (uint)MilBitmapWrapMode.Border;
+            brush->Native.Opacity = opacity;
             if (mapping is { } transform)
             {
-                brush->Mapping.M11 = (float)transform.ScaleX; brush->Mapping.M22 = (float)transform.ScaleY;
-                brush->Mapping.M12 = (float)transform.M12; brush->Mapping.M21 = (float)transform.M21;
-                brush->Mapping.M41 = (float)transform.X; brush->Mapping.M42 = (float)transform.Y;
-                brush->Wrap = (uint)wrapMode;
+                brush->Native.Mapping.M11 = (float)transform.ScaleX; brush->Native.Mapping.M22 = (float)transform.ScaleY;
+                brush->Native.Mapping.M12 = (float)transform.M12; brush->Native.Mapping.M21 = (float)transform.M21;
+                brush->Native.Mapping.M41 = (float)transform.X; brush->Native.Mapping.M42 = (float)transform.Y;
+                brush->Native.Wrap = (uint)wrapMode;
                 if (sourceClip is { } rectangle)
                 {
                     brush->ExactSourceClip = rectangle;
@@ -78,15 +68,15 @@ internal static unsafe class NativeImmediateSolidRealization
                         var point = clipTransform.Apply(x, y);
                         return new((float)point.X, (float)point.Y);
                     }
-                    brush->Clip0 = Point(rectangle.X, rectangle.Y);
-                    brush->Clip1 = Point(rectangle.X + rectangle.Width, rectangle.Y);
-                    brush->Clip2 = Point(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height);
-                    brush->Clip3 = Point(rectangle.X, rectangle.Y + rectangle.Height);
-                    brush->HasSourceClip = 1;
+                    brush->Native.Clip.Data.P0 = Point(rectangle.X, rectangle.Y);
+                    brush->Native.Clip.Data.P1 = Point(rectangle.X + rectangle.Width, rectangle.Y);
+                    brush->Native.Clip.Data.P2 = Point(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height);
+                    brush->Native.Clip.Data.P3 = Point(rectangle.X, rectangle.Y + rectangle.Height);
+                    brush->Native.HasSourceClip = 1;
                 }
             }
             ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)source)[1])(source);
-            brush->Source = source;
+            brush->Native.Source = source;
             realization = Create(null);
             ((Instance*)realization)->BitmapBrush = (nint)brush;
             return realization;
@@ -95,7 +85,7 @@ internal static unsafe class NativeImmediateSolidRealization
         {
             if (realization == 0)
             {
-                Direct3D9Factory.Release(brush->Source);
+                Direct3D9Factory.Release(brush->Native.Source);
                 NativeMemory.Free(brush);
             }
         }
@@ -113,7 +103,7 @@ internal static unsafe class NativeImmediateSolidRealization
     internal static bool TryGetExactSourceClip(nint brush, out MilRectD rectangle)
     {
         rectangle = default;
-        if (*(void***)brush != BitmapTable || ((BitmapBrush*)brush)->HasSourceClip == 0) return false;
+        if (*(void***)brush != BitmapTable || ((BitmapBrush*)brush)->Native.HasSourceClip == 0) return false;
         rectangle = ((BitmapBrush*)brush)->ExactSourceClip;
         return true;
     }
@@ -135,8 +125,8 @@ internal static unsafe class NativeImmediateSolidRealization
         self->BitmapBrush = 0;
         if (brush != null)
         {
-            nint source = brush->Source;
-            brush->Source = 0;
+            nint source = brush->Native.Source;
+            brush->Native.Source = 0;
             NativeMemory.Free(brush);
             Direct3D9Factory.Release(source);
         }
@@ -170,16 +160,16 @@ internal static unsafe class NativeImmediateSolidRealization
         void** table = (void**)RuntimeHelpers.AllocateTypeAssociatedMemory(typeof(NativeImmediateSolidRealization), 12 * sizeof(nint));
         table[0] = (delegate* unmanaged[Stdcall]<Instance*, uint>)&AddRef;
         table[1] = (delegate* unmanaged[Stdcall]<Instance*, uint>)&Release;
-        table[2] = (delegate* unmanaged<Instance*, uint, nint>)&Delete;
-        table[3] = (delegate* unmanaged<Instance*, nint, byte>)&NoTiling;
-        table[4] = (delegate* unmanaged<Instance*, byte>)&NoClip;
-        table[5] = (delegate* unmanaged<Instance*, nint, byte>)&NoTiling;
-        table[6] = (delegate* unmanaged<Instance*, uint, uint, nint, nint, nint, int>)&Ensure;
-        table[7] = (delegate* unmanaged<Instance*, void>)&NoFixups;
-        table[8] = (delegate* unmanaged<Instance*, void>)&NoFixups;
-        table[9] = (delegate* unmanaged<Instance*, byte, nint>)&GetBrush;
-        table[10] = (delegate* unmanaged<Instance*, nint*, int>)&GetEffects;
-        table[11] = (delegate* unmanaged<Instance*, nint>)&GetBrushCore;
+        table[2] = (delegate* unmanaged[Thiscall]<Instance*, uint, nint>)&Delete;
+        table[3] = (delegate* unmanaged[Thiscall]<Instance*, nint, byte>)&NoTiling;
+        table[4] = (delegate* unmanaged[Thiscall]<Instance*, byte>)&NoClip;
+        table[5] = (delegate* unmanaged[Thiscall]<Instance*, nint, byte>)&NoTiling;
+        table[6] = (delegate* unmanaged[Thiscall]<Instance*, uint, uint, nint, nint, nint, int>)&Ensure;
+        table[7] = (delegate* unmanaged[Thiscall]<Instance*, void>)&NoFixups;
+        table[8] = (delegate* unmanaged[Thiscall]<Instance*, void>)&NoFixups;
+        table[9] = (delegate* unmanaged[Thiscall]<Instance*, nint>)&GetBrushCore;
+        table[10] = (delegate* unmanaged[Thiscall]<Instance*, byte, nint>)&GetBrush;
+        table[11] = (delegate* unmanaged[Thiscall]<Instance*, nint*, int>)&GetEffects;
         return table;
     }
 
@@ -210,7 +200,7 @@ internal static unsafe class NativeImmediateSolidRealization
     [UnmanagedCallersOnly]
     private static uint GetBitmapType(nint self) => 4;
     [UnmanagedCallersOnly]
-    private static int BitmapZeroAlpha(nint self) => ((BitmapBrush*)self)->Opacity == 0 ? 1 : 0;
+    private static int BitmapZeroAlpha(nint self) => ((BitmapBrush*)self)->Native.Opacity == 0 ? 1 : 0;
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static uint AddRef(Instance* self) => (uint)Interlocked.Increment(ref self->References);
@@ -221,30 +211,30 @@ internal static unsafe class NativeImmediateSolidRealization
         if (count == 0) Destroy(self);
         return (uint)count;
     }
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static nint Delete(Instance* self, uint flags)
     {
         nint result = (nint)self;
         if ((flags & 1) != 0) Destroy(self);
         return result;
     }
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static byte NoTiling(Instance* self, nint context) => 0;
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static byte NoClip(Instance* self) => 0;
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static int Ensure(Instance* self, uint cache, uint display, nint brushContext, nint context, nint creator)
         => cache == 0 || cache == uint.MaxValue ? 0 : Direct3D9Factory.NotImplementedHResult;
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static void NoFixups(Instance* self) { }
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static nint GetBrush(Instance* self, byte transparent)
         => self->BitmapBrush != 0 ? self->BitmapBrush
             : self->IsNull == 0 || transparent != 0 ? (nint)(&self->BrushTable) : 0;
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static nint GetBrushCore(Instance* self) => self->BitmapBrush != 0 ? self->BitmapBrush
         : self->IsNull == 0 ? (nint)(&self->BrushTable) : 0;
-    [UnmanagedCallersOnly]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvThiscall)])]
     private static int GetEffects(Instance* self, nint* effects)
     {
         if (effects == null) return unchecked((int)0x80004003);

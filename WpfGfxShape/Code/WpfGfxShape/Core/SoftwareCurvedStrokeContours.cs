@@ -2,8 +2,16 @@ namespace WpfGfxShape.Core;
 
 internal static class SoftwareCurvedStrokeContours
 {
+    // Primitive figures are saved in local float space before the parent/device transform.
+    private static (double X, double Y) ApplyFillLocal(GeneratedImageTransform transform, double x, double y)
+    {
+        float px = (float)x, py = (float)y;
+        return (px * (float)transform.ScaleX + py * (float)transform.M21 + (float)transform.X,
+            px * (float)transform.M12 + py * (float)transform.ScaleY + (float)transform.Y);
+    }
+
     internal static bool TryRead(GeneratedEllipseGeometryResource ellipse, out SoftwareStrokeContours.Figure figure,
-        bool preserveCurves = false)
+        bool preserveCurves = false, bool fillPrimitive = false)
     {
         figure = default;
         if (!GeneratedImageTransform.TryResolve(ellipse.Transform, out var transform)) return false;
@@ -19,7 +27,8 @@ internal static class SoftwareCurvedStrokeContours
             new(x + mx, y - ry), new(x + rx, y - my), new(x + rx, y)];
         for (int i = 0; i < controls.Length; i++)
         {
-            var point = transform.Apply(controls[i].X, controls[i].Y);
+            var point = fillPrimitive ? ApplyFillLocal(transform, controls[i].X, controls[i].Y)
+                : transform.Apply(controls[i].X, controls[i].Y);
             if (!float.IsFinite((float)point.X) || !float.IsFinite((float)point.Y)) return false;
             controls[i] = new((float)point.X, (float)point.Y);
         }
@@ -47,7 +56,7 @@ internal static class SoftwareCurvedStrokeContours
     }
 
     internal static bool TryRead(GeneratedRectangleGeometryResource rectangle, out SoftwareStrokeContours.Figure figure,
-        bool preserveCurves = false)
+        bool preserveCurves = false, bool fillPrimitive = false)
     {
         figure = default;
         var value = rectangle.CurrentValue;
@@ -60,7 +69,8 @@ internal static class SoftwareCurvedStrokeContours
                 new(r.X + r.Width, r.Y + r.Height), new(r.X, r.Y + r.Height) };
             for (int i = 0; i < corners.Length; i++)
             {
-                var point = transform.Apply((float)corners[i].X, (float)corners[i].Y);
+                var point = fillPrimitive ? ApplyFillLocal(transform, corners[i].X, corners[i].Y)
+                    : transform.Apply((float)corners[i].X, (float)corners[i].Y);
                 if (!float.IsFinite((float)point.X) || !float.IsFinite((float)point.Y)) return false;
                 corners[i] = new((float)point.X, (float)point.Y);
             }
@@ -78,7 +88,8 @@ internal static class SoftwareCurvedStrokeContours
             new(l + rx, bottom), new(l + bx, bottom), new(l, bottom - by), new(l, bottom - ry)];
         for (int i = 0; i < controls.Length; i++)
         {
-            var p = transform.Apply((float)controls[i].X, (float)controls[i].Y);
+            var p = fillPrimitive ? ApplyFillLocal(transform, controls[i].X, controls[i].Y)
+                : transform.Apply((float)controls[i].X, (float)controls[i].Y);
             if (!float.IsFinite((float)p.X) || !float.IsFinite((float)p.Y)) return false;
             controls[i] = new((float)p.X, (float)p.Y);
         }

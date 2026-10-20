@@ -11,7 +11,9 @@
 - DEC-0006：已安装官方完整 .NET 10 WindowsDesktop，同版同架构独立对照；不要求历史 10.0.12。
 - [唯一总计划](remaining-gap-closure-plan.md)：九个有界包及唯一七阶段完成条件。
 - [主题合同](plan-module-contracts.md)、[最终差集](final-acceptance-remaining-matrix.md)。
-- [唯一外部页](all-completion-external-prerequisites.md)：三项来源与实际 x86/x64 验收环境。
+- [唯一外部页](all-completion-external-prerequisites.md)：确缺来源与实际 x86/x64 验收条件；retail player私有协议不是外部阻塞。
+- [保护API版本详档](protection-api-contract.md)：实际build commit、HTTPS失败/成功证据与尚未证明的bool语义。
+- 本次候选C79CCF1D…，托管4224/4224，原生1676/1635pass/41fail/0skip；整体未完成，不沿用前轮11fail。
 
 ## 正式规范
 
@@ -29,5 +31,5 @@
 [清理记录](completed-work/process-cleanup.md)登记实际执行，[历史索引](history-index.md)标明已清理材料，不承诺旧路径存在。
 最终源码已验证 NativeAOT 与真实工作区幂等执行，精确分账只见清理记录；运行生成资料只输出 ignored artifacts，不迁到 ReferenceData 或 Docs 假清理。
 独立不可再生输入、生产 manifest/资源声明和正式规范保留。
-GenProto 历史 GUID 依赖尚未恢复，旧 46/46 不能作为删除后的通过结果。
+[两项目收口记录](completed-work/two-test-projects-consolidation.md)是本轮测试组织裁决：Tests仅托管Tests与原生ComAcceptance，旧30项目/17目录已授权删除。GenProto历史审计不再是测试门，Ledger核心保留但不强依赖；本轮裁决覆盖旧测试组织规则，产品兼容目标不变。
 整体生产仍未完成；文档清理不关闭 C5/D4、ABI、HW、寿命或 E2E 门。

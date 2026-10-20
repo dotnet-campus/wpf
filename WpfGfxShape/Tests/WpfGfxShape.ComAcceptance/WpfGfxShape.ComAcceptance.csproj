@@ -6,6 +6,9 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputType>Exe</OutputType>
+    <StartupObject>WpfGfxShape.ComAcceptance.NativeRun</StartupObject>
+    <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
+    <TestingPlatformGenerateEntryPoint>false</TestingPlatformGenerateEntryPoint>
     <EnableMSTestRunner>true</EnableMSTestRunner>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     <EnableMSTestV2CopyResources>false</EnableMSTestV2CopyResources>
@@ -15,15 +18,17 @@
     <AotDllPath Condition="'$(AotDllPath)' == ''">$(MSBuildThisFileDirectory)../../artifacts/publish/WpfGfxShape/Release/$(AotRuntimeIdentifier)/wpfgfx_cor3.dll</AotDllPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../Code/WpfGfxShape/Core/SoftwareFillBezier.cs" Link="FillInteger/SoftwareFillBezier.cs" />
     <PackageReference Include="MSTest" Version="4.0.1" />
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
     <Using Include="System.IO" />
-    <None Include="../WpfGfxShape.WpfReference/TestResults/original-wpf-e07cbceaf453471dacb4cb12c99bdbc2.json" Link="ReferenceData/original-wpf.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="../WpfGfxShape.WpfReference/TestResults/source-clip-intersection-9ea80318e1d241db98efb079ef626374.json" Link="ReferenceData/source-clip-intersection.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="../WpfGfxShape.WpfReference/TestResults/glyph-arial-original.json" Link="ReferenceData/glyph-arial-original.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../../src/Microsoft.DotNet.Wpf/src/WpfGfx/include/wgx_sdk_version.h" Link="Contracts/wgx_sdk_version.h" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../../src/Microsoft.DotNet.Wpf/src/WpfGfx/core/dll/wpfgfx.def" Link="Contracts/wpfgfx.def" CopyToOutputDirectory="PreserveNewest" />
+    <AssemblyMetadata Include="ReferenceResultsPath" Value="$(WpfGfxShapeTestResultsRoot)native-reference" Condition="'$(ComAcceptanceSandbox)' != 'true'" />
+    <AssemblyMetadata Include="ReferenceResultsPath" Value="ReferenceData" Condition="'$(ComAcceptanceSandbox)' == 'true'" />
     <None Include="$(AotDllPath)" Link="Native/wpfgfx_cor3.dll" CopyToPublishDirectory="PreserveNewest" Condition="'$(ComAcceptanceSandbox)' == 'true'" />
     <AssemblyMetadata Include="ComAcceptanceSandbox" Value="$(ComAcceptanceSandbox)" />
-    <AssemblyMetadata Include="CalibrationResultsPath" Value="$(MSBuildThisFileDirectory)TestResults" Condition="'$(ComAcceptanceSandbox)' != 'true'" />
+    <AssemblyMetadata Include="CalibrationResultsPath" Value="$(WpfGfxShapeTestResultsRoot)native" Condition="'$(ComAcceptanceSandbox)' != 'true'" />
     <AssemblyMetadata Include="AotDllPath" Value="$([System.IO.Path]::GetFullPath('$(AotDllPath)'))" Condition="'$(ComAcceptanceSandbox)' != 'true'" />
     <AssemblyMetadata Include="CalibrationResultsPath" Value="Results" Condition="'$(ComAcceptanceSandbox)' == 'true'" />
     <AssemblyMetadata Include="AotDllPath" Value="Native/wpfgfx_cor3.dll" Condition="'$(ComAcceptanceSandbox)' == 'true'" />

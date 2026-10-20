@@ -20,6 +20,8 @@ internal sealed class GeneratedTargetRegistry
         target.Release();
     }
 
+    internal bool HasPresentableTargets => _targets.Any(static target => target.CanPresent);
+
     internal int Render(bool signalPresent = true)
     {
         GeneratedTargetResource[] targets = [.. _targets];

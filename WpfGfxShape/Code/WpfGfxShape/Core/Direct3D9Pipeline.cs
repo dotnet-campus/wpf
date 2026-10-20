@@ -268,7 +268,7 @@ internal sealed class Direct3D9ConstantColorSource : IDisposable
             : mapping(vertexBuilder, location);
     }
 
-    private static uint ConvertToPremultipliedSrgb(MilColorF color)
+    internal static uint ConvertToPremultipliedSrgb(MilColorF color)
     {
         float alpha = Math.Clamp(color.Alpha, 0, 1);
         byte alphaByte = ConvertToByte(alpha);

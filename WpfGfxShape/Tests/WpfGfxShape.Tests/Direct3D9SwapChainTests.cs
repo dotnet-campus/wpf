@@ -37,6 +37,17 @@ public sealed unsafe class Direct3D9SwapChainTests
         ReleaseOrder.Clear();
     }
 
+    /// <summary>Verifies that installing COM callbacks does not overwrite either surface identity.</summary>
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(1)]
+    public void WhenSurfaceVtableIsInitializedThenFixtureIndexIsPreserved(int index)
+    {
+        using FakeSurfaceObject surface = new(index);
+
+        Assert.AreEqual(index, GetSurfaceIndex(surface.Surface));
+    }
+
     [TestMethod]
     public void WhenSwapChainIsInitializedThenAllBackBuffersAreCachedWithIndependentReturnedOwnership()
     {
@@ -294,7 +305,7 @@ public sealed unsafe class Direct3D9SwapChainTests
 
     private static int GetSurfaceIndex(IDirect3DSurface9* surface)
     {
-        return *((int*) surface + 2);
+        return *(int*) ((nint*) surface + 14);
     }
 
     private struct FakeSwapChainObject : IDisposable
@@ -356,7 +367,8 @@ public sealed unsafe class Direct3D9SwapChainTests
             Surface = (IDirect3DSurface9*) memory;
             void** vtable = memory + 1;
             Surface->LpVtbl = vtable;
-            *((int*) Surface + 2) = index;
+            // Keep fixture identity after the object pointer and all 13 vtable slots.
+            *(int*) (memory + 14) = index;
             vtable[1] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DSurface9*, uint>) &AddRefSurface;
             vtable[2] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DSurface9*, uint>) &ReleaseSurface;
             vtable[12] = (void*) (delegate* unmanaged[Stdcall]<IDirect3DSurface9*, SurfaceDesc*, int>) &GetSurfaceDescription;

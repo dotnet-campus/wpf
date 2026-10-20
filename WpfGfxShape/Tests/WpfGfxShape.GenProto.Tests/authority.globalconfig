@@ -1,4 +1,0 @@
-is_global = true
-global_level = 100
-# Compile original authority without rewriting its regex algorithm.
-dotnet_diagnostic.SYSLIB1045.severity = warning

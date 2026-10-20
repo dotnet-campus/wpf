@@ -1,6 +1,0 @@
-<Project DefaultTargets="Build">
-  <Target Name="Build">
-    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Restore;Build;Test" Properties="Configuration=Release;ComAcceptanceSandbox=false;TestingPlatformCommandLineArguments=--filter FullyQualifiedName~WhenNativeGpu --report-trx --report-trx-filename gpu-readback-local-controls.trx" ContinueOnError="ErrorAndContinue" />
-    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Test" Properties="Configuration=Release;ComAcceptanceSandbox=false;TestingPlatformCommandLineArguments=--report-trx --report-trx-filename gpu-readback-local-full.trx" />
-  </Target>
-</Project>

@@ -1,23 +1,31 @@
-# 后续工作项
+# 当前工作项：完整替换 wpfgfx.dll
 
-本轮Docs/Ledger清理与现行引用修复已收口，最终源码已验证；精确账只见[清理记录](../completed-work/process-cleanup.md)，本次不新增下列既有工作项。
-不恢复已删除运行快照、scope overlay或旧WIP，不把清理当生产完成。
+## 任务
 
-## 下一批范围
+交由后续子智能体按照[完整替换实施与验证方案](../wpfgfx-complete-replacement-validation-plan.md)实施：**确保 WpfGfxShape 能够完整替换原来的 wpfgfx.dll**。发现差异后必须定位并修复生产根因，补稳定回归，再完成实际验证；不能只交付测试清单、文档或构建成功。
 
-1. 有界解除GenProto审计对旧GUID原物的依赖：正式输入/源码合同与当轮artifact分离，保留原断言，不skip、不伪造报告。
-2. 将仍写Investigations/GenProtoEvidence的生成工具逐个改为ignored artifacts；本轮仅修WireCompiler派生Ledger写入点，不扩成几十文件测试重写。
-3. 复核records/groups中历史状态与required关系；保留sourceOwner、nativePath、依赖与readinessRule，不把历史satisfiedEvidenceIds当当前满足。
-4. 普通SystemVideoSample测试的历史NativeDll绝对路径定位修复，遵守DEC-0006官方完整runtime/身份隔离。
-5. 后续生产按[唯一九包/七阶段](../remaining-gap-closure-plan.md)推进，当前不是只剩外部输入。
+## 权威约束
 
-## 不减合同
+- Windows x86 Release/x64 Release，不做 Debug 门。
+- 全部测试驱动、夹具、探针、比较与报告逻辑纯 C#/.NET；不增加 C/C++、原生探针或机器码方案。
+- 仅 WpfGfxShape.Tests/WpfGfxShape.ComAcceptance，可新增必要测试，不增加第三 Host。
+- 核心为二进制兼容、功能结果、时序行为、资源行为、恢复能力（device-loss、resize）。
+- 错误行为仅错误输入；环境错误细节、性能、额外 hardening 不独立设门。真实恢复和资源清理仍必须通过。
+- 官方独立对照、零阈值、真实模块身份及原始内容证据不变。无固定 runtime 合同，结论标明实际验证版本，不擅自缩窄产品范围。
 
-Windows x86/x64适用全部配置；ARM64不适用，DLL进程驻留，真实资源清理必需。
-C5/D4、完整ABI/strict/full/E2E及真实HW/恢复仍未满；两个required/parent继续Blocked。
-来源只向[唯一外部页](../all-completion-external-prerequisites.md)收敛，不索取ARM64或历史10.0.12。
+## 执行顺序
 
-## 证据边界
+1. 盘点两个项目的关键能力覆盖及真实调用路径，建立五维 × 双架构 Release 矩阵。
+2. 建立当前候选完整现有回归基线，重新裁决历史 HW 失败，不拼接旧 SHA。
+3. 补齐独立纯 C# ABI 调用、组合内容差分和真实 WPF producer/consumer E2E。
+4. 补齐更新/resize/device-loss/恢复/关闭状态序列、回调竞争和循环资源收敛。
+5. 用合法输入随机差分、失败缩减和负控发现未知缺陷；逐项修复并回归。
+6. 最后源码修改后完成两架构 Release 最终适用矩阵，回读实际证据，给出完整替换结论或明确未完成项。
 
-GenProto full尚未恢复，历史46/46非当前通过；本轮没有重跑full或生产publish。
-运行结果输出artifacts，不tracked，不搬ReferenceData/Docs备份。
+## 子智能体交付
+
+每个有界包提交变更文件、缺陷根因、测试覆盖、实际运行结果、产物身份、原始证据路径、未覆盖/阻塞项。共享实现修改须协调；主执行者负责最终集成及完整双架构验收。存在关键未覆盖或未解释差异不得宣布可完整替换。
+
+## 起始实证
+
+最新已运行范围仍见[基线](current-stable-baseline.md)及[报告](../completed-work/x86-stroke-current-validation.md)。x86 目标回归和 x64 同源码 Release 有界回归已通过，不再沿用“x86 未实跑/E_NOTIMPL 未修”。本次只是更新任务与方案，尚无新实现/测试结果；整体未完成。

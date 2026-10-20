@@ -1,5 +1,0 @@
-<Project DefaultTargets="Build">
-  <Target Name="Build">
-    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Restore;Build" Properties="Configuration=Release;ComAcceptanceSandbox=true" />
-  </Target>
-</Project>

@@ -140,10 +140,10 @@ public sealed unsafe partial class CompositionEffectsTests
             Assert.AreEqual(0, resource(channel, 47, &destination));
             Assert.AreEqual(0, resource(channel, 33, &shader));
             Assert.AreEqual(0, resource(channel, 38, &effect));
-            byte* sourcePacket = stackalloc byte[16];
+            byte* sourcePacket = stackalloc byte[8 + sizeof(nint)];
             *(uint*)sourcePacket = 0x0c; *(uint*)(sourcePacket + 4) = image; *(nint*)(sourcePacket + 8) = source;
             ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)source)[1])(source);
-            Assert.AreEqual(0, send(sourcePacket, 16, 0, channel));
+            Assert.AreEqual(0, send(sourcePacket, (uint)(8 + sizeof(nint)), 0, channel));
             byte* drawing = stackalloc byte[60]; new Span<byte>(drawing, 60).Clear();
             *(uint*)drawing = 0x18; *(uint*)(drawing + 4) = data; *(uint*)(drawing + 8) = 48;
             *(uint*)(drawing + 12) = 48; *(uint*)(drawing + 16) = 0x47;

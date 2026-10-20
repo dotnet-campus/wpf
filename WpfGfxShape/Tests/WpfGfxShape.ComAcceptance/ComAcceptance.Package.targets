@@ -14,9 +14,11 @@
       <AcceptancePackageFile Include="$(TargetDir)WpfGfxShape.ComAcceptance.exe;$(TargetPath);$(TargetDir)WpfGfxShape.ComAcceptance.deps.json;$(TargetDir)WpfGfxShape.ComAcceptance.runtimeconfig.json" />
       <AcceptancePackageFile Include="$(TargetDir)Microsoft.Testing.Platform.dll;$(TargetDir)Microsoft.Testing.Extensions.TrxReport.dll;$(TargetDir)Microsoft.Testing.Extensions.TrxReport.Abstractions.dll;$(TargetDir)Microsoft.Testing.Extensions.VSTestBridge.dll;$(TargetDir)Microsoft.VisualStudio.TestPlatform.ObjectModel.dll;$(TargetDir)Microsoft.TestPlatform.AdapterUtilities.dll;$(TargetDir)MSTest.TestAdapter.dll;$(TargetDir)MSTestAdapter.PlatformServices.dll;$(TargetDir)MSTest.TestFramework.dll;$(TargetDir)MSTest.TestFramework.Extensions.dll;$(TargetDir)Microsoft.TestPlatform.CoreUtilities.dll;$(TargetDir)Microsoft.TestPlatform.PlatformAbstractions.dll;$(TargetDir)Microsoft.TestPlatform.Utilities.dll;$(TargetDir)Newtonsoft.Json.dll;$(TargetDir)Microsoft.Testing.Extensions.MSBuild.dll" />
       <AcceptanceReferenceData Include="$(TargetDir)ReferenceData\*.json" />
+      <AcceptanceContract Include="$(TargetDir)Contracts\*" />
     </ItemGroup>
     <Copy SourceFiles="@(AcceptancePackageFile)" DestinationFolder="$(ComAcceptancePackageDirectory)" />
     <Copy SourceFiles="@(AcceptanceReferenceData)" DestinationFolder="$(ComAcceptancePackageDirectory)ReferenceData" />
+    <Copy SourceFiles="@(AcceptanceContract)" DestinationFolder="$(ComAcceptancePackageDirectory)Contracts" />
     <Copy SourceFiles="$(AotDllPath)" DestinationFolder="$(ComAcceptancePackageDirectory)Native" />
     <GetFileHash Files="$(AotDllPath)" Algorithm="SHA256">
       <Output TaskParameter="Items" ItemName="AcceptanceAotIdentity" />

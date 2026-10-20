@@ -2,7 +2,7 @@
 
 > 最新矩阵按[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)：Debug/Release × x86/x64及全部ABI/失败/寿命/E2E/strict/full条件。下文ARM64实机/编译/布局要求全部NA-UserScopeDecision，非Passed、不阻塞；x86不能降为可选或仅有限支持结果。精确runtime patch口径见[唯一审计](windowsdesktop-version-provenance.md)，[DEC-0006](decisions/DEC-0006-installed-official-runtime-contract.md)明确使用已安装官方完整runtime同版同架构独立对照，10.0.12仅历史身份、不再待澄清，不改golden。
 
-[测试策略](06-testing-strategy.md)§6–14正式主题合同，不维护当前数字。
+[测试策略](06-testing-strategy.md)§6–14正式主题合同，不维护当前数字。最新用户裁决覆盖旧组织：仅Tests托管与ComAcceptance原生两项目，GenProto历史取证/旧GUID/Ledger归档不再日常测试门，核心Ledger保留但非测试强依赖。产品兼容目标不变。
 
 ## 6. 数值、几何与像素比较
 
@@ -72,7 +72,7 @@ HW/D3DImage/media 用真实设备组件；SW 有稳定 CPU-only 基线；RDP/For
 - 生产 COM 唯一 ComAcceptance，标准 MTP 进程直接加载 AOT；禁止自建 Host/Process.Start，标准沙箱 exe 不属禁令。
 - WpfGfxShape.Tests：T1 与可直接验证组件。
 - 旧 AbiIntegration/AbiIntegration.Host：历史非生产 probe 发布/编排、resolver/PInvoke/加载宿主，只证明 E2E-00，不授权恢复旧 COM 方案。
-- 独立 PublicAbi 客户端验证生产公开 ABI，不因独立客户端角色被误封为 COM Host；不绕过唯一 COM 验收项目。
+- PublicAbi/Pcore/PlayerHwnd/WpfReference辅助源码已合入ComAcceptance，同MTP exe隔离角色不是独立项目或新增Host。
 
 probe 的加载/协议/并发/错误 DLL、symbol、PE、架构/模块路径/identity/HRESULT/out/异常及恢复不代表生产导出、COM、渲染或 PresentationCore。
 最新结果只见[基线](handoffs/current-stable-baseline.md)。

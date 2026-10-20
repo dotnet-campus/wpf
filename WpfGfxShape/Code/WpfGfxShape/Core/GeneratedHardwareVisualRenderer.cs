@@ -9,12 +9,18 @@ internal static class GeneratedHardwareVisualRenderer
         Direct3D9SurfaceRenderTarget target, uint width, uint height)
     {
         int hr = FrozenVisualTree.CapturePure(visual, [], out var tree);
-        if (hr < 0) return hr;
+        if (hr < 0)
+        {
+            PartitionScheduler.RecordCommandFailure(0, "Window.CapturePure"u8, hr);
+            return hr;
+        }
         using (tree)
         {
             if (tree is null) return Direct3D9Factory.InvalidCallHResult;
-            return Visit(tree, device, target, GeneratedImageTransform.Identity,
+            hr = Visit(tree, device, target, GeneratedImageTransform.Identity,
                 new(0, 0, checked((int)width), checked((int)height)), 0);
+            if (hr < 0) PartitionScheduler.RecordCommandFailure(0, "Window.Visit"u8, hr);
+            return hr;
         }
     }
 
@@ -58,7 +64,12 @@ internal static class GeneratedHardwareVisualRenderer
     {
         int drawResult = Draw(visual.Instructions, device, target, transform, clip,
             visual.BitmapScalingMode ?? 0, visual.CompositingMode ?? MilCompositingMode.SourceOver, visual);
-        if (drawResult < 0) return drawResult;
+        if (drawResult < 0)
+        {
+            PartitionScheduler.RecordCommandFailure(0,
+                System.Text.Encoding.UTF8.GetBytes($"Window.Draw depth={depth} kinds={string.Join(',', visual.Instructions.Select(static item => item.Kind))}"), drawResult);
+            return drawResult;
+        }
         foreach (var child in visual.Children)
         {
             int hr = Visit(child, device, target, transform, clip, depth + 1);
@@ -91,6 +102,13 @@ internal static class GeneratedHardwareVisualRenderer
             {
                 if (!stack.TryPop(out var previous)) return Direct3D9Factory.UceMalformedPacketHResult;
                 (transform, clip) = previous; continue;
+            }
+            if (instruction.Kind is GeneratedRenderDataKind.DrawRectangle or GeneratedRenderDataKind.DrawRectangleAnimate
+                or GeneratedRenderDataKind.DrawRoundedRectangle or GeneratedRenderDataKind.DrawRoundedRectangleAnimate)
+            {
+                int rectangleResult = GeneratedHardwareRectangle.Draw(instruction, device, target, transform, clip, compositing);
+                if (rectangleResult < 0) return rectangleResult;
+                continue;
             }
             if (instruction.Kind == GeneratedRenderDataKind.DrawGeometry)
             {

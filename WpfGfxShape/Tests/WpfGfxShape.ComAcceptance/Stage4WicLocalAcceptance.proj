@@ -1,6 +1,0 @@
-<Project DefaultTargets="Build">
-  <Target Name="Build">
-    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Restore;Build;Test" Properties="Configuration=Release;ComAcceptanceSandbox=false;TestingPlatformCommandLineArguments=--filter FullyQualifiedName~WhenStage4|FullyQualifiedName~WhenNativeGpu --report-trx --results-directory ../../Investigations/S-20261014-004-WIC/local-short --report-trx-filename wic-local-short.trx" ContinueOnError="ErrorAndContinue" />
-    <MSBuild Projects="WpfGfxShape.ComAcceptance.csproj" Targets="Test" Properties="Configuration=Release;ComAcceptanceSandbox=false;TestingPlatformCommandLineArguments=--report-trx --results-directory ../../Investigations/S-20261014-004-WIC/local-full --report-trx-filename wic-local-full.trx" />
-  </Target>
-</Project>

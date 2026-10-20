@@ -198,10 +198,7 @@ public sealed unsafe partial class MediaExportsTests
             _uninitialize = apartment >= 0;
             try
             {
-                using JsonDocument fixture = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "ReferenceData", "original-wpf.json")));
-                string path = AcceptancePaths.Sandbox
-                    ? Path.Combine(Path.GetDirectoryName(typeof(System.Windows.Media.MediaPlayer).Assembly.Location)!, "wpfgfx_cor3.dll")
-                    : fixture.RootElement.GetProperty("NativeDll").GetString()!;
+                string path = AcceptancePaths.OriginalDll;
                 nint module = candidate ? LoadCandidate() : NativeLibrary.Load(path);
                 var createFactory = (delegate* unmanaged[Stdcall]<nint*, uint, int>)NativeLibrary.GetExport(module, "MILCreateFactory");
                 var createProxy = (delegate* unmanaged[Stdcall]<Descriptor*, nint*, int>)NativeLibrary.GetExport(module, "MILCreateEventProxy");

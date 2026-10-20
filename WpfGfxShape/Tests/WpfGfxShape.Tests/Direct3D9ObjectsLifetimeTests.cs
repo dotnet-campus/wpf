@@ -140,7 +140,7 @@ public sealed unsafe class Direct3D9ObjectsLifetimeTests
         internal FakeDirect3DObject(string name)
         {
             _nameHandle = GCHandle.Alloc(name);
-            _memory = (nint) NativeMemory.AllocZeroed((nuint) sizeof(nint) * 4);
+            _memory = (nint) NativeMemory.AllocZeroed((nuint) sizeof(nint) * 5);
             nint* memory = (nint*) _memory;
             Direct3D = (IDirect3D9*) memory;
             Direct3DEx = (IDirect3D9Ex*) memory;

@@ -26,7 +26,7 @@ public sealed unsafe partial class BitmapRenderTargetTests
             Assert.AreEqual(0, api.GetBitmap(target, &bitmap));
             byte* context = stackalloc byte[2048];
             new Span<byte>(context, 2048).Clear();
-            *(int*)(context + 376) = 1;
+            *(int*)(context + InternalContextLayout.Clip) = 1;
             var path = (delegate* unmanaged[Stdcall]<nint, nint, nint, nint, nint, nint, nint, int>)(*(void***)view)[10];
             var infinitePath = (delegate* unmanaged[Stdcall]<nint, nint, nint, nint, int>)(*(void***)view)[11];
             var acquire = (delegate* unmanaged[Stdcall]<nint, nint, uint, nint*, int>)(*(void***)bitmap)[8];

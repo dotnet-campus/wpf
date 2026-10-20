@@ -13,14 +13,15 @@ internal sealed unsafe class GeneratedHardwareBitmapOperations : IDisposable
     private readonly MilCompositingMode _compositing;
     private readonly IReadOnlyList<MilPoint2D>? _triangles;
     private readonly uint _diffuse;
+    private readonly bool _solid;
 
     internal GeneratedHardwareBitmapOperations(Direct3D9Device device, Direct3D9SurfaceRenderTarget target,
         Direct3D9PipelineColorSource source, GeneratedImageTransform transform,
         Direct3D9SurfaceRect clip, MilCompositingMode compositing,
-        IReadOnlyList<MilPoint2D>? triangles = null, uint diffuse = uint.MaxValue)
+        IReadOnlyList<MilPoint2D>? triangles = null, uint diffuse = uint.MaxValue, bool solid = false)
     {
         _device = device; _source = source; _transform = transform; _compositing = compositing;
-        _triangles = triangles; _diffuse = diffuse;
+        _triangles = triangles; _diffuse = diffuse; _solid = solid;
         _handle = GCHandle.Alloc(this);
         nint token = GCHandle.ToIntPtr(_handle);
         var state = new Direct3D9ContextState(Matrix4x4.Identity, Matrix4x4.Identity,
@@ -52,10 +53,19 @@ internal sealed unsafe class GeneratedHardwareBitmapOperations : IDisposable
 
     private int GetBounds(Direct3D9PathClipperState state, out MilRectF bounds)
     {
-        var a = _transform.Apply(state.Bounds.Left, state.Bounds.Top);
-        var b = _transform.Apply(state.Bounds.Right, state.Bounds.Top);
-        var c = _transform.Apply(state.Bounds.Left, state.Bounds.Bottom);
-        var d = _transform.Apply(state.Bounds.Right, state.Bounds.Bottom);
+        double left = state.Bounds.Left, top = state.Bounds.Top;
+        double right = state.Bounds.Right, bottom = state.Bounds.Bottom;
+        if (_triangles is { Count: > 0 } triangles)
+        {
+            left = triangles.Min(static point => point.X);
+            top = triangles.Min(static point => point.Y);
+            right = triangles.Max(static point => point.X);
+            bottom = triangles.Max(static point => point.Y);
+        }
+        var a = _transform.Apply(left, top);
+        var b = _transform.Apply(right, top);
+        var c = _transform.Apply(left, bottom);
+        var d = _transform.Apply(right, bottom);
         bounds = new((float)Math.Min(Math.Min(a.X, b.X), Math.Min(c.X, d.X)),
             (float)Math.Min(Math.Min(a.Y, b.Y), Math.Min(c.Y, d.Y)),
             (float)Math.Max(Math.Max(a.X, b.X), Math.Max(c.X, d.X)),
@@ -103,12 +113,13 @@ internal sealed unsafe class GeneratedHardwareBitmapOperations : IDisposable
             {
                 var draw = new Direct3D9ProductionVertexDraw(_device);
                 var owner = new Direct3D9VertexPipelineOwner(
-                    static (out Direct3D9ExpandedVertexConverter? converter) => Direct3D9ExpandedVertexConverter.Create(
+                    (out Direct3D9ExpandedVertexConverter? converter) => Direct3D9ExpandedVertexConverter.Create(
                         Direct3D9VertexFormatAttribute.Xy | Direct3D9VertexFormatAttribute.Diffuse,
-                        Direct3D9VertexFormatAttribute.Xyz | Direct3D9VertexFormatAttribute.Diffuse | Direct3D9VertexFormatAttribute.Uv1,
+                        Direct3D9VertexFormatAttribute.Xyz | Direct3D9VertexFormatAttribute.Diffuse
+                            | (_solid ? Direct3D9VertexFormatAttribute.None : Direct3D9VertexFormatAttribute.Uv1),
                         Direct3D9VertexFormatAttribute.None, out converter), draw.Draw);
                 description = new(new Direct3D9ProductionPipelineInitializer([_source], owner,
-                    SendState, static () => { }), null, true);
+                    SendState, static () => { }, mappings: _solid ? [] : null), null, true);
                 return 0;
             }, static () => { });
         return 0;
@@ -116,7 +127,8 @@ internal sealed unsafe class GeneratedHardwareBitmapOperations : IDisposable
 
     private int SendState()
     {
-        int hr = _source.SendDeviceStates?.Invoke(0, 0) ?? Direct3D9Factory.NotImplementedHResult;
+        int hr = _solid ? _device.SetTexture(0, null)
+            : _source.SendDeviceStates?.Invoke(0, 0) ?? Direct3D9Factory.NotImplementedHResult;
         if (hr >= 0) hr = _device.SetVertexShader(null);
         if (hr >= 0) hr = _device.SetPixelShader(null);
         if (hr >= 0) hr = _device.SetRenderState((Renderstatetype)27, _compositing == MilCompositingMode.SourceOver ? 1u : 0u);
@@ -128,6 +140,13 @@ internal sealed unsafe class GeneratedHardwareBitmapOperations : IDisposable
         if (hr >= 0) hr = _device.SetTextureStageState(0, Texturestagestatetype.Alphaop, 4);
         if (hr >= 0) hr = _device.SetTextureStageState(0, Texturestagestatetype.Alphaarg1, 2);
         if (hr >= 0) hr = _device.SetTextureStageState(0, Texturestagestatetype.Alphaarg2, 0);
+        if (_solid)
+        {
+            if (hr >= 0) hr = _device.SetTextureStageState(0, Texturestagestatetype.Colorop, 2);
+            if (hr >= 0) hr = _device.SetTextureStageState(0, Texturestagestatetype.Alphaop, 2);
+            if (hr >= 0) hr = _device.SetTextureStageState(0, Texturestagestatetype.Colorarg1, 0);
+            if (hr >= 0) hr = _device.SetTextureStageState(0, Texturestagestatetype.Alphaarg1, 0);
+        }
         if (hr >= 0) hr = _device.DisableTextureStage(1);
         return hr;
     }

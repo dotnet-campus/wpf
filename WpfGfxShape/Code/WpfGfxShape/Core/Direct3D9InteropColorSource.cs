@@ -19,7 +19,7 @@ internal sealed unsafe partial class Direct3D9InteropColorSource : IDisposable
     private Direct3D9InteropColorSource(IDirect3DDevice9* device, SurfaceDesc description)
     {
         _device = device;
-        device->AddRef();
+        Direct3D9Factory.AddRef((nint)device);
         _description = description;
     }
 
@@ -52,23 +52,25 @@ internal sealed unsafe partial class Direct3D9InteropColorSource : IDisposable
         {
             void* shared = (void*)sharedHandle;
             IDirect3DTexture9* texture = null;
-            int result = device->CreateTexture(description.Width, description.Height, 1, 1,
+            int result = ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, uint, uint, uint, Format, Pool, IDirect3DTexture9**, void**, int>)device->LpVtbl[23])(
+                device, description.Width, description.Height, 1, 1,
                 description.Format, Pool.Default, &texture, sharedHandle != 0 ? &shared : null);
             if (result < 0) return result;
             candidate._texture = texture;
             IDirect3DSurface9* surface = null;
-            result = texture->GetSurfaceLevel(0, &surface);
+            result = ((delegate* unmanaged[Stdcall]<IDirect3DTexture9*, uint, IDirect3DSurface9**, int>)texture->LpVtbl[18])(texture, 0, &surface);
             if (result < 0) return result;
             candidate._surface = surface;
             if (sharedHandle == 0)
             {
                 IDirect3DSurface9* transfer = null;
-                result = device->CreateRenderTarget(description.Width, description.Height, description.Format,
-                    (MultisampleType)0, 0, true, &transfer, (void**)null);
+                result = ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, uint, Format, MultisampleType, uint, int, IDirect3DSurface9**, void**, int>)device->LpVtbl[28])(
+                    device, description.Width, description.Height, description.Format,
+                    (MultisampleType)0, 0, 1, &transfer, null);
                 if (result < 0) return result;
                 candidate._transfer = transfer;
                 candidate._primary = (IDirect3DSurface9*)primary;
-                candidate._primary->AddRef();
+                Direct3D9Factory.AddRef((nint)candidate._primary);
                 result = candidate.Realize();
                 if (result < 0) return result;
             }
@@ -89,24 +91,29 @@ internal sealed unsafe partial class Direct3D9InteropColorSource : IDisposable
         try
         {
             IDirect3DTexture9* texture = null;
-            int hr = device->CreateTexture(description.Width, description.Height, 1, 0,
+            var createTexture = (delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, uint, uint, uint, Format, Pool, IDirect3DTexture9**, void**, int>)device->LpVtbl[23];
+            int hr = createTexture(device, description.Width, description.Height, 1, 0,
                 description.Format, Pool.Default, &texture, null);
+            TraceUpload("CreateTexture.Default", hr, device, texture, staging, description);
             if (hr < 0) return hr;
             candidate._texture = texture;
-            hr = device->CreateTexture(description.Width, description.Height, 1, 0,
+            hr = createTexture(device, description.Width, description.Height, 1, 0,
                 description.Format, Pool.Systemmem, &staging, null);
+            TraceUpload("CreateTexture.Systemmem", hr, device, texture, staging, description);
             if (hr < 0) return hr;
             LockedRect pixels;
-            hr = staging->LockRect(0, &pixels, null, 0);
+            hr = ((delegate* unmanaged[Stdcall]<IDirect3DTexture9*, uint, LockedRect*, void*, uint, int>)staging->LpVtbl[19])(staging, 0, &pixels, null, 0);
+            TraceUpload("LockRect.Systemmem", hr, device, texture, staging, description);
             if (hr < 0) return hr;
             locked = true;
             hr = ((delegate* unmanaged[Stdcall]<nint, void*, uint, uint, byte*, int>)(*(void***)bitmap)[7])(
                 bitmap, null, checked((uint)pixels.Pitch), checked((uint)pixels.Pitch * description.Height), (byte*)pixels.PBits);
-            int unlock = staging->UnlockRect(0);
+            int unlock = Unlock(staging);
             locked = false;
             if (hr < 0) return hr;
             if (unlock < 0) return unlock;
-            hr = device->UpdateTexture((IDirect3DBaseTexture9*)staging, (IDirect3DBaseTexture9*)texture);
+            hr = ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, IDirect3DTexture9*, IDirect3DTexture9*, int>)device->LpVtbl[31])(device, staging, texture);
+            TraceUpload("UpdateTexture", hr, device, texture, staging, description);
             if (hr < 0) return hr;
             source = candidate;
             candidate = null;
@@ -114,10 +121,21 @@ internal sealed unsafe partial class Direct3D9InteropColorSource : IDisposable
         }
         finally
         {
-            if (locked) staging->UnlockRect(0);
-            if (staging != null) staging->Release();
+            if (locked) Unlock(staging);
+            Direct3D9Factory.Release(staging);
             candidate?.Dispose();
         }
+    }
+
+    private static int Unlock(IDirect3DTexture9* texture) =>
+        ((delegate* unmanaged[Stdcall]<IDirect3DTexture9*, uint, int>)texture->LpVtbl[20])(texture, 0);
+
+    private static void TraceUpload(string operation, int result, IDirect3DDevice9* device,
+        IDirect3DTexture9* texture, IDirect3DTexture9* staging, SurfaceDesc description)
+    {
+        if (result >= 0) return;
+        PartitionScheduler.RecordCommandFailure(0, System.Text.Encoding.UTF8.GetBytes(
+            $"Image.Upload {operation} device=0x{(nuint)device:X} texture=0x{(nuint)texture:X} staging=0x{(nuint)staging:X} width={description.Width} height={description.Height} format={description.Format} levels=1 usage=0 pointerSize={IntPtr.Size} lockedRectSize={sizeof(LockedRect)}"), result);
     }
 
     internal int Realize()
@@ -125,11 +143,11 @@ internal sealed unsafe partial class Direct3D9InteropColorSource : IDisposable
         ObjectDisposedException.ThrowIf(_device == null, this);
         if (_primary == null) return 0;
         nint sourceDc = 0, destinationDc = 0;
-        int result = _primary->GetDC(&sourceDc);
+        int result = ((delegate* unmanaged[Stdcall]<IDirect3DSurface9*, nint*, int>)_primary->LpVtbl[15])(_primary, &sourceDc);
         if (result < 0) return result;
         try
         {
-            result = _transfer->GetDC(&destinationDc);
+            result = ((delegate* unmanaged[Stdcall]<IDirect3DSurface9*, nint*, int>)_transfer->LpVtbl[15])(_transfer, &destinationDc);
             if (result < 0) return result;
             bool copied;
             try
@@ -140,26 +158,27 @@ internal sealed unsafe partial class Direct3D9InteropColorSource : IDisposable
             }
             finally
             {
-                int release = _transfer->ReleaseDC(destinationDc);
+                int release = ((delegate* unmanaged[Stdcall]<IDirect3DSurface9*, nint, int>)_transfer->LpVtbl[16])(_transfer, destinationDc);
                 if (result >= 0) result = release;
             }
         }
         finally
         {
-            int release = _primary->ReleaseDC(sourceDc);
+            int release = ((delegate* unmanaged[Stdcall]<IDirect3DSurface9*, nint, int>)_primary->LpVtbl[16])(_primary, sourceDc);
             if (result >= 0) result = release;
         }
         if (result < 0) return result;
-        return _device->StretchRect(_transfer, null, _surface, null, Texturefiltertype.None);
+        return ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, IDirect3DSurface9*, void*, IDirect3DSurface9*, void*, Texturefiltertype, int>)_device->LpVtbl[34])(
+            _device, _transfer, null, _surface, null, Texturefiltertype.None);
     }
 
     public void Dispose()
     {
-        if (_primary != null) { _primary->Release(); _primary = null; }
-        if (_transfer != null) { _transfer->Release(); _transfer = null; }
-        if (_surface != null) { _surface->Release(); _surface = null; }
-        if (_texture != null) { _texture->Release(); _texture = null; }
-        if (_device != null) { _device->Release(); _device = null; }
+        Direct3D9Factory.Release(_primary); _primary = null;
+        Direct3D9Factory.Release(_transfer); _transfer = null;
+        Direct3D9Factory.Release(_surface); _surface = null;
+        Direct3D9Factory.Release(_texture); _texture = null;
+        Direct3D9Factory.Release(_device); _device = null;
     }
 
     [LibraryImport("gdi32.dll", SetLastError = true)]
