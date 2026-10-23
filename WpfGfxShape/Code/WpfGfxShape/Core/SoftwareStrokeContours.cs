@@ -14,19 +14,17 @@ internal static class SoftwareStrokeContours
     internal static bool TryRead(GeneratedPathGeometryResource path, out List<Figure> figures, bool preserveGaps = false,
         bool allowNonFinite = false, bool fillLocalFloat = false)
     {
-        (double X, double Y) Apply(GeneratedImageTransform matrix, MilPoint2D value)
+        MilPoint2D ApplyFillLocal(GeneratedImageTransform matrix, MilPoint2D value)
         {
-            if (!fillLocalFloat) return matrix.Apply(value.X, value.Y);
             float x = (float)value.X, y = (float)value.Y;
-            return (x * (float)matrix.ScaleX + y * (float)matrix.M21 + (float)matrix.X,
+            return new(x * (float)matrix.ScaleX + y * (float)matrix.M21 + (float)matrix.X,
                 x * (float)matrix.M12 + y * (float)matrix.ScaleY + (float)matrix.Y);
         }
         bool Add(List<MilPoint2D> points, GeneratedImageTransform matrix, MilPoint2D value)
         {
             if (!fillLocalFloat) return SoftwareStrokeContours.Add(points, matrix, value, allowNonFinite);
-            var p = Apply(matrix, value);
-            if (!allowNonFinite && (!float.IsFinite((float)p.X) || !float.IsFinite((float)p.Y))) return false;
-            var next = new MilPoint2D((float)p.X, (float)p.Y);
+            var next = ApplyFillLocal(matrix, value);
+            if (!allowNonFinite && (!float.IsFinite((float)next.X) || !float.IsFinite((float)next.Y))) return false;
             if (points.Count == 0 || points[^1] != next) points.Add(next);
             return true;
         }
@@ -48,7 +46,12 @@ internal static class SoftwareStrokeContours
             {
                 for (int i = 0; i < values.Length; i++)
                 {
-                    var p = Apply(transform, values[i]);
+                    var p = transform.Apply(values[i].X, values[i].Y);
+                    if (fillLocalFloat)
+                    {
+                        var local = ApplyFillLocal(transform, values[i]);
+                        p = (local.X, local.Y);
+                    }
                     if (!allowNonFinite && (!float.IsFinite((float)p.X) || !float.IsFinite((float)p.Y))) return false;
                     values[i] = new((float)p.X, (float)p.Y);
                 }

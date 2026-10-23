@@ -1,5 +1,429 @@
 # 监督会话汇总与未闭事项排程
 
+## HE终态：同HD正式包candidate x64唯一对照通过
+沿用replacement-supervised-hwnd-consumer-contract.md，不新增报告。唯一新task333b412deb784bc3bdea920f2a519ba7，candidate1执行1通过0失败0skip；子PID836/监督6332，Exit0/nonTimeout/noKill，工具外层数值Exit未单列，非MTP监督无父TRX。actual候选Native/wpfgfx_cor3.dll SHA8F74588B081AD575EC1ED046E99CCC21182BA2E6BC47932F3DE9CBEEC915BEC0，Load句柄匹配实际模块后hash，数值句柄未序列化；testSHA878F8815345E61268526C957EF43D1D195979298C10D1C5216450234C9072E6C/MVIDe148d839-2fd7-44d4-88b5-512acdf3d919与HD同包，.NET/WPF10.0.13。
+native red/blue/red fresh各内容层通过；consumer红255/蓝16711680/绿65280零阈值全部相等，三eventtrue/HR0/四resource删除/Detach及cleanup完成，bitmap/surface/device/factory refs0，DestroyWindow1。flags12/context-2/DPI1/1/初始化invalidate不变；consumerbackend未知/目标surface未直接读，BasicRenderDriver仅native duplication，consumer没有单独screen读回，Available0及native exactclose未证。
+整task回收d:\lindexi\Code\dotnetcampus\WpfLab\WpfGfxShape\WpfGfxShape\artifacts\he-candidate-consumer\readback\x64-candidate；绝对taskTRX见同HD报告。HE和HD旧监督39/TRX86/业务77/阶段77/native60/stdout12/stderr空均分段亲读，诊断仅整回收未正文审。零源码/build/publish；仅引用HD旧default Release/win-x64 build98 warnings/0 errors；本轮official/x86/full/重跑0。
+下一唯一任务x86同场景official/candidate，本轮不执行。Available/HWloss/media/resources/最终四格/独立x64Event0开放，完整替换未完成。HE末次补记：报告全文/三共享HE最新受改节及本补记写后回读；旧历史仅相关节，未全文。
+
+## HD终态：官方可见三色基线成立，非HW完整闭合
+报告replacement-supervised-hwnd-consumer-contract.md完成聚焦合同表；HB独有集中纠正flags12、实际context-2/DPI1/1、初始化invalidate/close/commit，保留Present/cleanup/expected。唯一task9e32d79eddaf4449a0c8b936f3831604 official x64 1/1，Exit0/nonTimeout/noKill；native red/blue/red backbuffer/Present/window/screen/front/duplication fresh全过，consumer红255/蓝16711680/绿65280逐帧相等，四refs0且DestroyWindow1。没有字段消融，不能单字段断根因；target surface未直接读、consumer backend未知，duplication Microsoft Basic Render Driver不当consumer backend证明。
+actual官方AD1C9DBBC2FCC2B274145727E8F04D5ADF49A0C9AE4D1A3C33EC969FCD5B4BF1，test878F8815345E61268526C957EF43D1D195979298C10D1C5216450234C9072E6C/MVIDe148d839-2fd7-44d4-88b5-512acdf3d919，.NET/WPF10.0.13；HA候选8F74588B…仅包未消费。绝对回收根d:\lindexi\Code\dotnetcampus\WpfLab\WpfGfxShape\WpfGfxShape\artifacts\hd-hwnd-contract\readback\x64-official；taskTRX路径见报告。监督39/TRX86/业务77/阶段77/native60/stdout12/stderr空分段亲读；诊断未全文。独有正常分析器自包含10.0.13发布；default Release/win-x64 build成功98 warnings/0 errors，默认宏隔离。生产/共享/打包/并行未改，HA保留。
+本轮有效official task1，其余0，停止扩大。下一唯一：同HD包同场景candidate x64显式一次，同任务先native fresh，读actualSHA/三色/事件/refs；本轮不执行。Available callback/HWloss/media资源通知/full四格/独立x64Event0开放，完整替换未完成。HD末次补记：报告全文/三共享受改最新节写后回读，历史保留未全文。
+
+## HC终态：HB唯一DPI纠正组仍失败，停止扩大
+同HB surface-consumer-integration报告补终态，HB旧task6264c60805ad4c5387fb3f446057fd4f保留。新task7614cdf951604723acfff73811c75ef2仅x64 official：1执行0通过1失败，Exit2/nonTimeout/noKill，无原生崩溃；DpiX/Y=1/1按官方ABI76/84纠正已实跑，但首红仍255≠13480843，未进入蓝绿。DPI缺项影响未实证，不归候选产品。flags0与官方初始化未对齐属下一静态合同核验，不在本轮追加改参。
+actual官方SHA AD1C9DBBC2FCC2B274145727E8F04D5ADF49A0C9AE4D1A3C33EC969FCD5B4BF1，test C9310DFE22EAFD0B5D17479282FA2805907DE05949996D2CDC4C58BB29C686A9/MVID9246c92f-940f-4924-8e9f-23c5027b5267，.NET/WPF10.0.13。事件/flush成功不等消费，backend未观测；detach、四删除及delete flush/destroy/disconnect/deinit HR0、四refs0。duplicate直接close0是测试代码行为，不是native exactonceclose/真实callback。Available未覆盖。
+绝对回收根d:\lindexi\Code\dotnetcampus\WpfLab\WpfGfxShape\WpfGfxShape\artifacts\hc-surface-consumer\readback\x64-official；taskTRX绝对路径及identity见同报告。TRX50/监督39/业务66/阶段66/stdout29/stderr空已亲读，诊断完整回收未全文。独有obj/bin/publish/package正常分析器、自包含10.0.13成功；default Release/win-x64 build成功98 warnings/0 errors。仅HB独有诊断改码，生产不改不重发，候选SHA沿用HA仅包文件非actual消费。
+纠正四格只跑official x64一次，其它三格0；停止扩大且无第三次官方运行。下一唯一共享HWND consumer夹具内容链诊断，先认证flags/window合同，再明确backend/目标surface/桌面读回边界；不直接生产切片。full/Available/HWloss/media资源通知/独立x64Event0/最终四格未闭，完整替换未完成。HC末次补记：报告全文及三共享本轮受改节/本补记写后回读，旧历史保留未全文。
+
+## HA最终：有限默认Stdcall生产修复保留
+同GZ interop-stdcall-fix报告已补实际终态，不新增报告。四既有task亲读不重跑：fa8e6949abbb438a8c2851fa7599337a x86 candidate1/1；06d1c2d478df4f109e05c8eba74f6ab5 official1/1；df18450a15ed42fbb5b7b769527d70bf x64 DR2/2；4b2df2d01ea94829a13319309847df3a x64回归15/15=生命周期4/BW1/CK10。DR双架构双方三循环，QI/AddRef平衡、GC后dirty、Detach及最终bitmap/surface/device/factory refs0；Available0/ConsumerCoveredfalse不是通知通过。
+HA补90515a59564d45bc832c2c69104b9217 x86回归17/17=生命周期4/兄弟2/BW1/CK10；6c875e2dd9ea42e1bac913eff4d7f95b x64仅兄弟2/2。子Exit0/nonTimeout/noKill，监督不是MTP无父TRX；外工具未单列数值Exit。绝对回收根d:\lindexi\Code\dotnetcampus\WpfLab\WpfGfxShape\WpfGfxShape\artifacts\ha-stdcall-acceptance\readback；逐task路径/SHA/testMVID/filter见同报告。候选x86 SHA75D136F71223DB9EA0830BFBF9CDFC0EAAB748B5067397B682E42323B698EC30/x64 SHA8F74588B081AD575EC1ED046E99CCC21182BA2E6BC47932F3DE9CBEEC915BEC0；官方10.0.13同版同架构身份已核。
+HA生产/测试源码修改0，仅正常x86自包含10.0.13正式包发布，复用GZ候选DLL及x64正式包；default Release/win-x86正常build Exit0/1482 warnings/0 errors，不称新NativeAOT。独立通读本类653行与SDK范围，Stdcall slot/this/宽度/HRESULT/自然布局/所有权成立，保留CF/CX/CY/EF及trace。未动态覆盖Ex成功LUID/第二CreationParameters、SharedSurface/BitBlt/MSAA/恢复等分支；BW零阈值非空软件对照，CK10仅linked算法控制非native消费。兄弟实际SW通道Present/dirty/event/retry/Detach通过，不外推HW consumer或独立x64Event0。
+有限关键门通过，保留GZ本类默认修复；下一consumer整合门不等Available/HW恢复/media/resource通知/full四格闭合，完整替换未完成。HA末次补记：同报告全文与三共享最新受改节写后分段回读，长历史未全文；以下GY为历史。
+
+## GY独立终态：GX重复清8动态认证通过，非产品通过
+已补同GX getdirect3d-stack-validation报告，不建重复报告。task7b6833b1032b4acbb9bd6978b14004af、PID2236/TID4604/F7849764、actualSHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53；hardware51行、两context各122行、fileidentity6/cleanup4/dr6、actual identity/preflight及events1–3/699–760原件亲读。1355A1 FFD7前ESP7849676→A5 83C408前7849684→A8后7849692，两次各+8；A3 MOV不改ESP，DR6/EIP/phase/Get/读长与换点readback互证，重复日志非重复事件。this/out/slot6 actual d3d9 base6E7C0000/SHA F4757445…认证，EBP/F保存P/返回保持。清DR成功；子C0000005、监督1、cleanuptrue/nonTimeout、EXIT_PROCESS成立，无TRX不造计数。
+GM384字节原件全读，SDK及binding相关IL/calli本轮亲读。动态重复清8已成立，不等历史compiler归档；源checksum/精确compiler缺失限制源声明/codegen责任，不能归责整个Silk或称default同样已实测。结合GU/GW既有独立核证，因果链为多清8→参数区上移8→helper记录覆盖riid/out→错误QI参数；GQ/GV原件未本轮亲读，后续P零写引用GW既有独立核证，非本轮同task全链全核或首坏写认证。
+只读亲核FH六处GX显式条件、PEReader角色、NativeRun及项目/props默认隔离；生产COM无GX修改，CF/CX/CY/EF保留不重验。当前GetAdapterLuid及GetUpdateMethod仍有其它同因合同待审，单slot6不承诺全修。既有normal默认Release/x86发布60行日志实核exit0，有CA/MSTEST警告，stdout38913字符前18913不可见，不造总警告数。GY实验/提取/build/publish/沙箱/脚本/源码/生产修复0。
+下一唯一生产任务：当前InteropDeviceBitmapExports本类有限已认证COM闭包按SDK逐项明确Stdcall，连同相邻同因必要调用审查，保留refs/finally及CF/CX/CY/EF，不手补ESP/加frame/挪helper/SuppressGCTransition或泛全库替换。实施门具备，保留须正常分析器、官方/候选x86/x64 Release DR循环refs、生命周期、BW1/CK10及actual newSHA/TRX/JSON，失败精确撤回新增适配；不再以历史归责档案缺失否定动态事实。本轮不修代码。
+GY最后补记：独立核证及交接完成，起始进行中已替换；GX报告全文与三共享最新受改节/最后补记写后分段回读，长历史保留未全文。Available/HW消费恢复/full四格/x64Event0独立线开放，生产修复0，完整替换未完成。以下GW旧“等生成合同”仅历史，下一动作以本节为准。
+
+## GW独立终态：参数覆盖指令已证，生成合同未闭
+同GU qi-helper-stack报告补GW，不建重复报告。GV hardware57行/两context各122行/fileidentity6/cleanup4/preflight及actual identity、关键native-events与GU128/GM384字节原件亲读；GH仅报告关联且原件缺失，GR/GQ关键写后原件已核，历史不冒称全文。sameTID11128/native1893370B…/test0325C47F…/MVID51da9a05-9163-44c2-b600-e5a88949e0bd；1355E6前riid F-24/out F-14正确，1355EB后riid6D4C55EB/out F，this/ESP F-54/ECX F-50不变。
+连续指令写ECX相对+8(TLS结果)、+4(EBP=F)、+0([入口ESP]返回地址)、+C(8000)、+10(入口ESP+4)，另[EAX+30]=ECX。+4完整覆盖out、+0完整覆盖riid，this不交。静态out写先于riid，不当动态写监视或全局首坏写。1355DE确8D4DB0；序言基准三push应F-5C不交frame，实际高8形成重叠；前序slot6调用后ADD8仅支持清栈假设，不能代原始IL/calli认证。
+L1身份/L2指令/L3端点重叠已证，L4精确runtime符号布局/L5源checksum与生成合同未证。工作区及.dotnet有限检索缺该版本实现，不正式命名helper。FE旧失败适配已撤、非default，不归责d3d9/全Silk，不直接生产修复。唯一后续恢复同SHA FE生成合同证据包（源checksum/PDB、IL/calli、compiler/runtime版本与x86 helper/frame/codegen），仅核slot6清栈→QI边界；再评审最小源声明或编译器修复，要求x86/x64 DR/生命周期/BWCK，不重复采样或泛全direct。
+本轮仅四文档，运行/提取/build/publish/脚本/源码/生产修复0；默认隔离与COM/FH/DRDS/NativeRun/打包/CF/CX/CY不改。GV子C0000005/监督1/cleanuptrue/非timeout，非产品通过。Available/HW恢复/full四格/x64Event0开放，完整替换未完成。
+GW最后补记：报告全文和三共享最新受改节/本补记写后回读；长历史保留未全文。起始进行中由handoff最新终态替换，其范围登记保留报告。
+
+## GV最终：GU唯一helper候选已执行，实参覆盖而非ESP改变
+唯一task97a2f688101e40959ca6b9b31da6c98d，GU正式包原exe --fh-crash-evidence candidate/240秒，候选预算1/1消费。原件artifacts/gv-qi-helper/candidate；actualNative C:\CodingAgentSandbox\Tasks\97a2f688101e40959ca6b9b31da6c98d\Native\wpfgfx_cor3.dll，SHA1893370B…；testSHA0325C47F…/MVID51da9a05-9163-44c2-b600-e5a88949e0bd/.NET10.0.13/X86，监督3052/子10308/TID11128。预检Verified及hFileSHA/PE/字节门成功，完整身份见同GU qi-helper-stack报告GV节。
+动态F50446596=S50446604-8/P50446756经1351EB/135573认证；1355E6前→1355EB后同TID/F/EBP/ESP50446512，ESP差0，EDI1854358368保持。前(this192955968,riid50446560=F-24,out50446576=F-14)正确，后(this同,riid1833719275=返回6D4C55EB,out=F)错误。EAX1836129484→192940504/EDX12→ESP；ECX=F-50保持，helper transition记录写与槽覆盖相合，不能由此定全部库bug。参数32/F窗104/GUID16/out4均完整读/Error0，全hex与寄存器已补原GU报告，不新建重复报告。
+hardware57行、两context各122行、fileidentity6行、preflight/identity/cleanup及关键events亲读；DR全清读回、每事件Continue一次、真实AV NOT_HANDLED。子C0000005/监督1/CleanupConfirmedtrue/非timeout，EXIT_PROCESS已收，无完成TRX不造计数，工具未给原始码不造0。
+默认Release publish一次exit0，显式独有artifacts/gv-qi-helper/normal-publish；未用专用常量/NoWarn/分析器关闭，现存正常分析器警告保留。60行日志全回读，原stdout38764字符前18764被工具截断，不声明警告总数。源码/生产修复0，无候选重建、重跑控制/只读/full/COM变体；FH/FV默认隔离保持。
+下一唯一动作离线核同SHA helper transition-frame写合同与callsite LEA ECX,[EBP-50]布局/生成来源及其与QI参数槽重叠，不回退准备阶段前、不泛改COM或归责d3d9。Available/HW恢复/full四格/x64Event0全开。报告全文及三共享最新受改节写后回读，历史保留未全文；以下均为历史终态。
+
+## GT独立终态：GS错误实参已证，helper约定仍开
+亲读GS taskab5dcfc36f6d475e84ed452136d3da95 hardware40行/两context各122行/fileidentity6行/cleanup4行及关键事件。1355EB前F49989380、ESP=F-54，this191515360=[F-10]；riid6D4C55EB指CALL字节而非F-24；out=F非F-14，保存P49989540尚未清零。EDI1854358368经vtable/slot0认证，系统d3d9 actualbase6E7C0000/SHA F4757445…；错误参数调用前已存在，不归责系统将正确out改坏。
+同SHA原件384字节三push参数与direct helper目标1DA460核算已证，1355E8在imm内；helper内部/真实RET约定未知，不由Cdecl或ADD ESP,C定因。下一仅针对该helper前后context或返回约定认证，不泛替COM。详见同factory-qi-arguments报告GT节含全SHA/testSHA/MVID/runtime/固定窗/有效长度及退出层级。
+子C0000005/监督1/CleanupConfirmed=true/非timeout；原始工具码未读不造0，无完成TRX。默认正常分析器Release build一次exit0/98警告0错误，日志64行回读、stdout前57103字符截断。源码/生产修复0，publish/候选重建或重跑/COM变体/提取/full0；FH默认隔离、生产/DRDS/CF/CX/CY不变。Available/HW恢复/full四格/x64Event0仍开，完整替换未完成。
+GT最后补记：报告全文与三共享最新受改节写后分段回读；共享长历史保留未全文。
+
+## GR独立终态：factory QI输出别名窄链，ABI机制未证
+仅审计/文档，无新运行、源码或生产修复。GQ task8988e80364b343a0945fb41c863a9040原件核心亲读；同SHA1893370B…GM callee384字节完整原件及真实SDK合同已读。已证同TID2432 write4使固定F12042244保存P→0，ret不变；写后6E874394不是写指令，832300/EBX=F仅最窄候选，无可靠系统函数边界，不归责模块或排除其它线程。
+关键新增：写后D=EBP=F-5C，D+4原始槽值6D4C55ED匹配1355EB slot0 QI返回；按SDK三参数帧形状，D+10值F是候选void**，静态out本应F-14，D+C却为callsite地址而非F-24。仅原始栈关联，非完整unwind/实际QI入口认证。slot6/9/21输出应F-10/F-34(16字节)/F-3C(8字节)；无slot7 Caps。FE snapshot及EP原始calli当前缺失，IL Cdecl历史不能定ABI机制。
+唯一下一动作另授权1355EB CALL前一次最小参数栈采样（TID/F/EBP/ESP/EDI、ESP起10(hex)字节、F8及EDI模块/入口字节），核this/riid/out与F关系；本轮未执行、不扩全部COM。完整链及限制见同saved-frame-write报告GR节。GQ子C0000005/监督1/cleanuptrue/非timeout，无TRX计数。默认隔离与EF/CF/CX/CY保持；Available/HW恢复/full四格/x64Event0仍开，完整替换未完成。报告全文/三共享受改节已写后分段回读；本文件历史保留未全文。GR最后补记：报告1–117及三共享受改节已回读，本补记随后再读；执行0、生产修复0。
+
+## GQ最新：唯一write4候选真实执行，固定槽写后d3d9命中
+task8988e80364b343a0945fb41c863a9040，原件artifacts/gq-saved-write/candidate整任务回收；GM原包仅候选一次，控制/构建/提取/full未跑，无生产/Host/源码修改。监督7436/子5892/TID2432，候选SHA1893370B…实际身份和句柄SHA认证；testSHA765F48E7…/MVID7a8e00dd-0e4f-4cba-9f1e-406c2a01c6e9/.NET10.0.13/X86。
+固定F12042244=S-8，savedP12042404→0，ret6D4C51F0不变；写后EIP6E874394=d3d9.dll+B4394，EBX=F，前832300与AND [EBX],0吻合但仅窗口解释，不把写后EIP叫写指令，不排除其它线程/直接归责模块。尾13569E槽仍0，DR清零读回成功；return AV EBP0/ESP=S，子C0000005/监督结果1/CleanupConfirmed=true/TimedOut=false，无完成TRX及测试计数。详见同saved-frame-write报告GQ节完整寄存器、原字节和退出证据。
+候选1/1已消费，不再委派重跑；下一仅离线核call参数与固定F别名原因。默认隔离可选build未补，Available/HW恢复/full四格/x64Event0仍开，生产修复0。报告全文及三共享新增节写后回读；本文件历史保留未全文，下方GL待执行状态是历史。
+
+## GL终态：连续字节原件缺失，write4控制未执行
+详见replacement-supervised-saved-frame-write.md。实际FX原件artifacts/fx-callee-tail/result/result/fv-pe.txt在根/子根均不存在、目录亦缺；GK包Native存在。仅据FW/FZ文字列全部内部call的可见参数/相对F范围，不冒充原字节认证或动态路径。现FH exec Hit门不能直接消费数据写事件；write4待实现合同单列，未修改FH。
+control0/1、candidate0/1；无新task/testSHA/MVID/runtime/退出码/硬件事件/cleanup/TRX，build/publish/沙箱0，源码/生产0。明确前置阻断，不称控制失败/不支持，也未超预算另跑提取。下一唯一恢复FX task155dbcf5b66f4d199ace2507fc72f40b的既有fv-pe.txt；无法恢复先监督授权既有只读角色重新提取，再接续write4控制及过门后候选。GK保存槽被覆盖事实保留、首次写/线程仍未知；默认隔离及全部开放门保持。报告全文/三共享GL节写后回读，旧历史保留未全文。
+
+## GK最终：控制设施修正通过；固定savedP槽覆盖已确定
+同GJ callee-frame-context报告补GK完整原值/边界。唯一control taska6f705f78b4849a583495161f357716e/子11260/TID7796，以真实64A120000000C3两个边界、三次调用，slot0同址复用两次→最后slot1→DR全清读回，子0/监督0/cleanup=true。唯一candidate task448644f7c5b74a67870c0aed5619d3f6/监督11096/子6476/TID6076/base6D390000，SHA1893370B…未重建，FH+DR testSHA5D031BA3…/MVIDab2e7482-fece-43ce-bb6f-9e5c9e7144fc/.NET10.0.13/X86。实际句柄SHA/稳定PE/四位置文件映射指令/线程门全过。
+P51888484/S51888332；135573实际F51888324=S-8、EBP=ESP=F、固定F8=64C11703F0514C6D；13569E真实pop前EBP/ESP仍F，固定F8=00000000F0514C6D；return1351F0 EBP0/ESP=S，ret保持6D4C51F0。确定callee保存槽在建立后/pop前被覆盖，不再仅残留推导；首次写/具体call/写入线程未知。四阶段DR6/DR7/EIP严格匹配、转换和清零读回/Continue成功；AV NOT_HANDLED/子C0000005/监督取证0/cleanup=true非产品通过。原件artifacts/gk-frame-context；候选hardware36/两AV各122等全文亲读，事件仅关键范围。
+仅FH源修改，默认隔离normal无FH/DR独有正式发布Exit0，normal未运行；生产和禁改区0。预算control1+candidate1用完，不重试。下一只读同SHA135573–13569E原字节/内部call与独立ABI/输出指针别名savedP范围，未定位首坏写前不修生产。异常清理等失败分支未测。Available/HW消费恢复/full四格/x64Event0仍开，生产修复0，完整替换未完成。报告全文与共享最新节写后回读；历史保留未全文。
+
+## GI 独立终态：动态变化确认，静态保存槽仅条件推导
+独立亲读GH两任务fileidentity/hardware/cleanup、candidate两个AV context及关键异常/actual身份，当前FH状态机与FX同SHA384字节原件；详见同GA hardware-breakpoint-context报告GI节。load身份字段原值完整/子0；candidate taskdcfc9dd1d98c458d8675617a159b6575/TID2960/SHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53/base6D390000，EBP50054196→0/ESP=S=50054044同端点，清DR读回成功，真实AV NOT_HANDLED/secondchance/子C0000005，监督0仅取证成功。
+主ESP256不含S-8/S-4；额外48及caller-frame192分别覆盖[S-32,S+16)/[S-8,S+184)，确含负槽。S-8从0C000000变0、S-4从03000000变F0514C6D仅残留；[oldEBP]16不变不证明callee自己的保存槽不变。入口55/8BEC与正常尾声支持F=S-8候选推导，未动态认证入口，未证全路径/首次坏写/具体内部call/栈失衡。
+下一仅设计同SHA1351EB→135573（已建立F）→13569E（5D前）→1351F0的阶段复用硬件采样，记录F/ESP/固定槽与ret、区分入口异常/区间槽改变/恢复或上下文异常；需新增四阶段能力及仅新增机制正常控制，旧GC/加载门不重跑。未实施，源码/诊断/生产/build/publish/沙箱/新运行0，默认隔离/CF-CX-CY保持，不归咎整个Silk、不移绑default。Available/HW消费恢复/full四格/x64Event0等仍开，生产修复0，完整替换未完成；历史保留。
+
+GI最后补记：同GA报告写后188行分段全文、三共享最新GI节均已回读；共享历史中段未全文且未改，关键事件范围与缺失FV旧路径如实登记同报告。无追加运行/构建，四阶段采样仅设计。此补记随后回读。
+
+## GG补终态与GH实际终态
+GG task3c4a0c60d1694aeeb0fa2a3bff02a7ef实际身份认证成功/同步3995648/SHA匹配/pointer0/子Exit0/cleanup=true，仅FileIdentity日志{}，不是认证失败；最后修正版已发布预检但GG未加载。GH复用最终SHA6D8DA8EB2CCD0F69A9FF5298FF6C701EFE868391A14D9DB8CA16BFBBCA242366/MVID0cd67192-981b-4022-ad18-33fabbe306cc，不改源码/build0/default未移绑。修正版load-control task1f3f12ae65fb4b53bda90d2580d4a5a5身份前后Volume2759389505/Index3407872:296093/Size0:3995648/Write31285785:3967683863原值一致、正常Exit0/cleanup=true，加载门通过。
+唯一candidate taskdcfc9dd1d98c458d8675617a159b6575/子9956/TID2960/base6D390000，actual SHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53，真实句柄/模块/映射/线程门通过后CALL1351EB与return1351F0成对命中；EBP50054196→0，ESP50054044不变，初始保存槽B8C4FB021C10940C603F670B00000000不变，DR全清读回/Continue成功。真实AV readFFFFFF68随后secondchance，子ExitC0000005，监督0/CleanupConfirmed=true仅取证成功，业务未通过/业务finally未完成，不造TRX或工具exit。详细原值和因果边界同GA报告，原件artifacts/gh-candidate-context。加载1+候选1已结束，无full/变体/重试；下一只读核该SHA callee135570及EBP保存恢复路径，不证明首坏写或全程栈平衡。生产修复0，GG既有normal发布复用，Available/HW消费恢复/full四格/x64Event0继续开放，完整替换未完成。
+
+GH最终补记：GA报告旧143行分段覆盖、新增GH节与三共享最新受改节写后已回读；FH及事件阅读边界准确登记同报告，共享历史中段未全文。无追加运行/新build，两个任务原件核完后收口；本补记随后回读。
+
+## GF 最新终态：GE两候选Arm前失败已收口，文件身份所有权缺陷已修
+GF最终补记：GA报告写后1–123分段全文（截断34–35补读）及三共享最新受改节已回读，normal最终Exit0/preflight已核；共享历史中段未全文读。旧异常栈/工具响应缺件保留，不追加候选，本补记随后回读。
+同GA报告为唯一详档。GE task9a580414c3c34bb0956a6d471a527d56/子4740/TID5564及d1a5175d4de948ba821992d9c94330dc/子2368/TID2264，actual base均6D390000/SHA1893370B…；各hardware1行/DR6行/cleanup21行全文核，未Arm未配对。各Terminate/16次Continue/Detach/Wait0/两Close成功，ExitEvent=false，无子正常exit/监督结果/工具数字exit。用户交接RandomAccess seeking与ReOpenFile6，当前目录缺完整异常栈/原始工具响应，不冒称亲读。GE只读4306f2a1c8b34d339c4918436fc2bce9证ImageBase0x134由10000000→6E740000合法变化，与两候选base不同；稳定字段认证已修，不回填GD。
+源码确证：复制hFile同时入retainedFiles与逐事件handles，当次LOAD_DLL finally关闭复制值，后续认证字典为失效数值。仅FH改为独立SafeFileHandle所有权，认证using/卸载/外层清理释放一次；原事件hFile显式Close一次。DuplicateHandle当前调试器源/目标正确，非目标进程句柄。移除ReOpenFile/RandomAccess，同一打开文件DISK/文件ID/长度/时间前后认证+SetFilePointerEx/ReadFile有界同步读取及恢复，SHA不退化路径；PE/映射字节/线程门不放宽。
+GF独有gf-file-identity正式x86自包含10.0.13发布成功，唯一离线preflight Verified=true/CandidateLoaded=false，test SHAECB5459D85E2360519C9A6ACD7DD524CEE5EAF04ED1502B54BB43E8A04F26A1B/MVID3a4e6f69-0919-4617-b3a0-6787d42b9a73；最终normal无FH/DR正式发布Exit0已核，分析器正常。GF新候选/DR/崩溃/control/full0，句柄诊断0，无新TRX，生产修复0。真实LOAD_DLL复制文件权限/同步读/seek/恢复与异常清理未实测，下一唯一候选前不能称过门；最小另授权动作仅无DRCreate/Arm只读句柄诊断，旧栈缺件单独追回。本轮停止，Available/HW恢复/full四格/x64Event0均开，完整替换未完成。共享历史中段未全文读，历史保留。
+
+## GD 最新终态：安全Arm接入，唯一候选认证拒绝，无配对
+GD最终补记：报告新增节与三共享最新节已写后回读，旧GA报告87行写前全文覆盖且未改；未称报告99行写后全部复读，三共享历史中段未全文。normal Exit0与final-preflight已核。停止追加执行，此补记随后回读。
+同GA报告。candidate task4865eace578847c3b85ca9a7723e7318/子10808/TID2552，实际LOAD_DLL hFile路径/base6E630000/size4055040/SHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53已记录；合法surface三步HRESULT0，首次Create前独有随机token事件提供原生PID/TID/base/SHA，不从加载线程猜。AuthenticateCandidate抛BadImageFormatException，Arm前拒绝，无DR set/命中/clear回读，无成对EBP/ESP/保存槽返回地址，不套旧FT EBP0。通用异常未标具体认证项，无API权限拒绝证据。唯一事件Continue成功，cleanup21行全读：Terminate/16次Continue/Detach/Wait0/两Close成功，ExitEvent=false，无正常退出数字或supervisor结果，工具不提供数字exit。
+FH安全门/DR0清地址转slot1/原始caller窗口/ESP配对完成门已实现，未实测命中；实际路径SHA未持有原LOAD_DLL句柄到Arm仍有换件风险。只FH诊断与DR内FH条件握手，不动生产/原断言/禁改区；默认无符号normal和最终FH+DR均正式x86自包含10.0.13发布Exit0，分析器正常。两次非候选只读反射preflight验证内部方法/准确测试/aot.sha256，不称真正离线PE元数据认证。最终诊断SHA9B9B4497…不同于执行SHA1AD1802D…，不混绑。候选仅一次，控制0/full0/COM变体0；停后只补诊断与构建，不追加运行。
+下一唯一动作：同FH只读离线元数据和具体PE/映射认证差异，先解释安全拒绝；另授权才新候选。详细身份与原件在GA报告和artifacts/gd-candidate-arm/candidate/Results/fh-candidate。Available/HW消费/恢复/full四格/x64Event0等开，完整替换未完成。共享历史中段未全文读，不虚报覆盖。
+
+
+## GC 最新终态：原始硬件控制通过，安全候选Arm未接入，零候选
+仅补同GA hardware-breakpoint-context报告。唯一task9cce32f3eebd40d6b1f4742c116997ad，子2664/TID3048，原始DR0=1987771888/DR7=1设与读回成功；实际EIP767AFDF0/DR6=4294905841匹配系统kernel32认证地址，清零DR0..3/DR6/DR7读回成功，单步一次Continue成功。实际EXIT_PROCESS0/监督结果0，cleanup Wait0/Detach/Close成功；工具未提供数字进程退出码，不推填。原件artifacts/gc-hw-context/control/Results/fh-hw-control。
+仅FH显式Utf8JsonWriter原始context及Clear/Continue try/finally；正式独有gc-hw-context x86自包含10.0.13发布与默认无FH/DR normal发布Exit0，分析器正常/既有警告未压制。候选0/full0：actual LOAD_DLL句柄SHA/映射PEbytes/实际DR线程阶段认证与离线内部类型方法预检尚未实现，禁止借控制通过强跑旧candidate。下一唯一根因动作是同FH安全Arm认证，完整设计见GA报告；未取得新候选CALL前/返回前配对，不证明EBP归零/首次坏写/失衡。
+默认隔离、生产/COM/DRDS/CF-CX-CY及禁改区域不变。Available/HW消费/恢复/full四格/x64Event0等均开。共享历史只读顶部受改节，不称中段全文；报告全文/最新节及最终补记按实读登记。
+
+GC最终补记：GA报告写后1–85全文及三共享GC最新节已回读；normal日志Exit0已核。共享中段历史未全文读，候选0/full0，已停止追加运行；本补记随后回读。
+
+## GB 最新终态：认证修复，控制原件门未闭
+同GA报告replacement-supervised-hardware-breakpoint-context.md补记，不新增报告。必要诊断task0ff94ee9a3094ba4b7da33af0511b982证实SysWOW64实际路径与本地System32别名导致原606–608路径认证拒绝，RVA同130544；最小修FH本地句柄规范路径+SystemX86严格认证。诊断未Arm，Terminate/Wait0/Close成功。
+唯一纠正task e5802dd1e2214191bd2077c9bdd72c29：arm/Verified/before-hit/清零Verified/clear-confirmed，单步TID5940/address767AFDF0恰一次Continue，子exit0、supervisor-result0、cleanup Wait0/Close成功。但Actual/Context内部字段实际{}，缺DR6/EIP/DR数值原件，因此不称严格控制通过，不追加试跑、不候选/full。下一先补显式日志及错误清理审计，再另授权控制闭门后候选CALL前后取证。
+正式x86自包含10.0.13独有gb-hw-control发布成功，默认无FH/DR的normal发布成功；仅FhCrashEvidence改，生产/项目打包/NativeRun其它入口/CF-CX-CY未改。Available/HW恢复/full四格/x64Event0仍开。原件与工具响应保存artifacts/gb-hw-control。共享历史只读顶部，不继承全文；最终新增节及报告全文回读后补记。
+
+GB最终补记：同GA报告写后1–59全文与三共享GB最新节已回读；normal日志exit0已核，未读共享中段不称全文。工具响应已存gb-hw-control/tool-responses.txt；原始寄存器门仍开，不候选。本补记随后读。
+
+## FZ 最新终态：实际尾段核证交付，动态采样未实施
+FY进行中已由FZ接替关闭，不声称FY已核证。唯一细证/设计仍在replacement-supervised-create-callee-analysis.md，历史保留，以下旧“下一提取”不再有效。
+FX task155dbcf5b66f4d199ace2507fc72f40b原件37行与FvPeReadonly83行本轮全读；同输入SHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53/I386/PE32，固定[135570,1356F0)384字节/offset134970，片段SHA F6EF760CA4ADA31AAE1C4E4F33F010A70528FB3C319396FD6735CB551A4356F0。诊断exe74236254字节/SHA36FE288FC2AF84528A4AC24A1CFE72D5987A7D913354FA5513C0AFDAC602C387/MVID90c1efa6-58e5-432b-9f5b-5566c70808ce/.NET10.0.13/X64/CandidateLoaded=false；仅既有日志核对，未重算文件SHA，不造任务数字退出码。
+已从FW停点13566E连续手解至13569F：两组判空/调用后694/696赋EAX/EDX，698 LEA ESP,[EBP-C]，69B/69C/69D/69E POP EBX/ESI/EDI/EBP，69F C3 RET无立即数。连续原件字节支持静态恢复序列；不证明执行过、完整函数范围、实际ESP平衡、保存槽不污染或首坏写。
+FH源码全521行亲读：已有716字节x86上下文含DR字段、模块事件、GET_CONTEXT与有限AV采样/继续/超时清理，但无SET_CONTEXT/硬件成对采样。报告已设计Windows原生x86 DR0/DR1/DR7执行断点、80000004单步、PID/TID/同SHA加载基址+RVA认证；先正常控制，CALL1351EB/返回1351F0仅同SHA可用，同时记pre EBP/ESP、保存槽与返回地址关系，不只看EBP0。拥有断点才DBG_CONTINUE，其余异常NOT_HANDLED；清DR并回读，超时清理失败则终止受控子进程确认退出，禁止INT3/机器码/第三Host。本轮仅设计未实现、未运行，不足以授权生产ABI修复。
+本轮无新实验/构建/发布/沙箱/运行/代码修改，default未改，CF/CX/CY/EF保留；Available/HW内容与恢复/media/resources/full最终四格/x64Event0/E_HANDLE及完整替换均未闭。
+真实阅读范围（写前）：报告旧1–40全读；handoff1–40及725–748、本页1–32及726–740、issues1–30及736–756；无FY可继承的具体区间，中间历史未全文读。报告全文/新增节/共享末段写后核对；不把全历史阅读设为实证及设计交付前提。写后已读报告1–71全文、三共享FZ新增节与末段；补读后累计当前handoff1–60及733–756、本页1–52及734–748、issues1–50及744–764（写前旧文与写后新文合并覆盖）；未覆盖分别61–732、53–733、51–743。本登记随后回读。
+
+## FW 有界分析交付（全文交接回读未闭）
+报告replacement-supervised-create-callee-analysis.md。唯一只读task3dfca776fe764ab5be90226473d9525f，fv-pe.txt29行亲读；SHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53/I386/PE32，.text窗口[135570,135670)256字节offset134970，binSHA6538477605DFF8F7B10DA9949C8AA3219FCCE3BE8C877E9BF13BE741859BE7AF。直接call目标作为静态起点，函数range/PDB加载/方法名未认证，非完整函数。入口保存EBP/EDI/ESI/EBX并分配44；未证最终恢复/RET，13566E仅837D不完整停。三处间接call后ADD ESP8/C/C而615后无立即ADD，仅差异非ABI错误证明；缺vtable/helper实际栈合同。EBP0不指定callee首坏写。
+正式FV只读显式参数白名单，独有fw-create-callee/obj/bin/publish/package，仅exe74236256与DLL3995648字节，testSHAB3CAF74E373BBCD32CD9542E0F6CC6CB2214835B3B8043C014EAE9371A3BA470/MVID613dbc89-16d0-4c6b-950b-98e0ca094726/.NET10.0.13。发布实报0有既存警告，前18912字符不可见；沙箱工具无数字退出码，RoleResult0非产品通过。下一唯一另授权固定384字节窗口至1356F0补尾声，未知停止。未加载候选/新崩溃/变体/full/生产修复，默认和其它分派不变；Available/HW恢复/full四格/x64Event0等仍开，完整替换未完成。三共享历史本轮未全文读至末，不能冒称FW交接闭环。
+
+## FV 最后回读补记（交接完成）
+报告43/handoff729/本页733/issues749行（补记前）本轮全文分段读至末，截断末行及余段均缩段补齐，不借FU历史声明；FV新增终态写后读，旧历史未覆盖。报告删除未连续跟随的尾声模式推断并再读，不猜POP EBP/RET边界。原件83行、源码69/props18、package/回收清单、发布可用60行均已读，日志前18904字符不可见不称全审。补记随后再读。一次只读任务结束，不追加；下一唯一135570同SHA有界只读分析，EBP归零根因及生产修复仍未闭，完整替换未完成。
+
+## FV 提取及有界静态追踪终态（最新）
+详replacement-supervised-create-pe-analysis.md。唯一task c04e86c1d8d641c0a1e78042de0f395c，fv-pe.txt83行全读；实算精确SHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53/I386/PE32/SizeOfImage3DE000。Create1010字节offset134370、首次窗口96字节offset1345D0，均有bin/hex/片段SHA，RVA→真实raw范围核通过；仅文件读取不候选加载/PDB认证。入口连续手解至首次1351F0：EBP序言建立，直线无再赋值；1351DF/1351E8读EBP局部，1351EB CALL135570正常返回地址恰1351F0，最窄候选为该callee/返回上下文，非实际路径或归零点证明。无ESP平衡/首坏写/具体C#/库级bug认证。下一唯一另授权同SHA只读获取135570有边界依据的最小范围追EBP；最终动态仍须call前后context与返回槽，现有FH无现成无侵入入口事件。
+正式ComAcceptance新增全文件FV_PE_READONLY专属private Main，仅显式StartupObject发布，不改默认入口/项目/打包/生产COM/DRDS/CF-CX-CY。独有obj/bin/publish/package，白名单仅exe和DLL，无PDB/父目录。testSHA5FB1993603FAA790FD0CB542BE0210DF8EC52F8AF8AE46848E5AC065282B8F6F/MVID4913a299-7adb-403b-a1b0-9c31e5abf63b/.NET10.0.13。发布一次实报0/既存警告，日志前18904字符不可见；角色结果0是程序字段，工具未提供数字进程退出码，不造Exit0/TRX。生产修复/新崩溃/变体/full0；Available/HW恢复/media/resources/full四格/x64Event0仍开，完整替换未完成。四文档全文回读进行中，历史保留。
+
+## FU 最后回读补记
+本轮独立小段读完四文档全部正文/历史及截断缺段，不借FT/FR/FS声明；新增FU节全部写后回读、历史未改、末尾再核。补记前FT34/handoff719/本页726/issues742行，全文覆盖为写前历史加写后新增，不称写后又重读全部历史。本补记随后再读。控制195/候选589事件及全部context/cleanup/identity/业务已全文至末。文档闭环但EBP前驱根因未闭，无新运行/崩溃/生产修复，所有产品开放门不变。
+
+## FU 独立核证终态（最新）
+同一FT报告FU节为细证，无重复报告。控制context131/事件195/cleanup4；候选两context122各、事件589/cleanup4/业务6/stages6/identity1本轮连续小段亲读至末。FH521行及截断补齐。实际SDK形状手写Sequential/Pack4算716，Float112，EBP180/EIP184/ESP196/Extended204；544是RPM预算，首次有效384/次448，不是CONTEXT前缀，API只有BOOL无长度。三份flags10007/API/Close成功，控制与异常互证支持EBP0非结构错位伪零，仍无第二采集器认证。真正EIP1351F0的8BB568FFFFFF=MOV ESI,[EBP-98]→FFFFFF68只解释访问；继发1DE4D1/EAXFFFFFF7C/8B08单列，不认首因。sameSHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53由事件/DR/aot核，不绑定default或nearest211；source checksum未认证。
+首次窗口只有EIP及后32字节，有限连续手解至+1F单8B停止，未见EBP写但不证明前驱、COM或已执行路径/native栈。现有FH固定ntdll/FP不提取候选，本轮不新运行。下一唯一在现有正式显式只读PE诊断补限定提取分支，一次核sameSHA/I386/PE32/节raw+RVA-sectionRVA后读Create[134F70,135362)，从入口有限手解，未知停；本轮未实施，无现成无侵入入口/返回事件、不造有据Stdcall修复。默认发布可用60行全部读，Exit0/有分析器警告，前18916字符不可见不称全审；Normal.props与FH双符号隔离，诊断保留显式。生产COM/DRDS/其他分派/CF-CX-CY未改，FU build/publish/运行/崩溃/full0。任务码未提供；控制子0/监督0及候选子C0000005/监督0分层，后者仅取证成功，清理true，无完成TRX不造数。Available/HW恢复/media/resources/full最终四格/x64Event0仍开，默认安全但未修，完整替换未完成。
+
+## FT 实际上下文已得，交接回读未闭（最新）
+详replacement-supervised-first-av-context.md。控制task f6eb783074ba48508cc0434eb33b348d，子/监督结果0、context成功、清理true。唯一candidate task47e74fa5e2bb40a3a33720fb13a3a1c0，子C0000005/监督结果0仅取证、清理true。首次RVA1351F0 readFFFFFF68，采得EBP0，原始8BB568FFFFFF手工按x86解码MOV ESI,[EBP-0x98]，有效地址吻合；不是首坏写认证。继发1DE4D1/EAXFFFFFF7C/8B08对应MOV ECX,[EAX]，不当首因。两份context成功、ESP256/EIP32可读，失败块299/0；无native栈/局部变量/ESP平衡认证。精确候选actual SHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53；TestSHA0CB47F645005B02BFE1E018E4F676B1247E43849ADD6595E8BA7B438B5A52765/MVIDb0aedd26-bfef-4937-a5db-09d9182bc980/.NET10.0.13。生产修复0/full0/变体0，无完成TRX/不造计数。报告持久化路径。历史全文和事件全文回读未闭，不继承旧声明。下一单一定位动作：对同SHA首次指令前有界字节静态追踪EBP何以为0，不重跑崩溃；Available/HW恢复/full四格/x64Event0等仍开。
+
+## FR 终态 / FS 补读闭环：有界符号尝试停止，交接完成（最新优先）
+### FS 最终回读状态
+承接本次交接指定的FR本轮已读范围：handoff 1–420、本页1–398、issues 1–397；FS连续小段补读handoff 421–699、本页399–714、issues 398–730至末并补齐截断，另读FP报告1–73全部正文。FS核当前三共享首节仍为同一FR终态，无更新的最新节；前段归FR阅读，FS另核首节及部分前段，不称FS单独全文读完三共享，不用FO/FQ历史声明抵销本轮缺段。四文档仅更新最新节并写后回读，FR已读与FS补读合并完成交接。FS源码/新报告/符号任务/构建/发布/运行/沙箱/full均0。
+输入PDB匹配，但本次SymGetModuleInfo64没有实际PDB加载身份；提前return4不是工具实报退出码。未到checksum不等API不支持，旧函数范围及nearestline仅辅助，不作源字节认证；不再追加泛符号轮次。该崩溃当前无生产修复，完整替换和其他开放门不变。
+下一唯一真实根因动作须另授权既有正式纯C#调试角色：在Create首次AV收寄存器、异常/局部变量上下文及实际模块偏移，用原异常VA 0x6E7651F0 / RVA 0x1351F0核模块身份并验证数据流，区分COM输出污染与BitmapState/GetAdapterLuid初始化消费坏值；不无证归因故障语句、首坏写或整个库bug，本轮不执行。
+### FR 实际执行边界（保留）
+同一FP报告FR节记录唯一task5e66e939b3a54d29b8974c317acecfb2，原件19行读完；诊断publish1/Exit0，analyzers不压制；输入SHA1893370…/E9B419…及GUIDage重新实算匹配。实际module API True/0但LoadedPdbName空/GUID零/age0/SymType0，不认证PDB加载；checksum/算法及相邻行API在失败门后未调用，不称API不支持。源字节未经认证，旧Create[134F70,135362)/nearest211仅有界辅助，不作语句归因。源码return4分支；工具未给进程/监督原始退出码，不能冒称实报4；SymCleanup=True/0。无候选/COM/full/新崩溃/生产发布。现有角色仍全文件#if隔离，专属fr-symbol-auth clean输入/回收分离，生产/DRDS/入口/打包/CF-CX-CY未动。下一唯一另授权正式纯C#调试角色针对Create收异常寄存器/局部变量以区分COM输出污染与BitmapState/LUID初始化，不再泛符号迭代；本轮不采新崩溃。Available/HW恢复/media/resources/full四格/x64Event0等仍开放，完整替换未完成。FR阶段的历史全文待补状态已由上方FS分工补读闭环更新；阅读归属不升级为FS独立全文。
+
+## FQ 最后补记：核证交付而非全文交接完成
+最终符号21行/诊断源码138行/FE快照640行及同一FP报告已分段读至末。三共享新增FQ节与末尾已读，历史中段仍有未读/截断尾段未补齐，四文档用户指定全文闭环未完成，不沿用FO旧完成声明。本补记写后再读，交付缺口明确保留。FQ早期口头误称E1210不含SECURE已纠正：含SECURE/NO_IMAGE_SEARCH，仅无EXACT_SYMBOLS。FQ无新build/发布/符号执行/业务/full，源码未改；PDB实际加载身份及source checksum未闭，产品门均开放。
+
+## FQ 最终符号核证与源码数据流（最新优先）
+同一[FP报告FQ节](replacement-supervised-interop-crash-symbols.md)是最新认证，FP初稿/FO待映射仅历史。最终result-final/fp-symbols.txt21行已亲读，task090658255e19408d8be9a83ba05ddbef；DLL1893370B…980E53/PDB E9B419…ED6C、RSDS/MSF7 GUID e0a4d956-1efc-4509-83a3-b1664c206c82/age1匹配。SymOptions实际E1210，含NO_IMAGE_SEARCH/SECURE但没有EXACT_SYMBOLS；未记录DbgHelp LoadedPdbName/Matched及实际加载GUIDage，不用输入IdentityMatch替代。source checksum未取得，FF FE快照640行全文已读但未经源字节认证，当前default非FE构建源。
+base6E630000+1351F0=6E7651F0→Create+280，范围[134F70,135362)，nearest211/13517F+71；+1DE4D1=6E80E4D1→UnwindStackFrame+91，范围[1DE440,1DE5A6)，nearest683+10。符号/行API成功Error0，不提供相邻sequencepoint/inline区间，不定首坏写或继发unwind首因。
+FE静态resourceQI/description/device/caps/parameters→AdapterOrdinal→托管BitmapState与LUID初始化→GCHandle/Instance→Identity/Register→out及cleanup已列；未证错误offset/未初始化根因，前序ABI/out污染与后置消费仅候选，反例不当实跑。下一仅既有正式C#一次离线补实际加载PDB身份、source checksum及相邻行边界/快照同算法比较，不跑业务变体。
+最终输入三文件原件体积之和96627847，不是传输字节；两已回收符号task加两历史未回收至少4次，旧第三次最终不实；5次publish仅历史报告，未独立核完整调用/早期原始退出。FQ新增build/发布/符号执行/业务/full0，生产与所有禁止区域0改；Available/HW恢复/media/resources/最终full四格/x64Event0等仍开，完整替换未完成。四文档历史全文回读/截断补齐仍进行，不沿用旧轮完成声明。
+
+## FO 最后补记：四文档和原件回读闭环
+本轮同一FK报告85/handoff678/本汇总699/issues715行（补记前）正文历史全部小段亲读至末，FN遗留三共享长历史与各截断尾段已缩段补齐；FO新增终态已核，本补记写后再读。唯一有效task e31d917197404d69843eeb1b92312279的589事件/6业务/6stages/4cleanup/1identity全部读完，实际进入DR首次Create、候选内两个AV地址与second-chance已核，子C0000005/监督0/清理true，不造TRX计数。预检文件保留，上传仅正式com-acceptance-package。生产修复0/控制重复0/full0/状态机0改；下一仅精确SHA候选1351F0/1DE4D1离线映射，Available/HW恢复/full四格/x64Event0等仍开。取证和文档闭环不是完整替换。
+
+## FO 终态：编译闭包与一次真实候选取证完成（最新优先）
+详[同一FK报告FO节](replacement-supervised-crash-evidence-execution.md)。仅独有Build.props与安全只读C#元数据预检及四文档，源码/生产/状态机/DR断言/打包/版本0改，生产修复0。FH_CRASH_EVIDENCE+DR_INTEROP_ABI同启，正常分析器、x86 Release自包含10.0.13、独有fo obj/bin/显式publish/正式com-acceptance-package，不上传publish或回收根、不重发生产。发布共3次（成功、预检SDK引用MSB3755失败、纠正成功）。公开API60类型/DR1，最终元数据candidate TestMethod非DataRow、FH Run和NativeRun.Main均存在；offline-preflight.txt471行保存清单全部文件存在性/SHA与闭包PASS，exe/deps/runtimeconfig/Contracts/Native/aot已核。
+唯一有效task e31d917197404d69843eeb1b92312279，完整回收artifacts/fo-crash-evidence/run-candidate；外240秒、内120/130及5+5，未重复控制/full/变体/任务重试。空参数调用Function failed无任务，随后唯一完整调用执行。监督7152/子DR7148/初始TID7508；业务及stages各6行明确identity、CreateDevice/RenderTarget/ColorFill均Hr0及首次Create before，无after，非零测试。actual Native base1851981824/size4055040/SHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53，是FM←FE失败适配来源，不是当前default源码/官方/全direct成功DLL。TestSHA905D899878468269011A556D4FBB767571D52583E3FC878BFFB44228F910F66B/MVIDb988c06b-92b8-483d-a6fe-9fdf7d17dd20/.NET10.0.13/X86/4。
+真实AV均7508：first C0000005/6E7651F0/候选+1351F0，随后first及second C0000005/6E80E4D1/候选+1DE4D1，均NOT_HANDLED；初始断点和04242420不计候选AV。EXIT_PROCESS子C0000005、监督Exit0/CleanupConfirmed=true（仅取证通过，非产品通过）；无timeout/kill，Detach/Wait0/两Close均成功。事件589行完整回收，cleanup4行；无完成child.trx/父TRX/计数，无dump/native栈，不猜首坏写或整库bug。工具无数字task退出码/独立双流，不冒称网络故障。
+下一唯一该精确SHA两RVA离线符号/源码映射，先1351F0再1DE4D1；不新增运行。Available/HW恢复/media/resources/线程callback、最终full四格/x64Event0独立线均开。历史全文小段回读与最后补记随后记录。
+
+## FO 终态：唯一真实DR崩溃取证命中
+同一FK报告FO节与artifacts/fo-crash-evidence/offline-preflight.txt保留预检。正式FH+DR双符号x86自包含10.0.13包已元数据证明DR candidate TestMethod、internal FH Run/入口，正常分析器；唯一task e31d917197404d69843eeb1b92312279进入DR首次Create，无after。FE失败适配候选actual SHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53/base1851981824/size4055040，不是当前default源码。TID7508首次AV0x6E7651F0/+0x1351F0，随后0x6E80E4D1/+0x1DE4D1 first及second chance，全部NOT_HANDLED。子7148 EXIT_PROCESS C0000005；监督7152 Exit0仅取证成功/CleanupConfirmed=true；无timeout/kill，Detach/Wait0/两Close成功。TestSHA905D899878468269011A556D4FBB767571D52583E3FC878BFFB44228F910F66B/MVIDb988c06b-92b8-483d-a6fe-9fdf7d17dd20/.NET10.0.13/X86/4。无完成TRX/父计数/栈/dump，非零测试。生产修复0/状态机及DR断言0改/控制重复0/full0。下一仅此SHA两个RVA离线符号映射；Available/HW恢复/full四格/x64Event0仍开。四文档全文回读进行中，历史保留。
+
+## FN 最后补记：取证未达成，交接不冒称完成
+本轮1次候选角色提交/有效DR0，子Exit8/监督Exit1/清理确认true。四文档FN新增终态已回读，同一FK报告正文71行已全文回读；三共享长文档历史尚未全文读至末，不满足用户要求的完整交接，不沿用FI/FG/FM回读声明。下一先补三历史全文及截断，再离线核DR条件编译缺口。无候选actual加载/地址/栈，无生产修复；末次补记写后再读。
+
+## FN 终态：唯一提交未进入DR，不能关闭取证目标（最新优先）
+详同一[FK报告FN节](replacement-supervised-crash-evidence-execution.md)。原样FM正式x86自包含10.0.13包提交1次task6336be71fa8748e2a2f24194a9899b4d，回收artifacts/fn-crash-evidence/run-candidate；无重发/第二次请求/full/probe/COM变体或代码更改。子9832/TID7136，事件462行及cleanup4行逐段全文亲读。initial80000003/775D8B88/ntdll+118B88单次CONTINUE，04242420/750EAED4/KernelBase+1486548 NOT_HANDLED，所有Continue成功；EXIT_PROCESS子Exit8，监督Exit1/CleanupConfirmed=true，Detach/Wait0/两Close成功，无kill/AV/secondchance/timeout。
+执行前漏核包测试类型是本轮偏差：FM包公开API无DrInterop，源码需DR_INTEROP_ABI、FM props只启FH_CRASH_EVIDENCE。有效DR执行0，无DR业务/阶段、Native加载或完成TRX，不称候选不再崩溃。TestSHA CEDF1BB6F56E21B78E28E1E61ADAEE942613ECD8A9A52C534BBBBE6093796DBA/MVID4585cdb0-c774-4593-93e7-2d051c64a8c2/.NET10.0.13/X86/4；候选文件C:\CodingAgentSandbox\Tasks\6336be71fa8748e2a2f24194a9899b4d\Native\wpfgfx_cor3.dll/SHA1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53是FE失败适配来源，不是当前已撤回default源码/7B590原包或旧全direct成功DLL。本轮没有candidate actual加载/base/size/故障偏移/栈；工具无独立数字任务码/双流，无父TRX计数。
+生产修复0/源码修改0，无新build/publish，引用FM默认normal analyzer Release build Exit0/98警告0错/1.70秒。下一唯一离线核包FH_CRASH_EVIDENCE+DR_INTEROP_ABI闭包及公开DR方法/失败Native来源，随后独立授权取证，不改状态机/DR预期；本轮不追加。FM正常控制和FK失败保留；secondchance/timeout等未运行风险、Available/HW恢复/full四格/x64Event0等独立线仍开。历史全文回读与末次补记另据实际记录。
+
+
+## FM 终态：唯一正常控制通过（最新优先）
+详同一[FK报告FM节](replacement-supervised-crash-evidence-execution.md)。撤销自设exact导出RVA前置，不是用户要求/Windows必需合同；未伪称查官方网页。仅FhCrashEvidence显式诊断状态机/随机ready/完整事件及Continue记录，默认隔离，NativeRun/生产/打包版本0修改。正常分析器x86自包含10.0.13专有fm obj/bin/publish/package：2次CS0136失败，改局部名后第3次发布成功；默认Release build Exit0/98警告0错/1.70秒。
+控制1/probe0/full0/候选0，task1bd3444a0b2c44c5914d874caf15398f，回收artifacts/fm-debug-startup/run-control；事件195行与cleanup4行已读至末。子PID10824/初始TID6740/start12521024/flags0x08000402；CREATE_PROCESS/ntdll加载→80000003 firstchance/775D8B88单次启动门CONTINUE→后续04242420 firstchance NOT_HANDLED→随机ready→Exit0/secondchance0/无timeout，监督Exit0/CleanupConfirmed=true。Detach/Wait0/两自有Close成功，无额外kill；工具未暴露数字任务退出码/独立双流，无TRX分母。TestSHA CEDF1BB6F56E21B78E28E1E61ADAEE942613ECD8A9A52C534BBBBE6093796DBA/MVID4585cdb0-c774-4593-93e7-2d051c64a8c2；候选文件1893370B…980E53未加载。
+FK失败清理保留；异常/secondchance/timeout/日志IO/用户断点及多架构断点分支本轮未运行，不称全路径安全或NativeAOT通过。诊断修复非生产缺陷修复。下一独立只默认候选合法DR取证1，取得真实异常地址/模块偏移；本轮不跑。Available/HW恢复/media资源/full四格/x64Event0等未闭。全文回读与最终补记另按实际记录。
+
+
+## FL 取证终态；交接全文回读未完成（最新优先）
+同一[FK报告FL节](replacement-supervised-crash-evidence-execution.md)。FK事件22/cleanup9本轮亲读至末；模块采集2次、正常子退出控制0、候选Create0/full0。最终task262638d5b2f94c5eba30ab15b9d30ba8，回收artifacts/fl-startup-auth/run-modules-final/Results/fl-modules/module-evidence.json。I386/PE32 ntdll SHA7E15BD30…12F9DF同FK，RVA118B88文件映射/当前映射33字节一致，但不匹配DbgBreakPoint507408/DbgUiRemoteBreakin846256等精确导出；无可信内部符号与启动路径，不能认系统initial break。历史7336启动地址未保存，未造栈/ESP观测。安全门保留，控制未通过，无新调试清理/Exit0/TRX；数字任务退出码及独立双流缺口保留。
+仅FhCrashEvidence显式modules角色/事件起始地址字段，NativeRun及生产0修改、默认隔离；正常分析器显式x86自包含10.0.13发布2次成功，独有fl obj/bin/publish/package；默认Release build成功/98警告0错误。实际TestSHA850F20A2B7A08267BEF258DBB15B302A55105FE8BD3FDB9C82CF6C35BF89F162/MVIDef71709a-45f3-417c-9344-3cfb5ea3cd0c，候选文件1893370B…980E53未加载。下一补同SHA可信内部符号及启动关联，精确认证后的正常控制通过才候选最小取证1；Available/HW/full/x64Event0仍开。历史全文小段回读尚未完成，不称交接闭环。
+
+## FK 终态：控制未通过，候选零次（最新优先）
+详[执行报告](replacement-supervised-crash-evidence-execution.md)。控制task1ff51558d7474901843843fd4054e56c，远端C:\CodingAgentSandbox\Tasks\1ff51558d7474901843843fd4054e56c，回收artifacts/fk-crash-evidence/run-control；22行事件和9行cleanup全部亲读。断点first-chance80000003/775D8B88/thread7336/ntdll+118B88，来源未能精确证明，NOT_HANDLED后安全门抛错、终止子进程。Terminate/4次Continue/Detach/Wait0/两自有Close成功；不是正常Exit0，数字父/子退出码未取得，没有完成TRX或测试计数。工具返回应用异常不是连接故障，stdout/stderr未独立保存，不称完整双流。控制不通过，候选0/full0，不重跑。
+实际TestSHA C2FE0245DB4028036CD531A79BA0385F065E0E89E7E6AB0DA873A9D8258C0B05/MVID10370b81-c352-490d-b0ad-2e1f29e81942/.NET10.0.13/X86/4；候选文件1893370B…980E53不是控制已加载身份。显式正常分析器publish2次Exit0，首次shared PublishDir偏差第二次显式独有fk/publish纠正，只上传白名单包；默认Release build1次Exit0/98警告0错/2.59秒。未改生产、入口分派或项目打包，保留默认FH_CRASH_EVIDENCE隔离；诊断句柄所有权/未识别断点门修正仅失败清理分支得到运行证据，不称全面安全验收。下一离线核同SHA ntdll+118B88启动来源，不能绕过门复现Create。Available/HW恢复/full四格/x64Event0等未闭。FJ历史不视作本轮。四文档历史全文回读尚在进行。
+
+## FI 最终交接闭环补记（最新优先）
+FH报告25/handoff638/本页664/issues681行（补记前）全部正文与历史已小段回读至末，所有截断末行/余段补齐；本补记随后再次读。四文档完成、历史保留、无重复报告；旧进行中由此终态覆盖。FhCrashEvidence全文件与NativeRun两个FH入口默认条件隔离；默认normal analyzer Release build1次Exit0/98警告0错误，显式诊断build0；实际执行0、取证0、新沙箱请求0。非运行安全验收/生产修复；请求错误原件未独立取得、上传阶段未知及调试清理静态风险保留，不造hash/实际候选SHA或移绑旧shared publish。下一在连通后先正常退出控制1，再合法DR默认候选Create崩溃取证1，取异常地址/实际模块偏移；Available/HW恢复/full/x64Event0等未闭。
+
+## FI 诊断默认隔离终态，回读进行中（最新优先）
+详[FH报告FI节](replacement-supervised-interop-crash-evidence.md)。仅FhCrashEvidence全文件与NativeRun的--fh-normal-exit/--fh-crash-evidence同加FH_CRASH_EVIDENCE；默认不编译、不发现不触发，MTP/既有监督filtered/full及其他分派不变，未动生产COM/DRDS/VisualCache/historical/捕获/打包/CF-CX-CY。默认正常分析器Release build1：Exit0/98警告0错误/2.74秒，stdout前57103字符不可见，非全警告审计。显式诊断build0，实际执行0、取证0、新沙箱请求0、full0，不把编译当安全认证。
+FH旧Build.props/source-sha256.txt亲读，独立未取得保存的请求/原始连接错误；按交接连接172.20.115.32:50250超时、无taskID，非测试执行失败。远端上传完成/任务创建/启动均未证，不造远端路径。源码可读与GetFileHash访问能力不同，不判原件丢失、不称本次hash完成，未运行候选不绑定旧默认shared publish。EV/EX与FE trace/helper/内联配置差异非已证根因。调试continue失败/kill确认/异常路径句柄释放风险见FH报告，未运行不称安全验收或异常捕获通过。
+下一仅连通后先正常退出控制1，再合法DR默认候选Create崩溃取证1，目标异常地址/实际模块偏移；先核静态风险、显式条件及真实身份，不再猜扩大COM替换。Available/native通知consumer、HW内容/resize/loss恢复、media/resources/线程callback、最终full四格和x64Event0/E_HANDLE仍开放。四文档历史保留，全文小段回读继续。
+
+## FG 最终回读闭环补记
+四文档历史全文小段读至末、截断末行/余段补齐，FG新增终态已回读；补记前FE37/handoff626/本页656/issues673行，本补记随后再读。仅四文档交付闭环，无重复报告，历史未删；预检原TRX/正式失败/当前源码与snapshot范围已独立核，不造当前hash或字节恢复。无源码变更或新实验/build/发布/沙箱/full；默认安全但未修。下一唯一同正式包/同日志布局调用及编译配置差异审计，必要时转既有C#监督WER/小dump可行性审查，本轮不实施；所有开放门保持，文档不等完整替换。
+
+## FG 最终独立核证与交接（最新优先）
+[FE报告FG终态](replacement-supervised-interop-fix-closure.md)列完整路径/身份/差异与唯一下一任务。FG直接执行，仅专用读写搜索，先登记handoff、亲读规则/完整方案、原预检及正式原件；不新实验/发布/沙箱/full、不改生产测试或入口打包、不终端/直接间接脚本。以下旧进行中均保留历史，由本节覆盖。
+预检原件独立全文核：fe-interop-closure/run-preflight-x86/TestResults/fe-preflight.trx43行，task166181b0048744328deb69ddb8e63de2，1执行0通过1失败/Exit2；ff-interop-acceptance/run-preflight-x86/TestResults/ff-preflight.trx26行，task8481231bd53f4852bf42e916e93df676，1/1 Passed。FF upload-preflight确认MissingInputs/UnexpectedInputs=[]、ExecutionOutputs仅Results/aot-identity.json、ExactDirectoryMatches=false、NativeMatches=true。原目录/hash联合断言混淆输入manifest与初始化运行输出，不是输入污染或Native hash失败；nonempty/去重/hash断言保留，FeInteropPackageTests全类FF_INTEROP_PREFLIGHT隔离，默认不改变历史发现/业务。
+正式taskd71a90439db344ceb58e114fa643312d监督39/业务6/stages6/双流/actual及aot identity亲读：C0000005，非timeout/cancel/kill、排空正常；首次Create未返，无三轮/refs0/完成TRX。精确本地artifacts/ff-interop-acceptance/run-dr-x86/Results/ff-dr-x86/TestResults/child.trx直接读不存在；远端C:\CodingAgentSandbox\Tasks\d71a90439db344ceb58e114fa643312d\Results\ff-dr-x86\TestResults\child.trx。actualNative1893370BE00966654E5517C9D61E05450ADB37AB9423C16FF145FCCF99980E53，TestBD15F34C33B00DE64E3759835ED403663228EDF90E0CBF589062094610ABCF5E/MVID983d0bd1-9777-4755-97fd-c0822ce0dc13，.NET10.0.13/X86/4；业务GetModuleFileName实际路径而非仅manifest。此次无内部trace/故障地址/native栈，无法指定最早内部边界，不依据旧trace移绑或宣称首次坏写。
+源码627行全文亲读、FE实验snapshot及预检snapshot范围核明：前序/共享适配/helper已撤，default generated/surface directQI/DT-DX默认关闭trace/EF/CF-CX-CY保持。无源码改动无需重build；FF默认Exit0/3762警告0错仅历史引用，不造FG编译/hash或字节恢复认证。FE失败与旧全direct成功只列helper/内联、后置trace/条件布局和cleanup共享绑定等明确源码差异，不新增无证回归/全Silk库bug判断。
+下一仅一个定位任务：同一正式执行包/同日志布局核FE与EV/EX完整真实调用清单和编译配置，列Create后置slot6/QI0/Release2已一致与第二slot9/LUID/Ex释放、BitmapState/分配/Register/cleanup/共享释放尚未一致或未覆盖绑定。优先差异审计，不猜扩大COM闭包。若多轮仍不足且缺故障地址/native栈，转审既有正式C#监督角色安全WER LocalDumps/纯C# MiniDumpWriteDump（权限、架构、上下文、作用域恢复、空间和数据保护）可行性；无现成dump专用能力，不假装工具提供、不脚本/外部命令/新Host、不无限变体。本轮仅建议不实施。
+独立x64Event0/E_HANDLE、Available native通知/consumer、HW内容/resize/loss恢复、media/resources及最终四格仍开；默认安全但未修，四文档闭环不等完整替换完成。
+
+## FD 最终回读闭环补记
+四文档历史全文已小段读至末，所有超长截断末行/余段缩小补齐；FD新增终态已逐段读、历史未改，本补记随后再读。两task独立证据、正确部署/上传txt纠正、默认627行/辅助零残留和空文件无类型引用/默认发现风险已收口；不造新编译或运行结果。default安全但未修，下一仅有限已证调用点组合生产评审及官方/候选双架构DR循环refs/BW/CK保留门。CF/CX/CY/EF保留，x64Event0/HW恢复/Available/full等仍开，文档闭环不等完整替换。
+
+## FD 独立核证终态与唯一生产评审门（最新优先）
+[FB报告FD节](replacement-supervised-update-method-qi-samedll.md)给完整证据路径、身份与范围。本轮仅专用读写搜索，先登记handoff，再核规则/完整方案及FC原件；不新实验/发布/沙箱/full、不改生产测试代码，不重build/hash。有效回收根artifacts/fc-update-qi/run-direct、run-generated；各监督39、业务39/6、DT72/18、actual/aot identity、双流与标记/snapshot已亲读。direct e8ddeccf18564b6ea2fe897bbcda7e79精确childTRX26行1/1 Passed/Exit0、三循环及末refs0；后置generated三轮成功。generated215ca9d08f7a43239226ea87c223ce73 C0000005、首次Create未返/DT末第二QI.before，精确childTRX不存在不造计数。两actualNative5FCDE90B…/test4C4CADA0…/MVID1030015f…一致，.NET10.0.13/X86/4，无监督设施异常。
+只有GetUpdateMethod第二deviceQI标记运行时切换，CheckDevice与其它前序direct/后置generated固定；固定标签不能代源码选择。限定背景同DLL因果，非唯一default根因/栈损坏/整个库bug；Available0/native及consumer false，Ex未执行支不算覆盖。正确部署证据为fb-update-qi/upload-preflight-fc.json的Path/Bytes/SHA与精确com-acceptance-package sourceDirectory，txt早期状态已纠正指向JSON与最终有效2task；原VSTest缺AppInsights探测、FB误传PublishDir缺aot初始化失败/业务0分开，不盖正式exe结果。实验包复用未重编译，FD未重算hash。
+当前Interop627行全文与default snapshot关键段核毕，Code指定FB辅助零残留，默认generated/surface directQI/DT-DX条件trace保留，CF/CX/CY与EF未改。FcUploadPreflightTests.cs为空且Tests无引用：无类型/属性/默认发现或悬空引用风险，保持空，不以无删除工具拖延，不写脚本/新增工程。default安全但未修；FB历史build Exit0/1482警告/0错误/13.55秒仅历史引用，stdout截断非全审，不造FD新编译。
+下一仅一个生产修复评审：解释本类有限已证调用点组合如何覆盖剩余前序/失败cleanup风险，结合EL/EZ/FC及EX/ER不足，不把两QI或三处当充分修复，不回无界单点/全direct；生产保留必须正常分析器官方/候选双架构Release正式DR循环、精确身份/TRX/refs及生命周期、BW1/CK10，否则精确撤回。本轮不执行此门。Available/HW消费恢复、x64Event0/E_HANDLE、media/resources和最终四格full未闭，完整替换未完成。所有过程历史保留，旧待核状态由本节覆盖。
+
+
+## FC 两组有效业务完成（最新优先）
+FB部署错误保留；精确com-acceptance-package复用且本地逐文件hash/清单preflight通过，实验未重编译。direct e8ddeccf18564b6ea2fe897bbcda7e79 Exit0/TRX1/1/三轮及末refs0；generated215ca9d08f7a43239226ea87c223ce73 C0000005/首次Create未返/DT末GetUpdateMethod.QI.before，精确TRX不存在不填计数。仅增加fb-generated.input，两actualNative5FCDE90B…/test4C4CADA0…/MVID1030015f…一致，.NET10.0.13/X86；有效业务2，不追加。限定背景第二QI因果，不外推全库或唯一默认根因；Available0非消费覆盖。生产未修改，最终源码/历史回读与临时preflight诊断清退中。
+
+## FC 进行中（历史）
+纠正 FB 误上传 PublishDir=package 缺 aot.sha256，FB 未进Create/有效业务0。先核既有正式白名单 com-acceptance-package 与归档同DLL运行时标记及default恢复，不贸然重编译；上传前本地preflight清单和实际hash核验。先direct正控制成功才同包加fb-generated.input运行generated，最多2有效业务task，真实业务控制失败停。当前无FC task/发布/生产修改，开放门不变。
+
+## FB 停止与安全恢复（最新优先，未完整收口）
+[FB报告](replacement-supervised-update-method-qi-samedll.md)：仅第二deviceQI显式实验已精确撤回，Code指定辅助零命中，default正常分析器Release build Exit0/1482警告/0错误/13.55秒；stdout截断边界保留。独有前/实验快照已保存，未改DR/DS及禁止区域。
+唯一direct task60c6e3a930aa4ae1815fe4b5b884f188 Exit2，无timeout/kill/drain异常，精确childTRX49行1执行0通过1失败；初始化缺aot.sha256，未进业务。generated0、有效业务对照0，无same actualNativeSHA因果。误上传PublishDir=package而非正式com-acceptance-package；后者身份SHA5FCDE90B…直接读到，不是业务actual身份。控制失败停、未补跑/negative/full。下一唯一独立核正式白名单包/恢复源码，再另授权重新direct控制，不重复CheckDevice。
+源码恢复全文与四文档历史全文小段回读尚未完成，不能称完整收口。Available/HW恢复/media/resources/full四格/x64Event0均开放，无完整替换/全Silk库bug结论，EL Creation因果仍仅原背景。
+
+## FA 最终交付回读闭环（最新优先）
+四文档最终正文全文小段读至末：补记前EZ25/handoff568/本汇总624/issues641行，超长截断末行与余段已缩小补齐，本补记随后再读。EZ新增块精确撤回、恢复627行全文及Code指定标记零残留已核，默认正常分析器Release build Exit0/1482警告/0错误/6.38秒已完成；stdout前1193353字符截断，不称全审警告。两task独立亲核/direct精确TRX1/1已闭，generated精确TRX缺失不填计数；hash仅历史记录未重算。当前default安全但未修，下一唯一另授权第二deviceQI同DLL单点、不重复CheckDevice，本轮不执行。四文档交付完成非产品修复，Available0/HW消费恢复/x64Event0/full四格仍开，无新实验/发布/沙箱/full。
+
+## FA EZ安全撤回及独立核证（过程保留）
+详[EZ报告FA节](replacement-supervised-checkdevice-qi-samedll.md)。仅撤Interop的EZ新增块，恢复后627行全文及Code指定实验辅助零残留亲核；默认generated/surface directQI/DT与DX默认关闭trace、EF/CF/CX/CY保留。正常分析器默认Release build一次Exit0/1482警告/0错误/6.38秒，无NoWarn/关闭规则，增量入口非clean/AOT运行；61行可读日志至末，stdout前1193353字符被截断仅留末20000，不称警告全审。EZ无恢复hash文件，ET历史1C3E30CC…两行仅核记录未重算。
+既有direct482d5bb6703440b0a2e403cc6675eaf5/generated8f32bc2bc6e949d8810a6f5057b8f97e两监督各39/业务39与6/DT72与8/stdout12与2/stderr空/actual及aot identity/标记和源码选择已亲读；同actualNative2CB6F77F…、testE587956E…/MVID8ff939db…。direct精确本地TRX26行1/1 Passed、三轮及最终refs0/Exit0；generated精确childTRX直读不存在、不填计数，首次Create未返C0000005、DT末CheckDevice.generated.QI.before无after。单点因果仅固定其余前序direct及后置generated背景，不判唯一默认根因/栈破坏/全库bug；EN三处不足不能抹去EL Creation独立背景因果。
+当前default源码安全但未修；Available0/HW消费与恢复/独立x64Event0/full最终四格仍开。下一唯一另授权：固定EZ direct成功背景同DLL/正式DR/布局日志，仅runtime切GetUpdateMethod第二deviceQI精确重载；CheckDevice和其余前序direct/后置generated不变，先direct三轮refs0/Exit0/精确TRX控制成功才唯一generated、最多2task、控制失败停。不重复CheckDevice已证对照，本轮无新实验/发布/沙箱/full或禁止区域改动。四文档最终全文小段回读进行中，历史保留。
+
+## EY 最终交付闭环（最新优先）
+EX33/handoff545/本汇总614/issues631行最终正文已全文小段回读至末，无未补截断，本补记随后再读。direct本地child.trx26行1/1 Passed已亲核，阶段性缺口关闭；两task同Native C427438…/test0273…/MVIDe665…，仅runtime前序十重载切换，后置fixedgenerated。Direct三轮refs0/Exit0，generated首次Create未返C0000005、DT末条CheckDevice.generated.QI.before，无完成TRX；非唯一故障指令/全库bug结论。
+生产全文627行及Code指定EX/辅助零残留已核，默认generated和DT/DXtrace/CF/CX/CY/EF保留，hash仅核恢复记录未重算。正常分析器默认Release增量build仅一次Exit0/0警告0错误/0.81秒，17行完整无截断，非AOT/运行。源码安全与四文档收口完成，默认未修，本轮无新实验/发布/沙箱/full/禁止区域修改。
+下一唯一另授权：同DLL/正式DR/布局日志，保持其余前序direct及后置fixedgenerated，仅runtime切Create边界CheckDevice精确deviceQI指针重载，非全方法或同时两QI；先direct三轮refs0/Exit0/TRX成功控制才一个generated对照，最多2task，控制失败停，不全十/不重复后置/不移trace。EL Creation及EN三处不足不移绑EX背景。Available/HW恢复/full/四格/x64Event0仍开放；文档闭环不等产品修复，详EX报告。
+
+## EY direct TRX补核纠正（最新优先）
+后续精确本地run-direct/Results/ex-direct/TestResults/child.trx读取成功，26行全文、taskd505891…绑定、Completed/执行1通过1失败0；阶段性独立TRX缺口现已关闭，远端不可读以本地回收原件补齐。名称枚举零命中不能当不存在，前段判断撤销且历史保留；generated无完成TRX边界不变。继续四文档全文回读。
+
+## EY 独立EX核证与安全收口（历史阶段）
+详[EX报告EY节](replacement-supervised-prefix-samedll-control.md)。亲读direct/taskd505891…与generated/taskb4e9509…各监督39行、业务39/6、DT75/9、stages39/6、direct后置21、actual身份及aot-identity、generated stdout2/stderr空。两actualNative C427438AF11B8B4616AC732120B32B94EC848A8AD6B05406381C2C8A781DB267及test0273A1DE…/MVID e6656377-7943-4d3b-9d8e-b7400971a272相同，仅runtime标记切前序十重载、后置fixedgenerated。Direct Exit0三轮refs0、generated ExitC0000005首次Create未返且末条CheckDevice.generated.QI.before，无完成TRX；不从缺after定位指令/清栈/整个库bug。
+独立缺口：direct精确本地及监督绝对child.trx不可读、工作区名称检索零命中，EX-3历史26行1/1亲读不抹除但EY不冒称重核；generated两精确路径均不存在，不造TRX或以stdout替代。源码全文627行亲读及Code指定EX行为/辅助标记零命中，默认generated、DT/DX条件trace保留；restore两行1C3E30CC…仅核记录未重算。生产/测试、CF/CX/CY及EF均未改。一次正常分析器默认Release生产csproj build Exit0/0警告0错误/0.81秒，17行日志完整无截断，增量非clean/AOT/运行验收。源码安全收口完成，默认未修；四文档全文最终小段回读进行中，独立TRX缺口保留。
+下一唯一须另授权：同DLL/同正式DR/布局日志，只runtime切CheckDevice deviceQI精确指针重载，其余前序direct、后置fixedgenerated。首次失败边界在此、第二QI未执行，故选单点不同时两deviceQI。先direct三轮/refs0/Exit0/childTRX控制，成功才一个generated对照，最多2task，控制失败停；不全十、不重复后置或改trace。双成功只说明单点不足，失败只该背景替换作用。EL Creation因果只原背景，EN三处不足不移绑新背景。Available/HW恢复/full/四格/x64Event0仍开；EY无新实验/发布/沙箱/full，文档不等产品修复，历史全部保留。
+
+## EW 独立核证（最新优先）
+EW最终回读补记：四文档最终正文全文小段回读至末，补记前EV37/handoff523/本汇总605/issues622行；所有截断缩小补齐，本补记随后再读。精确本地TRX各26/DT各72已补核；Code追加指定历史实验标记/辅助检索零命中，不外推全仓。仅文档闭环非替换完成，默认未修、未闭门保持；无代码/构建发布/新业务任务/full，下一仅前序组同DLL固定后置generated实验另授权。
+[EW亲核详EV报告](replacement-supervised-adapter-samedll-control.md)：task4296dd31a8c04d65a0bcb0548e1ee9bd与2c4456e90cf34d58958524635ac2fe78，两组监督39/本地child.trx26/业务39/EV21/DT72/stages39/actual identity及aot-identity均独立读至末；Exit0、各1/1、三轮Bitmap及末尾surface/device/factory refs0。远端TRX不可读后已亲读精确本地回收件，不以stdout代TRX。Native6DCA9E55…、test4365873D…/MVID3e089fd7…一致，仅ev-generated.input切后三调用，前序/布局/日志固定。
+generated slot6/QI0/Release2也成功，不能支持后三调用单独导致旧失败，不能称整个Silk库已修或全库错误；EL Creation同DLL因果仍只限其背景。nonEx第二Creation/LUID/extendedRelease未执行，Available0/native及consumer false，无消费覆盖。只读默认generated和DT/DXtrace保留、Code指定实验标记/辅助零命中；恢复SHA1C3E30CC…只核既有两行记录，未独立重算，EF/CF/CX/CY未改。EV首次NativeAOT落共享artifacts/publish后专属重发偏差保留；默认增量build不代AOT，EW不构建/发布/运行。
+下一唯一实验另授权：同DLL切EV的ER前序十调用组direct/generated，后置fixed generated成功基线，保持日志/布局/真实能力；direct正控制完整三轮及refs0才允许唯一generated组，最多两task，控制失败即停。它隔离前序组合，比同时移除trace改变背景更有判别力；双成功不强归因、不追加全direct或full。详报告设计与结果分支。
+默认未修；x64Event0、Available、HW内容/resize/loss、media、resources通知/生命周期与final四格均开。四文档全文最终分段回读进行中，完成后另补记；全部历史保留，文档不代替换完成。
+
+## EU 独立核证与收口（最新优先）
+EU最终回读补记：本轮四文档最终正文全文小段读至末（补记前ET35/handoff509/本汇总597/issues614行）；所有截断已缩小补读，本补记随后再次读取。历史全文未读缺口由EU关闭，过程更新和全部历史保留。仅文档闭环非替换完成；默认generated及CF/CX/CY保持，无新生产修复或新运行。hash只核报告未重算，下一仍是另授权同NativeDLL运行时后置slot6/QI0/Release2 direct/generated固定布局日志对照，未覆盖项不关闭。
+
+[EU独立证据与边界](replacement-supervised-adapter-luid-runtime.md)：精确监督39/child.trx26/业务39/ET21/actual identity亲读至末，task a9846dc31dd2457abd0c6b4e8612b9f0 Exit0、1 passed、三次Bitmap refs0及最终surface/device/factory0。GetDirect3D真实Hr0、factoryQI E_NOINTERFACE/null、Release2；第二Creation/LUID/extendedRelease未执行。Available0不是回调消费；日志整行不证Dispose返回，区间组合成功非唯一方法根因。
+默认GetAdapterLuid与default-before-et对应段亲读均generated；SHA一致1C3E30CCB283A71FAE61286C582D7899A036911F474D3632614678F207FFFFB1只核ET既有认证，本轮无独立hash工具，未重算。仅Abi目录检索EtTrace|creationBoundary|QueryCreationDevice|ReleaseCreationDeviceEx无命中。CF/CX/CY、EF/trace保持，默认无新生产修复。
+下一唯一具体对照另授权：同NativeDLL运行时仅切换后置实际执行slot6/QI0/Release2的direct/generated，保持同布局同日志及已核ER背景以排除编译布局/日志差；无需重做ER全背景，保留真实能力判断。Ex/Available/HW内容与恢复/full/双架构DR及生命周期/BW/CK/x64 Event0仍未闭。
+本轮仅四文档，不新实验、不改代码、不build/发布/沙箱/终端/脚本、不full。过程更新已执行，全部历史保留。四文档最终全文小段回读进行中，截断缩小补读至末，最后补记再次读；文档完成不是替换完成。
+
+
+ET最后补记：报告24行分段至末及三共享新增ET段已读，历史长正文未本轮全文重读仍为交付缺口。默认GetAdapterLuid恢复亲读、SHA相同、辅助零残留、默认build已核，无第二业务任务。
+
+## ET 最终：非Ex后置区间闭包通过，实验已撤（最新优先）
+[ET报告](replacement-supervised-adapter-luid-runtime.md)：唯一task a9846dc31dd2457abd0c6b4e8612b9f0 Exit0，监督无timeout/cancel/kill/drain异常，精确绝对child.trx 1/1 Passed。三次Create/QI/AddRef/GC dirty/Detach均完成，三Bitmap及最终surface/device/factory refs0。GetDirect3D真实Hr0；factory203552256，QI真实E_NOINTERFACE/extended0，factory Release2。第二slot9字段/LUID/extended Release因原能力分支不执行，未覆盖。Available0仍未验native通知/consumer，不外推HW/full或x64 Event0。
+实际NativeSHA 1F11BFE00844E9FCD9F2404F35703EAA2316FBC3C78B43438CE1FEFCF2A78E9B；test7C8F41EECD5CA5806B4D88A8CB38127F0FFAC824F0CFA00B2DCBB7DF1E62F057/MVID11f29ca9-2390-4717-9e29-7653b2f2dbc2，.NET10.0.13/X86/4。业务39/ET21/DT72/监督39/identity/TRX26/双流已读。完整源码default/ER背景/ET实验快照与完整回收在artifacts/et-adapter-runtime。恢复后Interop与原快照SHA均1C3E30CCB283A71FAE61286C582D7899A036911F474D3632614678F207FFFFB1，ET/ER辅助零残留；默认正常分析器Release方案build Exit0/0警告/0错误/1.74秒，非默认AOT验收。
+仅认证组合及实际非Ex子集，不唯一定位方法、不默认生产修复。下一缩小slot6/QI0/Release2与日志扰动，Ex能力另验；双架构DR/生命周期/BW/CK/full/HW恢复/Available/x64 Event0保持开放。本轮新增文档段已回读；历史长正文未本轮全读，不承袭历史全文核证。
+
+ES最终回读：ES41/ER23/handoff490/本汇总581/issues598行已全文小段读至末，截断段缩小补齐；本补记随后再读。仅文档闭环，非生产或运行验收。
+
+## ES 最终：后置GetAdapterLuid静态审计，无新实验（最新优先）
+[ES逐句证据及缺项](replacement-supervised-adapter-luid-isolation.md)。生产/测试/条件辅助/发布/新task/有效实验0，不扩full；默认正常分析器Release增量build Exit0、0警告/0错误、1.18秒，19行日志亲读，不代AOT/DR。SDK与实际Silk factory四重载已核，但后置device slot6/第二slot9仍为generated，EL成功全direct包含它们，ER十窄链未替。AdapterOrdinal在BitmapState构造已消费，后置是新输出；缺factory QI Hr/null、字段、LUID、refs、日志FlushDispose尾界，不从缺after定唯一原生指令，不强跑宽泛假设。源码未改无撤回项/实验source，不造snapshot。ER原件亲读监督39/业务6/DT22/identity1、精确child.trx不存在，历史task760f6da25cf04064812f96c9f99c642c C0000005/完成Create0，身份详ES；无新身份或退出码。ER报告已补本轮实际回读范围，未重读双流不称已核。下一仅分段验证后置边界，默认未修；Available/HW消费/恢复/full及独立x64 Event0开放，历史保留。
+
+## ER 最终：窄链候选失败，已精确撤回（最新优先）
+四文档全文分段回读至末已完成：ER18/handoff482/本汇总577/issues594；截断段缩小补读。本补记随后再读，文档闭环不是生产验收。
+[ER报告](replacement-supervised-interop-stdcall-boundary.md)：正常分析器x86 NativeAOT/DR自包含10.0.13各发布1次成功，正式task760f6da25cf04064812f96c9f99c642c Exit C0000005、无timeout/kill；完成Create0、精确child.trx不存在。业务6/DT22/监督39/双流/actual identity亲核。GetUpdateMethod.after与后置GetDirect3D.after已出现，仍无首次Create.after，不能定位唯一调用/首坏地址。actualNative2B85E1DB413D9EE61E736783D218F825D30049954B95E7A54BE16484CFB512DB；test9E627594AD169BAE209BE822C9F91CF4FDA8C690DD7FC8C2146ADB2CAFE1F2C0/MVID1b478f87-fdd6-4aab-bf8f-c22e73acf388；X86/4。.NET10.0.13。
+13处逆向替换成功，默认generated/EF/CF/CX/CY/trace保持，helper/参数零残留；撤回后正常Release默认build Exit0、1482警告/0错误、8.31秒，非AOT。新x64/官方/生命周期/BW1/CK10/full/额外诊断均0，不造refs通过。窄边界不足不等于全库根因；下一另授权仅后置GetAdapterLuid内部阶段定位，保留同SHA失败包，不泛替、不无信息重跑。fill已验收保持，Available/HW消费/恢复/最终四格开放，x64 Event0独立。
+
+## EQ 补完EP独立原件审核（最新优先）
+[EP/EQ27方法精确表](replacement-supervised-com-binding-evidence.md)：x86-final/x64原始IL各742行、摘要各54行分段亲读；同Silk2.23.0 SHA/MVID，27项calli Cdecl/显式this与SDK x86 Stdcall不同，slot/参数数量顺序/返回宽度未见差异，不单凭签名首字节裁定物理栈破坏。实际.NET10.0.13，X86/4和X64/8，均只读JIT元数据，托管product加载非原生候选。Results仅txt，缺BL监督/退出响应/业务JSON/TRX/manifest，不造Exit0、候选消费或生产验收。
+EQ源码/项目/默认入口改动0，发布/沙箱/新AOT试验0；EP_COM_BINDING_READONLY默认关闭，CF/CX/CY保留。默认正常分析器Release专用build一次Exit0、2182警告/0错误、6.09秒，普通增量非AOT验收；62行日志亲读，stdout1862323仅末20000，前1842323未显示。EL同DLL单点因果保留且限控制背景；EN三处不足，日志尾声/返回区间无新定位。
+唯一下一任务另授权后实施本类首Create至GetUpdateMethod返回及失败cleanup的10重载私有Stdcall窄边界，精确范围/可判别性/失败撤回和双架构DR、身份/TRX/refs、生命周期及consumer门见EP；不全替27项、不再泛补静态或重跑full。default未修，Available/HW/恢复/full与独立x64 Event0均开。四文档更新后已全文小段回读至末：EP62/handoff474/本汇总573/issues590行；截断段缩小补读完，本补记随后再读。交接闭环完成，不代表生产修复。
+
+## EO 返回区间静态审计与EN交接补正（最新优先）
+[EO明细](replacement-supervised-interop-return-path-review.md)。EN原监督39/业务6/DT19/双流/actual identity与精确缺失child.trx亲核；两QI负Hr/null，其余记录Hr0。逐句排除本次Ex释放支；after缺失仍可包含日志尾声、OS判断、返回/caller/外层日志，不证函数未返。缺故障地址/native栈，不造首坏根因。全generated调用表区分实际IL/calli已核QI/slot9与其余缺项，不能全库归因。EO新发布/task/诊断/生产测试修改0，EN已撤回默认generated，trace/EF/CF/CX/CY保留；正常Release默认增量build Exit0、0警告/0错误、0.94秒，非AOT验收。下一仅同SHA纯C#只读补缺失方法体，不重复三处或全direct/full；EL因果限控制背景。Available/HW消费/恢复/最终四格与独立x64 Event0未闭。五文档全文分段回读已完成：EO59/EN28/handoff463/本汇总568/issues585行；截断段已缩小补读。完成后补记再读取，覆盖历史EN待办，不代表生产已修。
+
+## EN 最小 COM 组合失败并撤回（最新优先）
+[EN实证报告](replacement-supervised-interop-com-fix-delivery.md)。仅slot9及两device QI slot0改Stdcall；正常分析器x86自包含10.0.13正式DR task aaf1acf656f9493a852c30f85ec90f30 Exit C0000005。actualNative BF98CB728DEF274674769CC84B36F21099A186DDAEB990F1BC1EC1479DC775C9，test EAB5BEFA56FD62BEC368685F4BFFF64FFA824181C683DF26DD7184809B7ED712，MVID c43b0534-64a2-423d-a541-3d37c4f926a9。监督39/业务6/DT19/双流/identity亲核；首Create无after，末界GetUpdateMethod.QI.after至GetUpdateMethod.after，非首坏地址。精确TRX不存在，无完成计数。
+三处已精确撤回3成功/0失败；默认generated和EF/CF/CX/CY/trace保留，无默认生产修复。撤回后Release方案build Exit0/1482警告/0错误/14.13秒，正常分析器、非AOT运行。新候选x86任务1失败，x64/官方/额外诊断/生命周期/BW1/CK10均0。保留失败原包和证据，不复用旧SHA当通过。Available/HW/恢复未覆盖，x64 Event0/EHANDLE不合并。下一认证剩余链calli和有据单组诊断；全文四文档最终回读尚待，不标已做。
+
+
+## EM EL安全收口与同DLL独立审核（最新优先）
+
+[EL/EM完整证据](replacement-supervised-creation-parameters-samedll.md)、[EK补完](replacement-supervised-creation-parameters-validation.md)覆盖下方历史下一动作。EM只改既有五文档，未新实验、发布、沙箱任务或代码/入口/打包改动。Interop627行全文只读核，Code检索EK_CREATION_PARAMETERS/EkRelease零残留，默认generated及DT/DX条件trace、CF/CX/CY、EF保留；ElEvidenceSnapshot.cs为空、Tests无引用。709行实验源保留ignored artifacts，不上传历史根。
+
+正常分析器默认Release方案build一次Exit0、3664警告/0错误、18.04秒；无NoWarn/关闭规则，默认增量非clean/rebuild、具体项目命中不可由截断核。日志62行全文，stdout3075451字符只保留尾20000，前3055451未显示；不是发布或AOT验收。
+
+EL两原件监督各39行、业务39/6、stages39/6、DT trace75/21、双流与actual identities亲核。direct task3f6221abb9414da08c96326c3e7373ab Exit0三循环refs0及surface/device/factory refs0；generated taskdd182cd677f64ffd8e41d939a8e72804 C0000409、Create+0x388 NRE，GetCreationParameters Hr0/GetUpdateMethod.after均在。actualNative同C7E3EAADCAED3C5335B049074A2FF234BBDFF0451FCA11BA59EE7F2472956702，test同4172A58E5FE2D7A1594D253AC64609D23D948C85128E09EACBB092326A59C1EA/MVID39090b4c-4a11-4de9-8a32-27f5c2025332。源与input精确核，仅ek-generated.input切Create单调用，同binary外部因果成立，非唯一默认根因/首坏地址/全Silk库bug。
+
+精确TRX补正：direct Results/el-creation-samedll/TestResults/child.trx存在，26行全文、1/1通过，覆盖旧missing推断；generated相应文件实际缺失、不造计数。父监督非MTP，不造父TRX。x64 readonly297行全文确认24/offsets0/4/8/16；x86布局16/0/4/8/12。slot9 calli Cdecl对SDK Stdcall，IL不单独当AOT证据，canary/设备字段对照未验证。Available0不证明回调。
+
+下一限定GetCreationParameters正确Stdcall实现修复，同DLL因果已足够，不回泛化全direct或重跑full；default其它QI已知问题仍在，生产保留须正常分析器官方/候选双架构DR循环/refs及必要生命周期/BW/CK。本轮没有新默认修复，x64 Event0/EHANDLE另线；HW/loss/media/resources/通知/最终四格未闭。五文档最终全文分段回读已完成：handoff450行、本汇总560行、问题状态577行、EL44行、EK31行；本汇总253行起截断已补读至末。文档收口不等于生产已修。
+
+## EJ安全收口与EI独立核验（最新优先）
+
+[EJ最终报告](replacement-supervised-creation-parameter-isolation-review.md)、[EI补记](replacement-supervised-interop-repro-progress.md)覆盖旧排程，保留历史。实验源711行已保存artifacts/ei-interop-repro/snapshot/InteropDeviceBitmapExports.cs；Interop19块精确撤回EI行为及EiRelease，Code检索无残留。默认generated、DT/DX默认关闭trace、EF DR char*与CF/CX/CY保留，无新生产行为修复。正常分析器Release默认增量build1次Exit0、1482警告/0错误、30.93秒，无NoWarn/关闭规则；日志artifacts/ei-interop-repro/ej-closeout-build.log，原stdout仅尾20000可读，不是发布或运行。
+
+EJ亲核EI control taskb7691bc80334453a9e6226027f000bb2监督39/业务39/TRX26、三轮refs0/Exit0及1/1；单恢复task4236dabcf8664380b9f4937032a0b4c8监督39/业务6/stderr2/trace22及两actual identity，generated GetCreationParameters Hr0、GetUpdateMethod.after后Create+0x346 NRE/C0000409。完整SHA/MVID/路径见EJ。仅单调用或编译影响关联，测试SHA/MVID不同和代码布局影响未排除，不称唯一默认根因或全库bug。EG目录恢复已确认，撤销EH缺失推断，EG原件本轮仅EI引用。
+
+EJ新实验/发布/沙箱/full均0。下一仅GetCreationParameters实际绑定IL/calli对SDK Stdcall slot9、16字节输出结构/字段/合法地址；单点修复后须正常分析器双架构DR/生命周期/BW/CK。Available0非通知验证，x64 Event0独立，full/GPU/loss/media/resources/通知及Available真实callback未闭，完整替换未完成。
+
+## EH执行者最终安全收口（最新优先）
+
+[EH](replacement-supervised-com-group-closeout.md)与[EG补正](replacement-supervised-remaining-com-binding.md)覆盖旧排程，历史保留。完整857行实验源码已读并保存ignored artifacts/eh-com-closeout/snapshot/InteropDeviceBitmapExports.cs。Interop三EG标记及EgTrace/EgRelease经19处精确替换撤尽，Code检索无匹配；DT/DX默认关闭只读trace、原generated/Ex/HRESULT/null/refs保留；EF DR char*、CF/CX/CY及其它生产/测试/项目均未触碰。
+
+默认正常分析器Release方案build Exit0、1482警告/0错误、13.65秒，无压制规则；普通增量非发布/运行，stdout原1213693字符仅尾20000可读。后期0次新实验，无full；指定late包与taskebf9a136ffe74b94b87ff1bf58c73df6/all-direct、task3eae50f5bc544823b46150e570ce9b6c/early原件未找到。all-direct39行三循环refs0、监督/精确parentTRX/身份未亲核；early C0000409缺stderr，不判设施或native fail-fast，不凭码断ABI。实际计数/Exit/SHA/MVID/runtime未知，不填0或移绑旧B。
+
+早期四调用为GetDesc/GetDevice/TestCooperativeLevel/Create.GetCreationParameters；两device QI在控制中direct。既有DX第二QI已返回E_NOINTERFACE/null，不再写未返回。下一最小切片先恢复原件，再只拆实证失败组，不泛替全部、不夸唯一根因。后期不是默认修复且准确未运行；Available实际callback/HW消费/恢复/full未完成，x64 Event0独立。源码安全撤回和build完成，原件核证仍未完成，完整替换未完成。
+
+## ED interop安全收口（最新优先）
+
+[ED报告](replacement-supervised-interop-isolation-closeout.md)及DZ/EA/EB/EC补正覆盖旧排程，保留历史。Interop三实验标记及专属辅助已精确撤除，全文核验，原生成调用、Ex/HRESULT/null/refs及默认关闭DT/DX只读trace保留；无其它生产/测试修改、无发布/新实验/full。默认Release方案专用构建Exit0，1482警告/0错误，无新增分析器压制，不是双架构运行回归，不能追溯认证有效实验无压制。
+
+B task333d6746b5764d9b8d99fe0d06134756全direct+stack三轮Create、最终refs0、Exit0已亲核监督与业务全文；EC有效task6e9885f1d1f8489a99b6ead5dc6446b5恢复generated device QI组C0000005，trace最后CheckDevice.generated.QI.before，监督/trace/业务已亲核。组内两处未单拆，不能定整个Silk库bug；漏启DR Exit8零测试排除，未取得TRX不造计数。Available0/native callback/HW消费/full未验收，最小原Create仍候选x86问题。
+
+实际下一门限定两处device QI独立Stdcall修复并经双架构DR及生命周期回归才能保留；ED只是安全撤回与独立审查，不是生产修复，完整替换未完成。完整身份及原件路径见ED。
+
+
+## DY Interop/Present独立证据收口（最新优先）
+
+[DY审查](replacement-supervised-interop-present-review.md)覆盖下列DQ旧下一动作，历史保留。本轮执行审查子智能体只读核证、主代理监督，只改本报告/交接/状态及DY共四文档；无终端脚本、新实验/full或代码修改，文档完成不是修复完成。
+
+原件亲核DR四监督/actual identity及成功三TRX计数：官方x86/x64、候选x64各1/1 Exit0；候选x86 taskc9c5265acc6548d881ff9c2cfabfae3c在无channel/Present合法surface首次Create无after、C0000005。三成功格最终device/surface/factory refs0不能移绑崩溃格；Available实际通知仍0/未覆盖。DS原始四监督/identity/TRX及事件完成检索确认各1/1 Exit0、共12事件完成，但Surface=false/ContentConsumptionProven=false，非消费及唯一close直接计数证明。旧候选actualSHA x86 7B590883…/x64 F34DEAB0…不绑定当前源码。
+
+DW direct越过CheckDevice QI而generated未到after，两者均无完整Create。DX stage/direct均有GetDeviceCaps.after=0、第二QI.after=E_NOINTERFACE/null而无GetUpdateMethod.after；第二QI已返回，前序调用ABI/缓冲破坏未排除。DX final默认task27caeb1c537d4e9e8de257e5c82fe366，actual nativeSHA 0931D4911F8262B89B60731C22E115486E9AD24B5B877F3AB11F633DA7D3A616，仍C0000005，无成功生命周期。详细task/完整SHA及原件与报告边界见DY；失去原件不能拿报告当亲核。
+
+当前源码相关段只读确认direct行为分支撤回、CheckDevice/GetUpdateMethod仍生成QI、DT/DX条件trace默认关闭；不保证历史整文件hash。CF/CX/CY保留，无新生产修复；IL Cdecl不定整个Silk库bug。DV为角色误解导致未执行，不是平台能力阻塞。
+
+下一最小切片是逐slot独立认证当前类此前全部生成COM调用真实x86 ABI、返回缓冲大小/对齐及生命周期，用直接Stdcall替换分组控制辨别已返回前序调用的栈/内存破坏，而非只追最后before。无异常地址/栈不推断首次写坏位置，不跳GetUpdateMethod/绕Ex检测；x86无Present Create与x64旧Event0堆损坏两线处理，不盲full。旧DP无父完成TRX不拼计数；GPU/loss/resize/media/resource/线程callback/通知和最终四格仍开放，完整替换未完成。
+
+## DQ DP双架构full原生退出审查（最新优先）
+
+[DP](replacement-supervised-selfcontained-comacceptance-full.md)已补正，[DQ](replacement-supervised-current-full-crash-review.md)及artifacts/dq-full-crash/audit.json记录独立本地审查。本轮无新运行、无代码/默认行为改动，不再上传巨包。DP两包147788743/157457338字节清洁上传成功；x86 task624f2b6cf6f54172af4894312e8908b9退出0xC0000005，x64 task2f63b2fd89e7405fa076d5faa1a65464退出0xC0000374。两监督全文均full/1500秒、Arguments无filter，非timeout/cancel/kill、双流收齐；父完成TRX均缺，不拼子TRX为full总数。
+
+异常边界不同：x86候选Stage4HardwareCacheGeometry首DataRow在InteropDeviceBitmap_Create无after；x64官方HistoricalGeometry首次Commit E_HANDLE后DestroyChannel无after。两架构present(connection)=0x80070057的CombinedGeometry/DrawingImage及tile是业务失败，不是已证崩溃根因；x64另有BJ swapEffect3首红交付失败。BW official-repeat覆盖顶层identity，其filter不改变父full事实；包候选SHA不代actual，x64实际官方module与候选场景交叉可核，x86最后调用actual快照及full实际PresentationCore身份未闭。
+
+没有已证共同最小复现，本轮不追加filtered。唯一下一根因任务为RunVisualCacheConsumer独立纯C# ABI/事件所有权夹具切片，先认证Create/Available与异步复制事件初始/mutation合同，不主动再入官方悬空batch、不跳cleanup或复制危险行为到候选。CL源码UAF不绑定servicing因果，无已确认生产修复。DP_FULL_READBACK两Regex仍在，专属build未修，不宣称通过。CF/CX/CY修复保留；BW有限Passed已核，原44/10具体frame本轮消费未认证。GPU/loss/resize/media/resources/线程callback/通知、最终双项目双架构四格仍开放，完整替换未完成。以下历史保留；DG传输未知不再描述DP。
+
+## DH DG传输失败边界独立审计（最新优先）
+
+**只证DG双架构客户端HTTP超时，full未能裁决；本轮不再提交full/大包，不异步绕过。** [DH报告](replacement-supervised-clean-full-transport-review.md)为完整证据与最小取证交接。主代理仅监督；本轮只读审计及四文档，无终端直接间接脚本、探测上传、构建运行或生产测试打包修改。以下DF新full/DC长HTTP与异步建议保留历史但不再是当前行动。
+
+DG两 request-and-transport-{x64,x86}.json 第2–3行确认精确DE clean-{x64,x86}-02/com-acceptance-package，非回收根/PublishDir；manifest421/420行全文及递归列表无旧Results/历史/obj/PDB/coverage跨平台资产。总字节157451706/147783111只继承DE审计TotalBytes，DG/DH未独立重算，更非DG传输量。DD/DE修了输入污染，不代表大上传已完全解决；约150MB仍大，同包smoke成功不能证明这两次full上传完成。
+
+JSON第13行taskId=null、第14行客户端-1073740791/HttpClient.Timeout=100秒/HTTP栈、第15行阶段无证；无traceID/requestID/服务端关联ID/上传开始结束或字节。DG根仅两摘要JSON，没有额外原始错误日志。客户端状态不是被测退出/1500秒执行超时或上传/执行/回收特定阶段失败；不据100秒认定长运行。双full的taskID/实际绝对parentTRX、执行参数/Mode、监督退出/timeout/kill、TRX计数/RunInfo/失败组、stdout/stderr/业务及actual test/native/official/runtime/WPF身份均未知，不填0或拼接smoke。
+
+DE审计列根与Native下wpfgfx_cor3.dll大小不同，不是可证重复；CoreLib大文件和13语言资源存在，不等于可删。无不必要巨文件或安全缩包结论；只读DE逐文件大小与依赖消费链是下一缩包依据，不能删runtime猜Green。框架依赖转换先要同架构runtime/WPF实证，不擅改本包10.0.13基线/合同。
+
+下一最小行动交两请求给基础设施关联既有记录，取上传起止/实际发送接收字节、taskID/关联ID、exe启动结束/退出及回收阶段，存在既有任务先恢复。提交时间/会话也需从原记录补；当前工具无服务日志及既有任务按ID独立回收能力，不造接口命令，不先要求改平台/异步绕上传，不盲重跑。CY有限通过和原44/10已核有限修复保留，不能说失效；full未知。旧BDfull不绑当前SHA，最终稳定双项目×双架构Release四格未交；HW/loss/resize新帧/media/resources/线程callback/通知/Event0/E_HANDLE/首次堆损坏/其余nested-stroke/圆角大shader等合同仍开。完整替换未完成。
+
+## DF DD/DE上传审计文档闭环（最新优先）
+
+本轮只补完DD/DE及三共享文档，主代理监督，无终端/脚本、代码修改、新构建发布运行或full提交。详见[DD](replacement-supervised-upload-package-boundary.md)、[DE](replacement-supervised-upload-boundary-review.md)最新补正，以下历史完整保留。
+
+首要根因为上传过大：DB错误sourceDirectory指回收目录，混Results/TRX/诊断/历史；递归PublishDir又带跨平台/异架构/coverage额外资产。不能再认定已证明长执行通道障碍；原上传字节未知，不造缩减百分比。DC旧full未恢复仍是历史事实，但不是永久阻止新clean full的理由。
+
+DE最终clean输入artifacts/de-upload-review/clean-x64-02/com-acceptance-package 157451706字节、clean-x86-02/com-acceptance-package 147783111字节，主要.NET/WPF10.0.13自包含。runtime探测不足，不擅改runtime。双架构DE最终父TRX各36/36、监督filtered/120秒/Exit0，无timeout/cancel/kill/排空超时；task21a05e928a394e2bb7ad4b4bc654539c、taskcce3c41fe7a4417b84f9406b8ae9e70f，actual候选F34DEAB0…/7B590883…与保留修复不变，仅smoke不外推full。
+
+DD最终两架构父TRX Counters及x64 BW actual identity已直接路径亲读，直接原件优先于目录枚举，撤销旧“缺TestResults/未核x86 TRX”。ReferenceData两静态文件代码追踪合理，不宣称full闭包实跑已证；同次官方角色生成文件不误列静态缺件。
+
+文档收口后可另轮安排全新clean包full，先审逐文件清单/大小/架构/身份。回收根及PublishDir不可传，默认打包禁止Results/历史/无关资产。当前无已证必须继续拒绝clean full的技术阻断；依赖闭包最终由full裁决，不循环以缺full证明为不跑理由。本轮未提交full；最终稳定双项目×双架构Release四格及GPU/loss/media/resource/线程callback/通知/Event0/E_HANDLE/堆损坏等仍未闭，smoke和文档完成不是最终验收。
+
+## DC 既有full只读恢复收口（最新优先）
+
+**DB两次既有full证据未恢复，执行结果观测阻塞；不判产品缺陷，完整替换未完成。** [DC报告](replacement-supervised-full-result-recovery.md)记录完整尝试/源码审计/原件路径。主代理仅监督。仅新增正式项目DC_FULL_RESULT_RECOVERY隔离的显式只读测试及四文档，无终端脚本/第三Host/full重跑/源任务kill清理，不改生产、入口默认或打包，保留CX/CY。
+
+本地.coding-agent为空，DB产物/诊断日志未找到新full ID。专属win-x64正式ComAcceptance发布成功，仅运行恢复filter，新诊断task5a0218f40a12454f814727cc13bdea9e。亲读recovery.json：complete，1582个目录、0命中、0复制、0.1387329秒；精确检查Results/db-full-x64/x86，不无限遍历，只读白名单并有时间/目录/文件/字节上限。可见集合无命中不证明原任务不存在或退出，也不证明沙箱实例共享；诊断控制台1通过非full，诊断TRX未回收亲读。
+
+独立代码核full无filter、兼容旧1–120/新1–1500、本地化及23参数case；亲读既有25/25、26/26、控制1/1的父TRX Counters末尾及监督全文，均filtered/Exit0、无timeout/kill。这只是入口修复，不移绑full。两次full的taskID、父TRX/失败组、监督Mode/实际Arguments/退出与actual test/native/official/runtime仍未知；客户端100秒超时/-1073740791不当被测状态。
+
+需要平台返回/持久化taskID与远端路径、按ID异步状态、独立回收/同实例索引、长HTTP请求或轮询支持。先恢复原任务，不再提交full。旧BD结果不绑定当前候选，CX/CY修复保留；四格和GPU/loss/resize新帧/media/resources/线程callback/通知/同步Event0/E_HANDLE/堆损坏/圆角大shader仍未闭。以下历史保留。
+
+## CY 当前源码有限恢复验收交接（最新优先）
+
+**CX当前三段恢复有限独立通过，应保留；原44/10在当前双架构已核有限场景修复，完整替换未完成。** [CY验收](replacement-supervised-fill-restoration-acceptance.md)及授权补完[CX](replacement-supervised-fill-restoration-delivery.md)记录源码清单、完整SHA/MVID/parent路径与亲核边界。主代理仅监督；CY只更新五文档，无源码/测试/项目修改，无终端直接间接脚本、构建发布运行或矩阵重跑。
+
+artifacts/cx-fill-restoration/run-x64-02 task8c2daf9e393a4e6f85a3459974581884父Results/cx-x64/TestResults/child.trx 23/23 Exit0=CQ5+CR1+BW1+CK10+Br5+额外格式1；geometry-x64 task385b819965644d109ac98685fc3b1b33父Results/cx-x64-geometry/TestResults/child.trx PublicGeometry12/12 Exit0；run-x86 taskb10fd8bf380b455395eed2b09fb6f4a1父Results/cx-x86/TestResults/child.trx 34/34 Exit0=CQ5+CR1+BW1+CK10+Br5+Public12。格式1不新增产品门，FLOAT oracle未取得。
+
+actual新SHA x64 F34DEAB06AF47E9D79E5C1CBA06ECE8113C85C7BCF8DC5923A6DA2DB952C20A7 / x86 7B59088381C9BB85F8366A5DD9477DAA3A4D70B744D6257F8AD265E87B508CCA；同包旧CF36353D…/C4D7…不同。测试9BC9F796…/236b761c-ad2f-4292-9741-7a447b168465及AB92DF00…/f0813943-164f-4b7e-bc51-13e2a154e5e5，完整SHA见CX。官方/repeat独立同版同架构.NET10.0.13/software RTB。
+
+双架构fill206=frames10+device178+precision2+siblings16全部comparison全文分段读至末，零阈值/差0/repeat0/非空；stroke16 comparison全文差0非空、非同快照，角色actual/关键TRX监督和Br/precision/BW关键结果亲核。NativeShapeReader真实消费SoftwareFillBezier；fillLocalFloat默认false保持stroke，CF curved/fillPrimitive递归保留。无新回归，不移绑历史AB5655/FD8B32。像素SHA/大数组未独立重算，Br不造候选actual身份，不外推所有HFD/clip、大曲线、GPU/full。
+
+下一最小步建立当前双架构ComAcceptance基线并定位剩余失败，不撤回无回归修复或反复归档。旧BDfull x64 1740/1699/41 Exit2、x86无父TRX不绑定新SHA；最终稳定Tests/ComAcceptance×x86/x64 Release四格完整适用full仍须做。其余nested/stroke及GPU/loss/resize新帧/media/长期resource线程callback/通知/同步Event0/E_HANDLE/首次堆损坏/圆角大shader等合同全部保留。以下历史状态保留，由本节更新。
+
+## CW 已回收证据补核收口（最新优先）
+
+**归档有限运行门支持三文件精确恢复阶段，不是当前源码验收，更不是完成替换。** [CW报告](replacement-supervised-fill-gap-independent-review.md)记录亲读范围，[CV](replacement-supervised-fill-x64-gap-closure.md)已授权补完；主代理仅监督，无终端脚本、新构建发布运行或生产测试修改。
+
+CV x64 task0ac894bf47e44a7e984a683fec57d11d父12/12 Exit0，14角色TRX计数/监督退出/identity亲核。fill206全部comparison（frames108/device1788/precision28/siblings168行）逐段读至末尾：threshold0/差0/repeat0/非空；stroke87行全文16差0非空，baselineIsCurrentSnapshot=false，旧36353D…/新AB5655…实际不同。同测试FD10C815…/MVID da2444a0-5ea1-429b-9074-ab706faed74c，官方/repeat AD1C9…/.NET10.0.13/X64软件RTB，不外推HW。
+
+CS x86 device1788行/precision28行及两关键参数各30行已全文补读，差0/repeat0/非空；旧C4D7D…/新FD8B32…identity亲核，测试B04139…；CU已核206其余范围与stroke/父17复用不重跑。必要Br5+PublicGeometry12两架构分别taskdc925678e7034d4497714c4837a12a3e、taske0da0b00e4af4ea885ae8c5dca32aa7c，各父17/17 Exit0；Br5末节均零差/非空/threshold0，测试及官方身份核到，未输出候选actual加载身份不得推断。PublicGeometry12业务记录模块SHA与父断言核到，未夸称24份全数组独立重算。
+
+下一最小动作按CW三文件对应段恢复：NativeShapeReader整数设备入口，Stroke普通path fillLocalFloat默认false分支，Group ordinary path选择传参；CF curved/fillPrimitive链保持。本轮未恢复、不移绑归档SHA。Cr TestInitialize由CS_FILL_ACCEPTANCE显式隔离，default不变；历史归档获取仅实验，正式验收不能依赖远程task。日志/buffer SHA仅核记录未独立重算。原44/10及GPU/loss/media/resource/通知和最后稳定源码四格full等未闭保留，无新增泛化门；以下历史阅读缺口由本节补正。
+
+## CU 独立最终审查收口（最新优先）
+
+**CT 安全撤回 CR 未齐验收的普通float/整数挂接，CF有限修复保留；完整替换未完成。** [CU报告](replacement-supervised-fill-matrix-final-review.md)列源码核查、原件路径、身份和证据边界。主代理仅监督；CU只读代码证据并更新四文档，不构建/发布/运行，无终端或直接间接脚本；历史全部保留。
+
+源码亲核 NativeShapeReader共享Flatten后Apply、Stroke无fillLocalFloat、Group ordinary path无该参数；GeneratedNativeStroke/Group/Curved的CF fillPrimitive链仍在。SoftwareFillBezier保留实现但生产未消费。CQ/CS_FILL_ACCEPTANCE仍显式隔离，零阈值、repeat0、非空、真实旧SHA与不同新SHA及完整缓冲比较未降合同。
+
+CS x86根artifacts/cs-fill-acceptance/final-run-x86，task cc18c3b74fad4a7c94ef499607fd62e3，监督全文及父TRX计数亲核17/17 Exit0；16stroke comparison全文零差非空，baselineIsCurrentSnapshot=false，actual old C4D7D4699F6334AC164DE95573D382807803ED65E4FE42AA05A9559FEA7F44EB / new FD8B32FAF8D55CF72001DE9ACFE18A57E0814D92C38F63C4FE1D7D45047CD522不同。同测试B04139…/MVID9ca00196-7748-40a6-926c-dcb22a761fa5/.NET10.0.13/X86软件RTB。frames10/siblings16全表及candidate身份亲核差0/repeat0/非空；未审完device/precision原始comparison，不认证206全部亲核。父17是CQ5+CR1+BW1+CK10，非Br/PublicGeometry必要17兄弟。
+
+CQ旧双架构父5/2/3 Exit2原件已核，206=frames10+device178+precision2+siblings16；旧逐场景和身份细节引用CQ报告。CR x64 task375db6729b3c4e5cbffa991b2317bd98父5/5 Exit0/实际AB5655…身份已核，但stroke为同快照重复，非x64最终CF旧/CR新验收。全部已有通过保留，撤回前通过不能绑定当前源码；CT撤回后build仅历史构建证据。
+
+下一执行先独立审查普通float/整数入口设计和矩阵覆盖，优先补x64同包真实old/new及必要Br5+PublicGeometry12兄弟证据，再针对性恢复最小挂接。先读已有产物补device/precision审计，不要求重做已核x86，不退回泛化全量循环。未完成是验证缺口，不捏造像素回归/环境故障。
+
+原44/10当前生产仍开（未撤回后实跑），nested/stroke、BD旧full x641740/1699/41 Exit2与x86缺父TRX保留；不绑定最终稳定源码。GPU/loss/resize新帧、持续媒体、长期资源线程callback、通知/圆角/大shader/同步Event0/E_HANDLE/首次堆损坏及最终稳定Tests/ComAcceptance×x86/x64 Release四格full仍缺。CF/CH、CK/CM及历史通过继续可复用，不因撤回抹除。四文档收口不是替换验收。
+
 ## CO CN安全撤回收口（最新优先）
 
 **CN未核生产挂接已撤回，非有限集成通过，完整替换未完成。** [CO报告](replacement-supervised-fill-integration-acceptance.md)列范围，CN过时初稿已补正。NativeShapeReader恢复共享Flatten/Apply；撤除SoftwareStrokeContours的fillLocalFloat及group传参，不整文件覆盖。CF fillPrimitive/curved修复与SoftwareFillBezier保留。

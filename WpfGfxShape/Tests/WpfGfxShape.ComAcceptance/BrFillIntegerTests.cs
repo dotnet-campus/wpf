@@ -61,8 +61,8 @@ public sealed class BrFillIntegerTests
         File.WriteAllBytes(Path.Combine(root, "integer-lines.pbgra32"), lines);
         var assembly = typeof(BrFillIntegerTests).Assembly;
         using Process process = Process.GetCurrentProcess();
-        string official = process.Modules.Cast<ProcessModule>().Single(m =>
-            string.Equals(m.ModuleName, "wpfgfx_cor3.dll", StringComparison.OrdinalIgnoreCase)).FileName;
+        ProcessModule officialModule = OfficialRasterModule.Find(process);
+        string official = officialModule.FileName;
         File.WriteAllText(Path.Combine(root, "evidence.json"), JsonSerializer.Serialize(new
         {
             sample, controls, trace, differences, threshold = 0,
@@ -70,7 +70,7 @@ public sealed class BrFillIntegerTests
             assembly = assembly.Location,
             sha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(assembly.Location))),
             mvid = assembly.ManifestModule.ModuleVersionId,
-            official, officialSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(official))),
+            official, officialBaseAddress = officialModule.BaseAddress.ToString("X"), officialSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(official))),
             officialVersion = FileVersionInfo.GetVersionInfo(official).FileVersion,
             runtime = RuntimeInformation.FrameworkDescription,
             architecture = RuntimeInformation.ProcessArchitecture.ToString(), hardwareVerified = false

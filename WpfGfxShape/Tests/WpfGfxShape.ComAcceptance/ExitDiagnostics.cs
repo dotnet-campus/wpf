@@ -19,13 +19,36 @@ internal static class ExitDiagnostics
         stream.Flush(true);
     }
 
+    private static readonly System.Resources.ResourceManager Resources = new("WpfGfxShape.ComAcceptance.AcceptanceResources", typeof(ExitDiagnostics).Assembly);
+
+    internal sealed record Options(string Root, int Seconds, string? Filter)
+    {
+        internal string Mode => Filter is null ? "full" : "filtered";
+        internal string[] ChildArguments => [.. Filter is null ? Array.Empty<string>() : new[] { "--filter", Filter },
+            "--report-trx", "--report-trx-filename", "child.trx", "--results-directory", Path.Combine(Root, "TestResults"),
+            "--diagnostic", "--diagnostic-synchronous-write", "--diagnostic-output-directory", Path.Combine(Root, "Diagnostic"), "--no-progress"];
+    }
+
+    internal static Options Parse(string[] args)
+    {
+        ArgumentNullException.ThrowIfNull(args);
+        if (args.Length != 3) throw new ArgumentException(Resources.GetString("ExitArguments"), nameof(args));
+        bool full = args[0] == "--full";
+        string root = args[full ? 1 : 0];
+        if (string.IsNullOrWhiteSpace(root)) throw new ArgumentException(Resources.GetString("ExitArguments"), nameof(args));
+        int seconds = int.Parse(args[full ? 2 : 1], CultureInfo.InvariantCulture);
+        if (seconds < 1 || seconds > (full ? 1500 : 120))
+            throw new ArgumentOutOfRangeException(nameof(args), Resources.GetString("ExitBudget"));
+        if (!full && string.IsNullOrWhiteSpace(args[2]))
+            throw new ArgumentException(Resources.GetString("ExitArguments"), nameof(args));
+        return new Options(Path.GetFullPath(root), seconds, full ? null : args[2]);
+    }
+
     internal static async Task<int> RunAsync(string[] args)
     {
-        if (args.Length != 3) throw new ArgumentException(message: null, paramName: nameof(args));
-        string root = Path.GetFullPath(args[0]);
-        int seconds = int.Parse(args[1], CultureInfo.InvariantCulture);
-        if (seconds is < 1 or > 120) throw new ArgumentOutOfRangeException(nameof(args));
-        string filter = args[2];
+        Options options = Parse(args);
+        string root = options.Root;
+        int seconds = options.Seconds;
         Directory.CreateDirectory(root);
         string executable = Environment.ProcessPath ?? throw new InvalidOperationException();
         var start = new ProcessStartInfo(executable)
@@ -35,14 +58,14 @@ internal static class ExitDiagnostics
         };
         if (Path.GetFileNameWithoutExtension(executable).Equals("dotnet", StringComparison.OrdinalIgnoreCase))
             start.ArgumentList.Add(typeof(NativeRun).Assembly.Location);
-        foreach (string argument in new[] { "--filter", filter, "--report-trx", "--report-trx-filename", "child.trx", "--results-directory", Path.Combine(root, "TestResults"), "--diagnostic", "--diagnostic-synchronous-write", "--diagnostic-output-directory", Path.Combine(root, "Diagnostic"), "--no-progress" })
+        foreach (string argument in options.ChildArguments)
             start.ArgumentList.Add(argument);
         start.Environment["WPFGFX_EXIT_STAGES"] = Path.Combine(root, "stages.jsonl");
         start.Environment["WPFGFX_RUN_ROOT"] = root;
         var record = new ExitRecord
         {
             StartedUtc = DateTimeOffset.UtcNow, SupervisorPid = Environment.ProcessId,
-            Executable = executable, Arguments = start.ArgumentList.ToArray(), TimeoutSeconds = seconds,
+            Executable = executable, Arguments = start.ArgumentList.ToArray(), TimeoutSeconds = seconds, Mode = options.Mode,
             Runtime = RuntimeInformation.FrameworkDescription, Architecture = RuntimeInformation.ProcessArchitecture.ToString(),
             TestAssembly = typeof(NativeRun).Assembly.Location,
             TestSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(NativeRun).Assembly.Location))),
@@ -142,6 +165,7 @@ internal static class ExitDiagnostics
         public int? Pid { get; set; }
         public string Executable { get; set; } = "";
         public string[] Arguments { get; set; } = [];
+        public string Mode { get; set; } = "";
         public int TimeoutSeconds { get; set; }
         public string Runtime { get; set; } = "";
         public string Architecture { get; set; } = "";

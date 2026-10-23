@@ -77,8 +77,8 @@ public sealed class CkFillIntegerTests
         File.WriteAllBytes(Path.Combine(root, "official-cubic.pbgra32"), cubic);
         File.WriteAllBytes(Path.Combine(root, "reconstructed-lines.pbgra32"), lines);
         using Process process = Process.GetCurrentProcess();
-        string module = process.Modules.Cast<ProcessModule>().Single(m =>
-            string.Equals(m.ModuleName, "wpfgfx_cor3.dll", StringComparison.OrdinalIgnoreCase)).FileName;
+        ProcessModule officialModule = OfficialRasterModule.Find(process);
+        string module = officialModule.FileName;
         var assembly = typeof(CkFillIntegerTests).Assembly;
         File.WriteAllText(Path.Combine(root, "evidence.json"), JsonSerializer.Serialize(new
         {
@@ -87,7 +87,7 @@ public sealed class CkFillIntegerTests
             implementation = "linked production SoftwareFillBezier; no production entry hookup",
             assembly = assembly.Location, assemblySha256 = Hash(assembly.Location),
             mvid = assembly.ManifestModule.ModuleVersionId,
-            module, moduleSha256 = Hash(module), moduleVersion = FileVersionInfo.GetVersionInfo(module).FileVersion,
+            module, moduleBaseAddress = officialModule.BaseAddress.ToString("X"), moduleSha256 = Hash(module), moduleVersion = FileVersionInfo.GetVersionInfo(module).FileVersion,
             runtime = RuntimeInformation.FrameworkDescription,
             architecture = RuntimeInformation.ProcessArchitecture.ToString(), hardwareVerified = false
         }, new JsonSerializerOptions { WriteIndented = true }));

@@ -2,6 +2,10 @@
   <PropertyGroup>
     <ComAcceptancePackageDirectory>$(WpfGfxShapeArtifactsRoot)com-acceptance-package\</ComAcceptancePackageDirectory>
   </PropertyGroup>
+  <ItemGroup Condition="'$(ComAcceptanceReferenceInputDirectory)' != ''">
+    <ComAcceptanceReferenceInput Include="$(ComAcceptanceReferenceInputDirectory)/glyph-arial-original.json;$(ComAcceptanceReferenceInputDirectory)/original-wpf.json" />
+    <None Include="@(ComAcceptanceReferenceInput)" Link="ReferenceData/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
   <Target Name="DisableAcceptanceCoverageRegistration" BeforeTargets="_GenerateSelfRegisteredExtensionsFileInputCache;_GenerateTestingPlatformEntryPointFileInputCache">
     <ItemGroup>
       <TestingPlatformBuilderHook Remove="83B7B6C3-DC9C-4F30-8323-A3E1EBA7F65B;98058041-B5B6-4A75-9834-58E6DF796A22" />
@@ -24,19 +28,28 @@
       <Output TaskParameter="Items" ItemName="AcceptanceAotIdentity" />
     </GetFileHash>
     <WriteLinesToFile File="$(ComAcceptancePackageDirectory)aot.sha256" Lines="@(AcceptanceAotIdentity->'%(FileHash)')" Overwrite="true" />
-    <WriteLinesToFile File="$(ComAcceptancePackageDirectory)package-files.txt" Lines="@(AcceptancePackageFile->'%(Filename)%(Extension)');@(AcceptanceReferenceData->'ReferenceData/%(Filename)%(Extension)');Native/wpfgfx_cor3.dll;aot.sha256;package-files.txt" Overwrite="true" />
+    <WriteLinesToFile File="$(ComAcceptancePackageDirectory)package-files.txt" Lines="@(AcceptancePackageFile->'%(Filename)%(Extension)');@(AcceptanceReferenceData->'ReferenceData/%(Filename)%(Extension)');@(AcceptanceContract->'Contracts/%(Filename)%(Extension)');Native/wpfgfx_cor3.dll;aot.sha256;package-files.txt" Overwrite="true" />
   </Target>
   <Target Name="PackageSelfContainedComAcceptance" AfterTargets="Publish" Condition="'$(ComAcceptanceSandbox)' == 'true' and '$(SelfContained)' == 'true'">
     <Error Condition="!Exists('$(PublishDir)Native\wpfgfx_cor3.dll')" Text="$(PublishDir)Native\wpfgfx_cor3.dll" />
     <RemoveDir Directories="$(ComAcceptancePackageDirectory)" />
     <ItemGroup>
-      <AcceptancePublishedFile Include="$(PublishDir)**\*" Exclude="$(PublishDir)**\*.pdb;$(PublishDir)Results\**;$(PublishDir)TestResults\**;$(PublishDir)CodeCoverage\**" />
+      <AcceptancePublishedFile Include="$(PublishDir)WpfGfxShape.ComAcceptance.exe;$(PublishDir)WpfGfxShape.ComAcceptance.dll;$(PublishDir)WpfGfxShape.ComAcceptance.deps.json;$(PublishDir)WpfGfxShape.ComAcceptance.runtimeconfig.json" />
+      <AcceptancePublishedFile Include="$(PublishDir)Microsoft.Testing.Platform.dll;$(PublishDir)Microsoft.Testing.Extensions.TrxReport.dll;$(PublishDir)Microsoft.Testing.Extensions.TrxReport.Abstractions.dll;$(PublishDir)Microsoft.Testing.Extensions.VSTestBridge.dll;$(PublishDir)Microsoft.VisualStudio.TestPlatform.ObjectModel.dll;$(PublishDir)Microsoft.TestPlatform.AdapterUtilities.dll;$(PublishDir)MSTest.TestAdapter.dll;$(PublishDir)MSTestAdapter.PlatformServices.dll;$(PublishDir)MSTest.TestFramework.dll;$(PublishDir)MSTest.TestFramework.Extensions.dll;$(PublishDir)Microsoft.TestPlatform.CoreUtilities.dll;$(PublishDir)Microsoft.TestPlatform.PlatformAbstractions.dll;$(PublishDir)Microsoft.TestPlatform.Utilities.dll;$(PublishDir)Newtonsoft.Json.dll;$(PublishDir)Microsoft.Testing.Extensions.MSBuild.dll" />
+      <AcceptancePublishedFile Include="@(RuntimePackAsset->'$(PublishDir)%(DestinationSubPath)')" />
+      <AcceptancePublishedFile Include="$(PublishDir)Contracts\wgx_sdk_version.h;$(PublishDir)Contracts\wpfgfx.def;$(PublishDir)Native\wpfgfx_cor3.dll" />
+      <AcceptancePublishedFile Include="@(ComAcceptanceReferenceInput->'$(PublishDir)ReferenceData/%(Filename)%(Extension)')" />
     </ItemGroup>
-    <Copy SourceFiles="@(AcceptancePublishedFile)" DestinationFiles="@(AcceptancePublishedFile->'$(ComAcceptancePackageDirectory)%(RecursiveDir)%(Filename)%(Extension)')" />
+    <ItemGroup>
+      <AcceptancePublishedFile>
+        <PackagePath>$([MSBuild]::MakeRelative('$(PublishDir)', '%(AcceptancePublishedFile.FullPath)'))</PackagePath>
+      </AcceptancePublishedFile>
+    </ItemGroup>
+    <Copy SourceFiles="@(AcceptancePublishedFile)" DestinationFiles="@(AcceptancePublishedFile->'$(ComAcceptancePackageDirectory)%(PackagePath)')" />
     <GetFileHash Files="$(PublishDir)Native\wpfgfx_cor3.dll" Algorithm="SHA256">
       <Output TaskParameter="Items" ItemName="AcceptancePublishedIdentity" />
     </GetFileHash>
     <WriteLinesToFile File="$(ComAcceptancePackageDirectory)aot.sha256" Lines="@(AcceptancePublishedIdentity->'%(FileHash)')" Overwrite="true" />
-    <WriteLinesToFile File="$(ComAcceptancePackageDirectory)package-files.txt" Lines="@(AcceptancePublishedFile->'%(RecursiveDir)%(Filename)%(Extension)'->Replace('\', '/'));aot.sha256;package-files.txt" Overwrite="true" />
+    <WriteLinesToFile File="$(ComAcceptancePackageDirectory)package-files.txt" Lines="@(AcceptancePublishedFile->'%(PackagePath)'->Replace('\', '/'));aot.sha256;package-files.txt" Overwrite="true" />
   </Target>
 </Project>

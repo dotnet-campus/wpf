@@ -11,6 +11,12 @@ internal static class NativeRun
     [STAThread]
     private static async Task<int> Main(string[] args)
     {
+#if FH_CRASH_EVIDENCE
+        if (args.Length == 1 && args[0] == "--fh-normal-exit")
+            return 0;
+        if (args.Length > 0 && args[0] == "--fh-crash-evidence")
+            return FhCrashEvidence.Run(args[1..]);
+#endif
         if (args.Length > 0 && args[0] == "--supervise-exit")
             return await ExitDiagnostics.RunAsync(args[1..]);
         if (args.Length > 0 && args[0] == "--bm-fill-control-points")

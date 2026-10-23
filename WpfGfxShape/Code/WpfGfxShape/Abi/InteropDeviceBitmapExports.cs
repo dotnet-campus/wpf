@@ -7,6 +7,59 @@ namespace WpfGfxShape.Abi;
 
 internal static unsafe class InteropDeviceBitmapExports
 {
+    [System.Diagnostics.Conditional("DT_INTEROP_CREATE_TRACE")]
+    [System.Diagnostics.Conditional("DX_INTEROP_COM_DIAGNOSTICS")]
+    private static void TraceCreate(string stage, nint address = 0, int result = 0)
+    {
+        string directory = System.IO.Path.Combine(AppContext.BaseDirectory, "Results", "dt-interop-create");
+        System.IO.Directory.CreateDirectory(directory);
+        using var stream = new System.IO.FileStream(System.IO.Path.Combine(directory, "stages.jsonl"), System.IO.FileMode.Append, System.IO.FileAccess.Write, System.IO.FileShare.ReadWrite);
+        using var writer = new System.IO.StreamWriter(stream, leaveOpen: true);
+        using (var json = new System.Text.Json.Utf8JsonWriter(stream))
+        {
+            json.WriteStartObject();
+            json.WriteString("Stage", stage);
+            json.WriteNumber("Address", (long)address);
+            json.WriteNumber("Result", result);
+            json.WriteNumber("PointerSize", sizeof(nint));
+            json.WriteNumber("SurfaceDescSize", sizeof(SurfaceDesc));
+            json.WriteNumber("CreationParametersSize", sizeof(DeviceCreationParameters));
+            json.WriteNumber("CapsSize", sizeof(Caps9));
+            json.WriteEndObject();
+            json.Flush();
+        }
+        writer.WriteLine();
+        writer.Flush();
+        stream.Flush(true);
+    }
+
+    private static int QueryCom(void* self, Guid* iid, void** output)
+        => ((delegate* unmanaged[Stdcall]<void*, Guid*, void**, int>)(*(void***)self)[0])(self, iid, output);
+
+    private static uint ReleaseCom(void* self)
+        => self == null ? 0 : ((delegate* unmanaged[Stdcall]<void*, uint>)(*(void***)self)[2])(self);
+
+    private static void ReleaseCom(nint self) => ReleaseCom((void*)self);
+
+    private static int GetSurfaceDevice(IDirect3DSurface9* self, IDirect3DDevice9** output)
+        => ((delegate* unmanaged[Stdcall]<IDirect3DSurface9*, IDirect3DDevice9**, int>)(*(void***)self)[3])(self, output);
+
+    private static int GetCreationParameters(IDirect3DDevice9* self, DeviceCreationParameters* output)
+        => ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, DeviceCreationParameters*, int>)(*(void***)self)[9])(self, output);
+
+    private static int UnlockSurface(IDirect3DSurface9* self)
+        => ((delegate* unmanaged[Stdcall]<IDirect3DSurface9*, int>)(*(void***)self)[14])(self);
+
+    private static int CreateRenderTarget(IDirect3DDevice9* self, uint width, uint height, Format format,
+        int lockable, IDirect3DSurface9** output)
+        => ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, uint, Format, MultisampleType, uint, int, IDirect3DSurface9**, void**, int>)(*(void***)self)[28])
+            (self, width, height, format, (MultisampleType)0, 0, lockable, output, null);
+
+    private static int StretchRect(IDirect3DDevice9* self, IDirect3DSurface9* source, void* sourceRect,
+        IDirect3DSurface9* target, void* targetRect)
+        => ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, IDirect3DSurface9*, void*, IDirect3DSurface9*, void*, Texturefiltertype, int>)(*(void***)self)[34])
+            (self, source, sourceRect, target, targetRect, Texturefiltertype.None);
+
     private const int PointerError = unchecked((int)0x80004003);
     private const int InvalidArgument = unchecked((int)0x80070057);
     private const int Fail = unchecked((int)0x80004005);
@@ -152,22 +205,34 @@ internal static unsafe class InteropDeviceBitmapExports
         try
         {
             Guid iid = IDirect3DSurface9.Guid;
-            int result = ((delegate* unmanaged[Stdcall]<nint, Guid*, void**, int>)(*(void***)resource)[0])(resource, &iid, (void**)&surface);
+            TraceCreate("QI.surface.before", resource);
+            int result = QueryCom((void*)resource, &iid, (void**)&surface);
+            TraceCreate("QI.surface.after", (nint)surface, result);
             if (result < 0) return result;
             SurfaceDesc description;
-            result = surface->GetDesc(&description);
+            TraceCreate("GetDesc.before", (nint)surface);
+            result = ((delegate* unmanaged[Stdcall]<IDirect3DSurface9*, SurfaceDesc*, int>)(*(void***)surface)[12])(surface, &description);
+            TraceCreate("GetDesc.after", (nint)surface, result);
             if (result < 0) return result;
             if (description.Width > 0x3fffffff || description.Height > 0x3fffffff) return unchecked((int)0x88980801);
             if (description.Format is not (Format.A8R8G8B8 or Format.X8R8G8B8)) return unchecked((int)0x88982F80);
             if ((description.Usage & 2) != 0 || (description.Usage & 1) == 0) return unchecked((int)0x88980800);
             if (description.Pool != Pool.Default) return unchecked((int)0x88980802);
-            result = surface->GetDevice(&device);
+            TraceCreate("GetDevice.before", (nint)surface);
+            result = GetSurfaceDevice(surface, &device);
+            TraceCreate("GetDevice.after", (nint)device, result);
             if (result < 0) return result;
+            TraceCreate("CheckDevice.before", (nint)device);
             if (CheckDevice(device) < 0) return unchecked((int)0x88980803);
+            TraceCreate("CheckDevice.after", (nint)device);
             DeviceCreationParameters parameters;
-            result = device->GetCreationParameters(&parameters);
+            TraceCreate("GetCreationParameters.before", (nint)device);
+            result = GetCreationParameters(device, &parameters);
+            TraceCreate("GetCreationParameters.after", (nint)device, result);
             if (result < 0) return result;
+            TraceCreate("GetUpdateMethod.before", (nint)device);
             FrontBufferUpdateMethod method = GetUpdateMethod(device, surface);
+            TraceCreate("GetUpdateMethod.after", (nint)device, (int)method);
             if ((description.MultiSampleType != (MultisampleType)0 || description.MultiSampleQuality != 0)
                 && method != FrontBufferUpdateMethod.SharedSurface) return unchecked((int)0x88980800);
             var state = new BitmapState((nint)surface, description, dpiX, dpiY, version, callback, fallback != 0, parameters.AdapterOrdinal)
@@ -179,7 +244,9 @@ internal static unsafe class InteropDeviceBitmapExports
             instance = (Instance*)NativeMemory.AllocZeroed((nuint)sizeof(Instance));
             instance->Vtable = Vtable; instance->References = 1; instance->State = GCHandle.ToIntPtr(handle);
             state.Identity = (nint)instance;
+            TraceCreate("Register.before", (nint)instance);
             state.Register();
+            TraceCreate("Register.after", (nint)instance);
             *output = (nint)instance; *width = description.Width; *height = description.Height;
             surface = null; instance = null; handle = default;
             return 0;
@@ -189,8 +256,8 @@ internal static unsafe class InteropDeviceBitmapExports
         {
             NativeMemory.Free(instance);
             if (handle.IsAllocated) handle.Free();
-            if (device != null) device->Release();
-            if (surface != null) surface->Release();
+            ReleaseCom(device);
+            ReleaseCom(surface);
         }
     }
 
@@ -206,20 +273,36 @@ internal static unsafe class InteropDeviceBitmapExports
     private static FrontBufferUpdateMethod GetUpdateMethod(IDirect3DDevice9* device, IDirect3DSurface9* surface)
     {
         Caps9 caps;
-        if (device->GetDeviceCaps(&caps) < 0 || (caps.DevCaps2 & 0x10) == 0)
+        TraceCreate("GetUpdateMethod.GetDeviceCaps.before", (nint)device);
+        int capsResult = ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, Caps9*, int>)(*(void***)device)[7])(device, &caps);
+        TraceCreate("GetUpdateMethod.GetDeviceCaps.after", (nint)device, capsResult);
+        if (capsResult < 0 || (caps.DevCaps2 & 0x10) == 0)
             return FrontBufferUpdateMethod.Software;
         IDirect3DDevice9Ex* extended = null;
         Guid iid = IDirect3DDevice9Ex.Guid;
-        if (device->QueryInterface(&iid, (void**)&extended) >= 0)
+        TraceCreate("GetUpdateMethod.QI.before", (nint)device);
+        int queryResult = QueryCom(device, &iid, (void**)&extended);
+        TraceCreate("GetUpdateMethod.QI.after", (nint)extended, queryResult);
+        if (queryResult >= 0)
         {
-            extended->Release();
+            TraceCreate("GetUpdateMethod.extended.Release.before", (nint)extended);
+            uint references = ReleaseCom(extended);
+            TraceCreate("GetUpdateMethod.extended.Release.after", (nint)extended, unchecked((int)references));
             if ((caps.Caps2 & 0x80000000) != 0) return FrontBufferUpdateMethod.SharedSurface;
         }
         if (!OperatingSystem.IsWindowsVersionAtLeast(6))
         {
             nint dc = 0;
-            if (surface->GetDC(&dc) >= 0 && surface->ReleaseDC(dc) >= 0)
-                return FrontBufferUpdateMethod.BitBlt;
+            TraceCreate("GetUpdateMethod.GetDC.before", (nint)surface);
+            int dcResult = ((delegate* unmanaged[Stdcall]<IDirect3DSurface9*, nint*, int>)(*(void***)surface)[15])(surface, &dc);
+            TraceCreate("GetUpdateMethod.GetDC.after", dc, dcResult);
+            if (dcResult >= 0)
+            {
+                TraceCreate("GetUpdateMethod.ReleaseDC.before", (nint)surface);
+                int releaseResult = ((delegate* unmanaged[Stdcall]<IDirect3DSurface9*, nint, int>)(*(void***)surface)[16])(surface, dc);
+                TraceCreate("GetUpdateMethod.ReleaseDC.after", (nint)surface, releaseResult);
+                if (releaseResult >= 0) return FrontBufferUpdateMethod.BitBlt;
+            }
         }
         return FrontBufferUpdateMethod.Software;
     }
@@ -230,19 +313,21 @@ internal static unsafe class InteropDeviceBitmapExports
         IDirect3D9Ex* extended = null;
         try
         {
-            if (device->GetDirect3D(&factory) < 0) return 0;
+            TraceCreate("GetDirect3D.before", (nint)device);
+            if (((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, IDirect3D9**, int>)(*(void***)device)[6])(device, &factory) < 0) return 0;
+            TraceCreate("GetDirect3D.after", (nint)factory);
             Guid iid = IDirect3D9Ex.Guid;
-            if (factory->QueryInterface(&iid, (void**)&extended) < 0) return 0;
+            if (QueryCom(factory, &iid, (void**)&extended) < 0) return 0;
             DeviceCreationParameters parameters;
-            if (device->GetCreationParameters(&parameters) < 0) return 0;
+            if (GetCreationParameters(device, &parameters) < 0) return 0;
             Silk.NET.Core.Native.Luid luid;
-            if (extended->GetAdapterLUID(parameters.AdapterOrdinal, &luid) < 0) return 0;
+            if (((delegate* unmanaged[Stdcall]<IDirect3D9Ex*, uint, Silk.NET.Core.Native.Luid*, int>)(*(void***)extended)[21])(extended, parameters.AdapterOrdinal, &luid) < 0) return 0;
             return *(ulong*)&luid;
         }
         finally
         {
-            if (extended != null) extended->Release();
-            if (factory != null) factory->Release();
+            ReleaseCom(extended);
+            ReleaseCom(factory);
         }
     }
 
@@ -288,9 +373,23 @@ internal static unsafe class InteropDeviceBitmapExports
     {
         IDirect3DDevice9Ex* extended = null;
         Guid iid = IDirect3DDevice9Ex.Guid;
-        if (device->QueryInterface(&iid, (void**)&extended) < 0) return device->TestCooperativeLevel();
-        try { return extended->CheckDeviceState(0); }
-        finally { extended->Release(); }
+        TraceCreate("CheckDevice.generated.QI.before", (nint)device);
+        int result = QueryCom(device, &iid, (void**)&extended);
+        TraceCreate("CheckDevice.generated.QI.after", (nint)extended, result);
+        if (result < 0)
+        {
+            TraceCreate("CheckDevice.TestCooperativeLevel.before", (nint)device);
+            int status = ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, int>)(*(void***)device)[3])(device);
+            TraceCreate("CheckDevice.TestCooperativeLevel.after", (nint)device, status);
+            return status;
+        }
+        try { return ((delegate* unmanaged[Stdcall]<IDirect3DDevice9Ex*, nint, int>)(*(void***)extended)[128])(extended, 0); }
+        finally
+        {
+            TraceCreate("CheckDevice.extended.Release.before", (nint)extended);
+            uint references = ReleaseCom(extended);
+            TraceCreate("CheckDevice.extended.Release.after", (nint)extended, unchecked((int)references));
+        }
     }
 
     [UnmanagedCallersOnly(EntryPoint = "InteropDeviceBitmap_Detach", CallConvs = [typeof(CallConvStdcall)])]
@@ -364,23 +463,23 @@ internal static unsafe class InteropDeviceBitmapExports
         bool locked = false;
         try
         {
-            int result = source->GetDevice(&device);
+            int result = GetSurfaceDevice(source, &device);
             if (result < 0) return result;
             SurfaceDesc description = state.Description;
             if (surface == state.Surface && description.MultiSampleType != (MultisampleType)0)
             {
-                result = device->CreateRenderTarget(description.Width, description.Height, description.Format, (MultisampleType)0, 0, false, &resolved, (void**)null);
+                result = CreateRenderTarget(device, description.Width, description.Height, description.Format, 0, &resolved);
                 if (result < 0) return result;
-                result = device->StretchRect(source, null, resolved, null, Texturefiltertype.None);
+                result = StretchRect(device, source, null, resolved, null);
                 if (result < 0) return result;
                 source = resolved;
             }
-            result = device->CreateOffscreenPlainSurface(description.Width, description.Height, description.Format, Pool.Systemmem, &staging, (void**)null);
+            result = ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, uint, Format, Pool, IDirect3DSurface9**, void**, int>)(*(void***)device)[36])(device, description.Width, description.Height, description.Format, Pool.Systemmem, &staging, null);
             if (result < 0) return result;
-            result = device->GetRenderTargetData(source, staging);
+            result = ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, IDirect3DSurface9*, IDirect3DSurface9*, int>)(*(void***)device)[32])(device, source, staging);
             if (result < 0) return result;
             LockedRect pixels;
-            result = staging->LockRect(&pixels, null, 0x10);
+            result = ((delegate* unmanaged[Stdcall]<IDirect3DSurface9*, LockedRect*, void*, uint, int>)(*(void***)staging)[13])(staging, &pixels, null, 0x10);
             if (result < 0) return result;
             locked = true;
             Guid format = description.Format == Format.A8R8G8B8
@@ -390,7 +489,7 @@ internal static unsafe class InteropDeviceBitmapExports
             SoftwareBitmap.Bitmap* target = (SoftwareBitmap.Bitmap*)copy;
             for (uint y = 0; y < description.Height; y++)
                 Buffer.MemoryCopy((byte*)pixels.PBits + (long)y * pixels.Pitch, target->Pixels + (long)y * target->Stride, target->Stride, (long)description.Width * 4);
-            result = staging->UnlockRect(); locked = false;
+            result = UnlockSurface(staging); locked = false;
             if (result < 0) return result;
             bitmap = copy; copy = 0;
             return 0;
@@ -398,10 +497,10 @@ internal static unsafe class InteropDeviceBitmapExports
         finally
         {
             Direct3D9Factory.Release(copy);
-            if (locked) staging->UnlockRect();
-            if (staging != null) staging->Release();
-            if (resolved != null) resolved->Release();
-            if (device != null) device->Release();
+            if (locked) UnlockSurface(staging);
+            ReleaseCom(staging);
+            ReleaseCom(resolved);
+            ReleaseCom(device);
         }
     }
 
@@ -466,7 +565,7 @@ internal static unsafe class InteropDeviceBitmapExports
         available = 0;
         if (state.Surface == 0) return 0;
         IDirect3DDevice9* device = null;
-        int result = ((IDirect3DSurface9*)state.Surface)->GetDevice(&device);
+        int result = GetSurfaceDevice((IDirect3DSurface9*)state.Surface, &device);
         if (result < 0) return result;
         try
         {
@@ -494,23 +593,22 @@ internal static unsafe class InteropDeviceBitmapExports
                 {
                     IDirect3DTexture9* texture = null;
                     void* shared = null;
-                    result = device->CreateTexture(state.Description.Width, state.Description.Height, 1, 1,
+                    result = ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, uint, uint, uint, uint, Format, Pool, IDirect3DTexture9**, void**, int>)(*(void***)device)[23])(device, state.Description.Width, state.Description.Height, 1, 1,
                         state.Description.Format, Pool.Default, &texture, &shared);
                     if (result < 0) return result;
-                    result = texture->GetSurfaceLevel(0, &front);
-                    if (result < 0) { texture->Release(); return result; }
+                    result = ((delegate* unmanaged[Stdcall]<IDirect3DTexture9*, uint, IDirect3DSurface9**, int>)(*(void***)texture)[18])(texture, 0, &front);
+                    if (result < 0) { ReleaseCom(texture); return result; }
                     state.HardwareTexture = (nint)texture;
                     state.SharedHandle = (nint)shared;
                 }
                 else
                 {
-                    result = device->CreateRenderTarget(state.Description.Width, state.Description.Height,
-                        state.Description.Format, (MultisampleType)0, 0,
-                        state.UpdateMethod == FrontBufferUpdateMethod.BitBlt, &front, (void**)null);
+                    result = CreateRenderTarget(device, state.Description.Width, state.Description.Height,
+                        state.Description.Format, state.UpdateMethod == FrontBufferUpdateMethod.BitBlt ? 1 : 0, &front);
                     if (result < 0) return result;
                 }
                 state.HardwareFront = (nint)front;
-                result = device->ColorFill(front, null, 0);
+                result = ((delegate* unmanaged[Stdcall]<IDirect3DDevice9*, IDirect3DSurface9*, void*, uint, int>)(*(void***)device)[35])(device, front, null, 0);
                 if (result < 0)
                 {
                     Direct3D9Factory.Release(state.HardwareFront); state.HardwareFront = 0;
@@ -521,8 +619,8 @@ internal static unsafe class InteropDeviceBitmapExports
             foreach (Direct3D9BitmapSourceRectangle dirty in state.Dirty)
             {
                 Silk.NET.Maths.Box2D<int> rectangle = new(dirty.X, dirty.Y, dirty.X + dirty.Width, dirty.Y + dirty.Height);
-                result = device->StretchRect((IDirect3DSurface9*)state.Surface, &rectangle,
-                    (IDirect3DSurface9*)state.HardwareFront, &rectangle, Texturefiltertype.None);
+                result = StretchRect(device, (IDirect3DSurface9*)state.Surface, &rectangle,
+                    (IDirect3DSurface9*)state.HardwareFront, &rectangle);
                 if (result < 0) return result;
             }
             result = ReadSurface(state, out nint snapshot, state.HardwareFront);
@@ -535,7 +633,7 @@ internal static unsafe class InteropDeviceBitmapExports
             state.FrontVersion++;
             return 0;
         }
-        finally { device->Release(); }
+        finally { ReleaseCom(device); }
     }
 
     internal static nint AcquireBitmapSource(nint identity, bool fallbackOnly = false)

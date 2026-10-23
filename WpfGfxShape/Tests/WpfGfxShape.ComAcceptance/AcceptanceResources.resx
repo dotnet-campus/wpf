@@ -7,4 +7,6 @@
   <data name="AbsolutePathRequired" xml:space="preserve"><value>Local acceptance requires the explicitly configured absolute artifact/results path. Rebuild the test project with AotDllPath.</value></data>
   <data name="RelativePathRequired" xml:space="preserve"><value>Sandbox acceptance requires a relative path contained within the test application directory. Rebuild with ComAcceptanceSandbox=true.</value></data>
   <data name="InvalidNativeIdentity" xml:space="preserve"><value>The artifact must be a matching-architecture native PE and its SHA256 must match the packaged official publication.</value></data>
+  <data name="ExitArguments" xml:space="preserve"><value>Expected root seconds filter, or --full root seconds. Root and filtered expressions must not be blank.</value></data>
+  <data name="ExitBudget" xml:space="preserve"><value>The supervision budget must be 1–120 seconds for filtered mode or 1–1500 seconds for full mode.</value></data>
 </root>
