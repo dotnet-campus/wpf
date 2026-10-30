@@ -1,5 +1,8 @@
 # 当前执行规则
 
+## 本轮用户明确覆盖
+生产禁止原版wpfgfx媒体委托；旧许可与待裁决失效，允许Windows公开系统媒体。先删再实现。normalbuild≤3（准确绝对Tests/COM Release），定向tests≤2，隐式Debugbuild单列；Nativepublish0/COMpublish0/沙箱0。不得终端、脚本、委派、新工程、依赖升级。见[删除报告](../completed-work/replacement-remove-original-media-delegation.md)。
+
 ## 任务与范围
 
 目标是实现并验证 WpfGfxShape 完整替换原来的 wpfgfx.dll，不以局部 Green 或文档更新关门。详见[实施方案](../wpfgfx-complete-replacement-validation-plan.md)。

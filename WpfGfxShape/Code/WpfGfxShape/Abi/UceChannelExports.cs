@@ -42,27 +42,38 @@ internal static unsafe partial class UceChannelExports
     {
         if (output == null) return InvalidArgument;
         *output = 0;
-        lock (Gate)
+        bool ownsScheduler = false;
+        try
         {
-            try
+            lock (Gate)
             {
-                var connection = new Connection();
-                if (synchronous == 0)
+                try
                 {
-                    int result = PartitionManagerExports.Acquire(out connection.Scheduler);
-                    if (result < 0) return result;
+                    var connection = new Connection();
+                    if (synchronous == 0)
+                    {
+                        int result = PartitionManagerExports.Acquire(out connection.Scheduler);
+                        if (result < 0) return result;
+                        ownsScheduler = true;
+                    }
+                    nint identity = NewIdentity();
+                    Connections.Add(identity, connection);
+                    ownsScheduler = false;
+                    *output = identity;
+                    return 0;
                 }
-                nint identity = NewIdentity();
-                Connections.Add(identity, connection);
-                *output = identity;
-                return 0;
+                catch (OutOfMemoryException) { return OutOfMemory; }
+                catch (OverflowException) { return OutOfMemory; }
+                catch (InvalidOperationException error) { return PartitionScheduler.RecordFailure(error); }
+                catch (ArgumentException error) { return PartitionScheduler.RecordFailure(error); }
+                catch (System.ComponentModel.Win32Exception error) { return PartitionScheduler.RecordFailure(error); }
+                catch (ExternalException error) { return PartitionScheduler.RecordFailure(error); }
             }
-            catch (OutOfMemoryException) { return OutOfMemory; }
-            catch (OverflowException) { return OutOfMemory; }
-            catch (InvalidOperationException error) { return PartitionScheduler.RecordFailure(error); }
-            catch (ArgumentException error) { return PartitionScheduler.RecordFailure(error); }
-            catch (System.ComponentModel.Win32Exception error) { return PartitionScheduler.RecordFailure(error); }
-            catch (ExternalException error) { return PartitionScheduler.RecordFailure(error); }
+        }
+        finally
+        {
+            // Release may join a worker whose callback needs Gate.
+            if (ownsScheduler) PartitionManagerExports.Release();
         }
     }
 
@@ -153,28 +164,56 @@ internal static unsafe partial class UceChannelExports
                     || (connection.Scheduler is null && sourceChannel.Thread != Environment.CurrentManagedThreadId)) return InvalidArgument;
                 partition = sourceChannel.State.Partition;
             }
+            Channel? channel = null;
+            bool accepted = false;
             try
             {
                 nint handle = NewIdentity();
                 Channels.EnsureCapacity(Channels.Count + 1);
-                var channel = new Channel(connection, new SameThreadChannel(partition ?? new SameThreadPartition(connection.Scheduler)), source == 0);
+                channel = new Channel(connection, new SameThreadChannel(partition ?? new SameThreadPartition(connection.Scheduler)), source == 0);
+                Channels.Add(handle, channel);
+                created = handle;
                 if (connection.Scheduler is null) channel.State.Register();
                 else
                 {
                     registration = new PartitionScheduler.Work(channel.State, null, register: true);
                     connection.Scheduler.Submit(registration);
                 }
-                Channels.Add(handle, channel);
-                created = handle;
+                accepted = true;
             }
             catch (OutOfMemoryException) { return OutOfMemory; }
             catch (OverflowException) { return OutOfMemory; }
             catch (InvalidOperationException error) { return PartitionScheduler.RecordFailure(error); }
             catch (ArgumentException error) { return PartitionScheduler.RecordFailure(error); }
             catch (ExternalException error) { return PartitionScheduler.RecordFailure(error); }
+            finally
+            {
+                if (!accepted)
+                {
+                    Channels.Remove(created);
+                    try { channel?.State.Destroy(); }
+                    catch (OutOfMemoryException error) { PartitionScheduler.RecordFailure(error); }
+                    catch (OverflowException error) { PartitionScheduler.RecordFailure(error); }
+                    catch (InvalidOperationException error) { PartitionScheduler.RecordFailure(error); }
+                    catch (ArgumentException error) { PartitionScheduler.RecordFailure(error); }
+                    catch (ExternalException error) { PartitionScheduler.RecordFailure(error); }
+                }
+            }
         }
         int result = registration?.Completion.Task.GetAwaiter().GetResult() ?? 0;
         if (result >= 0) *output = created;
+        else
+        {
+            bool stop;
+            lock (Gate)
+            {
+                // The worker has already rolled back the failed registration.
+                Channels.Remove(created, out Channel? channel);
+                stop = channel is not null && channel.Connection.Disconnected
+                    && !Channels.Values.Any(other => ReferenceEquals(other.Connection, channel.Connection));
+            }
+            if (stop) PartitionManagerExports.Release();
+        }
         return result;
     }
 
@@ -209,9 +248,10 @@ internal static unsafe partial class UceChannelExports
             catch (ArgumentException error) { return PartitionScheduler.RecordFailure(error); }
             catch (ExternalException error) { return PartitionScheduler.RecordFailure(error); }
         }
-        if (cleanup is not null && scheduler?.IsCurrentThread != true) cleanup.Completion.Task.GetAwaiter().GetResult();
+        int result = cleanup is not null && scheduler?.IsCurrentThread != true
+            ? cleanup.Completion.Task.GetAwaiter().GetResult() : 0;
         if (stop && scheduler is not null) PartitionManagerExports.Release();
-        return 0;
+        return result;
     }
 
     [UnmanagedCallersOnly(EntryPoint = "MilResource_CreateOrAddRefOnChannel", CallConvs = [typeof(CallConvStdcall)])]

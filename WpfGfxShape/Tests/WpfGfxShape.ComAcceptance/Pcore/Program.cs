@@ -82,7 +82,8 @@ internal static partial class Program
             foreach (Assembly owner in new[] { pc, wb })
                 NativeLibrary.SetDllImportResolver(owner, Resolve);
             Checkpoint("resolver-installed-before-WPF");
-            if (args.Length == 2 && args[1] == "shaderbounds") RenderShaderBounds();
+            if (args.Length == 2 && args[1] == "cache-contract") RenderPublicCacheContract();
+            else if (args.Length == 2 && args[1] == "shaderbounds") RenderShaderBounds();
             else if (args.Length == 2 && args[1] == "media") RenderMedia();
             else if (args.Length == 2 && args[1] == "shadow") RenderDropShadow();
             else if (args.Length == 2 && args[1] == "lifecycle-sequence") RenderLifecycleSequence();

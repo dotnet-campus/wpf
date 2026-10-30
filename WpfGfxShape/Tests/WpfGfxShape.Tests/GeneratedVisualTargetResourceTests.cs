@@ -9,7 +9,7 @@ public sealed class GeneratedVisualTargetResourceTests
     [TestMethod]
     public void WhenLayoutsAreMeasuredThenNativeSizesMatch()
     {
-        Assert.AreEqual((20, 32, 8, 24, 12, 16, 16, 12, 24), (Marshal.SizeOf<MilGuidelineSetCommand>(), Marshal.SizeOf<MilBitmapCacheCommand>(), Marshal.SizeOf<MilVisualCreateCommand>(), Marshal.SizeOf<MilVisualSetOffsetCommand>(), Marshal.SizeOf<MilVisualDependencyCommand>(), Marshal.SizeOf<MilVisualInsertChildAtCommand>(), Marshal.SizeOf<MilVisualSetAlphaCommand>(), Marshal.SizeOf<MilTargetSetRootCommand>(), Marshal.SizeOf<MilTargetInvalidateCommand>()));
+        Assert.AreEqual((20, 28, 8, 24, 12, 16, 16, 12, 24), (Marshal.SizeOf<MilGuidelineSetCommand>(), Marshal.SizeOf<MilBitmapCacheCommand>(), Marshal.SizeOf<MilVisualCreateCommand>(), Marshal.SizeOf<MilVisualSetOffsetCommand>(), Marshal.SizeOf<MilVisualDependencyCommand>(), Marshal.SizeOf<MilVisualInsertChildAtCommand>(), Marshal.SizeOf<MilVisualSetAlphaCommand>(), Marshal.SizeOf<MilTargetSetRootCommand>(), Marshal.SizeOf<MilTargetInvalidateCommand>()));
     }
 
     [TestMethod]

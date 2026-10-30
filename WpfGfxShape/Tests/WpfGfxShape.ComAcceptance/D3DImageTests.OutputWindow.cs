@@ -86,6 +86,9 @@ public sealed unsafe partial class D3DImageTests
     [UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvStdcall)])]
     private static nint OutputWindowProcedure(nint window, uint message, nuint wParam, nint lParam)
     {
+#if NATIVE_PAINT_BASELINE
+        if (NpbWindowMessage(window, message, wParam, lParam)) return 0;
+#endif
         // The consumer owns every output pixel; a stock EDIT control must not repaint over Present.
         if (message == 0x14) return 1;
         if (message == 0x0f) { ValidateRect(window, 0); return 0; }

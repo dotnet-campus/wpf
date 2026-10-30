@@ -16,13 +16,15 @@ public sealed unsafe partial class D3DImageTests
 
     /// <summary>Runs official geometry separately so an ABI failure cannot abort candidate regressions.</summary>
     [TestMethod]
-    public void WhenHistoricalCaptureOfficialGeometryRunsThenExpectedUpdatesRemain()
-        => RunHistoricalCaptureControl(true, true, false, 0xff00ff00u, 0x0000ff00u);
+    public Task WhenHistoricalCaptureOfficialGeometryRunsThenExpectedUpdatesRemain()
+        => HistoricalProcessIsolation.RunAsync(nameof(WhenHistoricalCaptureOfficialGeometryRunsThenExpectedUpdatesRemain),
+            () => RunHistoricalCaptureControl(true, true, false, 0xff00ff00u, 0x0000ff00u));
 
     /// <summary>Runs the official two-sampler scene in its own filtered process.</summary>
     [TestMethod]
-    public void WhenHistoricalCaptureOfficialSamplerRunsThenExpectedUpdatesRemain()
-        => RunHistoricalCaptureControl(true, false, false, 0xff00ff00u, 0x0000ff80u);
+    public Task WhenHistoricalCaptureOfficialSamplerRunsThenExpectedUpdatesRemain()
+        => HistoricalProcessIsolation.RunAsync(nameof(WhenHistoricalCaptureOfficialSamplerRunsThenExpectedUpdatesRemain),
+            () => RunHistoricalCaptureControl(true, false, false, 0xff00ff00u, 0x0000ff80u));
 
     private static void RunHistoricalCaptureControl(bool official, bool geometry, bool cache, uint color, uint expected)
     {

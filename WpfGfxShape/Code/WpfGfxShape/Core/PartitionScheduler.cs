@@ -40,6 +40,9 @@ internal sealed class PartitionScheduler : IDisposable
         _thread.SetApartmentState(ApartmentState.MTA);
         _thread.Start();
         _initializationResult = _initialized.Task.GetAwaiter().GetResult();
+#if WPFGFX_RUNTIME_HEAP_DIAGNOSTIC
+        WpfGfxShape.Abi.RuntimeHeapDiagnostic.Track(this, _thread);
+#endif
     }
 
     internal int InitializationResult => _initializationResult;
@@ -148,7 +151,8 @@ internal sealed class PartitionScheduler : IDisposable
                     if (work.Register) work.Channel.Register();
                     else if (work.Destroy)
                     {
-                        try { result = work.Channel.CommitSubmitted(work.Batches!); }
+                        // Draining business batches must not turn a successful detach into a zombie error.
+                        try { work.Channel.CommitSubmitted(work.Batches!); }
                         finally { work.Channel.Destroy(); }
                     }
                     else
@@ -171,11 +175,22 @@ internal sealed class PartitionScheduler : IDisposable
                 {
                     if (result < 0)
                         RecordCommandFailure(0, ReadOnlySpan<byte>.Empty, result);
-                    if (result < 0 && work.Channel.Partition.Failure >= 0) work.Channel.Partition.Failure = result;
+                    if (work.Register && result < 0 && !work.Channel.IsRegistered)
+                    {
+                        // The caller cannot own a channel whose registration failed.
+                        try { work.Channel.Destroy(); }
+                        catch (OutOfMemoryException error) { RecordFailure(error); }
+                        catch (ArgumentException error) { RecordFailure(error); }
+                        catch (InvalidOperationException error) { RecordFailure(error); }
+                        catch (ExternalException error) { RecordFailure(error); }
+                        catch (OverflowException error) { RecordFailure(error); }
+                    }
+                    bool management = work.Register || work.Destroy;
+                    if (!management && result < 0 && work.Channel.Partition.Failure >= 0) work.Channel.Partition.Failure = result;
                     int failure = work.Channel.Partition.Failure;
                     if (failure < 0) work.Channel.WakeMessageWaiters();
                     // The native zombie back channel exposes only OOM/OOVM, not internal command failures.
-                    work.Completion.SetResult(failure < 0
+                    work.Completion.SetResult(!management && failure < 0
                         ? failure == unchecked((int)0x8876017C) ? failure
                             : Direct3D9Factory.IsOutOfMemory(failure) ? Direct3D9Factory.OutOfMemoryHResult
                             : unchecked((int)0x88980406)

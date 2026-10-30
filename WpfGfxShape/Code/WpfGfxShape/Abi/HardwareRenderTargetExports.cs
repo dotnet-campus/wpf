@@ -29,7 +29,7 @@ internal static unsafe class HardwareRenderTargetExports
         internal Direct3D9DeviceManager Manager = null!;
         internal Direct3D9Device Device = null!;
         internal Direct3D9SurfaceRenderTarget Renderer = null!;
-        internal readonly uint Width, Height;
+        internal uint Width, Height;
         internal readonly nint Window;
         internal uint PolicyGeneration;
         internal nint SoftwareTarget, SoftwareBitmap;
@@ -41,6 +41,43 @@ internal static unsafe class HardwareRenderTargetExports
             if (PolicyGeneration == generation) return;
             DisposeBackend();
             InitializeBackend();
+        }
+
+        internal int Resize(uint width, uint height)
+        {
+            EnsurePolicy();
+            int result;
+            if (SoftwareTarget == 0)
+            {
+                result = Renderer.Resize(width, height);
+                if (result < 0) return result;
+            }
+            else
+            {
+                result = BitmapRenderTargetExports.CreateDrawingIntermediate(width, height, out nint nextTarget, out nint nextBitmap, floating: false);
+                if (result < 0) return result;
+                Direct3D9SoftwareGdiPresenter? nextPresenter = null;
+                try
+                {
+                    result = Direct3D9SoftwareGdiPresenter.Create(Window, width, height, out nextPresenter);
+                    if (result < 0) return result;
+                    Presenter?.Dispose();
+                    Direct3D9Factory.Release(SoftwareTarget);
+                    Direct3D9Factory.Release(SoftwareBitmap);
+                    SoftwareTarget = nextTarget; nextTarget = 0;
+                    SoftwareBitmap = nextBitmap; nextBitmap = 0;
+                    Presenter = nextPresenter; nextPresenter = null;
+                }
+                finally
+                {
+                    nextPresenter?.Dispose();
+                    Direct3D9Factory.Release(nextTarget);
+                    Direct3D9Factory.Release(nextBitmap);
+                }
+            }
+            Width = width; Height = height;
+            KiResizeTrace.Record("target.resized", $"target={KiResizeTrace.Id(this)} device={KiResizeTrace.Id(Device)} manager={KiResizeTrace.Id(Manager)} size={Width}x{Height}");
+            return result;
         }
 
         private void InitializeBackend()
@@ -73,6 +110,7 @@ internal static unsafe class HardwareRenderTargetExports
 
         private void DisposeBackend()
         {
+            KiResizeTrace.Record("target.disposeBackend", $"target={KiResizeTrace.Id(this)} device={KiResizeTrace.Id(Device)} manager={KiResizeTrace.Id(Manager)} generation={PolicyGeneration} size={Width}x{Height}");
             Presenter?.Dispose(); Presenter = null;
             Direct3D9Factory.Release(SoftwareTarget); SoftwareTarget = 0;
             Direct3D9Factory.Release(SoftwareBitmap); SoftwareBitmap = 0;
@@ -115,6 +153,7 @@ internal static unsafe class HardwareRenderTargetExports
                     try
                     {
                         Marshal.ThrowExceptionForHR(Renderer.Resize(width, height));
+                        KiResizeTrace.Record("target.hardwareReady", $"target={KiResizeTrace.Id(this)} device={KiResizeTrace.Id(Device)} manager={KiResizeTrace.Id(Manager)} adapter={adapter} generation={ProcessRenderPolicy.Generation} size={width}x{height}");
                     }
                     catch { Renderer.Dispose(); throw; }
                 }
@@ -149,6 +188,7 @@ internal static unsafe class HardwareRenderTargetExports
             instance->References = 1;
             instance->Handle = GCHandle.ToIntPtr(handle);
             target = (nint)instance;
+            KiResizeTrace.Record("target.created", $"address={target:X} target={KiResizeTrace.Id(owner)} device={KiResizeTrace.Id(owner.Device)} manager={KiResizeTrace.Id(owner.Manager)}");
             owner = null; handle = default;
             return 0;
         }
@@ -157,11 +197,22 @@ internal static unsafe class HardwareRenderTargetExports
         finally { if (handle.IsAllocated) handle.Free(); owner?.Dispose(); }
     }
 
+    internal static int Resize(nint target, uint width, uint height)
+    {
+        if (!IsHardware(target) || width == 0 || height == 0 || width > int.MaxValue || height > int.MaxValue)
+            return Direct3D9Factory.InvalidArgumentHResult;
+        try { return Get((Instance*)target).Resize(width, height); }
+        catch (COMException error) { return error.HResult; }
+        catch (OutOfMemoryException) { return Direct3D9Factory.OutOfMemoryHResult; }
+    }
+
     internal static bool IsHardware(nint target) => target != 0 && *(void***)target == Table;
     private static Target Get(Instance* value) => (Target)GCHandle.FromIntPtr(value->Handle).Target!;
 
-    internal static int Render(nint target, GeneratedVisualResource? visual, MilColorF clearColor, bool signalPresent)
+    internal static int Render(nint target, GeneratedVisualResource? visual, MilColorF clearColor, bool signalPresent,
+        out bool windowPresented)
     {
+        windowPresented = false;
         Target owner = Get((Instance*)target);
         try { owner.EnsurePolicy(); }
         catch (COMException error) { return error.HResult; }
@@ -180,13 +231,17 @@ internal static unsafe class HardwareRenderTargetExports
                     hr = Direct3D9BitmapSource.CopyPixels(owner.SoftwareBitmap, new(0, 0, (int)owner.Width, (int)owner.Height), (uint)stride, (uint)pixels.Length, (nint)buffer);
             }
             finally { owner.Presenter.Unlock(); }
-            return hr < 0 ? hr : PerformanceInstrumentation.Presented(owner.Window,
-                owner.Presenter.Present(new(0, 0, (int)owner.Width, (int)owner.Height)), signalPresent);
+            if (hr < 0) return hr;
+            hr = owner.Presenter.Present(new(0, 0, (int)owner.Width, (int)owner.Height));
+            windowPresented = hr == 0 && owner.Width != 0 && owner.Height != 0;
+            return PerformanceInstrumentation.Presented(owner.Window, hr, signalPresent);
         }
         if (hr < 0) return hr;
         hr = visual is null ? 0 : GeneratedHardwareVisualRenderer.Render(visual, owner.Device,
             owner.Renderer, owner.Width, owner.Height);
-        return hr < 0 ? hr : PerformanceInstrumentation.Presented(owner.Window, owner.Renderer.Present(), signalPresent);
+        if (hr < 0) return hr;
+        hr = owner.Renderer.Present(out windowPresented);
+        return PerformanceInstrumentation.Presented(owner.Window, hr, signalPresent);
     }
 
     private static void** CreateTable()

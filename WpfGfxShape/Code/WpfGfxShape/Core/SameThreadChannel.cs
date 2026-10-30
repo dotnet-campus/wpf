@@ -5,14 +5,24 @@ namespace WpfGfxShape.Core;
 
 internal sealed class SameThreadPartition
 {
+    private enum CompositionDeviceState : uint
+    {
+        Normal = 0,
+        NoDevice = 1
+    }
+
+    // Matches CComposition construction before any successful window presentation.
+    private CompositionDeviceState _deviceState = CompositionDeviceState.NoDevice;
+
     internal readonly GeneratedProtocolChannelRegistry Channels = new();
-    internal readonly GeneratedTargetRegistry Targets = new();
+    internal readonly GeneratedTargetRegistry Targets;
     internal int Failure;
     internal static bool RenderWithoutDisplays;
     internal readonly Av.VideoComposition? Videos;
 
     internal SameThreadPartition(PartitionScheduler? scheduler = null)
     {
+        Targets = new GeneratedTargetRegistry();
         if (scheduler is not null) Videos = new Av.VideoComposition(() => scheduler.ScheduleCompositionPass(this));
     }
 
@@ -29,7 +39,7 @@ internal sealed class SameThreadPartition
             }
             if (result >= 0 && (RenderWithoutDisplays || ChannelGraphicsCapabilities.HasDisplays()))
             {
-                result = Targets.Render();
+                result = Targets.Render(presentResult: ProcessSuccessfulWindowPresent);
                 if (result < 0) PartitionScheduler.RecordCommandFailure(0, "Targets.Render"u8, result);
             }
             if (result < 0 && Failure >= 0) Failure = result;
@@ -108,12 +118,32 @@ internal sealed class SameThreadPartition
     private readonly HashSet<SameThreadChannel> _notifications = [];
     private bool _pendingBadShader;
 
+    private void ProcessSuccessfulWindowPresent(int result)
+    {
+        if (result != 0 || _deviceState != CompositionDeviceState.NoDevice) return;
+        CompositionDeviceState previous = _deviceState;
+        _deviceState = CompositionDeviceState.Normal;
+        byte[] message = new byte[64];
+        BinaryPrimitives.WriteUInt32LittleEndian(message, 0x05);
+        BinaryPrimitives.WriteUInt32LittleEndian(message.AsSpan(8), (uint)previous);
+        BinaryPrimitives.WriteUInt32LittleEndian(message.AsSpan(12), (uint)_deviceState);
+        foreach (var listener in _notifications) listener.PostMessage(message);
+    }
+
     internal void SetPendingBadShaderNotification() => _pendingBadShader = true;
     internal void RegisterNotifications(SameThreadChannel channel, bool enable)
     {
         if (!enable) { _notifications.Remove(channel); return; }
-        if (_notifications.Add(channel)) channel.PostMessage(0x05);
+        if (_notifications.Add(channel))
+        {
+            byte[] message = new byte[64];
+            BinaryPrimitives.WriteUInt32LittleEndian(message, 0x05);
+            BinaryPrimitives.WriteUInt32LittleEndian(message.AsSpan(8), (uint)_deviceState);
+            BinaryPrimitives.WriteUInt32LittleEndian(message.AsSpan(12), (uint)_deviceState);
+            foreach (var listener in _notifications) listener.PostMessage(message);
+        }
     }
+
     internal void FlushPendingBadShaderNotifications()
     {
         if (!_pendingBadShader) return;
@@ -250,7 +280,10 @@ internal sealed class SameThreadChannel
 
     internal void WakeMessageWaiters()
     {
-        lock (_messages) _messageEvent.Set();
+        lock (_messages)
+        {
+            if (!_destroyed) _messageEvent.Set();
+        }
     }
 
     internal unsafe int WaitForMessage(uint count, nint* handles, bool waitAll, uint timeout, uint* output)
@@ -258,7 +291,7 @@ internal sealed class SameThreadChannel
         nint* nativeHandles = stackalloc nint[64];
         for (uint i = 0; i < count; i++) nativeHandles[i] = handles[i];
         bool added = false;
-        var queueHandle = _messageEvent.SafeWaitHandle;
+        Microsoft.Win32.SafeHandles.SafeWaitHandle? queueHandle = null;
         try
         {
             lock (_messages)
@@ -266,8 +299,9 @@ internal sealed class SameThreadChannel
                 if (_destroyed) return unchecked((int)0x80070006);
                 if (Partition.Failure < 0) return Partition.Failure;
                 if (_messages.Count != 0) { *output = count; return 0; }
-                _messageEvent.Reset();
+                queueHandle = _messageEvent.SafeWaitHandle;
                 queueHandle.DangerousAddRef(ref added);
+                _messageEvent.Reset();
                 nativeHandles[count] = queueHandle.DangerousGetHandle();
             }
             uint result = WaitForMultipleObjects(count + 1, nativeHandles, waitAll ? 1 : 0, timeout);
@@ -279,7 +313,7 @@ internal sealed class SameThreadChannel
                 return Partition.Failure < 0 ? Partition.Failure : 0;
             }
         }
-        finally { if (added) queueHandle.DangerousRelease(); }
+        finally { if (added) queueHandle?.DangerousRelease(); }
     }
 
     [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
@@ -299,13 +333,28 @@ internal sealed class SameThreadChannel
 
     internal SameThreadChannel(SameThreadPartition partition)
     {
-        Partition = partition;
-        _resources = new GeneratedProtocolHandleTable(partition.Videos, targets: partition.Targets) { BadShaderNotification = partition.SetPendingBadShaderNotification };
-        _channel = partition.AllocateChannel();
-        _router = new GeneratedProtocolProductionContext(_channel, partition.Channels).CreateRouter();
+        bool initialized = false;
+        try
+        {
+            Partition = partition;
+            _resources = new GeneratedProtocolHandleTable(partition.Videos, targets: partition.Targets) { BadShaderNotification = partition.SetPendingBadShaderNotification };
+            _channel = partition.AllocateChannel();
+            _router = new GeneratedProtocolProductionContext(_channel, partition.Channels).CreateRouter();
+            initialized = true;
+        }
+        finally
+        {
+            if (!initialized) _messageEvent.Dispose();
+        }
     }
 
-    internal void Register() => Partition.Channels.TryAdd(_channel, _resources);
+    internal bool IsRegistered { get; private set; }
+
+    internal void Register()
+    {
+        if (!Partition.Channels.TryAdd(_channel, _resources)) throw new InvalidOperationException();
+        IsRegistered = true;
+    }
 
     internal int DuplicateTo(uint original, SameThreadChannel target, out uint duplicate)
     {
@@ -601,20 +650,26 @@ internal sealed class SameThreadChannel
 
     private void ReleaseResources()
     {
-        if (_destroyed) return;
-        _destroyed = true;
+        lock (_messages)
+        {
+            if (_destroyed) return;
+            _destroyed = true;
+            _notificationWindow = 0;
+            _messages.Clear();
+            // Wake before releasing ownership; active native waits retain their borrowed handle.
+            try { _messageEvent.Set(); }
+            finally { _messageEvent.Dispose(); }
+        }
         _command = null;
         _commandLength = 0;
         Partition.RegisterNotifications(this, false);
         Partition.RemovePresentNotifications(this);
         Partition.SetVBlankSyncMode(this, false);
-        lock (_messages)
+        if (IsRegistered)
         {
-            _notificationWindow = 0;
-            _messages.Clear();
-            _messageEvent.Set();
+            Partition.Channels.Remove(_channel);
+            IsRegistered = false;
         }
-        Partition.Channels.Remove(_channel);
         while (_open.Count != 0)
         {
             int index = _open.Count - 1;

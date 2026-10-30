@@ -232,6 +232,7 @@ internal static unsafe partial class BitmapRenderTargetExports
                 {
                     int result = NativeShapeReader.Capture(shape,
                         ToImageTransform(((NativeContextPrefix*)context)->WorldToDevice), out coverage, clip);
+                    JpBrushTrace.Record("Path.FillShape", result, $"shape={shape};clip={clip}");
                     if (result < 0) return result;
                 }
                 return ConsumeSoftwareRealization(primitive.Renderer, realizer, brushContext, context, creator,
@@ -271,9 +272,11 @@ internal static unsafe partial class BitmapRenderTargetExports
     {
         int result = NativeBrushRealizerReader.Realize(realizer, brushContext, context,
             creator, out nint brush, out nint effects);
+        JpBrushTrace.Record("Path.Realize", result, $"shape={shape};realizer={realizer};brush={brush};effects={effects};clip={clip};coverage={strokeCoverage is not null};matrix={matrix}");
         if (result < 0) return result;
         if (brush == 0) return 0;
         result = SoftwareBitmapEffects.Capture(effects, out var snapshot);
+        JpBrushTrace.Record("Path.Effects", result);
         if (result < 0) return result;
         using var ownedEffects = snapshot;
         uint brushType = ((delegate* unmanaged<nint, uint>)(*(void***)brush)[3])(brush);
@@ -286,6 +289,7 @@ internal static unsafe partial class BitmapRenderTargetExports
         if (coverage is null)
         {
             result = NativeShapeReader.Capture(shape, transform, out coverage, clip);
+            JpBrushTrace.Record("Path.Shape", result, $"shape={shape};transform={transform};clip={clip}");
             if (result < 0) return result;
         }
         var drawing = drawingContext ?? new SoftwareImageDrawingContext(GeneratedImageTransform.Identity, clip, 3, state.Compositing,
@@ -293,8 +297,11 @@ internal static unsafe partial class BitmapRenderTargetExports
         if (drawing.GeometryMask is { } contextCoverage)
             coverage = coverage is null ? contextCoverage
                 : SoftwareImageCoverage.Combine(coverage, contextCoverage, MilCombineMode.Intersect);
-        if (brushType == 4) return FillInternalBitmapBrush(renderer, brush, transform, coverage, drawing, state);
-        return ImmediateSolidBrushRealizer.DrawBorrowedSolid(renderer, brush, coverage, drawing);
+        result = brushType == 4
+            ? FillInternalBitmapBrush(renderer, brush, transform, coverage, drawing, state)
+            : ImmediateSolidBrushRealizer.DrawBorrowedSolid(renderer, brush, coverage, drawing);
+        JpBrushTrace.Record("Path.Brush", result, $"type={brushType};clip={clip};coverage={coverage is not null};transform={transform}");
+        return result;
     }
 
     internal static int DrawSoftwareRealization(Direct3D9SoftwareImageRenderer renderer, nint realizer,
@@ -359,8 +366,9 @@ internal static unsafe partial class BitmapRenderTargetExports
                 && NativeImmediateSolidRealization.TryGetExactSourceClip(brush, out var viewport))
             {
                 if (space == 1) viewportMapping = worldToDevice.Prepend(viewportMapping);
-                if (!SoftwareImageCoverage.TryCreate(viewport, viewportMapping, out var viewportCoverage, renderer.TargetBounds))
-                    return InvalidArgument;
+                bool captured = SoftwareImageCoverage.TryCreate(viewport, viewportMapping, out var viewportCoverage, renderer.TargetBounds);
+                JpBrushTrace.Record("Path.ViewportCoverage", captured ? 0 : InvalidArgument, $"viewport={viewport};mapping={viewportMapping};target={renderer.TargetBounds};polygon={string.Join(';', polygon)}");
+                if (!captured) return InvalidArgument;
                 if (coverage is null) coverage = viewportCoverage;
                 else if (polygon.All(point => Math.Abs(point.X) < 524288 && Math.Abs(point.Y) < 524288)
                     && coverage.TryClipParallelogram(polygon, out var clippedCoverage))
@@ -369,7 +377,9 @@ internal static unsafe partial class BitmapRenderTargetExports
             }
             else
             {
-                if (!SoftwarePathCoverage.TryCreateFigures([polygon], MilFillMode.Winding, out var path)) return InvalidArgument;
+                bool captured = SoftwarePathCoverage.TryCreateFigures([polygon], MilFillMode.Winding, out var path);
+                JpBrushTrace.Record("Path.SourceClipCoverage", captured ? 0 : InvalidArgument, $"mapping={mapping};clipTransform={clipTransform};target={renderer.TargetBounds};polygon={string.Join(';', polygon)}");
+                if (!captured) return InvalidArgument;
                 if (path is null) return Direct3D9Factory.UnexpectedHResult;
                 var sourceClip = new SoftwareImageCoverage(path);
                 if (coverage is null) coverage = sourceClip;

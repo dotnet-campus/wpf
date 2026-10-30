@@ -459,8 +459,10 @@ internal static unsafe class GeneratedVisualRenderer
             try
             {
                 int hr = WpfGfxShape.Abi.BitmapRenderTargetExports.CreateDrawingIntermediate(Width, Height, out target, out candidate, floating);
+                JpBrushTrace.Record("DrawingSnapshot.Create", hr, $"size={Width}x{Height};floating={floating};target={target};bitmap={candidate};disposed={_disposed};draws={_draws.Count};bounds={Bounds};mapping={PixelToDevice}");
                 if (hr < 0) return hr;
                 hr = SoftwareImageRenderSession.Open(target, Width, Height, out session);
+                JpBrushTrace.Record("DrawingSnapshot.Open", hr, $"size={Width}x{Height};target={target}");
                 if (hr < 0) return hr;
                 foreach (var draw in _draws)
                 {
@@ -473,7 +475,7 @@ internal static unsafe class GeneratedVisualRenderer
                         3 => session!.DrawPath(draw.Brush, draw.Mask, draw.StrokeBrush, draw.StrokeMask, draw.Bounds, draw.Context, draw.NativeStroke),
                         _ => session!.Draw(draw.Source, draw.Rectangle, draw.IsMilSource, draw.Context)
                     };
-                    if (hr < 0) { session.AbortLayers(); return hr; }
+                    if (hr < 0) { JpBrushTrace.Record("DrawingSnapshot.Draw", hr, $"size={Width}x{Height};target={target};bitmap={candidate};action={draw.LayerAction};context={draw.Context}"); session.AbortLayers(); return hr; }
                 }
                 bitmap = candidate; candidate = 0;
                 return 0;

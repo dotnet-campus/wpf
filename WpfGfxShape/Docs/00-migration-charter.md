@@ -1,5 +1,8 @@
 # wpfgfx C#/.NET Native AOT 迁移章程
 
+## 用户强制纠正：生产禁止原版媒体委托
+禁止生产保留或加载任何原版 wpfgfx 提供媒体服务；允许 Windows 公开媒体组件。既有“合法第二wpfgfx”许可及排程已撤销，历史绿不认证独立媒体。先删除链路，再实现独立后端。当前普通媒体创建 E_NOTIMPL，独立媒体全部 Open / NotImplemented；完整替换 Open。见[删除报告](completed-work/replacement-remove-original-media-delegation.md)。
+
 强制执行；适用于 WpfGfxShape 全部调查、设计、实现、测试和交接。
 目标源码 `src/Microsoft.DotNet.Wpf/src/WpfGfx` 及直接依赖、生成协议、托管调用方。
 生产根 `WpfGfxShape/Code/WpfGfxShape`；主测试根 `WpfGfxShape/Tests/WpfGfxShape.Tests`；文档根 `WpfGfxShape/Docs`。

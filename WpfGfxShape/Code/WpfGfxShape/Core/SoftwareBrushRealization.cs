@@ -151,6 +151,7 @@ internal sealed unsafe class SoftwareBrushRealization : IDisposable
         try
         {
             int hr = session.RealizeBrush(image, out candidate);
+            JpBrushTrace.Record("SoftwareBrushRealization.EnsureRealization", hr, $"candidate={candidate};disposed={_disposed};realizing={_realizing};viewbox={image.Viewbox};viewport={image.Viewport};transform={image.Transform};opacity={image.Opacity}");
             if (hr < 0) return hr;
             if (_disposed) return Direct3D9Factory.WgxInvalidCallHResult;
             _immediate = candidate;

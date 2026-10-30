@@ -950,6 +950,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
             }
 
             notify = (_usableDevices.Contains(device) || _unusableDevices.Contains(device)) && !_lostDevices.Contains(device);
+            KiResizeTrace.Record("manager.deviceDisposed", $"manager={KiResizeTrace.Id(this)} device={KiResizeTrace.Id(device)} adapter={device.AdapterOrdinal} notify={notify}");
             if (notify) NotifyDeviceLost(device);
             _usableDevices.Remove(device);
             _unusableDevices.Remove(device);
@@ -970,6 +971,7 @@ internal sealed class Direct3D9DeviceManager : IDisposable
     {
         using (EnterManagerLock())
         {
+            KiResizeTrace.Record("manager.adapterStatus", $"manager={KiResizeTrace.Id(this)} adapter={adapterOrdinal} valid={isValid}");
             Action<uint, bool>[] interop;
             lock (InteropListenersGate) interop = [.. InteropListeners];
             _pendingAdapterNotifications.Enqueue(new(adapterOrdinal, isValid, interop));

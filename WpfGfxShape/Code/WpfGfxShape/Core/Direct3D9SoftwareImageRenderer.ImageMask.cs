@@ -164,6 +164,7 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
                         workingFormat: brush.HasDrawingSource && !_floating ? SoftwareImageWorkingFormat.DrawingImagePbgra32 : SoftwareImageWorkingFormat.Native);
                 return 0;
             });
+            JpBrushTrace.Record("Renderer.RealizeBrush.AddImageMask", result, $"size={_width}x{_height};floating={_floating};candidate={candidate};drawing={brush.HasDrawingSource};deviceAligned={brush.HasDeviceAlignedDrawing}");
             if (result < 0) return result;
             realization = candidate;
             candidate = 0;
@@ -279,6 +280,7 @@ internal sealed unsafe partial class Direct3D9SoftwareImageRenderer
         try
         {
             int sourceResult = mask.RealizeDrawingSource(out source, out sourceOwned, _floating);
+            JpBrushTrace.Record("AddImageMask.RealizeDrawingSource", sourceResult, $"source={source};owned={sourceOwned};viewbox={mask.Viewbox};viewport={mask.Viewport};mapping={mask.DrawingPixelToDevice}");
             if (sourceResult < 0) return sourceResult;
             double dpiX, dpiY;
             int hr = ((delegate* unmanaged[Stdcall]<nint, double*, double*, int>)(*(void***)source)[5])(source, &dpiX, &dpiY);

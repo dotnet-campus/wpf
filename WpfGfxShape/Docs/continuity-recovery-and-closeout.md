@@ -1,5 +1,8 @@
 # 连续性：恢复、工作模块与收尾
 
+## r6恢复提示
+[报告](completed-work/sampler-native-crash-x64-r6-closeout.md)：build1/publish1/offline1实际执行，缺image-backed .xdata读取使unwind不可信，caller未知，任务未完成，非外部API能力障碍。offline角色用完需另授offline1修正验证，业务角色不挪用；fixture不改、23红与所有历史保留。当前恢复以next-session-handoff首部r6为准，r5下一动作历史化；诊断默认关闭，不代正式业务验收。
+
 [连续性协议](10-session-continuity-protocol.md)§1–7正式合同；强制执行，上位[章程](00-migration-charter.md)。
 
 ## 1. 目的

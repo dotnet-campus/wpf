@@ -36,6 +36,9 @@ public sealed unsafe partial class D3DImageTests
 
     private static void RunVisualCacheConsumer(bool cache, uint color, uint expected, bool geometryConsumer, bool configurationRecovery = false, bool wicSource = false, int callbackAction = -1, bool transactionRecovery = false, bool multipleDevices = false, bool closeSecondFirst = false, bool resizeWindow = false, bool official = false)
     {
+#if NATIVE_OBSERVATION_CONTRACT
+        using NativeObservationScope? observation = resizeWindow && !official ? new NativeObservationScope() : null;
+#endif
         string path = official ? AcceptancePaths.OriginalDll : AcceptancePaths.AotDll;
         nint module = NativeLibrary.Load(path);
         if (resizeWindow) LogHardwareModuleIdentity(module, path);
@@ -44,6 +47,7 @@ public sealed unsafe partial class D3DImageTests
         var disconnect = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "WgxConnection_Disconnect");
         var channelCreate = (delegate* unmanaged[Stdcall]<nint, nint, nint*, int>)NativeLibrary.GetExport(module, "MilConnection_CreateChannel");
         var destroy = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "MilConnection_DestroyChannel");
+        var releaseResource = (delegate* unmanaged[Stdcall]<nint, uint, int*, int>)NativeLibrary.GetExport(module, "MilResource_ReleaseOnChannel");
         var resource = (delegate* unmanaged[Stdcall]<nint, uint, uint*, int>)NativeLibrary.GetExport(module, "MilResource_CreateOrAddRefOnChannel");
         var send = (delegate* unmanaged[Stdcall]<void*, uint, byte, nint, int>)NativeLibrary.GetExport(module, "MilResource_SendCommand");
         var close = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "MilChannel_CloseBatch");
@@ -53,19 +57,39 @@ public sealed unsafe partial class D3DImageTests
         ExitDiagnostics.Stage("visual CreateOutputWindow before");
         nint window = CreateOutputWindow("Two input shader acceptance", 40, 40);
         ExitDiagnostics.Stage("visual CreateOutputWindow after");
+        var initialize = (delegate* unmanaged[Stdcall]<int, int>)NativeLibrary.GetExport(module, "MilCompositionEngine_InitializePartitionManager");
+        var deinitialize = (delegate* unmanaged[Stdcall]<int>)NativeLibrary.GetExport(module, "MilCompositionEngine_DeinitializePartitionManager");
+        var flush = (delegate* unmanaged[Stdcall]<nint, int>)NativeLibrary.GetExport(module, "MilComposition_SyncFlush");
+        bool initialized = false;
+        var officialImages = new List<uint>();
         nint secondWindow = 0;
         uint secondDestination = 0;
+        uint worldTransform = 0, contentRoot = 0;
         nint d3d = 0, device = 0, connection = 0, channel = 0;
         nint[] surfaces = new nint[2], bitmaps = new nint[2];
         nint lazyStream = 0, lazyFrame = 0, transactionBitmap = 0;
         bool armed = false;
         int callbacks = 0, streamDisposals = 0, nestedResult = 0;
         uint callbackImage = 0;
+        bool businessCompleted = false;
+        var cleanupFailures = new List<string>();
+#if OFFICIAL_CACHE_FIRSTFRAME
+        using OfficialCacheObservation? cacheObservation = official && cache && resizeWindow ? new OfficialCacheObservation(module, path, window) : null;
+        officialCacheObservation = cacheObservation;
+#endif
+        void RecordCleanup(string operation, int hr)
+        {
+            ExitDiagnostics.Stage($"visual cleanup {operation} HRESULT=0x{unchecked((uint)hr):X8}");
+            if (hr < 0) cleanupFailures.Add($"{operation}: 0x{unchecked((uint)hr):X8}");
+        }
         try
         {
             Assert.AreNotEqual(0, window);
             ExitDiagnostics.Stage("visual EstablishObservableWindow before");
             EstablishObservableWindow(window);
+#if NATIVE_OBSERVATION_CONTRACT
+            observation?.Window(window);
+#endif
             ExitDiagnostics.Stage("visual EstablishObservableWindow after; Direct3DCreate9 before");
             d3d = Direct3DCreate9(32);
             ExitDiagnostics.Stage("visual Direct3DCreate9 after");
@@ -74,20 +98,33 @@ public sealed unsafe partial class D3DImageTests
             ExitDiagnostics.Stage("visual CreateDevice before");
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint, uint, nint, uint, PresentParameters*, nint*, int>)(*(void***)d3d)[16])(d3d, 0, 1, window, 0x26, &parameters, &device));
             ExitDiagnostics.Stage("visual CreateDevice after; PresentNativeControl before");
+#if ORIGINAL_PRESENT_SYSTEM_TRACE
+            using (OriginalPresentSystemTrace? trace = resizeWindow && !official ? new OriginalPresentSystemTrace() : null)
+            {
+                PresentNativeControl(window, device, false);
+            }
+#else
             PresentNativeControl(window, device, false);
+#endif
             ExitDiagnostics.Stage("visual PresentNativeControl after; DiagnoseNativePresent before");
-            DiagnoseNativePresent(window, device, false);
+            DiagnoseNativePresent(window, device, false, module);
             ExitDiagnostics.Stage("visual DiagnoseNativePresent after; AssertCombinedPixel before");
             AssertCombinedPixel(window, 0x00563412);
             ExitDiagnostics.Stage("visual AssertCombinedPixel after; connect before");
             nint nativeConnection = 0;
-            Assert.AreEqual(0, connect(1, &nativeConnection));
+            if (official)
+            {
+                Assert.AreEqual(0, initialize(0));
+                initialized = true;
+            }
+            Assert.AreEqual(0, connect(official ? (byte)0 : (byte)1, &nativeConnection));
             ExitDiagnostics.Stage("visual connect after");
             connection = nativeConnection;
             nint nativeChannel = 0;
             ExitDiagnostics.Stage("visual channelCreate before");
             Assert.AreEqual(0, channelCreate(connection, 0, &nativeChannel));
             channel = nativeChannel;
+            officialCacheObservation?.Record("connection", new { Connection = (long)connection, Channel = (long)channel, Hwnd = (long)window, Async = official });
             ExitDiagnostics.Stage("visual channelCreate after");
             uint[] visuals = new uint[2];
             uint secondaryImage = 0;
@@ -119,9 +156,15 @@ public sealed unsafe partial class D3DImageTests
                 uint* content = stackalloc uint[] { 0x22, visual, data };
                 Assert.AreEqual(0, send(content, 12, 0, channel));
                 ExitDiagnostics.Stage($"visual surface {i} draw commands after; dirty before");
-                Assert.AreEqual(0, dirty(0, 0, 12, 1, bitmap));
-                PresentPacket frame = new() { Type = 0x0b, Handle = image };
-                Assert.AreEqual(0, send(&frame, (uint)sizeof(PresentPacket), 0, channel));
+                int dirtyResult = dirty(0, 0, 12, 1, bitmap);
+                officialCacheObservation?.Record("source-resource", new { Index = i, Image = image, Data = data, Visual = visual, Bitmap = (long)bitmap, Surface = (long)surface, ActualWidth = width, ActualHeight = height, Dirty = "0,0,12,1", DirtyHResult = dirtyResult, DrawWidth = draw.Width, DrawHeight = draw.Height, ContentDirty = "image/drawing/content commands submitted; internal dirty Unknown" });
+                Assert.AreEqual(0, dirtyResult);
+                if (official) officialImages.Add(image);
+                else
+                {
+                    PresentPacket frame = new() { Type = 0x0b, Handle = image };
+                    Assert.AreEqual(0, send(&frame, (uint)sizeof(PresentPacket), 0, channel));
+                }
             }
             using var wic = new SystemWicBitmap();
             nint wicBitmap = 0;
@@ -167,7 +210,7 @@ public sealed unsafe partial class D3DImageTests
                                 var replacementWrap = (delegate* unmanaged[Stdcall]<nint, nint*, int>)NativeLibrary.GetExport(module, "MilResource_CreateCWICWrapperBitmap");
                                 nestedResult = replacementWrap(replacementBitmap, &replacementWrapper);
                                 if (nestedResult < 0) return;
-                                byte[] packet = new byte[16];
+                                byte[] packet = new byte[8 + IntPtr.Size];
                                 MemoryMarshal.Write(packet.AsSpan(), 0x0cu);
                                 MemoryMarshal.Write(packet.AsSpan(4), callbackImage);
                                 MemoryMarshal.Write(packet.AsSpan(8), replacementWrapper);
@@ -199,7 +242,7 @@ public sealed unsafe partial class D3DImageTests
                     Assert.AreEqual(0, wrap(wicBitmap, &wrapper));
                     uint image = 0;
                     Assert.AreEqual(0, resource(channel, 95, &image));
-                    byte[] sourcePacket = new byte[16];
+                    byte[] sourcePacket = new byte[8 + IntPtr.Size];
                     MemoryMarshal.Write(sourcePacket.AsSpan(), 0x0cu);
                     MemoryMarshal.Write(sourcePacket.AsSpan(4), image);
                     MemoryMarshal.Write(sourcePacket.AsSpan(8), wrapper);
@@ -232,10 +275,45 @@ public sealed unsafe partial class D3DImageTests
             *(ulong*)(target + 8) = (ulong)window;
             *(uint*)(target + 32) = 32; *(uint*)(target + 36) = 16;
             *(float*)(target + 52) = 1;
+            if (official)
+            {
+                *(uint*)(target + 56) = 12;
+                int protocolContext = 0;
+                foreach (int value in new[] { -1, -2, -3, -4 })
+                    if (AreDpiAwarenessContextsEqual(GetWindowDpiAwarenessContext(window), value) != 0) protocolContext = value;
+                Assert.AreNotEqual(0, protocolContext);
+                *(int*)(target + 72) = protocolContext;
+                *(double*)(target + 76) = GetDpiForWindow(window) / 96.0;
+                *(double*)(target + 84) = GetDpiForWindow(window) / 96.0;
+            }
             Assert.AreEqual(0, send(target, 92, 0, channel));
             SendOutputWindowSettings(send, channel, destination, window);
-            uint* root = stackalloc uint[] { 0x35, destination, visuals[0] };
+            // HwndTarget binds its DPI transform to a separate content root, above the business visual.
+            Assert.AreEqual(0, resource(channel, 39, &contentRoot));
+            Assert.AreEqual(0, resource(channel, 66, &worldTransform));
+            Assert.AreNotEqual(0u, contentRoot);
+            Assert.AreNotEqual(0u, worldTransform);
+            ExitDiagnostics.Stage($"visual world create root={contentRoot} transform={worldTransform} child={visuals[0]}");
+            byte* matrix = stackalloc byte[60];
+            new Span<byte>(matrix, 60).Clear();
+            *(uint*)matrix = 0x77;
+            *(uint*)(matrix + 4) = worldTransform;
+            double dpiScale = GetDpiForWindow(window) / 96.0;
+            *(double*)(matrix + 8) = dpiScale;
+            *(double*)(matrix + 32) = dpiScale;
+            int matrixResult = send(matrix, 60, 0, channel);
+            officialCacheObservation?.Packet(channel, new ReadOnlySpan<byte>(matrix, 60), matrixResult);
+            officialCacheObservation?.Record("target-resource-graph", new { Target = destination, Hwnd = (long)window, Channel = (long)channel, Root = contentRoot, Transform = worldTransform, Child = visuals[0], Secondary = visuals[1], TargetHex = Convert.ToHexString(new ReadOnlySpan<byte>(target, 92)), SubmittedWorld = new[] { dpiScale, 0.0, 0.0, dpiScale, 0.0, 0.0 }, TargetWidth = 32, TargetHeight = 16 });
+            Assert.AreEqual(0, matrixResult);
+            ExitDiagnostics.Stage($"visual world update transform={worldTransform} M11={dpiScale:R} M22={dpiScale:R} size=60 animation=0");
+            uint* transform = stackalloc uint[] { 0x1c, contentRoot, worldTransform };
+            Assert.AreEqual(0, send(transform, 12, 0, channel));
+            uint* child = stackalloc uint[] { 0x26, contentRoot, visuals[0], 0 };
+            Assert.AreEqual(0, send(child, 16, 0, channel));
+            ExitDiagnostics.Stage($"visual world bind root={contentRoot} transform={worldTransform} child={visuals[0]}");
+            uint* root = stackalloc uint[] { 0x35, destination, contentRoot };
             Assert.AreEqual(0, send(root, 12, 0, channel));
+            ExitDiagnostics.Stage($"visual world SetRoot target={destination} root={contentRoot}");
             if (multipleDevices)
             {
                 secondWindow = CreateOutputWindow("Second cache device", 100, 40);
@@ -254,6 +332,11 @@ public sealed unsafe partial class D3DImageTests
             int initialCommitResult = commit(channel);
             ExitDiagnostics.Stage($"visual commit returned HRESULT=0x{initialCommitResult:X8}");
             Assert.AreEqual(0, initialCommitResult);
+            if (official)
+            {
+                Assert.AreEqual(0, flush(channel));
+                foreach (uint image in officialImages) JhPresentImage(send, commit, flush, channel, image);
+            }
             ExitDiagnostics.Stage("visual commit after; bitmap0 release before");
             Release(bitmaps[0]);
             bitmaps[0] = 0;
@@ -261,7 +344,9 @@ public sealed unsafe partial class D3DImageTests
             for (int frame = 0; frame < 2; frame++)
             {
                 ExitDiagnostics.Stage($"visual frame {frame} present before");
-                Assert.AreEqual(0, present(connection), "Two-input Present");
+                int frameResult = official ? flush(channel) : present(connection);
+                officialCacheObservation?.Record("initial-frame-flush", new { Frame = frame, HResult = frameResult, Channel = (long)channel, Hwnd = (long)window });
+                Assert.AreEqual(0, frameResult, "Two-input Present");
                 ExitDiagnostics.Stage($"visual frame {frame} present after");
                 Assert.AreEqual(0, DwmFlush());
                 AssertCombinedPixel(window, expected);
@@ -291,10 +376,13 @@ public sealed unsafe partial class D3DImageTests
                     Assert.AreNotEqual(0, GetClientRect(window, out WindowRectangle resized));
                     Assert.AreEqual(width, resized.Right - resized.Left);
                     Assert.AreEqual(24, resized.Bottom - resized.Top);
+                    ExitDiagnostics.Stage($"visual resize official={official} client={resized.Right - resized.Left}x{resized.Bottom - resized.Top} settings before");
                     SendOutputWindowSettings(send, channel, destination, window);
                     Assert.AreEqual(0, close(channel));
                     Assert.AreEqual(0, commit(channel));
-                    Assert.AreEqual(0, present(connection));
+                    int resizePresentResult = official ? flush(channel) : present(connection);
+                    ExitDiagnostics.Stage($"visual resize width={width} export={(official ? "MilComposition_SyncFlush" : "WgxConnection_SameThreadPresent")} HRESULT=0x{resizePresentResult:X8}");
+                    Assert.AreEqual(0, resizePresentResult);
                     Assert.AreEqual(0, DwmFlush());
                     Console.WriteLine($"HardwareResize official={official} client={width}x24");
                     AssertCombinedPixel(window, expected);
@@ -335,7 +423,7 @@ public sealed unsafe partial class D3DImageTests
                 try
                 {
                     Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, nint, uint, nint*, int>)(*(void***)transactionBitmap)[8])(transactionBitmap, 0, 2, &bitmapLock));
-                    byte[] configuration = new byte[32];
+                    byte[] configuration = new byte[28];
                     MemoryMarshal.Write(configuration.AsSpan(), 0x8du);
                     MemoryMarshal.Write(configuration.AsSpan(4), hardwareMode);
                     MemoryMarshal.Write(configuration.AsSpan(8), 2.0);
@@ -357,7 +445,7 @@ public sealed unsafe partial class D3DImageTests
             }
             if (configurationRecovery)
             {
-                byte[] configuration = new byte[32];
+                byte[] configuration = new byte[28];
                 MemoryMarshal.Write(configuration.AsSpan(), 0x8du);
                 MemoryMarshal.Write(configuration.AsSpan(4), hardwareMode);
                 MemoryMarshal.Write(configuration.AsSpan(8), 1.0);
@@ -390,7 +478,7 @@ public sealed unsafe partial class D3DImageTests
                     WriteHardwareWic(replacementBitmap, changedColor);
                     var wrap = (delegate* unmanaged[Stdcall]<nint, nint*, int>)NativeLibrary.GetExport(module, "MilResource_CreateCWICWrapperBitmap");
                     Assert.AreEqual(0, wrap(replacementBitmap, &wrapper));
-                    byte[] packet = new byte[16];
+                    byte[] packet = new byte[8 + IntPtr.Size];
                     MemoryMarshal.Write(packet.AsSpan(), 0x0cu);
                     MemoryMarshal.Write(packet.AsSpan(4), secondaryImage);
                     MemoryMarshal.Write(packet.AsSpan(8), wrapper);
@@ -401,29 +489,56 @@ public sealed unsafe partial class D3DImageTests
             else
             {
                 Assert.AreEqual(0, dirty(0, 0, 12, 1, bitmaps[1]));
-                PresentPacket changed = new() { Type = 0x0b, Handle = secondaryImage };
-                Assert.AreEqual(0, send(&changed, (uint)sizeof(PresentPacket), 0, channel));
+                if (!official)
+                {
+                    PresentPacket changed = new() { Type = 0x0b, Handle = secondaryImage };
+                    Assert.AreEqual(0, send(&changed, (uint)sizeof(PresentPacket), 0, channel));
+                }
             }
             Assert.AreEqual(0, close(channel));
             Assert.AreEqual(0, commit(channel));
+            if (official) JhPresentImage(send, commit, flush, channel, secondaryImage);
             Release(bitmaps[1]);
             bitmaps[1] = 0;
             for (int frame = 0; frame < 2; frame++)
             {
-                Assert.AreEqual(0, present(connection), "Present after secondary mutation and caller release");
+                Assert.AreEqual(0, official ? flush(channel) : present(connection), "Present after secondary mutation and caller release");
                 Assert.AreEqual(0, DwmFlush());
                 AssertCombinedPixel(window, geometryConsumer
                     ? color == 0xff00ff00u ? 0x00ff0000u : 0x0000ff00u
                     : color == 0 ? expected
                         : color == 0xff00ff00u ? 0x00ff0080u : 0x0000ff80u);
             }
+            businessCompleted = true;
         }
         finally
         {
+            if (channel != 0) officialCacheObservation?.DrainAfterResult(module, channel, businessCompleted);
+            officialCacheObservation = null;
+            if (channel != 0 && (worldTransform != 0 || contentRoot != 0))
+            {
+                if (worldTransform != 0)
+                {
+                    int deleted = 0;
+                    RecordCleanup("release world transform", releaseResource(channel, worldTransform, &deleted));
+                    ExitDiagnostics.Stage($"visual cleanup world transform={worldTransform} deleted={deleted}");
+                    if (deleted != 1) cleanupFailures.Add($"world transform deleted: {deleted}");
+                }
+                if (contentRoot != 0)
+                {
+                    int deleted = 0;
+                    RecordCleanup("release content root", releaseResource(channel, contentRoot, &deleted));
+                    ExitDiagnostics.Stage($"visual cleanup content root={contentRoot} deleted={deleted}");
+                    if (deleted != 1) cleanupFailures.Add($"content root deleted: {deleted}");
+                }
+                RecordCleanup("world release close", close(channel));
+                RecordCleanup("world release commit", commit(channel));
+            }
             ExitDiagnostics.Stage("visual cleanup destroy channel before");
-            if (channel != 0) destroy(channel);
+            if (channel != 0) RecordCleanup("destroy", destroy(channel));
             ExitDiagnostics.Stage("visual cleanup destroy channel after; disconnect before");
-            if (connection != 0) disconnect(connection);
+            if (connection != 0) RecordCleanup("disconnect", disconnect(connection));
+            if (initialized) RecordCleanup("deinitialize", deinitialize());
             ExitDiagnostics.Stage("visual cleanup disconnect after; surfaces before");
             for (int i = 1; i >= 0; i--)
             {
@@ -439,8 +554,9 @@ public sealed unsafe partial class D3DImageTests
             ExitDiagnostics.Stage("visual cleanup device after; windows before");
             if (secondWindow != 0) DestroyWindow(secondWindow);
             if (window != 0) DestroyWindow(window);
-            if (lazyStream != 0) Assert.AreEqual(1, streamDisposals);
-            ExitDiagnostics.Stage("visual cleanup complete");
+            if (lazyStream != 0 && streamDisposals != 1) cleanupFailures.Add($"streamDisposals: {streamDisposals}");
+            ExitDiagnostics.Stage("visual cleanup complete: " + string.Join("; ", cleanupFailures));
+            if (businessCompleted) Assert.IsEmpty(cleanupFailures, string.Join("; ", cleanupFailures));
         }
     }
 
@@ -461,12 +577,27 @@ public sealed unsafe partial class D3DImageTests
         nint dc = GetDC(window);
         try
         {
+#if NATIVE_OBSERVATION_CONTRACT
+            nativeObservation?.BeforePixel(window, dc);
+#endif
             uint actual = GetPixel(dc, 16, 8);
+#if NATIVE_OBSERVATION_CONTRACT
+            nativeObservation?.Pixel(actual, expected);
+#endif
+            officialCacheObservation?.Record("pixel", new { Hwnd = (long)window, X = 16, Y = 8, Expected = expected, Actual = actual });
             Console.WriteLine($"Two-input pixel expected=0x{expected:X8} actual=0x{actual:X8}");
             for (int shift = 0; shift < 24; shift += 8)
                 Assert.IsTrue(Math.Abs((int)((actual >> shift) & 255) - (int)((expected >> shift) & 255)) <= 1, $"Pixel 0x{actual:X8}, expected 0x{expected:X8}");
         }
-        finally { ReleaseDC(window, dc); }
+        finally
+        {
+#if NATIVE_OBSERVATION_CONTRACT
+            int released = ReleaseDC(window, dc);
+            nativeObservation?.Released("window", released);
+#else
+            ReleaseDC(window, dc);
+#endif
+        }
     }
 
     private static void BindTwoInputEffect(delegate* unmanaged[Stdcall]<nint, uint, uint*, int> resource,
@@ -492,7 +623,7 @@ public sealed unsafe partial class D3DImageTests
         {
             uint mode = 0;
             Assert.AreEqual(0, resource(channel, 94, &mode));
-            packet = new byte[32];
+            packet = new byte[28];
             MemoryMarshal.Write(packet.AsSpan(0), 0x8du); MemoryMarshal.Write(packet.AsSpan(4), mode);
             MemoryMarshal.Write(packet.AsSpan(8), 1.0);
             SendSamplerPacket(send, channel, packet);
@@ -530,6 +661,10 @@ public sealed unsafe partial class D3DImageTests
     private static void SendSamplerPacket(delegate* unmanaged[Stdcall]<void*, uint, byte, nint, int> send, nint channel, byte[] packet)
     {
         fixed (byte* pointer = packet)
-            Assert.AreEqual(0, send(pointer, (uint)packet.Length, 0, channel), $"Command 0x{BitConverter.ToUInt32(packet):X}, {packet.Length} bytes");
+        {
+            int hr = send(pointer, (uint)packet.Length, 0, channel);
+            officialCacheObservation?.Packet(channel, packet, hr);
+            Assert.AreEqual(0, hr, $"Command 0x{BitConverter.ToUInt32(packet):X}, {packet.Length} bytes");
+        }
     }
 }

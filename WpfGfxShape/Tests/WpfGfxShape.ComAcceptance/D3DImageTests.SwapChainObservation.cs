@@ -23,11 +23,46 @@ public sealed unsafe partial class D3DImageTests
     private static void PresentNativeControl(nint window, nint device, bool extended)
     {
         Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint, nint, uint, uint, float, uint, int>)(*(void***)device)[43])(device, 0, 0, 1, 0xff123456, 1, 0));
-        int result = extended
+#if ORIGINAL_PRESENT_DXGKRNL
+        bool traceCompleteEntered = false, traceCompleteReturned = false;
+        try
+        {
+#endif
+        int result;
+#if ORIGINAL_PRESENT_SYSTEM_TRACE
+        originalPresentTrace?.Before(window, device, extended);
+        int? traceResult = null;
+        try
+        {
+#endif
+        result = extended
             ? ((delegate* unmanaged[Stdcall]<nint, nint, nint, nint, nint, uint, int>)(*(void***)device)[121])(device, 0, 0, window, 0, 0)
             : ((delegate* unmanaged[Stdcall]<nint, nint, nint, nint, nint, int>)(*(void***)device)[17])(device, 0, 0, window, 0);
+#if ORIGINAL_PRESENT_SYSTEM_TRACE
+        traceResult = result;
+        }
+        finally
+        {
+            long traceAfterQpc = System.Diagnostics.Stopwatch.GetTimestamp();
+            originalPresentTrace?.After(traceAfterQpc, traceResult);
+        }
+#endif
+        if (extended && result == 0x08760878)
+            LogOccludedDeviceState(window, device, result);
         Assert.AreEqual(0, result);
+#if ORIGINAL_PRESENT_DXGKRNL
+        traceCompleteEntered = true;
+#endif
         CompleteNativePresent(device, window);
+#if ORIGINAL_PRESENT_DXGKRNL
+        traceCompleteReturned = true;
+        }
+        finally
+        {
+            long traceCompleteExitQpc = System.Diagnostics.Stopwatch.GetTimestamp();
+            originalPresentTrace?.CompleteExit(traceCompleteExitQpc, traceCompleteEntered, traceCompleteReturned);
+        }
+#endif
     }
 
     private static void LogNativeSwapChain(nint window, nint device)

@@ -14,6 +14,7 @@ internal static partial class Program
         new RenderTargetBitmap(1, 1, 96, 96, PixelFormats.Pbgra32).Render(new DrawingVisual());
         var set = (delegate* unmanaged[Stdcall]<int, void>)NativeLibrary.GetExport(module, "WpfGfx_SetDisableBoundsCheckProtection");
         var observations = new List<object>();
+        Evidence["shaderBoundaryConsumers"] = BoundsConsumers;
         try
         {
             observations.Add(new { mode = "default", pixel = RenderBoundsShader([0xffff0200, 0x02000001, 0x800f0800, 0xa0e40000, 0xffff]) });
@@ -42,9 +43,17 @@ internal static partial class Program
         Evidence["shaderBounds"] = observations;
     }
 
+    private static readonly List<object> BoundsConsumers = [];
+
     private static uint RenderBoundsShader(uint[] words)
     {
-        using var stream = new MemoryStream(MemoryMarshal.AsBytes(words.AsSpan()).ToArray());
+        byte[] bytes = MemoryMarshal.AsBytes(words.AsSpan()).ToArray();
+        int invalidEvents = 0;
+        EventHandler onInvalid = (_, _) => invalidEvents++;
+        PixelShader.InvalidPixelShaderEncountered += onInvalid;
+        try
+        {
+        using var stream = new MemoryStream(bytes);
         var shader = new PixelShader { ShaderRenderMode = ShaderRenderMode.SoftwareOnly };
         shader.SetStreamSource(stream);
         var visual = new DrawingVisual { Effect = new BoundsEffect(shader) };
@@ -53,7 +62,15 @@ internal static partial class Program
         bitmap.Render(visual);
         uint[] pixels = new uint[16];
         bitmap.CopyPixels(pixels, 16, 0);
+        BoundsConsumers.Add(new { size = bytes.Length, wordCount = words.Length,
+            sha256 = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(bytes)),
+            firstToken = words[0], lastToken = words[^1], pixels, invalidEvents,
+            source = "RenderTargetBitmap.CopyPixels", managedHResult = 0,
+            nativeHResult = "not exposed by RenderTargetBitmap.Render" });
+        visual.Effect = null;
         return pixels[0];
+        }
+        finally { PixelShader.InvalidPixelShaderEncountered -= onInvalid; }
     }
 
     private sealed class BoundsEffect : ShaderEffect

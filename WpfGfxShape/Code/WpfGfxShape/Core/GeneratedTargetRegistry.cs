@@ -3,7 +3,6 @@ namespace WpfGfxShape.Core;
 internal sealed class GeneratedTargetRegistry
 {
     private readonly List<GeneratedTargetResource> _targets = [];
-
     internal void Add(GeneratedTargetResource target)
     {
         // Reserve before acquiring ownership so allocation failure cannot leak a reference.
@@ -22,7 +21,7 @@ internal sealed class GeneratedTargetRegistry
 
     internal bool HasPresentableTargets => _targets.Any(static target => target.CanPresent);
 
-    internal int Render(bool signalPresent = true)
+    internal int Render(bool signalPresent = true, Action<int>? presentResult = null)
     {
         GeneratedTargetResource[] targets = [.. _targets];
         foreach (GeneratedTargetResource target in targets) target.AddRef();
@@ -30,7 +29,8 @@ internal sealed class GeneratedTargetRegistry
         {
             foreach (GeneratedTargetResource target in targets)
             {
-                int result = target.Render(signalPresent);
+                int result = target.Render(signalPresent, out bool windowPresented);
+                if (windowPresented && result == 0) presentResult?.Invoke(result);
                 if (result < 0) return result;
             }
             return 0;

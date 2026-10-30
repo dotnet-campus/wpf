@@ -1,5 +1,7 @@
 # E2E-08 媒体方法族：真实公开路径有限收口
 
+> 历史证据：用户已撤销“合法第二wpfgfx模块”提供生产媒体的许可及排程。下文委托模式视频绿不认证独立媒体。生产委托已删除，普通媒体 E_NOTIMPL；独立后端全部 Open / NotImplemented，完整替换 Open。见[删除报告](replacement-remove-original-media-delegation.md)。
+
 ## 身份、构建与本轮范围
 
 2026-10-15 Windows x64 / .NET WindowsDesktop 10.0.1 建设版；不是目标10.0.12验收。本轮未改生产代码、未重新publish生产AOT或COM包。现有生产候选SHA256为 `9FDFE101BB27928DB76F2F1EBD2F25C7362CE3502303EE1AC305879897CA7EC8`；原版/系统媒体服务为 `94C06484D001F33EE651F993ACB257DEBA59F06B4D924C06100B3AFF3ECA680F`。PresentationCore为 `605FD26A2D1DF0D81B3DE3CB233365DC6091EC7C72C48B22FB805819C8F57654`。

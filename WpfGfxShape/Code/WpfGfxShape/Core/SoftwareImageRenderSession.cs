@@ -70,6 +70,7 @@ internal sealed unsafe class SoftwareImageRenderSession : IDisposable
             || rowBytes > int.MaxValue || (ulong)_width * _height * (floating ? 16u : 4u) > int.MaxValue
             || stride < rowBytes || required > size)
             return Direct3D9Factory.InvalidArgumentHResult;
+        JpBrushTrace.Record("Session.Initialize.buffer", hr, $"target={target};bitmap={_bitmap};lock={_bitmapLock};pixels={(nint)pixels};size={size};stride={stride};actual={w}x{h};requested={width}x{height};format={format}");
         _renderer = new(pixels, size, stride, _width, _height, floating);
         return 0;
     }

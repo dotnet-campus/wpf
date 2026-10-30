@@ -17,8 +17,263 @@
     <AotRuntimeIdentifier Condition="'$(AotRuntimeIdentifier)' == ''">win-x64</AotRuntimeIdentifier>
     <AotDllPath Condition="'$(AotDllPath)' == ''">$(MSBuildThisFileDirectory)../../artifacts/publish/WpfGfxShape/Release/$(AotRuntimeIdentifier)/wpfgfx_cor3.dll</AotDllPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'CacheConsumerSymbolPreparation'">
+    <DefineConstants>$(DefineConstants);SAMPLER_OFFLINE_SYMBOLS;CACHE_CONSUMER_SYMBOL_PREPARATION</DefineConstants>
+    <Optimize>true</Optimize>
+    <SelfContained>true</SelfContained>
+    <ComAcceptanceSandbox>true</ComAcceptanceSandbox>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)owned-desktop-full-x64-r1/clean/Native/wpfgfx_cor3.dll</AotDllPath>
+    <ComAcceptancePackageDirectory>$(WpfGfxShapeArtifactsRoot)cache-consumer-recovery-r1/clean/</ComAcceptancePackageDirectory>
+    <PublishDir>$(WpfGfxShapeArtifactsRoot)cache-consumer-recovery-r1/publish/</PublishDir>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'CacheConsumerSymbolPreparation'">
+    <None Include="$(WpfGfxShapeArtifactsRoot)cache-consumer-recovery-r1/symbol-readback/Results/cache-consumer-symbol-preparation/wpfgfx_cor3.pdb" Link="inputs/wpfgfx_cor3.pdb" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <Target Name="PinCacheConsumerPreparationFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'CacheConsumerSymbolPreparation'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'ControlledDesktopFull'">
+    <DefineConstants>$(DefineConstants);SANDBOX_DESKTOP_DIAGNOSTIC</DefineConstants>
+    <Optimize>true</Optimize>
+    <SelfContained>true</SelfContained>
+    <ComAcceptanceSandbox>true</ComAcceptanceSandbox>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+  </PropertyGroup>
+  <Target Name="PinControlledDesktopFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'ControlledDesktopFull'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'SandboxDesktopDiagnostic'">
+    <DefineConstants>$(DefineConstants);SANDBOX_DESKTOP_DIAGNOSTIC</DefineConstants>
+    <Optimize>true</Optimize>
+    <SelfContained>true</SelfContained>
+    <ComAcceptanceSandbox>true</ComAcceptanceSandbox>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)latest-contract-default-x64-r1/clean/Native/wpfgfx_cor3.dll</AotDllPath>
+    <ComAcceptancePackageDirectory>$(WpfGfxShapeArtifactsRoot)owned-desktop-x64-r1/clean/</ComAcceptancePackageDirectory>
+    <PublishDir>$(WpfGfxShapeArtifactsRoot)owned-desktop-x64-r1/publish/</PublishDir>
+  </PropertyGroup>
+  <Target Name="PinSandboxDesktopFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'SandboxDesktopDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'WicOwnerOfflineSymbols'">
+    <DefineConstants>$(DefineConstants);SAMPLER_OFFLINE_SYMBOLS;WIC_OWNER_OFFLINE_SYMBOLS</DefineConstants>
+    <Optimize>true</Optimize>
+    <SelfContained>true</SelfContained>
+    <ComAcceptanceSandbox>true</ComAcceptanceSandbox>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)cache-packet-fix-x86-r1/clean/Native/wpfgfx_cor3.dll</AotDllPath>
+    <ComAcceptancePackageDirectory>$(WpfGfxShapeArtifactsRoot)wic-owner-offline-x86-r1/clean/</ComAcceptancePackageDirectory>
+    <PublishDir>$(WpfGfxShapeArtifactsRoot)wic-owner-offline-x86-r1/publish/</PublishDir>
+  </PropertyGroup>
+  <Target Name="PinWicOfflineFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'WicOwnerOfflineSymbols'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <ItemGroup Condition="'$(Configuration)' == 'WicOwnerOfflineSymbols'">
+    <Content Include="$(WpfGfxShapeArtifactsRoot)wic-final-release-owner-x86-r1/official-o6-readback/Results/wic-final-release-owner.json" Link="inputs/wic-final-release-owner.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(WpfGfxShapeArtifactsRoot)wic-final-release-owner-x86-r1/official-o6-readback/wpfgfx_cor3.dll" Link="inputs/wpfgfx_cor3.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="PackageWicOfflineInputs" AfterTargets="PackageSelfContainedComAcceptance" Condition="'$(Configuration)' == 'WicOwnerOfflineSymbols'">
+    <Copy SourceFiles="$(PublishDir)inputs/wic-final-release-owner.json;$(PublishDir)inputs/wpfgfx_cor3.dll" DestinationFolder="$(ComAcceptancePackageDirectory)inputs/" />
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'WicFinalReleaseOwnerDiagnostic'">
+    <DefineConstants>$(DefineConstants);WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC</DefineConstants>
+    <Optimize>true</Optimize>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+  </PropertyGroup>
+  <Target Name="PinWicOwnerFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'WicFinalReleaseOwnerDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'SandboxForegroundControlDiagnostic'">
+    <DefineConstants>$(DefineConstants);SANDBOX_FOREGROUND_CONTROL_DIAGNOSTIC</DefineConstants>
+    <Optimize>true</Optimize>
+    <SelfContained>true</SelfContained>
+    <ComAcceptanceSandbox>true</ComAcceptanceSandbox>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+  </PropertyGroup>
+  <Target Name="PinSandboxForegroundFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'SandboxForegroundControlDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'SamplerNativeCrashR2'">
+    <Optimize>true</Optimize>
+    <SamplerCrashDiagnostic>true</SamplerCrashDiagnostic>
+    <DefineConstants>$(DefineConstants);SAMPLER_OFFLINE_SYMBOLS</DefineConstants>
+    <ComAcceptanceSandbox>true</ComAcceptanceSandbox>
+    <SelfContained>true</SelfContained>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)final-candidate-major-x64-r1/clean/Native/wpfgfx_cor3.dll</AotDllPath>
+    <ComAcceptancePackageDirectory>$(WpfGfxShapeArtifactsRoot)sampler-native-crash-x64-r7/clean/</ComAcceptancePackageDirectory>
+    <PublishDir>$(WpfGfxShapeArtifactsRoot)sampler-native-crash-x64-r7/publish/</PublishDir>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'SamplerNativeCrashR2'">
+    <Content Include="$(WpfGfxShapeArtifactsRoot)sampler-native-crash-x64-r4/clean/wpfgfx_cor3.dll" Link="wpfgfx_cor3.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(WpfGfxShapeArtifactsRoot)sampler-native-crash-x64-r4/symbol-canonical-readback/Results/sampler-offline-symbols/wpfgfx_cor3.pdb" Link="wpfgfx_cor3.pdb" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'SamplerNativeCrashR2'">
+    <Content Include="$(WpfGfxShapeArtifactsRoot)sampler-native-crash-x64-r3/readback/Results/sampler-native-crash-r3/second-chance-9876-168-context.json" Link="inputs/context.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(WpfGfxShapeArtifactsRoot)sampler-native-crash-x64-r3/readback/Results/sampler-native-crash-r3/second-chance-9876-168.dmp" Link="inputs/original.dmp" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(WpfGfxShapeArtifactsRoot)sampler-native-crash-x64-r3/readback/Results/sampler-native-crash-r3/second-chance-9876-168-exception.json" Link="inputs/exception.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="PackageSamplerOfflineInputs" AfterTargets="PackageSelfContainedComAcceptance" Condition="'$(Configuration)' == 'SamplerNativeCrashR2'">
+    <Copy SourceFiles="$(PublishDir)wpfgfx_cor3.dll;$(PublishDir)wpfgfx_cor3.pdb" DestinationFolder="$(ComAcceptancePackageDirectory)" />
+    <Copy SourceFiles="$(PublishDir)inputs/context.json;$(PublishDir)inputs/original.dmp;$(PublishDir)inputs/exception.json" DestinationFolder="$(ComAcceptancePackageDirectory)inputs/" />
+    <WriteLinesToFile File="$(ComAcceptancePackageDirectory)package-files.txt" Lines="wpfgfx_cor3.dll;wpfgfx_cor3.pdb;inputs/context.json;inputs/original.dmp;inputs/exception.json" Overwrite="false" />
+  </Target>
+  <Target Name="PinSamplerCrashFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(SamplerCrashDiagnostic)' == 'true'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'RuntimeHeapOwnerDiagnostic'">
+    <DefineConstants>$(DefineConstants);RESOURCE_LIFECYCLE_TREND;RESOURCE_LIFECYCLE_HANDLE_TYPES;RUNTIME_HEAP_OWNER_DIAGNOSTIC</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+    <AotRuntimeIdentifier>win-x64</AotRuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'ResourceLifecycleHandleTypesDiagnostic'">
+    <DefineConstants>$(DefineConstants);RESOURCE_LIFECYCLE_TREND;RESOURCE_LIFECYCLE_HANDLE_TYPES</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+    <AotRuntimeIdentifier>win-x64</AotRuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'ResourceLifecycleTrendDiagnostic'">
+    <DefineConstants>$(DefineConstants);RESOURCE_LIFECYCLE_TREND</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+    <AotRuntimeIdentifier>win-x86</AotRuntimeIdentifier>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)postfailure-source-rebuild-x86-r1/native/wpfgfx_cor3.dll</AotDllPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'OriginalPresentDxgKrnlDiagnostic'">
+    <DefineConstants>$(DefineConstants);ORIGINAL_PRESENT_SYSTEM_TRACE;ORIGINAL_PRESENT_DXGKRNL</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+    <IntermediateOutputPath>$(WpfGfxShapeArtifactsRoot)original-present-dxgkrnl-stageA/obj/$(Configuration)/$(TargetFramework)/$(RuntimeIdentifier)/</IntermediateOutputPath>
+    <OutputPath>$(WpfGfxShapeArtifactsRoot)original-present-dxgkrnl-stageA/bin/</OutputPath>
+    <AotRuntimeIdentifier>win-x86</AotRuntimeIdentifier>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)postfailure-source-rebuild-x86-r1/native/wpfgfx_cor3.dll</AotDllPath>
+  </PropertyGroup>
+  <Target Name="PinOriginalPresentDxgKrnlFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'OriginalPresentDxgKrnlDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'DxgKrnlOfflineTdhDiagnostic'">
+    <DefineConstants>$(DefineConstants);ORIGINAL_PRESENT_OFFLINE_TDH;DXGKRNL_OFFLINE_TDH</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+    <IntermediateOutputPath>$(WpfGfxShapeArtifactsRoot)dxgkrnl-offline-x86-r1/obj/$(Configuration)/$(TargetFramework)/$(RuntimeIdentifier)/</IntermediateOutputPath>
+    <OutputPath>$(WpfGfxShapeArtifactsRoot)dxgkrnl-offline-x86-r1/bin/</OutputPath>
+    <AotRuntimeIdentifier>win-x86</AotRuntimeIdentifier>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)postfailure-source-rebuild-x86-r1/native/wpfgfx_cor3.dll</AotDllPath>
+  </PropertyGroup>
+  <Target Name="PinDxgKrnlOfflineFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'DxgKrnlOfflineTdhDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <ItemGroup Condition="'$(Configuration)' == 'DxgKrnlOfflineTdhDiagnostic'">
+    <Content Include="$(WpfGfxShapeArtifactsRoot)original-present-dxgkrnl-x86-r1/readback/Results/WpfGfxShape-OriginalPresent-b56df1ea692949ed9f4b0f7e93364ff2/original-present.etl" Link="inputs/original-present.etl" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(WpfGfxShapeArtifactsRoot)original-present-dxgkrnl-x86-r1/readback/Results/WpfGfxShape-OriginalPresent-b56df1ea692949ed9f4b0f7e93364ff2/controller.json" Link="inputs/controller.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'OriginalPresentOfflineTdhDiagnostic'">
+    <DefineConstants>$(DefineConstants);ORIGINAL_PRESENT_OFFLINE_TDH</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+    <IntermediateOutputPath>$(WpfGfxShapeArtifactsRoot)original-present-offline-tdh-x86-r2/obj/$(Configuration)/$(TargetFramework)/$(RuntimeIdentifier)/</IntermediateOutputPath>
+    <OutputPath>$(WpfGfxShapeArtifactsRoot)original-present-offline-tdh-x86-r2/bin/</OutputPath>
+    <AotRuntimeIdentifier>win-x86</AotRuntimeIdentifier>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)postfailure-source-rebuild-x86-r1/native/wpfgfx_cor3.dll</AotDllPath>
+  </PropertyGroup>
+  <Target Name="PinOriginalPresentOfflineFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'OriginalPresentOfflineTdhDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <ItemGroup Condition="'$(Configuration)' == 'OriginalPresentOfflineTdhDiagnostic'">
+    <Content Include="$(WpfGfxShapeArtifactsRoot)original-present-raw-etl-x86-r1/readback/Results/WpfGfxShape-OriginalPresent-8b2f6187eae44b42b5943845c2b10127/original-present.etl" Link="inputs/original-present.etl" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(WpfGfxShapeArtifactsRoot)original-present-raw-etl-x86-r1/readback/Results/WpfGfxShape-OriginalPresent-8b2f6187eae44b42b5943845c2b10127/controller.json" Link="inputs/controller.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'OriginalPresentSystemTraceDiagnostic'">
+    <DefineConstants>$(DefineConstants);ORIGINAL_PRESENT_SYSTEM_TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+    <BaseIntermediateOutputPath>$(WpfGfxShapeArtifactsRoot)original-present-raw-etl-stage1/obj/</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(WpfGfxShapeArtifactsRoot)original-present-raw-etl-stage1/obj/$(Configuration)/$(TargetFramework)/$(RuntimeIdentifier)/</IntermediateOutputPath>
+    <OutputPath>$(WpfGfxShapeArtifactsRoot)original-present-raw-etl-stage1/bin/</OutputPath>
+    <AotRuntimeIdentifier>win-x86</AotRuntimeIdentifier>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)postfailure-source-rebuild-x86-r1/native/wpfgfx_cor3.dll</AotDllPath>
+  </PropertyGroup>
+  <Target Name="PinOriginalPresentTraceFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'OriginalPresentSystemTraceDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'NativePaintBaselineDiagnostic'">
+    <DefineConstants>$(DefineConstants);NATIVE_PAINT_BASELINE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+    <BaseIntermediateOutputPath>$(WpfGfxShapeArtifactsRoot)native-paint-baseline-x86-r1/obj/</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(WpfGfxShapeArtifactsRoot)native-paint-baseline-x86-r1/obj/$(Configuration)/$(TargetFramework)/$(RuntimeIdentifier)/</IntermediateOutputPath>
+    <OutputPath>$(WpfGfxShapeArtifactsRoot)native-paint-baseline-x86-r1/bin/</OutputPath>
+    <AotRuntimeIdentifier>win-x86</AotRuntimeIdentifier>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)postfailure-source-rebuild-x86-r1/native/wpfgfx_cor3.dll</AotDllPath>
+  </PropertyGroup>
+  <Target Name="PinNativePaintBaselineFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'NativePaintBaselineDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'NativeObservationDiagnostic'">
+    <DefineConstants>$(DefineConstants);NATIVE_OBSERVATION_CONTRACT</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  <Target Name="PinNativeObservationFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'NativeObservationDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'OfficialCacheFirstFrameDiagnostic'">
+    <DefineConstants>$(DefineConstants);OFFICIAL_CACHE_FIRSTFRAME</DefineConstants>
+    <Optimize>true</Optimize>
+    <ComAcceptanceSandbox>true</ComAcceptanceSandbox>
+    <SelfContained>true</SelfContained>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)final-candidate-major-x64-r1/clean/Native/wpfgfx_cor3.dll</AotDllPath>
+    <ComAcceptancePackageDirectory>$(WpfGfxShapeArtifactsRoot)official-cache-firstframe-r5/clean/</ComAcceptancePackageDirectory>
+    <PublishDir>$(WpfGfxShapeArtifactsRoot)official-cache-firstframe-r5/publish/</PublishDir>
+  </PropertyGroup>
+  <Target Name="PinOfficialCacheFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'OfficialCacheFirstFrameDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'ConsumerDirectDiagnostic'">
+    <DefineConstants>$(DefineConstants);CONSUMER_DIRECT_DIAGNOSTIC</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  <Target Name="PinDirectConsumerFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'ConsumerDirectDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
   <ItemGroup>
     <Compile Include="../../Code/WpfGfxShape/Core/SoftwareFillBezier.cs" Link="FillInteger/SoftwareFillBezier.cs" />
+    <Compile Include="../../Code/WpfGfxShape/Core/Av/MediaFoundationSample.cs" Link="MediaFoundation/MediaFoundationSample.cs" />
+    <Compile Include="../WpfGfxShape.Tests/MediaFoundationResourceTests.cs" Link="MediaFoundation/MediaFoundationResourceTests.cs" />
     <PackageReference Include="MSTest" Version="4.0.1" />
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
     <Using Include="System.IO" />
@@ -32,6 +287,10 @@
     <AssemblyMetadata Include="AotDllPath" Value="$([System.IO.Path]::GetFullPath('$(AotDllPath)'))" Condition="'$(ComAcceptanceSandbox)' != 'true'" />
     <AssemblyMetadata Include="CalibrationResultsPath" Value="Results" Condition="'$(ComAcceptanceSandbox)' == 'true'" />
     <AssemblyMetadata Include="AotDllPath" Value="Native/wpfgfx_cor3.dll" Condition="'$(ComAcceptanceSandbox)' == 'true'" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(JkReadbackInputs)' == 'true'">
+    <None Include="../../artifacts/jh-com-full-convergence/readback/full-x64/Results/jh-full-x64/TestResults/child.trx" Link="inputs/x64.trx" CopyToPublishDirectory="Always" />
+    <None Include="../../artifacts/jj-full-closeout/readback/full-x86/Results/jj-full-x86/TestResults/child.trx" Link="inputs/x86.trx" CopyToPublishDirectory="Always" />
   </ItemGroup>
   <Import Project="ComAcceptance.Package.targets" />
 </Project>

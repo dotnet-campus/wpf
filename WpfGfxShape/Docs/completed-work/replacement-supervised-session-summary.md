@@ -1,5 +1,296 @@
 # 监督会话汇总与未闭事项排程
 
+## KQ 审查终态：不重复HH失败探针，等待真实消费前提
+新报告 `replacement-supervised-native-consumer-gate-review.md`。已有HH原参数旧段；其整体三帧控制/官方加载超出本轮单提交1预算，不直接复跑或更名新增。未给出相对KP/HH显示条件变化，不以基线/GDI负控本身当交付前提。源码0改，build/COM publish/Native publish/沙箱/新执行/新提交均0。下一先提供真实显示消费条件的具体变化或根因证据，再授权最小精确native-only入口；原ID shader/resize未授权。
+本轮直接读到KP child.trx（枚举未列但按stdout路径映射可读），1执行0过1失败/Exit2，纠正“当前readback缺TRX”调查结论，不重跑补件。actual Native20B3F944…与test4C522922…/MVID0e30de26…来自旧实际身份原件；001E1D1C/00563412前置失败、未connect/shader/resize，cleanup无实际refs数值。本轮非新校准、非产品通过；KN历史有限保留及未闭项不变。
+
+## KP 终态：原生前置失败早停，像素未覆盖
+报告 `replacement-supervised-resize-pixel-revalidation.md` 全文。唯一task6dc44ac8fd3947b989353d9bda46b4a0，原ID1eded079…child TRX1执行0过1失败0skip/业务Exit2，BL120外180，无timeout/kill/drain；监督非MTP无parentTRX，工具无独立数值exit。实际Native20B3F944…（完整SHA见报告）、test4C5229227BD7D024ED088136AF736A6363F76E990BFE18D4D56B47359A6F6FA9/MVID0e30de26-29e5-4cf8-99da-31e012e3c4a7/.NET10.0.13 X86；实际路径SHA亲读，WPF包10.0.13但actual PresentationCore身份未记录。nativeControl d3d9/Exfalse/cooperative0、32×16，同进程可见无遮挡窗口，前置00563412实际001E1D1C。未connect/shader/resize、无FF80/FF00本次数据；cleanup路径完成不冒未建bitmap/surface refs0。前置失败立即停，原像素仍开，不判修复失败，KN双架构17/17有限保留不重跑。小normal COM build1成功133warnings0errors、正式最新默认COM x86 self-contained10.0.13发布1、Native发布0、沙箱1、源码0改。下一唯一门落实同原参数native00563412真实consumer显示前提后由主代理授权同ID定向；不随机追绿/盲改生产/full。旧full1814/40和4不相减，Available/HWbackend/真实loss/mediaresources/final四格开放，完整替换未完成，历史保留。
+
+## KO 终态：KN 正常原地生命周期有限保留独立成立
+同KL报告 `replacement-supervised-inplace-target-resize.md` KO完整终态，未新建重复报告。既有x86 task5d545020b24440a399ecb67fc967673b、x64 task5ece82eddd464ed4bbca438cb1caca41父TRX各17/17/Exit0，监督无timeout/kill/drain；各生命周期2+BW1+CK10+snapshot2+genericref2。actual Native20B3F944…/40D09398…及完整testSHA/MVID/WPF/runtime10.0.13见同报告亲读身份表；四份320行生命周期和两份22行target trace完整亲读。refs1→2→2、snapshotS_OK/non-null、设置通知[]，正常destroy callback0/701、四Release0、窗口清理保留。GetDesc32×16→64×24、GetDevice IUnknown保持及target/device/manager诊断保持，不夸独立public target assert/纯ABI全证明；actual Native含默认关闭KI诊断，业务修复不受其guard控制，默认KN测试guard闭合。
+有限源码审计无具体新反例，policy重建、失败HR与软件先建后换保留；未把所有policy/loss或原显示门当额外有限保留阻断。原FF80→FF00像素及专属Renderer创建/resize/清理全兄弟未测，已有snapshot/generic不替代。最后可读日志是KN COM x64 publish Exit0（52809字符/截前32809），不是默认solution build；其Exit/warnings总数未独立核实，不套历史数字。KO源码0改、新task/build/publish/沙箱0。下一唯一currentNative原ID1eded079-5019-809c-bf7c-07ef4caf0e29原resize像素定向；前置不过记failed/内容未覆盖，不重跑矩阵或随机变参。旧full1814/40和另4不相减，Available/HWbackend/真实loss/mediaresources/full四格仍开，完整替换未完成；历史节保留。
+
+## KM 终态：原地实现已真实发布测试，有限验收不足后精确撤回
+详同KL inplace-target-resize报告KM全文。唯一x86 task715b335434b8483e8061e4eb968e3a61，3执行2过1失败/Exit2，120/180，无timeout/kill/drain；新Native5742074481A861592ECF21487650BE06E2D785F4DF89FE378F7C448E41059D21/test208B61DCDCBF3772819AB8B888994C52D2D7A8C73308CE830B6166DEE58EEB2C/MVID1feb4656-9d95-49a7-846c-e7870b6c70d4，10.0.13。真实默认生命周期两例refs保持2/snapshotS_OK non-null/无unavailable，真实销毁callback0/701、最终四refs0；原shader显示前置001E1D1C/00563412失败，shader未覆盖。缺实际target尺寸/deviceidentity、x64及相邻组，未达有限保留，已按唯一变更表精确撤生产及默认测试，不因显示失败单独否定修复；normal撤后build成功3806warnings/0errors。Native/COM各发布成功1，沙箱1，旧红未重跑；原件/实验包保留artifacts/km-inplace-resize。下一唯一门补尺寸/deviceidentity及相邻默认回归后x86→x64有限验收。旧full1814/40及4与Available/HWbackend/loss/mediaresources/final四格开放。
+
+## KL 终态：合法初始化不能消除候选失效，生产修复未交付
+详 `replacement-supervised-inplace-target-resize.md`。唯一新x86 taskbc44de8cbadf42a69546b83411629d4d，TRX2执行2过/Exit0，BL120/外180，无timeout/kill/drain。同KK connect1/flags12/DPI1/Compose，baseline refs1→2→2/snapshot0，resize refs1→2→1/snapshotE_FAIL/null/available1→0且producer cooperative0；两cleanup四Release0/窗口销毁。Passed仅观测自洽，初始化差异不是唯一原因。候选trace关联旧target/device/manager销毁与surface清空，官方backend/LUID仍未知，不伪同adapter。actualNative625DBB10879CFDB77CAA91F9A10F37B242247026D1B2930E5532031C53A63D7F复用，test0DB1D61F3ACE84AEADDC0B42139B066D27613BA942C860A4235C9354F6F19494/MVID0e55d8dd-e823-4b22-8664-212ee99810eb，10.0.13。生产0改，仅默认关闭KL分支；COM发布1/default normal Release build1成功/131warnings/0errors，核心原件已读。原shader/x64/修复后回归均未执行，原像素门未覆盖。下一唯一动作有限原地Resize实现及默认生命周期回归，保留Notify/loss，先补容量核再每架构1组。发布前未核容量数值已披露，无diskfull/破坏清理。旧full1814/40及4及Available/HWbackend/loss/mediaresources/final四格开放，完整替换未完成，历史保留。
+
+## KK 终态：唯一官方独立生命周期控制，与KJ既有候选不同
+同KF报告KK全文；taskfbd2a0eaa7ce4521989887df58893221，x86 Release selfcontained10.0.13，BL120/外180，TRX2执行2过/失败skip0、Exit0，无timeout/kill/drain。baseline/真实32×16→64×24均refs1→2→2、snapshot0/non-null→0/non-null、cooperative0→0、设置及cleanup callback[]/0次，两cleanup四对象Release0/窗口销毁；KJ旧resize refs2→1/E_FAIL/callback1→0。实际官方5EBD18E019D7D82144EE068A7D56F47200E2D82A2121E3F3A066DAA6AC36B834，testCCE8D4CF61EF81574720BF8007A906DD48898EA95067EC711D449E895C01C629/MVID8c8511b2-21e3-45de-95e3-c50d6bad7a42；核心原件已亲读，artifacts/kk-official-resize/readback。
+公开同步SameThreadPresent合法compose非D3DImage Present；KKconnect1/flags12/DPI1与KJconnect0/flags0/DPI0有初始化差异，不冒单因子差分。官方实际HWbackend/adapter-LUID未独立读回、无consumer/shader像素，Passed仅观测自洽。源码resize secondary swapchain不重建device，候选整target/device/manager替换为最小调查点；不删正常销毁Notify。下一仅先补同合法初始化下实际backend/adapter证据，再授权原地resize与shader恢复。生产0改，仅专属KK分支及同KF/三共享，发布失败1/成功1、task1；normal无符号Release build Exit0/131warnings/0errors、默认API无KK/KJ。旧full1814/40及4与Available/HWbackend/loss/mediaresources/final四格开放，完整替换未完成；最新受改节写后回读，历史保留。
+
+## KJ 终态：非显示真实生命周期控制，未关原shader差异
+同KF报告全文。唯一task817be18724c140ef97ae1f884421c83c，x86 Release selfcontained10.0.13、BL120/外180、2执行2过/失败skip0、Exit0，无timeout/kill/drain。未resize refs2保持/快照0/无通知；生产UpdateWindowSettings32×16→64×24实际替换old target后同bitmap callback1→0、surface refs2→1、快照E_FAIL且producer cooperative0。trace关联old/new不同manager/device，old Dispose→adapter0false→surface清空/DisabledTrue；front始终0，未验consumer像素。两cleanup四对象Release0/窗口销毁完成。actualNative625DBB10879CFDB77CAA91F9A10F37B242247026D1B2930E5532031C53A63D7F、test71A52DA56E99AF7322E6D29553F1D7851FAEF014A1147C8611016B3CF93021A0/MVID674465a5-4619-44a9-a4fd-67e0c0f4a5af。独有artifacts/kj-resize-lifetime发布production成功1/COM失败3后成功1，唯一沙箱1。新增全文件KJ_RESIZE_LIFETIME默认关闭，正常无符号Release build Exit0/131warnings/0errors，默认API无KJ；生产及共享夹具/入口/打包0改。正常销毁Notify合法不删；缺同版官方同场景无显示target初始化/同步公开入口独立对照，下一仅核准此入口再另授权官方生命周期角色，不重跑原红帧。旧full1814/40及4、官方首shader/samplerAV/真实loss、Available/HWbackend/mediaresources/full四格仍开放。
+
+## KI 终态：实际唯一原候选 x86 任务停原生前置
+同KF报告已补全文。task47d17e80b1684f998423f94d76bd27db，原ID1eded079…TRX1执行/0过/1失败/0skip、Exit2，无timeout/kill/drain，filtered120/外180。native001E1D1C/00563412，未connect/resource/shader/resize；cleanup21条完成，无生产lifecycle命中。不重跑/不变参，不能裁决old-device invalid/新front/implicit透明，非工具错误。NativeAOT及默认COM x86 Release自包含10.0.13专属发布2次，回收artifacts/ki-resize-trace/readback；actualSHA BAD5BA034FB195B6136A7B82A15950510CA584C9B403DA0CF9207FE1A0CBBE84，testSHA47838C45B8FD3255DFCE89183A2B0F70439FB4F0A84C1D2F8A85C4700546D061/MVID55ac1a23-7efe-4dba-b209-6e86df5724db。保留默认关闭有界KI_RESIZE_TRACE诊断、行为修复0；原断言/VisualCache/historical/入口/打包/CF CX CY0改。正常default Release solution build成功/3675warnings/0errors，旧full1814/40及4与四格开放不变。
+
+## KH 控制终态：同KF报告，未作无据生产修复
+原版manager正常销毁亦要求NotifyDeviceLost，interop同adapter invalid释放surface/disable合同同方向。新同adapter双managed设备控制实际通过：True|True|False且survivor仍usable/manager1/0；加去重分支共3Passed/Exit0（默认Debug net10.0，仅补充）。normal Release build Exit0/2313warnings/0errors；生产0改，专属测试一处。沙箱tasks0/publish0/原trace0，无新SHA/MVID/TRX/runtime采集；缺真实COM消费与像素因果，不能认证两架构/真实loss/原shaderresize。下一唯一门是原candidate x86方法一次KH默认关闭lifetime trace。摘要artifacts/kh-resize-lifetime/managed-control.txt；历史full及Available/HWbackend/真实loss/mediaresources/full四格仍开。
+
+## KG 最新终态：官方首shader合同审查，唯一任务前置失败早停
+详replacement-supervised-official-shader-frame-contract.md。task d6ccccf4771a41f2994173e987c1a23a，x86 Release selfcontained10.0.13，完成TRX 1执行/0过/1失败/0skip、子Exit2，无timeout/kill/drain。native001E1D1C/00563412失败，尚未连接/资源/shader/resize；旧14e862b3首shader零/FF80本轮未覆盖，旧记录不是resize后坏。actual官方5EBD18…，testSHA D0D2DB…/MVID ed8991c2-4a31-4f18-82e4-0b823a8d6373，Native仅包依赖7E0936…未重发。原Present duplicate合同合法，不诱发旧IS Event0；原缺initial invalidate且ps2.0 CompileSoftwareShader0不同真实WPF1，均未验单因果。下一唯一门是前置成立后的专属合法协议首shader消费/原内容后态证据，不立即建议共享修复。仅全文件KG_OFFICIAL_SHADER_CONTRACT诊断，无default行为；最后默认无KG符号normal隔离Build成功，正常分析器。生产/共享VisualCache/historical/入口/项目打包0改，保留KF和历史。报告与三共享KG节写后回读，旧full1814/40及4、Available/HWbackend/loss/mediaresources/final四格仍开放。
+
+
+## KE 最新终态：KD核证、最终分类与交接
+沿用replacement-supervised-shader-postfix-integration.md完整终态；现有两full x64 1814/1774/40、x86 1814/1810/4，skip0、Failed/Exit2，task0fa9829009a640a3b6075cb559b55051 / 087548bed8dc4a7db312504c02debe41。父Modefull无filter、timeout/kill/drain均否，实际身份与官方10.0.13/参考生成来源已交叉核；顶层Curve角色identity不代父监督。
+final-classification.tsv/json位于artifacts/kd-shader-integration/classified/Results/kd-inventory，44记录/40唯一ID、交集4/仅x6436/仅x860；无损引用原失败Name/参数/Message/Stack/RawResult，直接阶段分类而非根因关闭。x64 23首帧+3fresh+2隔离首帧+2public像素+9Present非零状态+1loss=40；x86 AV/候选resize后差异/官方resize前差异/loss触发各1。撤销初稿按shader名称判3产品内容：真实Stack在PresentNativeControl，result141953144非零状态，未到目标内容验收。候选resize x86前帧FF80、64x24后FF00；官方resize用例实在resize前零/FF80；sampler x86 C0000005根因未明，x64子Exit2首帧失败；loss旧device未lost。下一依序候选RunVisualCacheConsumer resize绑定、官方首shader帧合同、HistoricalProcessIsolation/sampler x86 ABI/角色，未来仅精确单方法有界门。
+本次full边界两ID、KA窗口两旧ID/回归、JN Rounded/Curve、AsyncWic及Original mode7/8双架构Passed；WIC原11 x86逐项Passed、x64首帧Failed。族两架构187Passed。精确1809→1814集合diff未闭，当前新增来源3JZ+1KA+1KB；包总字节未知，不混原输入与生成回收。KE生产/测试业务0改、无新运行/build/publish/沙箱/脚本，历史与修复保留。旧managed4256两格旧身份，Available/HWbackend/loss/mediaresources/长期资源/final四格仍开放，完整替换未完成。报告及三共享受改节写后回读，历史覆盖边界登记报告，不冒称全历史审核。
+
+KE最后补记：同KD报告全文、三共享KE受改节和最终分类44行/JSON已写后回读，未新增运行，证据覆盖限制及未闭项保持。
+
+## KC 最新终态：KB shader大小边界有限保留，非全shader关闭
+同replacement-supervised-shader-size-boundary-fix.md补终态。disabled0完整字节>1048576拒绝，非零关闭大小限制；原像素预期不变，不硬填白色。KB task x64 f72497ed502b48da919068332cfc09ad / x86 c6b516b0234f4ab1a3825eada7fec4c2，各2Passed/0fail/0skip、Completed/监督Exit0，无timeout/kill/drain，原105b96c7…及新158e085b…通过。原方法两角色31组16pixels/lengthSHA首尾/flags0,1,-1,2,0及actual已核，上限红、+4开白关红；新回归复用原流程，不冒称全新oracle。actual NativeE331526…/7E0936…、官方AD1C…/5EBD…，10.0.13；新方法消费者全文未再逐行核，证据范围详报告。清理只有原流程/结束，未有shader专属弱引用或release计数；nativeHRESULT未暴露，不认证白色fallback。源码审无生产漏洞，不重发；KC仅修managed单测陈旧disabled0预期为E_FAIL，定向4Passed/Exit0默认Debug，非正式矩阵且超出仅normalbuild偏好如实登记。最终normal Release solution build2182warnings/0errors/2.64秒，无COM组重跑/旧红/full。下一唯一相关门为既有shader族必要回归，再集成full；显示/WIC原11及officialsampler x86 AV边界保留。旧full44/19不相减，四格仍开，完整替换未完成。全文报告及三共享KC节写后回读；KA/JZ/JN/JD和COM/fill/通知历史保留。
+
+## KA 最新终态：窗口专属角色及原内容有限通过
+见replacement-supervised-window-role-routing-fix.md。原170ff4ac…/1e7cbafa…双架构不再误传绝对路径return64，实际业务original/candidate完成三轮12帧零阈值、resize及cleanup。专属StartInfo role/method，父只协调，内部helper有界wait/kill/drain/finallyreceipt，不改公共路由/生产/JZ。两架构各4/4/0fail/0skip、监督Exit0/Completed，task x64 8e3fe0045dd24c5a9ca940a26e3a617f / x86 90cdc21626a5408bb613ab3db08a5f1e；新稳定回归13baa1a6…及原空旧帧负控Passed，独立业务PID/父已有通用root/未改parent环境已核。actual JR Native1782797…/1DFB337…及官方AD1C…/5EBD…，父TRX尾/监督/内容证据/事件清理亲读，角色TRX逐行已读范围见报告。默认Release build成功130warnings/0errors/1.46秒。有限保留，无撤回；原软件内容consumer通过不代表HWND呈现/HW恢复。下一唯一生产任务ShaderBounds1048580 disabled0差异，不改golden。旧full44/19不推新值，四格仍开；JZ及历史完整保留。
+
+## JZ 最新：包长修复有限保留，原11未验收通过
+完整报告replacement-supervised-wic-packet-width-fix.md。仅WIC三分配12/16及独立回归；双架构布局/合法官方与候选调用各3Passed，原11各Failed于connect前首帧001E1D1C/00563412。修前原x86包11/0/11、修后双架构各14/3/11/0skip、监督Exit2且无timeout/kill/drain。task x86 ef917552412641eca748f035e5b87c3d，x64 bd5f88556dbd40b99c1f219d81e4eba8。实际Native1DFB337…/1782797…与官方5EBD…/AD1C…、testSHA/MVID及refs0见报告亲读范围；不以新3绿替代原11。正常默认Release最终build成功130warnings/0errors/3.07秒。下一门恢复正式可见原生首帧后同11业务验收；streamDisposals若出现先保留失败并做HU官方独立case。未动生产/KA角色/释放语义，不推新full，四格开放，全部历史保留。
+
+## JY 终态：JX分类已落盘，文档收口与回读由JY完成
+完整终态见既有 `replacement-supervised-postfix-com-full.md`，不新增报告。JY读取JSON/TSV确认63条：x64 3产品+2夹具+38显示+1输入=44，x86 2产品+13夹具+2显示+1原生子崩+1输入=19；共同19/仅x64 25/仅x86 0，并集44。直接症状分类完整不等于根因全部关闭；rawReference不改，完整失败原件为 `artifacts/jv-postfix-full/inventory/Results/jj-full-inventory/x64-failures.json`、`artifacts/jv-postfix-full/inventory/Results/jj-full-inventory/x86-failures.json`，同目录summary及jx分类/对账保留。
+双full各1809，x64 1765通过/44失败，x86 1790通过/19失败，skip均0、监督Exit2/Failed。task为338d677c5e124d569bba7e296aec503e/711b804e5ab64d349dc4820eb9da75e6；父testSHA/MVID、Native及官方actual只按报告已核范围引用，JY不新审原始运行。旧managed4256独立账，不是最终四格全过；38显示直接前置不能证明产品HW无缺陷，sampler x86 AV与x64 Exit2分开，Q缺输入不是零差。七新增精确diff未闭、输入总字节未知，不阻碍当前清单交付。
+下一优先两任务并行且不重full：x86 WIC测试包长12/16修正并保留生产strictsize，后续有限验证11个精确ID；window专属角色/方法隔离，不误用输出根、不吞64、不改公共路由，后续有限验证双架构各2条。第三任务ShaderBounds真实内容边界后续处理，1048580 disabled0官方白/候选红而1048576两边红，不改golden/阈值，本轮不跑。
+此前JX“进行中”及其回读/交接完成声明仅属历史，分类已落盘但文档未闭部分由JY完成，不冒称JX已完成回读。JY仅四份既有文档修改，源码/测试/生产/项目0，新实验/build/publish/沙箱/full/终端/脚本0；写后回读报告全文及三共享最新受改节。分类与文档交付已完成，Available/HWloss/mediaresources/final仍开放，完整替换未完成。以下全部历史保留。
+
+## JU 终态：JT族已核，准入default COM双full
+完整裁决补同replacement-supervised-safe-fill-family-regression.md，不新增报告。双架构既有task1a1020b157484f18b7bcde76709390a3/6e1b7fc6bbe44cb2a6e0a3901231ca70各358/358/0skip Completed/监督Exit0，actual1782797…/1DFB337…、testSHA/MVID/.NET10.0.13及原mode7/8两ID Passed亲核。六方法DataRow共358，校准内部调用不重复计数；两官方同版actual AD1C…/5EBD…各2/2，官方输入来源核实。x86 direct450/0、solid180/0、bitmap180/0；跨格式投影57差明确保留，非同格式float oracle，不作生产全绿或full准跑无限门。首次ED34误包排除JR验收，fixed/aot正确身份原件可追；JT只读guard默认关闭，无需为full开启。JN resolver/JS有限矩形等已验修复均保留。
+既有默认Release构建摘要Exit0/129warnings/0errors/3.02秒，输出前81802字符截断如实披露；JU无源码/项目修改、无build/publish/沙箱/full或业务重跑。指定93表目录/旧TRX路径缺件不推广全盘结论、不无限寻档。明确可安排下一轮同最后源码default COM双full，未见具体部署/隔离结果丢失阻断，允许失败形成新完整清单；下一唯一任务即双full并按实际新分母回读。子native隔离Failed不skip，危险官方协议风险未修。旧1802/1709/93仍历史，IO managed4256两格独立，Available/HWloss/mediaresource/final开放，未完整替换。以下全部阶段历史保留。
+
+## JS 终态：JR有限保留，原件核证已交付
+沿用JL报告 completed-work/replacement-supervised-present-invalidarg-fix.md。直接读真实绝对映射路径的双架构TRX各62行，7/7/0skip Completed，监督Exit0/无timeout/cancel/kill/drain；目录枚举漏TestResults不能当缺件。actual Native1782797…/1DFB337…及testSHA/MVID/runtime已核；x64首修1/1亦读。合法Capture输入(1,0)、scale1e10、28.4=1.6e11在clip前被拒是根因；单figure/直线轴对齐矩形设备safe交集再量化可保留，未扩通用curve/stroke/viewport。七测试仅六输入，原公开API精确两点不透明红断言和清理保留；成功TRX无像素expected/actual/原始附件，不伪造文件。原93表两项历史映射有据，其余逐项标未证，不宣全簇。JS无源码修改/发布/业务重跑/full；默认Release solution build一次Exit0/3803warnings/0errors/14.48秒，不压分析器，前3165037输出字符被工具截断，日志可用62行已分段读完。下一唯一最后源码扩大CombinedGeometry+DrawingImage相关族，恢复原93映射后协调集成full准备门。旧full1802/1709/93/0不变，四格Available/HWloss/mediaresources/final开放，完整替换未完成。下列进行中状态均为阶段历史，不代表JS现状。
+
+## JR 进行中；JQ阶段终态待核
+同JL报告：亲读JQ task f262332feeeb4c49ab2a34cf6d14b441原始trace，4x1/Open成功后Path.FillShape首负E_INVALIDARG，尚无实际拒绝坐标/修后通过；JQ完整identity/TRX待核。JR核官方±524287设备安全裁剪先于量化，接续至多一次失败点trace及最窄fill修复，不动stroke/Bezier既有语义，不留未验default补丁。旧full与四格开放状态不变，历史保留。
+
+## JO 有界终态：Present首真实旧红，未闭最早下层返回
+同replacement-supervised-present-invalidarg-fix.md完整更新，JL已发生证据更正。JO正常分析器专属x64 Release selfcontained10.0.13发布1 Exit0，沙箱仅task c74f4e622ed1419da9a26c43c39ca43a一次完整方法等值过滤：TRX1执行/0pass/1fail/0skip，present(connection)=-2147024809，子Exit2，BL120外180，无timeout/kill/drain；工具未给数值码。testSHA C3EB8F3C…/MVID2071c81d…，复用Native文件0C16A66C…，非actualmodule枚举证据。JL官方stdout1/1与监督Exit0已读，TRX缺本地件未读；e160f坏filter0tests不算旧红。已确认软件bitmap target的geometry/brush/DrawingSnapshot消费链，不是窗口故障，最早负返回未证不修生产。两93表全文与共同链精确数未完，原首ID1bbc964c…匹配双架构；生产修复0、修后回归0、x86新运行0、full0。历史清单、官方环境变更控制及独立旧红分别JL_PRESENT_INVENTORY/JL_PRESENT_OFFICIAL/JO_PRESENT_REPRO显式隔离，断言保留、默认均关闭，无role空返回。默认normal build共2，最后源码后Exit0/129warnings/0errors/2.79秒。下一唯一brush realization/嵌套DrawingSnapshot首负来源核官方；未完整完成，旧full计数不变，JN/JM及公共文件未动。
+
+## JN 终态：JM resolver 独立核证有限保留
+见 replacement-supervised-full-resolver-isolation-fix.md 完整报告。双架构JM任务05af1f852ce14bd3b87f31f1504f2579/3d85ef32e4b0495d95c442916d1cc580父TRX各3/3 Exit0及精确两旧失败ID通过已亲读，代表角色监督/TRX/actualmodule/identity/cleanup、6/10帧零阈值comparison/alpha、父resolver/Dispatcher快照与六PID已核；不是全角色/原始像素/异常路径全审。专属角色与精确方法校验解决输出根误作业务角色；helper退出/drain等待有界，无0tests/缺TRX空过。完整93表范围检索仅证明Rounded module0、Curve resolveralreadyset两项，未证额外传播或其它缺口恢复。JN正常Release默认构建1 Exit0/129warnings/0errors/2.69秒，无分析器压制，源码/生产修改0、发布0、新矩阵0；保留JD及JL/JO历史。裁决有限保留，下一唯一最后源码扩大对应族或后续协调集成full门。旧full1802/1709/93/0不变，不相减造full；HWloss/Available/mediaresources/final四格开放，完整替换未完成。
+
+## JK 终态：本地full结果读取与完整失败表
+同JH报告replacement-supervised-com-full-convergence.md已补，不新增重复报告。x64 task90574bc234a940b4b97033714264ec72与x86 taskce92e8484d4c4342a756919d211e3821均1802/1709/93/0、正常Exit2，无filter/timeout/kill/drain，Counters/RunInfo/监督亲读；ResultSummary Failed。完整失败JSON各93条，artifacts/jk-readonly/readback-complete/Results/jj-full-inventory，summary证明各1802唯一父ID且失败数严格对账，原文/参数/定义均保留。两不同testSHA/MVID不得拼最后源码四格；actual Native x86 D5CE061D…/x64 0C16A66C…已读，源精确闭包尚欠。focus核本full新指定ID通过。前三后续簇Present E_INVALIDARG/resolver重复安装/显示fresh前置；隔离子正常Exit2回传不是nativecrash实测，kill等异常分支未执行。生产/full/render/脚本/新Host0，只改既有条件隔离整理器及条件输入；专属publish5次3失败2成功，整理实际2次首失败第二完成，超一次预算如实登记，不造外层exit；无default build。绝对parentTRX/SHA和未核边界见同报告；历史保留，IO4256独立，HWloss/Available/mediaresource/最终四格和完整替换仍开。
+
+## JG 终态：x86补齐同JB固定生命周期双架构有限验收
+同replacement-supervised-interop-transport-ownership.md已补JG全文。default normal x86 build1 Exit0/0warnings/0errors/1.03秒；专属正常分析器Release selfcontained10.0.13 publish1 Exit0，仅2任务：official ce9e9447df814be1ada6809113f479f7（11236/9144）核心读完后candidate 3630e1eecc554fa59a5ac6b2ede3fddd（8732/1256），各1/1 Exit0，无timeout/cancel/kill/drain，外工具无数值码。两份identity27/ledger266/stages38/TRX35/stdout12/空stderr全文核心亲读，真实HALbitmap refs1→2→1，删除/flush/destroy/disconnect/deinit/Detach后四Release0；查询本身配平。未交付duplicate关闭一次原柄可用，非已交付event。actual官方5EBD18E0…/IP候选63B91E6C…/test3B84CED3… MVIDa32d2dec-8c9f-4389-8eae-9c619a2cf3c7/WPF D2A9C8B6… MVID2934bccd…，同版10.0.13/X86；完整SHA/actual路径/绝对TRX在报告。结合JF x64同合同历史各1/1，同版双架构有限验收成立，仅固定对象生命周期，不泛化IUnknown/长期资源。源码/生产/项目/Native重发0，default API不含JB两方法，专属包含，零源码新改无需冒新默认全量。只上传独有418行白名单package，源/回收隔离，aot/runtime核完，无diskfull但余量未知/清理0。已停止，无Present/consumer/fresh/原sampler/full；未知失败仍开不盲补close或doubleRelease。下一唯一原窗口合法asyncsampler/VisualBrush/HardwareOnly/非零duplicate事件交付整合，另需本task显示前置；Available/HW恢复/长期资源/media/full四格/旧officialsampler AV仍开，完整替换未完成。报告及三共享最新节写后回读，历史保留。
+
+## JF 终态：JB显式0xA正常合同x64两格实证
+见replacement-supervised-interop-transport-ownership.md。default normal build1 Exit0/0warnings/0errors，正常分析器x64 Release selfcontained10.0.13 publish1 Exit0，沙箱2：official58e22d7a99d24ced84024f8855ab7695（9676/3924）先1/1 Exit0后candidate30f3ce99e20742608a82da2ac11a16e5（6220/7560）1/1 Exit0，无timeout/cancel/kill/drain，外工具数值码未给。两组identity/266行ledger/38行stages/35行TRX/stdout/stderr核心全文读完：真实HAL surface/InteropBitmap，refs1→2→1，resource删除/flush/destroy/disconnect/deinit/Detach及四COM最终Release0；未发送duplicate关闭一次原柄仍可用，不冒已交付event关闭。actual官方AD1C9DBB…/IP候选0C16A66C…/test966B8661… MVIDc425a692…/WPF0E605CCC…，同版10.0.13/X64，完整身份与绝对TRX在报告。源码/生产/项目修改重发0，无Present/窗口内容/full/原sampler复跑；default DLL API无两个JB方法，专属有且各真实1例，默认安全。正式419行白名单包、只上传package；无diskfull但余量未知，不广清/置空DLL。unknown失败未覆盖，OS回收非refs0，不泛化IUnknown返回计数。下一唯一x86相同JB合同，随后原窗口合法整合；Available/HW恢复/长期资源/media/full四格/原officialsampler AV开放，未完整替换。报告及三共享受改节写后回读，历史保留。
+
+## JE 终态：补JD x86自包含有限验收并独立审x64
+
+同replacement-supervised-offscreen-isolation-fix.md JE终态。build1成功（124warnings/0errors/6.92秒）、selfcontained10.0.13发布1成功、沙箱1：task10ef4f53172e4e61b02ec12102669745，监督3828/业务父7652，9/9 BL Exit0，无timeout/kill/drain，外工具未单列数值Exit。x86实际test99259117…/MVID8fb933a4…、IP Native63B91E6C…、官方5EBD18E0…/WPF D2A9C8B6…，四份代表三角色+direct业务JSON全文亲读，非空RGB新内容/8weakref全false，原304/两1024全字节及repeat比较通过；三角色/direct TRX各1/1。包manifest418行，总字节及剩余未知，无diskfull且未阻塞本次、清理0，不要求安装runtime。独立读JD x64最终父TRX/监督9/9 Exit0、candidate全业务+official identity，10.0.1与x86 10.0.13分别同版official对照，不称同版双架构。静态无parent sampler resolver/dispatcher关闭/全局环境写入/共享stream锁；回归原resolver存在性/dispatcher identity/HasShutdownStarted断言Passed，但缺独立父快照JSON、非完整resolver内容及HasShutdownFinished前后审查，边界不隐瞒。JE源码/生产修改0、生产重发/full0，保留已过默认修复。下一唯一JB0xA引用所有权控制（replacement-supervised-window-sampler-ownership.md），Available/HW恢复/mediaresources/full仍开，未完整替换。报告和三共享受改节写后回读，旧历史保留。
+
+## JD 终态：保留默认离屏进程隔离修复，x86环境缺口明确
+
+见replacement-supervised-offscreen-isolation-fix.md。两测试文件最小修改，默认direct/group均真实同exe角色，父无sampler resolver/dispatcher shutdown/GC；角色标记不递归、读取精确TRX/输出/业务PID。最终x64 task6da931b0949547f6a1c56f1ab9b1e25b，1976/2232，9/9 Exit0无timeout/kill/drain；同parent两轮direct/group+Bitmap兄弟、resolver map/dispatcher状态不变通过。原304shader/两1024缓冲/非空RGB零阈值/8weakref断言保留，代表三role+direct业务全文亲读，未冒所有role人工全审。actual test494B675A… MVID1d59285b…、Native0C16A66C…、官方94C06484…，共享.NET/WPF10.0.1同版，不混IY13 oracle。normal build2次通过，末次Exit0/124warnings/0errors/1.44秒；publish3成功，sandbox4含首未回收绝对根、初版/最终x64各1、x86启动失败1。x86 taskf3fd51a8fcba49fb9916fbd47086baa3明确缺x86.NET，未进测试无TRX；小包已备，不冒双架构通过。容量剩余未知、清理0，无diskfull，未大自包含、不碰JA损坏包。明确保留已测x64修复，下一唯一动作提供x86同版共享runtime后同filter有限实跑并回读。生产/打包/版本/并行/NativeRun/ExitDiagnostics不动，JB0xA及Available/HWbackend/loss/mediaresources/full仍开，完整替换未完成。报告全文和三最新节写后回读，以下历史保留。
+
+## JC 终态：恢复源码，容量未恢复
+
+见replacement-supervised-capacity-isolation-recovery.md。唯一源码改动是精确删除JA helper finally新增shutdown Assert，写后回读；shader/内容/原清理及生产不动。当前OffscreenSamplerTests为IY direct同进程candidate，旧taskd6aee85b72b146ee9602fc0816f8804f risk/监督全文已读，resolver重入风险仍真，不称隔离已修。JB全文件guard静态无default引用，专属测试仍未成功编译。JA final-x64/publish及com-acceptance-package失败目录实存，publish的PresentationFramework曾置空，禁止上传/恢复/执行；risk/x64/readback保留。JB专属根无子项与历史路径不符，不能说已清理。无删除/容量统计工具，清理0、准确大小未知；需实际存储侧先保留日志/manifest及候选原DLL/PDB/像素/TRX，再仅回收报告所列任务独有失败重复件。JC build/publish/test/沙箱/full0，default未验证；可读JB误Clean日志59行Exit1/CS8104，历史default Exit1/CS8104及MSB3021/MSB3027来自JB报告，原件未重新取得，不造新计数。下一唯一任务容量恢复后normal default build一次，再默认离屏子进程隔离，JB所有权在后，不full。报告全文与三JC共享段写后回读；下列历史保留，旧下一任务不覆盖此节。
+
+## JB 终态：0xA所有权专属合同待运行，存储阻断
+
+详见replacement-supervised-window-sampler-ownership.md。新增JB_WINDOW_SAMPLER_CONTRACT真实Interop转交/清空ref变化与最终Release0控制，另未交付event副本取消；不是DS无surface Present重复，不执行windowconsumer。四次发布Exit1（CS1686已修后磁盘不足）；default normal Release/win-x64也CS8104磁盘不足，未验证成功。official0/1、candidate0/1、sandbox/full0，无新TRX/taskSHA/MVID/refs；不造运行证据。生产/JA/default Event0/共享helper/打包不改。逐动作所有权表与正常路径修复设计已交；先恢复白名单存储、同合同正式发布离线核闭包再official先candidate各一次，实过再IV窗口整合，显示前置本task过才原内容。Available/HWbackend/loss/mediaresources/full四格及旧sampler AV仍开，完整替换未完成。末次JB自有节与报告写后回读，历史保留。
+
+## IZ 终态：IY 默认离屏 sampler 验收保留
+
+同一replacement-supervised-default-offscreen-sampler.md已补完整终态，不新报告。IZ无新运行/build/publish/沙箱/源码修改。default x64 task30cef74af86149aeadf1147c57c6f153与x864ec0c0cd78da4c569e4c288f73361ff0各父2/2 Exit0，official/candidate/repeat各精确1/1 Exit0，三独立业务PID分别2232/4208/3828、9912/10032/1132；direct默认真实candidate在4228/11128执行，无空返回。八份业务JSON、六role监督/exit/TRX和两父监督/TRX已全文亲读，timeout/kill/drain false。group真实全字节比较304shader+两1024缓冲，源码核全256RGB expected0000FF80→00FF0080/actualFF00FF80→FFFF0080，nonempty；8weakref false/dispatcher/finalizers true，NativeComRefsMeasured=false，不认COMrefs0。没有另行comparison日志，原二进制未独立解码。
+
+actual IP x640C16A66C…/x8663B91E6C…、testB341D2EE…MVID99ac2275…/CFFAB489…MVIDcc06de1e…及官方AD1C9DBB…/5EBD18E0…与实际WPF/.NET10.0.13已核，完整值见报告；生产未重发。兄弟task064759a314134b63ba133bfb6dc13e0d/fcd1817a1bb248309d33feec40f01ecc各7/7 Exit0（bitmap1+SWshader3+HY/Listener/动态state各1），各另9role1/1 Exit0，角色大数组及全事件未全审，不认完整产品闭包。包清单只核首尾/aot，IY normalbuild日志未取得，不造数。
+
+裁决保留默认helper/group/direct；旧IW/IV/IS guard保持。Nonempty及完成字段无单独Assert、resolver进程级/dispatcher shutdown的任意同进程组合安全未证已登记；有限独立通过不撤，也不外推。IW软件本来绿，不是生产或旧HW/0xA/event修复。下一唯一门旧window官方sampler/0xA AddRef/event副本在处理或丢弃与drain后回收的所有权准备，不新full绕崩溃。Available/HWbackend/loss/mediaresources/full四格仍开放，完整替换未完成。最后补记IZ：报告全文及三共享最新节写后回读；旧历史保留，不千行冒全审。
+
+## IX 终态：x86离屏同合同两任务通过
+
+见同一IW报告replacement-supervised-offscreen-sampler-consumer.md新增IX终态。零源码修改，正式x86Release selfcontained10.0.13独有包，复用IP Native63B91E6C…；official task7f2c794d25304c39a1767d29af9eea83与candidate03289f6c059a4252907b4c8ea0ec74e9各Exit0、精确role TRX1executed/1passed，无timeout/kill/drain，先官方亲读通过再候选；仅两有效task，无部署纠正或其他场景运行。256consumer全数组初FF00FF80→FFFF0080，RGB0000FF80/00FF0080零阈值非空；8托管弱引用false、dispatcher/finalizers完成，NativeComRefsMeasured=false，不认COMrefs0。actual官方5EBD18E0…/候选63B91E6C…，test7F539702…/MVID7b4ea56f-4adc-4ffc-afc4-b02d5ee9e7e2，WPF D2A9C8B6…/MVID2934bccd-58e4-4afe-8677-ec985888f34e，均X86/.NET10.0.13。完整SHA/绝对taskTRX/原件路径见报告。bgra回收未独立解码，全部业务JSON与监督/TRX亲读；父非MTP无TRX，外层独立exit未提供不造码。default正常build0/117warnings/0errors/2.37秒，元数据确认默认无IW方法、显式包有。与IW x64同SoftwareOnly合同通过，不是旧HW修复。下一唯一门：离屏默认回归门，另轮审查纳入；原窗口sampler/0xA/event所有权/Available/HWbackend/loss/mediaresources/full四格/x64Event0全开放，完整替换未完成。历史保留。
+
+## IW 终态：软件离屏sampler打破显示前置循环，非HW验收
+
+见replacement-supervised-offscreen-sampler-consumer.md。全文件IW_OFFSCREEN_SAMPLER新增同exe官方/候选独立filtered测试；官方SW+HardwareOnly明确SkipRender，选择SoftwareOnly同等sampler合同，原shader304字节/s0+s1 VisualBrush与初后态expected保留。WriteableBitmap producer→DrawingVisual/effect→独立RenderTargetBitmap consumer CopyPixels，更新同一资源。x64official45f86c80473542a89dc3c09a0ca75560和candidate199a0198e4ca4325b4d13af2d6a0cacb各Exit0、TRX1/1passed，无timeout/kill/drain，预算1+1用完。256像素FF00FF80→FFFF0080，RGB0000FF80/00FF0080零阈值非空；托管8弱引用false、dispatcher/finalizers完成，nativeCOM refs未测，不冒refs0。actual candidate0C16A66C…/officialAD1C9DBB…；testD3EB5EDC… MVID81df88ac-104b-4cca-ab05-b29233e3baa9，10.0.13/X64。独有正常发布/default正常分析器build0/117warnings/0errors/1.41秒；生产不重发，原共享窗口断言不改不skip。IV精确child.trx现已读1executed/1failed，旧缺证判断补正，无新IV运行。下一唯一任务为另轮x86同合同。D3DImage/0xA/nativeAvailability/HW/旧窗口sampler/转交所有权仍未验收；Available/HWbackend/loss/mediaresources/full四格仍开，完整替换未完成。历史保留。
+
+## IV 终态：新隔离夹具已发布，唯一任务停于原生显示前置
+
+详见replacement-supervised-isolated-sampler-validation.md。全文件IV_ISOLATED_SAMPLER新增当前独立ABI场景，保留VisualBrush两sampler与0000FF80/00FF0080；同exe filtered监督，未知转交保留所有持有交监督终止，不凭Commit0关副本/计refs0。正常资源收口及该失败保护均未实跑验收，默认不启用。task5f9bc6bef1314af3904b182d12e53839，监督10536/子10756 Exit2，无timeout/kill/drain/AV；原生expected00563412实际00F0F0F0，尚未connect/Send，sampler内容和sendbytes未覆盖，资源/转交为空。deinit0及窗口关闭，未采前置COM refs0。stdout1failed，回收没有child.trx，不伪造TRX计数。实际official AD1C9DBB…、testB0211D28…/MVID1e6dfe2b-7f35-4049-9757-e5ea41f3ffd6，WPF0E605CCC…/10.0.13。独有obj/bin/publish/package，正常分析器；default最后build Exit0/117warnings/0errors/2.96秒。共享夹具/生产/打包均未改，无重跑/FH/full，不认旧IS复现或首坏写。下一唯一门是原生Present→捕获前置及TRX回收完整性，不是等待旧IS源码。最后补记IV：报告及最新共享节写后回读，历史保留；Available/HWbackend/loss/mediaresources/full四格仍开，完整替换未完成。
+
+## IU 终态：officialSampler 静态核证收口，安全门未满足
+
+见replacement-supervised-official-sampler-contract.md。当前VisualBrush148、ShaderEffect80+42全字段与仓库官方协议/解码静态对应，不等于同servicing ABI或旧IS实际bytes通过；旧包IL/符号、原始sendbuffer及4099f839源码绑定缺证。精确source/snapshot四路径核不存在，不推全局。旧IS实际supervision/moduleSHA/testSHA/MVID/末阶段/缺child.trx亲读，sampler仅initialCommit0后C0000005，无内容/cleanup，无最终计数、非首坏写定位。
+
+确定不能继承的假设：batch内存交接不证明内嵌event/COM释放，zombie拒收可返回成功仅signal flush/delete；恢复后显式IS helper副本失败/丢弃回收未闭，不得默认启用。共享源码/生产/打包零修改；正常default Release/win-x64 build Exit0、0warnings/0errors、6.24秒，17行全读，增量非clean。有效officialSampler task0/1，无发布/sandbox/full，原异常本轮未覆盖，不称不复现。
+
+下一唯一门是旧部署程序集/同版ABI与Send记录到处理或丢弃、drain后回收的明确清单，先闭event副本与0xA AddRef失败责任，再允许独有IU一次原内容隔离验证，不复跑默认Event0。最后补记IU：全文报告及三共享最新节写后回读，历史保留；Available/HWbackend/loss/mediaresources/full四格仍开，完整替换未完成。
+
+## IT 终态：源码安全恢复，IS 官方 sampler 中断核证
+
+补同 replacement-supervised-shared-geometry-submit-fix.md。仅 VisualCache 撤残 async cleanup、SharedConsumerLifetime 新实验整体显式 IS_SHARED_CONSUMER_EXPERIMENT 隔离；历史测试/原内容断言不skip，Stage4参数全103行核清未改。default正常分析器项目Release/win-x64 build117 warnings/0 errors（2.99秒），完整slnx Release117/0（1.97秒），增量非clean，日志前部截断；首次solution+RID NETSDK1134后用正确目标成功。生产/NativeRun/ExitDiagnostics/公共捕获打包不动，无发布/新运行。
+
+task0727659920f44b25807d75918bc50d46监督7880/子6940，C0000005非timeout/kill/drain；diag五candidate Passed节点、officialGeometry Passed及refs0/cleanup failures0，officialSampler仅InProgress，stages553 initialCommit0后EOF。精确task根Results/is-x64/TestResults/child.trx无完成回收，无最终整组计数，非full。actual Native0C16A66C…/official根AD1C9DBB…独立模块原件已核，不能冒包hash或定位候选生产坏写。IR未跑officialSampler，scope差异不预定根因；Event0旧E_HANDLE未复现不等于修复，末日志非首次坏写。
+
+下一唯一门为officialSampler独立隔离合同静态核证：独立ABI/VisualBrush/ShaderEffect字段和资源引用、合法async事件及Send失败/批次丢弃/提交失败所有权与销毁偏序。未来geometry按场景保留须先合理默认配置/历史回归门，不能随意skip或默认禁用旧测试。Available/HWbackend/loss/mediaresources/full四格仍开，完整替换未完成。最后补记IT：恢复可编译已完成，同IR报告记录精确读界/截断/缺源码snapshot；下文历史保留。
+
+## IR 终态：显式旧geometry内容实验通过，默认修复未交付
+
+见replacement-supervised-shared-geometry-submit-fix.md。四task3708ca561ad240cba9655995f9f02b59/ed81c846413041eeb57b042951db4855/26ee60740457425d89a81135afddc5a2/c9b69738a2ef4a269a503efa358f9169分别x64 official/candidate、x86 official/candidate；Exit均0，TRX1/5/1/5 Passed，无timeout/kill/drain。旧UID原生前置、geometry initial/mutation确实通过，E_HANDLE/C0000374本显式实验未出现，不证明full修复。IP两Native actual复用，未重发生产。
+
+实验缺资源deletion/flush/final refs及Send失败所有权核证，official sampler/独立回归未完成，故12组共享修改精确撤回。正常default Release build117 warnings/0 errors；原断言和生产HA/IA/ID/IH不动。独有实验包/四task原件在artifacts/ir-shared-geometry，下一唯一门补足上述合同和回归再最终双架构兄弟验收，不重复原生前置循环。Available/HWbackend/loss/media/resources/full四格/x64Event0仍开，完整替换未完成。最后补记IR：历史不覆盖，详细回读范围和不足见报告。
+
+## IQ 终态：IP双full中断已独立核证
+
+同 replacement-supervised-integrated-comacceptance-full.md 已补终态，不重复报告。x86 taskd41f442050e743ddbf359ec0e4a9516c / x64 task9cadcdae08eb4718afda7192740b7f27均Modefull、无filter、子C0000374，无timeout/kill/drain失败、stderr空；精确parent child.trx均不存在，无full完成计数，不拼source-clip角色。IO各4256独立保留，COM两格中断，不称四格绿。
+
+两架构最后同官方geometry UID18e39062-2997-8a5c-bf02-39b275a17ace仅开始：两surface和原生内容前置均过，Commit80070006→DestroyBefore无after。x86已不是旧DQ Interop前边界，未证明首次坏写。CombinedGeometry/DrawingImage和TileCalibration present80070057是业务差异；x86另WIC send Command0xC/-2003303421及streamDisposals1对0，失败列表仅可见下界、不造总数。
+
+新Native x8663B91E6C…/x640C16A66C…，父test5E8F778F…/315F62A8…完整SHA/MVID与official actual见报告；BW顶层identity覆盖不改变父full身份。实际10.0.13，参考生成taskd94a1acd…/3b69be49…分别同架构官方Exit0；full内又重写ignored参考，tracked不动。清单420/421条，上传API原记录/实际总字节未知；整理器WarningLevel0仅工具问题，正式分析器/并行未改。
+
+defaultstate/HY初态/ListenerBroadcast在两父diag均无节点，不以历史绿绑定新SHA；部分初始化/通知兄弟有Passed节点。下一唯一根因门是本次共享VisualCache真实surface提交/退出的合法async初始化、connect0及duplicate Event ownership/失败回收/完成等待/cleanup，先合同后最小迁移，不称已证event根因；前置阻塞须保留并设计同合同普通surface有限真实内容验收，不无限撤回循环。HW/backend/非零sync/Available/loss/media/resource/full四格/x64Event0仍开，完整替换未完成。
+
+最后补记（IQ）：只四文档，无源码/测试/项目修改，无build/publish/沙箱/重跑/整理exe。报告全文与三共享新增IQ节/补记写后回读，原IO及以下长历史保持，未冒全文历史审计。
+
+## IO 终态：当前源码托管Tests双架构full完成
+
+报告 replacement-supervised-current-managed-full.md。x86 taskba2ad674489148f68ed51b597681d017 / x64 task86ccebb9f76f4c4dabf2fd3ee966cf3b，各唯一一次无filter正式Tests full，parent Completed4256/4256、其他Counters全0，失败集合空；diag session Exit0，不冒工具独立进程Exit。Workers4/MethodLevel、断言及SDK/TFM未改；.NET10.0.13 self-contained，正常依赖图构建后专属Tests入口发布，生产是托管prod而非NativeAOT。actual Tests DC761366…/E96D259E…、managed prod5265E624…/7FE8B39C…及MVID全文在报告，与BC旧4256分账。
+
+clean-x86/clean-x64各233文件及逐文件SHA清单，独立full-x86/full-x64回收，未上传历史/coverage采集/异平台原生执行器；插件托管依赖保留，无数据缺失失败。总字节未取得不编造。原始TRX/diag/四份身份JSON已读；源码0、COM0、Native重发0、定向复跑0。下一唯一实际门为另行授权当前COM无filter基线，若崩溃保留parent缺失后根因修复；旧DP崩溃/BD41失败仅历史。IH/IA/ID/COMfill保留；IN限定不适用不能排除COM全项。HWconsumerbackend/loss/Available/media/resources/full四格/x64Event0仍开，完整替换未完成。最后补记（IO）：报告全文及三共享最新IO受改节写后回读，下方历史保留、未冒全文历史审计。
+
+## IN 终态：指定同步可见 HWND 合同源码不适用
+
+报告 replacement-supervised-synchronous-partition-state.md 已登记官方调用链：SameThreadPresent只Compose、不执行HWND Present，SyncFlush只完成命令；同步调度/OnEndComposition无补呈现。HWND Render/Present分离，纯色/brush不能修复缺失的Present入口；官方真实同步调用方是GenericRenderTarget/RTB，D3DImage同步需软件副本且PresentPacket仅async。没有本任务指定的可见窗口合法消费闭包，按授权源码前置不适用停门，不复现旧Event0，不删除consumer造合法。
+
+候选SameThreadPresent也只Render(signalPresent:false)，没有证实新的真实状态差异，不添加同步Normal回调/广播。仅限定协议不适用，不排除其他独立官方窗口API。后续若找到明确合法可见入口，先official x64内容/cleanup再候选比较才谈生产修复。IH/IA/ID/COMfill及IK/IM默认异步双架构验收保留，Native未重发。
+
+本轮四文档，源码0/publish0/沙箱0；x64/x86 official/candidate task及role均0，实际TRX/Exit/SHA/MVID/runtimeWPF/原始消息/颜色/refs未采集，不冒通过。正常Release build一次Exit0/117 warnings/0 errors/3.48s；63行最后日志回读，原stdout前段截断不冒全审。未增IN默认或显式空测试/包、未动分析器/打包/公共捕获。Available/HWbackend/非零sync/长期资源/loss/media/full四格/x64Event0全开，完整替换未完成。最后补记（IN）：报告全文及三共享最新受改节写后回读；历史保留，下方旧下一门由本节限定停门结论替代。
+
+## IM 最终终态：IK默认动态双架构保留，IL补HW分账完成
+
+同 replacement-supervised-default-partition-state-regression.md 已补完整终态，不新重复报告。IM关键原件复核支持保留：IK default task6185fdc6e5914b11b30a3c76d4714481 / a9960230c2074fc0a7d0c2b290fb66df父各2/2 Passed/监督Exit0；六独立官方/候选/官方repeat角色各1/1/Exit0，无timeout/kill/drain失败。三色consumer255/16711680/65280、三event、1/1→1/0→后四条0/0、后两帧A/B零消息、四refs0/cleanup成立；无role实际candidate。IL业务核证与IM必要采样分开，不冒全部原件全文全审。
+
+default兄弟task43582650a24244889d4546da907f595d / 61c77e13916e49b694165c2735d9afe7各25/25/Exit0，组成3锁通知+HY2+广播2+候选排空12+官方6，HU未default发现不计覆盖。IL补HW taskac492da22f324fa79f56d8bb9c4c0335 / a2414bd326ed41a4a7d8c10945f9cad0父各1/1/Exit0及四role1/1/Exit0，复用II显式包；其scope为nonHW class5消息窗口，不冒HWbackend。必要callback注销/队列保留/禁用drain0/cleanup证据可核，不声称四份业务全文已全审。
+
+actual候选Native x64 EE3F1DE1…/x86 01CF2206…，官方AD1C9DBB…/5EBD18E0…，.NET/WPF10.0.13；IK default test25388125…/0A8D7A55…、MVIDcb759b13…/d5dd13f1…，II显式HW testB84B3512…/40071429…、MVID090b609d…/e8ca1b93…分别记账。绝对task根、实际Native/test完整SHA/MVID/runtime官方来源已从原件入同报告。包全文件manifest/hash/安装源复制链未独立全审，准确披露但不自设撤回门；normalbuild既有记录不新构建，现存日志仅IK x86 publish尾段，不称normal全日志复核。
+
+默认helper闭包/IF HB入口guard/无role实candidate及无default探索入口泄漏已核源码，生产0修改、IH/IA/ID/COMfill保持。旧红仅历史IF，未以新default测试实跑旧DLL；consumer actual backend/转换更细时点/多监听同时变化未证。未见具体撤回风险，保留双架构默认独立动态回归，不因文档缺尾再挂待验收。
+
+下一唯一门为合法同步状态合同：先以现有正式ComAcceptance官方有效同步HWND/consumer核状态、snapshot、消息时序，再按真实差异决定最小修复/双架构验收，不直接套async状态或预设广播。Available/HWbackend/非零sync/长期资源/loss/mediaresources/full四格/x64Event0全部开放，完整替换未完成。
+
+最后补记（IM）：同IK报告全文分段与三共享最新IM受改节/补记写后回读；只改四文档，生产/测试源码修改0、新build/publish/沙箱/测试运行0，无终端脚本/新Host/工程。长历史仅受影响顶部核读，未无谓全文复读，原历史保留；以下IJ“默认动态仍缺”等不是当前下一任务。
+
+## IJ 终态：IH/II最小Present状态修复有限保留通过
+
+补同 replacement-supervised-partition-present-state-fix.md，不新报告；只读审计加四文档，生产/测试/build/publish/沙箱0。独立亲读三核心child TRX/监督及actual/状态/consumer/清理：e61e5fa0956c43308e90470d74e6da45(candidate x64)、9e6286ff04614adf805aa360ff393baf(official x86)、aeda7991921e42cd9cc186167505cc1a(candidate x86)，各1/1 Passed、Exit0；无timeout/kill/drain失败。真实六条64字节type5：1/1→1/0→B注册/重注册A时A/B各0/0；三色255/16711680/65280、三event真、四COMrefs0及cleanup。转换具体setup/哪次Present与consumer实际HWbackend未认证，B动态时未订阅，不冒多监听同时变化覆盖。
+
+actual候选Native SHA x64 EE3F1DE1BC3192766ABE5ACBC94B2548B9EEDD5107B5E7BA8BF8F465DB148189 / x86 01CF2206C3AE4327B6057A18AFA084629B49409AC812CFBD099E22CB66105ABC；官方x865EBD18E0…、既有IF/II官方x64AD1C9DBB…，.NET/WPF10.0.13。核心test856010B1…/1FF7E338…，II恢复guard后的最终test B84B3512…/40071429…、MVID090b609d…/e8ca1b93…分账。II双独立包task62eb98f92bdc4bf6a36e7142c475c48c / 98c05771852d46a097c6ce9b12d4eb85各32/32 Passed、监督Exit0，actual候选同核心，Native未重发。32含3通知锁+2HY+2广播+12候选排空+6官方排空+1有限HW注销group+6HU关闭，含显式探索，不称默认完整产品闭包/full。
+
+双架构HW candidate callback进入→注销返回→callback退出、保留队列/禁用drain0/windowless快照及cleanup已核；官方/候选四角色actual/清理/Exit0已核。HU候选False-6双架构207行业务全文、role1/1与Exit0已核：closeReturn0次dispose、externalRelease触发且仅一次dispose，sibling destroy/deinit后仍1，refs0；其余HU退出已核，其他业务不冒全文。包输入与回收分离，输入aot.sha256/关键声明与actual/test/runtime核到，未全文件manifest、未独立全hash/安装源复制链审计，不以此撤真实有限修复。
+
+五生产文件窄链资格已核：真实软件Present精确0且非空、D3D PresentProcessed且0，occlusion归一0不认证；HWND资源限定、registry逐target既有顺序首失败停止、partition在asyncCompose串行上下文唯一字段更新后广播且registration同源。scheduler队列锁不等全渲染锁，同步SameThreadPresent无回调接入；不承诺全线程安全/全状态机/loss/多监听同时动态。保留IA、ID、COMfill及最小NoDevice→Normal，无须撤回的新语义证据，不因guard恢复或报告迟滞撤真绿。仅x64历史旧红/双新绿，不称x86旧红已核的全矩阵。
+
+下一唯一生产回归门是现有ComAcceptance默认独立合法async HWND动态1/1→1/0→后0/0；当前仅显式IF覆盖，HY初态/静态广播/default build不代动态。同步状态合同后续另门，不擅自扩大。本轮不执行下一门。真实HW非零sync/Available/长期资源/loss/mediaresources/full四格/x64Event0全部开，完整替换未完成。最后补记（IJ）：同IH报告全文与三共享最新受改节写后回读；以下历史保留，非待裁决。
+
+## IG 终态：IF真实转换与后snapshot差异独立核证
+
+授权补同 replacement-supervised-partition-render-state.md，IF初稿/历史不删。official task ea7ec0df7fbe4e12ada417e42bc04768/PID8812：唯一child用例1/1 Passed/监督Exit0；candidate 833a25829cf442f7856693d159786a6c/PID5204：1执行1失败/Exit2，真实转换断言失败，非部署错误。两监督无timeout/kill/drain失败、stderr空；两个精确 Results/if-{official,candidate}-x64/TestResults/child.trx 已亲读，目录索引漏项不作文件缺失证据，原“未找到”保留并明确补正。
+
+两侧业务identity同test SHA D1AA4EA…/MVID39cda456…/.NET WPF10.0.13 X64/8，actual官方AD1C9DBB…、candidate1AFFBE40…，不混O包aot-identity/BJ中的候选身份。三色独立window consumer读回255/16711680/65280均通过，三event真、四COMrefs0及cleanup。官方6条完整64字节type5：初态1/1、frame0内容确认后drain1/0、B注册A/B及A重注册A/B均0/0；候选5条全1/1，各帧drain无变化。新增listener广播已实现，新的缺陷是权威动态更新及后快照过时；不是invalidtarget或producer回读假consumer。actualconsumerbackend未知，转换在setup还是哪次Present不定更细因果；B当时未订阅，动态同时广播A/B未实证。
+
+已亲读SameThreadPartition/GeneratedTargetRegistry/GeneratedTargetResource和HardwareRenderTargetExports两个真实窗口Present分支、官方TYPE_HWNDRENDERTARGET Present→HandleWindowErrors→HandlePresentErrors→ProcessRenderingStatus。Render成功不等Present成功；正occlusion不等Normal；窗口处理前/后HR不混。下一唯一生产任务先有界采setup/initial invalidate/逐次Present消息及backend/HR关联，再通过既有函数窄传参将合格窗口Present结果逐target上报共享partition，在scheduler同串行上下文更新old/new并广播，注册snapshot同源。不自创多target聚合、任意HR全局loss或删除最后target规则；只闭合法1→0，完整loss/occluded/cache副作用仍缺。精确函数/传参与验收设计见同IF报告，本轮未改生产。
+
+IG四文档，生产/测试源码/构建/发布/运行0；IA初态/ID广播/COMfill保留。显式IF/HB条件不改变default，最后已有默认Release build Exit0、108warnings/0errors2.74秒；日志85078前65078截断，仅审全部可用64行，不冒完整stdout/默认产物反射。下一验收双架构IF官方基线+旧红新绿（x86尚无本轮证据），默认HY payload/ListenerBroadcast及通知锁/注销/排空/关闭兄弟，绑定新SHA/MVID及actual身份并回读原始内容。未过门不留未核生产补丁。真实HW/nonzeroSyncModeStatus/Available/长期资源/loss/mediaresources/full四格/x64Event0开放，完整替换未完成。独立范围为本IF核心原件与列明源码，不继承IE全审或包全集合hash结论。
+
+最后补记（IG）：同IF报告全文及三共享最新独立节已写后回读，核证/设计终态，不是生产修复完成；以下历史保留。
+
+## IE终态：保留ID一行广播，独立核证已结
+
+补同 replacement-supervised-listener-broadcast-fix.md，不新报告、不重跑组。baseline-x64真实广播旧红B-enable A缺消息成立；old-x64 2BFC…初态0/0误包不混。默认task acfbc84543834ad4bda9d93ed1108069 / 992ccc01c6804d468464bb9cb7f1b2fb各2/2 Exit0，六独立role各1/1 Exit0；PID2228/9676/4624及7652/10476/2456、test/MVID/runtime.NET10.0.13及官方来源亲核。六business全部15阶段/11条完整64字节1/1一致，windowless队列、重复操作及监听销毁后再注册/cleanup成立；不是动态状态验收。
+
+Native SHA x64 1AFFBE40F24D35DC317FE05D3D1F64C62AC136700F5D8D50B41A9B7252D68863 / x86 C3D357371E070F3A81CCA3F955F50DC45A1A1F56A46680AE118930432C424AF7。guard0a99217da78d4635b55f7a6661b12369 / 473002d2898a496389dc279d4f9b1b6c各30/30 Exit0，无timeout/kill/drain失败；组成3通知锁+2HY+12候选排空+6官方排空+1HW有限注销+6HU关闭，含显式探索，非30默认闭包。HW关键注销事件/两候选HU False-6完整业务亲读，其他业务未全读；包全集合/hash未审完。
+
+源码集合/调用路径/队列锁及生命周期已核，不承诺HashSet枚举次序、全线程安全或refs/长期收敛；只保留注册Add成功后全监听PostMessage一行，不动IA/COMfill及禁改域。IE只改四文档，生产/测试/发布/沙箱0；最后正常分析器默认Release build一次Exit0、3772warnings/0errors9.16秒。stdout3160257字符仅保留末20000，前3140257不可回读，不冒全日志审核。
+
+下一唯一状态门为官方合法同partition真实转换及同源old/new、渲染后snapshot→最小权威更新；不猜target映射。动态转换/渲染后snapshot/有效HWtarget非零sync/Available/长期资源/HWloss/media/full四格/x64Event0开放，完整替换未完成。最后补记（IE）：同ID报告全文及三共享IE最新节写后回读，最终保留，不待裁决；以下历史不覆盖。
+
+最后补记（IC）：完整IC报告及三共享最新受改节已写后回读，保留诊断/旧红，不留未核生产补丁。
+
+## IC终态：双架构广播缺陷已证，状态未变、生产未修
+详 replacement-supervised-partition-state-transition.md。唯一合法双listener矩阵，B由A作source复用partition，两真实channel/窗口；官方新增监听广播全部已登记，候选只新增者。重复enable/disable无消息，窗口注销仍可收backchannel、销毁B后A重新注册成立。每架构官方11条/候选7条64字节type5、old/new1/1，真实状态始终NoDevice；HWND Present才是已查明Normal成功入口，WIC/no-target不作伪转换。
+task x64 c7326c5073374edc86e954d79dc0f959 / x86 5fe48015961042b5b7a25820ffb7a250，父各1失败/Exit2，四role各1通过/Exit0；无timeout/kill/drain失败。actual Native复用IA531E0967…/21B396AE…；身份/原始消息/必要偏序cleanup及未逐项全文重复事件登记见报告。仅IC_PARTITION_STATE诊断；生产0、NativeAOT0，IA和COM/fill保留。默认build Exit0、104warnings/0errors3.38秒、默认无IC类型。下一唯一门为广播默认旧红→最小广播修复→新双架构SHA与HY/通知/注销/关闭兄弟；未做前不留生产补丁。动态转换/HW/Available/loss/mediaresources/full四格/x64Event0仍开。
+
+最后补记（IB）：同IA报告全文及三共享IB最新节已写后回读，最终保留有限初态修复；原运行与IB审查分别计数。
+
+## IB终态：保留IA有限初态修复，非动态设备状态闭包
+详同device-state-snapshot-fix报告IB最终裁决。只保留SameThreadChannel的partition NoDevice构造字段及64字节注册快照；字段有归属但无更新路径，行为等价固定初值，渲染后注册永久NoDevice不得记正确。GeneratedTargetRegistry/聚合/广播/锁队列/唤醒/注销及既有COM/fill未改，不恢复HY错误猜测映射。
+既有payload x64 a1185e06037545b6948e188b5893dbfc / x86 40fb4374bcd048318cc50162775821ee，父各2/2、六role各1/1/Exit0；两完整64字节old/new1/1、counts[1,0,0,1,0]/cleanup与默认direct实际执行亲核。actual SHA531E096706C3E3AC4E9AE84C6A0158354382FC2B97A9018CF689B64289B09913 / 21B396AE6701CFD0E7D036B63ABE8308EDD5555874582E194D5930EA765EDD60，runtime.NET10.0.13，完整test/MVID/官方身份见报告；官方repeat不同PID。旧红x64 task7389… role TRX Failed/index8 expected1 actual0/Exit2亲核，有限旧红新绿成立，不冒x86旧红。
+regression25d762d8c59544e0b3a6feed6d25cae0 / 849373c9aad24379a8f07e3189a2b7dd，各30/30、Exit0无timeout/kill/drain失败；精确filter及3通知锁+2HY+12候选排空+6官方排空+1HWgroup+6关闭已核，含显式HS/HW探索，不是30默认产品闭包。必要事件定点核读，不冒全部逐角色全文。四输入包与回收Results分离；manifest全集合差分/逐文件hash未完成，非完整打包审计通过。
+原IA默认build日志Exit0、3664warnings/0errors17.08秒已核；IB生产/新构建/发布/执行0，仅本报告和三共享文档。下一唯一门官方控制的合法partition状态变更及同源变更/渲染后注册快照；广播须双listener官方控制，不从单target猜全局。Available/HWloss/mediaresources/full四格/x64Event0开放，完整替换未完成。历史保留。
+
+## HZ终态：精确撤HY未验收状态机，保留默认旧红回归
+详同device-state-payload-fix报告HZ节。HY现包x64 task df657c32839a45b6b0ecb702cfcfd6fe，父2/2、official/candidate/official-repeat各1/1、子Exit0，实际candidate FEA2BEEC…/test8999ABE8…/MVID8e219e09…/.NET10.0.13。父/三roleTRX及三business137行全文已读，完整64字节两消息1/1、数量[1,0,0,1,0]/cleanup正常。外层数值Exit/kill/drain字段未取得，不虚构；一次错误runner参数拒绝不计业务。仅初态绿，不绑定最终源码，不算双架构验收。
+官方partition状态拥有者及Render/Present上下文与HY逐target映射未证等价，广播无双listener官方控制，选择安全撤回。SameThreadChannel新增状态/映射/序列化广播及GeneratedTargetRegistry新增回调全部精确撤回，既有锁/唤醒/注销/COM/fill不动。默认独立旧红测试、旧红原件、HY包和HZ行为文字快照/task回收保留。受改生产区已回读，Release/default normalbuild Exit0，3768warnings/0errors，24.91/23.51秒，分析器未关。HZ x86及通知/close兄弟新运行0，不能称通知关闭本轮新验收。下一唯一门权威partition初态/快照/已合法触发变更统一序列化，再准确双架构必要矩阵。Available/HWloss/mediaresources/full四格/x64Event0仍开，完整替换未完成。最后补记：报告全文和三共享HZ节写后回读，历史保留。
+
+## HX终态：HW原件收口，通知内容缺陷优先于重复显示前置
+同 notification-unregister-race 报告已补完整终态。仅四文档，无新构建/发布/沙箱/运行/上传/生产修改。x64 task6d6698ebd4f24ee0b28d661ceca9d5ff、x86 task82ae7e3fda164265ade7a96a986851de，两父各1执行1过、四role各1执行1过/Exit0无timeout/kill/drain失败；两父/四roleTRX、两监督/四exit/四business各386行/actualidentity及原始bytes全文亲读。Passed未断言payload。类型5 old/new为offset8/12各32位，MIL_MESSAGE64字节，双架构首次及无window重新登记官方1/1=NoDevice→NoDevice、候选0/0=Normal→Normal，不是padding/reserved/其他消息。官方构造初态和注册/状态变化发送源码已核；候选只PostMessage05清零内容、无对应partition状态联动。官方新增监听广播全体而候选只发新增者为兄弟静态合同差异，未作运行证明。当前源码与安装10.0.13实证层级分开，未声称servicing完全同源。
+有限必要偏序真实message-only HWND register/submit→dispatch-enter→unregister-return→callbackexit→retained drain1，disable0/无window backchannel1/最终0、barrier/清理/join成立；不要求撤已post消息或等callback。任意迟到/真实HWtarget/非零SyncModeStatus/长期收敛仍未覆盖。实际HA8F74588B…/75D136…与official/test/WPF身份详报告，无hash重算。clean白名单定义/源回收目录分离已核，清单419/418仅头尾，集合差分/逐项hash/RuntimePackAsset/ReferenceData实际输入未完，不再上传。
+下一唯一生产门：partition真实状态驱动的类型5内容修复及独立默认回归，旧HA在受控未渲染前置应因payload失败、新修后过；不写死环境1/1，不扩大显示/full门，本轮未实施。HW显式guard/HA COM/fill保留；HV native前置仍失败、shared撤回，暂不重复同native门，显示独立阻塞，通知修复不冒HW消费。Available/HWbackend/loss/mediaresources/final四格/x64Event0开放，完整替换未完成。最后补记：报告全文和三共享HX节写后回读；HV/HU/HS及并行历史保留，旧下一门以本HX最新优先级修订。
+
+## HV终态：实际旧consumer重验证在native前置早停
+详 shared-consumer-recovery 报告。共享普通surface最小迁移/正常分析器x64 self-contained10.0.13发布1次，task97cfbd69e48a460392bfa9d31e7dac65，原official HistoricalGeometry 1执行0通过1失败，子Exit2/nonTimeout/noKill/drain正常，TRX69/监督39/stages24/stdout48全读。expected00563412实际001D1C1D，connect前失败，cleanup complete；consumer未进入，E_HANDLE不作已修复/不复现判断，refs无最终数字/backend未知。actualtest3F418C8F98217499D3887DD15928804717DB672C66DFDAACE0AA655CFAEF48F2/MVID3a7bad28-9128-4bf9-a699-299b089148eb/.NET10.0.13 X64，officialAD1C9DBB…，actualWPF模块未记录。候选仅包SHA8F74588B…未消费，x86既定75D136…未发布；其余三格/兄弟/full0。13项迁移精确撤回，默认无未验收补丁；normal build99warnings/0errors3.19秒，编译snapshot及回收分离保留artifacts/hv-shared-consumer。生产0/不重发HA，HB及并行HW保留；下一唯一门原D3D9 DISCARD00563412真实显示定位确认后再迁移原official，不重跑HT正锚/追加ETW。HWbackend/loss/mediaresources/full四格、Available/x64Event0开放。最后补记：报告/三共享HV写后回读，旧历史及HW不覆盖，未冒完整替换。
+
+## HU终态：HS有限关闭顺序补证（非完整通知合同）
+同HS notification-close-contract报告HU节详原始身份/事件/范围。最终HS guard后显式发布，两架构各一次：task ac140f1175de49d98ea9ce3464a7aa75 / 92334e2157bf42498867952ee54561d1；父各6通过、role各六个1通过、全部Exit0无timeout/kill/drain失败。12角色独立PID，actual官方同版10.0.13及HA8F74588B…/75D136…已加载；全部真实阶段externalRelease内callback enter/exit，close前0，最终1，sibling/deinit后不重复，三个五秒cancelable观察完成。不把当前同步现象提升必要合同，不覆盖HS历史反例；仅合法三状态最终exactlyonce及不早于外部释放的有限必要偏序成立。生产0，未改HT/HR/共享设施/打包。两父TRX十二roleTRX/exit/业务及两监督已全文分段读；default正常99warnings/0errors1.70秒。白名单集合审计/源回收及默认API枚举未完成，未冒clean完成。下一唯一任务是合法注销与在途通知受控交错；有效target/非零SyncModeStatus/迟到通知/长期收敛/full四格等开放。HR/HT历史保留。
+
+## HT最新终态：HR设施纠正，目标Blit桥接实证
+同HR报告HT节已补完整旧/新证据。旧20b167…childTRX46行补全：1执行1失败Exit2/Present0，owner初始化遗漏是设施错误，ETW自身成功不改称目标bridge。仅一行HP回调接既有owner try/finally；HT发布1/唯一task0c1cdf3ad01e45e0bed28f5d51f47c00，TRX44全读1执行1通过/监督Exit0、无timeout/kill/drain失败。actualtest6AAB005D0C31B7C8015F9C18C00A8E4AC2838A93C5573997001416FEB5A21CE1/MVIDf7cb0948-3929-4ef4-9d2c-1abb31db1a14/.NET10.0.13 X64。PresentEx实际一次HR0/前后态0/首红所有内容一致；Dxg166真实TDH17标量属性成功、HWND9110896/PID5296/ownerTID1448一致，调用区间QPC支持字段身份，Blit桥接成立。Token0，无DWM/501/occlusion原因或scanout证据，不覆盖HM/HN旧失败。session HR-502827896283482da356da6ab51c691b 1.5057311秒/所有Start Enable Stop Consume Close0，control1/graphics1/lost0/joined/权限恢复；refs0/Destroy1/owner finally退出。clean419项自包含10.0.13，HA只依赖未消费，独有ht-present-trace产物及回收分离。最后normal build99 warnings/0 errors2.25秒、默认API无HP。生产修复0/full0，不追加ETW，HO有/无duplication隔离+独立GDI仅备选未运行；Available/HWloss/媒体资源通知/x64Event0/四格开放。HS/HU内容与全部历史保留，完整替换未完成。
+
+
+## HQ终态：一次短ETW控制完成，HO双轨解耦保留
+详原HP报告新增HQ节；原HP/HO历史不覆盖。发布1/唯一task cac9e239b5e44fc28f4839a3e07ac7b4，session HQ-1c332e40a1944003bf5adbe0bae7730a，Start/三个窄ID Enable/Open/Process/Stop/Close均0；controller1.7160697秒，STOP排空实际消费control1/DWM67三条/Dxg0，lost0/payload44/joined，临时权限恢复0。ACL234→read0，控制payload吻合但TDH1168；DWM TDH metadata成功，hwnd0/hr087A0001非目标，动态TdhGetProperty尚未实现。TRX1执行1通过0失败，绝对路径/actualtest SHA A2DB4D3B…/MVID980e70c6…/.NET10.0.13 X64及33行业务全读详报告；未给独立数值Exit，不造码。default98 warnings/0 errors3秒，默认无HP，生产修复0/无渲染/HM/consumer/full/Event0。下一唯一显示任务另轮一次固定首红Present目标关联，先补字段解码/控制TDH/deadline与STOP完成QPC，缺桥接停，不泛采。
+HO推荐显示与非显示解耦：协议静态、合法无surface控制、ABI/通知/媒体生命周期、托管Tests与full准备可独立推进；原共享颜色门不得删除，但非全仓开工门。HO成对有/无duplication+GDI标尺仅建议替代，本轮未跑。历史修复及成功失败保留；Available/HW恢复/backend/media/resources/full四格/x64Event0开放，完整替换未完成。
+
+## HN终态：只读显示源合同成立，occlusion仍未定位
+见 replacement-supervised-display-source-state.md。发布2/唯一task3a45024c5717468daa6f2ee3174ae76c；HA8F74588…仅包依赖未消费。CCD/GDI/D3D/DXGI证实HWND840570→monitor10001→DISPLAY1→LUID4E71/source0/target5527112配置active/attached，WTS UNLOCK/console、屏保0/cloak0。精确HM首红读回FFFF0000但CheckDeviceState/PresentEx/after08760878，桌面旧色、DXGI initial及10次timeout，未fresh；全局DWM Frame1→2非目标消费证明。Exit2/nonTimeout/noKill/drain正常/stderr空，TRX65行全读1执行1失败/notExecuted0，refs0/Destroy1。未跑基础9/consumer/Event0/full、未改系统或生产/公共捕获/共享consumer/打包。default98 warnings/0 errors10.06秒/API无HN。下一唯一行动：具权限外部DWM/DxgKrnl trace以目标HWND/LUID/QPC/source/target关联occlusion/consume/scanout；显示电源及根因仍未证。历史成功/失败保留，Available/HWbackend/loss/media/resources/full四格/x64Event0开放，完整替换未完成。
+
+## HM终态：精确成功合同正锚仍occluded，门控停止
+报告 replacement-supervised-present-positive-anchor.md。发布1/task395b5f3c45ae43d8881e3386118788e7唯一1，精确HJ Ex owner DISCARD count2/interval1/Format22/behavior26及完整窗口/读回/duplication顺序已核；实际descriptor逐字段HR0一致。首红backbufferFFFF0000，实际PresentCalled=true/前态-PresentEx-后态均08760878 OCCLUDED非S_OK，完成后window/screen00CDB38B/frontFF8BB3CD/无fresh，DXGI初始及10次887A0027。剩余三色停止、基础9未执行非失败，refs0/0/Destroy1。Exit2/nonTimeout/noKill/drain正常/stderr空，TRX1执行1失败0通过/notExecuted0，无父TRX/外数值Exit未给。actualtestEA2108B46639172A09D96B50BC01C070CFE8DBE176D1A58F72F2422037404C52/MVID46cc82ba-d59e-4529-9875-4b660f023dc8/.NET10.0.13 X64；全身份/QPC详报告。整task hm-positive-anchor/readback/x64-native；业务26/窗口2/监督39/stdout44/TRX65全文读，Diagnostic仅回收。default98 warnings/0 errors2.31秒/API无HM HI HL，显式HI partial外无改动。下一唯一需要关联目标HWND/LUID/QPC的外部DWM/DxgKrnl显示源激活/扫描/合成occlusion原因证据，不重复随机改参。无API或产品责任结论，无consumer/迁移/FLIPEX/full。HJ/HL/HA/HDHEHF历史保留，所有剩余总门开放，完整替换未完成。
+
+## HL终态：同任务三组无fresh，停止迁移失败循环
+详 completed-work/replacement-supervised-discard-present-differential.md。唯一task c6f6968310184cdb985728cab0b7cbac，基础9测试/Ex owner/基础9 owner，同Format22/32×16/DISCARD/count1/interval0；各红蓝红FF123456。12帧backbuffer正确/实际Present/GPU完成，基础9 HR0，Ex四次08760878 S_PRESENT_OCCLUDED且前后同状态；全部window/screen00CDB38B/front FF8BB3CD/DXGI无fresh，未取样0非黑帧。H1不支持Ex差异，H2仅owner不足以修复；不能跨HJ任务归因。三组device/factory refs0/Destroy1，前台无遮挡。Exit2/nonTimeout/noKill/drain正常/stderr空，childTRX total1/executed1/passed0/failed1/notExecuted0，无父TRX/外数值Exit未给。actualtest56D19E4B31D650582D24F1D4DC7080C496758FB595BF9099577D3D9AE97147FB/MVIDeda472f1-26c2-45a0-b837-0c5dce1aeee8/.NET10.0.13 X64，身份/WPF/系统SHA及逐帧QPC详报告。发布1/task1，回收artifacts/hl-present-differential/readback/x64-native；无consumer/connect/Event0/full/部署补跑。仅HI partial显式HL复用，公共/生产/旧夹具不改；最后源码后default98 warnings/0 errors、2.36秒。下一唯一另轮动作：精确HJ count2/interval1 Ex owner正锚与同合同基础9 owner成对；正锚仍occluded即停止。HA/HDHEHF/HJ保留，Available/HWbackend/loss/mediaresources/full四格/x64Event0开放，完整替换未完成。
+HL末次范围登记：报告53行全文/三共享HL节写后回读；153行业务、三个窗口各5行、监督39行全读，TRX补齐13–220后现246行全文亲读，独立stdout相关首尾与TRX完整StdOut已读；Diagnostic仅回收，历史仅读相关节。无追加运行或源码改动。
+
+## HK终态：旧DISCARD适用，前置失败后共享迁移已精确撤回
+完整报告 completed-work/replacement-supervised-shared-consumer-revalidation.md。唯一task0432ac5ad9df4e78b41573f06a62edea，旧official Geometry精确filter total1/executed1/passed0/failed1/notExecuted0，绝对childTRX69行全读；子Exit2/nonTimeout/noKill/drain正常，stderr空，监督非MTP无父TRX。旧D3D9普通Present原HR0断言通过并完成，但expected00563412/window与screen实际00CDB38B，HWND AC0516/actualFormat22/SwapEffect1/DPI96，connect前停止；未到consumer，不归候选。actual官方AD1C9DBB…，test5C19F1367487F82A39225962DCCDD40ABDC76D1DD8B7BE56BA886061D80C3BDB/MVID07a7457d-19b0-46e2-915e-09d01735cad0/.NET10.0.13 X64，actual WPF及最终refs无直接记录不补造。
+本轮普通surface async迁移14项已逐项撤回，默认VisualCache535行及原Present/断言/cleanup保留，HB及HA只读。候选固定HA x64 8F74588…仅包依赖，不重建。发布1/task1，candidate/x86/related/full/FLIPEX运行0。独有hk-shared-consumer保留编译snapshot及整task回收；无新增源码全量snapshot。撤回后正常default Release/win-x64 build98 warnings/0 errors、2.27秒。DISCARD适用，FLIPEX INVALIDCALL不作本轮门；下一唯一门定位旧D3D9 DISCARD前置fresh，不扩泛native/HB代验。Available/HWbackend/loss/media/resources/full四格/独立x64Event0仍开，完整替换未完成。
+
+## HJ终态：HI专属读回已修；DISCARD成功，FLIPEX在真实Present失败
+同HI报告追加，不另建重复报告。task80257012a4c640019c6eaf83b1b34024，childTRX1/执行1/通过0/失败1/未执行0，Exit2/nonTimeout/noKill/drain正常、stderr空；监督无父TRX，外数值Exit未提供。六帧GetDesc Format22/32×16匹配staging，所有读回HRESULT0/refs0/红蓝红正确；Format22 X非alpha，RGB零阈值。DISCARD三次真实PresentEx0/完成、window/screen/front/duplication fresh红蓝红正确。FLIPEX三次真实PresentEx8876086C，完成/后态/桌面采样未执行，不把哨兵当旧色。六次stateBefore S_OK，HI occluded未复现；不支持FLIPEX改善，occlusion与内容跨轮仅相关，不能因果归环境。双控制device/factory refs0/销毁1。
+actualtest5F1828CEA6A725729A9B7EA08E17345CF98360A87EE18F55DF115677AB548B2F/MVIDf5f29290-df11-4bbc-9819-37093387422f/.NET10.0.13 X64；actualWPF/系统模块/window/LUID及逐帧QPC见同HI报告。HA8F74588…只依赖不冒actual消费。仅HI专属partial修改，公共/生产/共享/项目打包不动；发布2次（task前离线纠正首依赖），正式task1/无追加。default正常分析器Release/win-x64 build98 warnings/0 errors，2.30秒新跑。回收artifacts/hj-present-control/readback/x64-native，监督/逐帧/双窗口/双流/绝对childTRX Counters/RunInfo Failed亲读。下一唯一任务离线核FLIPEX PresentEx合同/override限制定位INVALIDCALL，非随机改flags/扩consumer；DISCARD成功为共享迁移前置反证保留。HDHEHF及HA修复保留，Available/HWbackend/loss/media/resources/full四格/x64Event0仍开，完整替换未完成。
+
+HJ末次核证：同HI报告全文及三共享最新HJ节已写后回读，旧历史仅相关节；childTRX105行/双流及逐帧/窗口全读，Diagnostic仅登记未全审。无新增运行。
+
+## HI终态：occlusion有实测，交付对照因专属前置错误未覆盖
+唯一task7d92e64668684b28a669a4c59bd6511f，TRX total1/executed1/passed0/failed1，childExit2/nonTimeout/noKill/drain正常。D3D9Ex两个模式均CheckDeviceState08760878 S_PRESENT_OCCLUDED；LUID4E71及monitor10001与DXGI一致，实际WinSta0/Default/session1 Active/High/remote0/protocol0/DWM enabled。HI Format22调用公共固定Format21 staging读回，GetRenderTargetData8876086C使六帧均未Present。不是双模式交付失败：H1未判别；H2简单错输出排除、occlusion来源未闭。双控制refs0/0/销毁1。test98D5ED8E9C3314A02BBF87489C3B9696018139D0CD2C0195CEF5E3888367A3C9/MVID8fd15929-e5ab-4881-b5d9-6a04730655d3/.NET10.0.13 X64，WPF及系统SHA详HI报告。发布1/task1，未追加；default normal build98 warnings/0 errors新跑，仅HI显式文件，无生产/共享/打包改动。回收artifacts/hi-desktop-delivery/readback/x64-native，绝对TRX及关键原件亲读。下一唯一动作另授权HI专属actual-format staging读回后一次原配置blit/flip，公共函数不改、async不迁移。HH/HDHEHF历史保留，Available/HWbackend/loss/media资源通知/full四格/x64Event0仍开放，完整替换未完成。
+
+## HH终态：原样HB控制及旧原生前置同时未证
+沿用HG报告replacement-supervised-shared-consumer-contract-fix.md。唯一task4b901b8e7b094574bf51400213e9cb41，child TRX total1/executed1/passed0/failed1/notExecuted0，子Exit2/nonTimeout/noKill/drain正常，stderr空；监督非MTP无父TRX、外数值Exit未单列。HB三帧backbuffer正确/Present0/GPU完成但window/screen00CDB38B、front FF8BB3CD、DXGI无本次fresh；旧前置expected00563412/actual00CDB38B，refs0/0/DestroyWindow1。实际format21对22、提交owner7932对测试8204；坐标56,48/DPI96/cover foreground自身。COLORREF转换正确，不改expected，未证单一夹具根因。失败层限定为提交/GPU完成至独立桌面可见内容之间，不泛称环境即可结案。
+actual官方AD1C9DBBC2FCC2B274145727E8F04D5ADF49A0C9AE4D1A3C33EC969FCD5B4BF1，test9B1101DA2E0E9A53D3AD6B49E66C046C2FC7F9B0E6CF0510F8DFB60A83362C76/MVID457ab1fb-c99d-4459-a552-3448d4e8279c/.NET10.0.13 X64；WPF SHA0E605CCC78D7929EB8DA4473CDCB6D7EF79DB07B3F69E780745AE1F2AA5A6E31。只新增显式HH_NATIVE_PRECONDITION同exe诊断，无默认业务修改、无consumer/connect/Event0、无共享捕获或生产/项目打包改动。最后default正常build98 warnings/0 errors新跑；正常发布2调用（1 CA2219编译失败/1成功），有效task1，candidate/x86/full0；HA仅依赖非actual。回收artifacts/hh-native-precondition/readback/x64-official；child.trx真实路径直接读到，Counters/RunInfo与核心业务亲读；旧front tuple{}不补造。
+下一唯一门同task同时验证HB与旧原生前置可见内容及释放，满足后才HG迁移并同一official HistoricalGeometry复测；当前未满足。旧EHANDLE/consumer未覆盖，Available/HWbackend/loss/media/resources/full四格/x64Event0仍开放，完整替换未完成。
+
+
+HH末次核证纠正：直接读取HG旧task绝对路径映射Results/hg-x64-official/TestResults/child.trx成功，原“无TRX”枚举结论撤销，历史保留。HG真实Counters total1/executed1/passed0/failed1/notExecuted0/timeout0/aborted0，RunInfo Error exit2；亲读1–9、35–69，非新增运行。HH报告全文与三共享最新受改节已写后读，末次补记再次回读；长历史仅有关节。
+
+## HG终态：显示前置阻塞，未验收共享修改已撤回
+详replacement-supervised-shared-consumer-contract-fix.md。唯一official x64 task43cf881c5a8947eea0b886a7b331617b，stdout1执行/1失败/0成功/0skip；Exit2/nonTimeout/noKill/drain正常，无原生崩溃。expected00563412/actual00CDB38B在connect前失败，cleanup complete；旧E_HANDLE/Destroy未覆盖。回收没有完成childTRX，不造Counters/Failed/RunInfo；监督非MTP无父TRX。actual官方AD1C9DBBC2FCC2B274145727E8F04D5ADF49A0C9AE4D1A3C33EC969FCD5B4BF1；test744BB930F11749F7E8E3F80FC91C206150ED410B0ACA85BBFFB94B15D9AD533C/MVID414349cd-6e2c-4774-9181-acf1d8209c46/.NET10.0.13 X64。consumer内容/events/refs未覆盖，候选只包SHA。
+默认共享VisualCache修改逐项精确恢复，HA/HB及原断言/Present/cleanup保留；恢复后default正常Release/win-x64 build98 warnings/0 errors。candidate/x86/相关回归/full0；前置失败后未追加任务。下一唯一门先确认旧共享显示前置，再重做合同迁移及同一official复测；未验收行为不保留，完整替换未完成。HWbackend/Available/loss/media/resources/full四格/独立Event0仍开。HG末次补记：报告全文与三共享HG新节写后读，历史相关节未全审。
+
+## HF终态：x86 official/candidate同包有限内容消费对照通过
+同HD报告replacement-supervised-hwnd-consumer-contract.md补HF，未新增报告。official e0036f3dbf3347bb8891145835f4c9df、candidate71daf6c78a9c4cdabc67748c1c9d8e98各1执行1通过0失败0skip/子Exit0/nonTimeout/noKill/drain正常。非MTP无父TRX，外工具数值Exit未单列。actual官方SHA5EBD18E019D7D82144EE068A7D56F47200E2D82A2121E3F3A066DAA6AC36B834；HA候选Native SHA75D136F71223DB9EA0830BFBF9CDFC0EAAB748B5067397B682E42323B698EC30。test同包SHA C61C02D7A3A6F1B4785920037C8CF0E81C1A18EE51352950D9CE99B2A614A12E/MVIDe37ffa74-0079-4cf6-af2d-c1e0671cc2f2；.NET/WPF10.0.13 X86 ptr4，完整路径/TRX/WPF SHA见同报告；数值基址与WPF完整加载路径未落盘，不补造。
+两格native red/blue/red backbuffer/Present/window/screen/front/duplication fresh全过，consumer红255/蓝16711680/绿65280全等，三事件true，Detach/四resource删除/flush/destroy/disconnect/deinit/DestroyWindow1、四refs0。flags12/context-2/DPI1/1/初始invalidate与原合同未改。backend未知，BasicRenderDriver仅native前置；consumer只有windowDC，无target surface独立读/consumer screen双读。Available0/native exactclose未证。
+零源码改动，正常分析器仅显式HB符号win-x86 Release selfcontained10.0.13正式发布一次，独有artifacts/hf-x86-consumer obj/bin/publish/package且PublishDir显式，clean com-acceptance-package为上传源，readback分离，下分x86-official/x86-candidate。HA生产不重发，各一次后停止，无full/变体/控制重跑。两格监督39/TRX86/业务77/阶段77/native60/stdout12/stderr空全部分段亲读，diagnostic/PPM仅回收；HD旧default正常build98 warnings/0 errors引用非本轮新跑。
+下一唯一共享夹具迁移门：将已验证flags/context/实际DPI/invalidate/async+duplicate合同逐项映射共享consumer，保留旧预期/cleanup，backend/目标消费独立证据仍开放；本轮未迁移。独立x64Event0/EHANDLE不因新场景成功而关闭，HW loss/media/resources通知/full最终四格仍开，完整替换未完成。HF末次补记：HD报告全文与三共享HF最新受改节/本补记写后回读，旧历史仅相关节未全文。
+
 ## HE终态：同HD正式包candidate x64唯一对照通过
 沿用replacement-supervised-hwnd-consumer-contract.md，不新增报告。唯一新task333b412deb784bc3bdea920f2a519ba7，candidate1执行1通过0失败0skip；子PID836/监督6332，Exit0/nonTimeout/noKill，工具外层数值Exit未单列，非MTP监督无父TRX。actual候选Native/wpfgfx_cor3.dll SHA8F74588B081AD575EC1ED046E99CCC21182BA2E6BC47932F3DE9CBEEC915BEC0，Load句柄匹配实际模块后hash，数值句柄未序列化；testSHA878F8815345E61268526C957EF43D1D195979298C10D1C5216450234C9072E6C/MVIDe148d839-2fd7-44d4-88b5-512acdf3d919与HD同包，.NET/WPF10.0.13。
 native red/blue/red fresh各内容层通过；consumer红255/蓝16711680/绿65280零阈值全部相等，三eventtrue/HR0/四resource删除/Detach及cleanup完成，bitmap/surface/device/factory refs0，DestroyWindow1。flags12/context-2/DPI1/1/初始化invalidate不变；consumerbackend未知/目标surface未直接读，BasicRenderDriver仅native duplication，consumer没有单独screen读回，Available0及native exactclose未证。

@@ -46,49 +46,7 @@ public sealed unsafe partial class D3DImageTests
     [TestMethod]
     public void WhenExclusiveDeviceIsDisplacedThenRealDeviceLossCanRecover()
     {
-        nint window = CreateOutputWindow("Exclusive device loss probe", 40, 40);
-        nint otherWindow = CreateOutputWindow("Exclusive device loss trigger", 100, 40);
-        nint factory = Direct3DCreate9(32), first = 0, second = 0;
-        try
-        {
-            Assert.AreNotEqual(0, factory);
-            NativeDisplayMode mode = default;
-            Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint, NativeDisplayMode*, int>)(*(void***)factory)[8])(factory, 0, &mode));
-            PresentParameters parameters = new() { Width = mode.Width, Height = mode.Height, Format = mode.Format, Count = 1, SwapEffect = 1, Window = window, Windowed = 0 };
-            nint created = 0;
-            int result = windowThread!.Invoke(() => CreateExclusiveDevice(factory, window, parameters, out created));
-            first = created;
-            Console.WriteLine($"DeviceLossProbe firstCreate=0x{result:X8} mode={mode.Width}x{mode.Height} format={mode.Format}");
-            Assert.AreEqual(0, result);
-            PresentParameters other = parameters;
-            other.Window = otherWindow;
-            result = windowThread.Invoke(() => CreateExclusiveDevice(factory, otherWindow, other, out created));
-            second = created;
-            int lost = ((delegate* unmanaged[Stdcall]<nint, int>)(*(void***)first)[3])(first);
-            Console.WriteLine($"DeviceLossProbe secondCreate=0x{result:X8} firstCooperative=0x{lost:X8}");
-            Assert.AreEqual(unchecked((int)0x88760868), lost, "Exclusive displacement must produce real D3DERR_DEVICELOST; no synthetic replacement is accepted.");
-            windowThread.Invoke(() => { Release(second); return 0; });
-            second = 0;
-            EstablishObservableWindow(window);
-            long deadline = Environment.TickCount64 + 5000;
-            do
-            {
-                lost = ((delegate* unmanaged[Stdcall]<nint, int>)(*(void***)first)[3])(first);
-                ProcessWindowMessages(window);
-            } while (lost == unchecked((int)0x88760868) && Environment.TickCount64 < deadline);
-            Console.WriteLine($"DeviceLossProbe beforeReset=0x{lost:X8}");
-            Assert.AreEqual(unchecked((int)0x88760869), lost);
-            result = windowThread.Invoke(() => ResetExclusiveDevice(first, parameters));
-            Console.WriteLine($"DeviceLossProbe reset=0x{result:X8}");
-            Assert.AreEqual(0, result);
-            Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, int>)(*(void***)first)[3])(first));
-        }
-        finally
-        {
-            windowThread!.Invoke(() => { Release(second); Release(first); return 0; });
-            Release(factory);
-            DestroyWindow(otherWindow); DestroyWindow(window);
-        }
+        RunExclusiveFocusLoss();
     }
 
     private static int CreateExclusiveDevice(nint factory, nint window, PresentParameters parameters, out nint device)

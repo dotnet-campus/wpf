@@ -35,7 +35,46 @@ public sealed unsafe partial class UceChannelTests
     [Timeout(30000)]
     public void WhenOriginalAsyncWicTransportIsDisconnectedThenCloseDrainsAllQueueStates(int queueState) => RunAsyncWicDrain(true, queueState);
 
-    private static void RunAsyncWicDrain(bool system, int queueState)
+#if HS_NOTIFICATION_CLOSE
+    /// <summary>Diagnoses whether close relinquishes transport ownership before the caller releases its surviving stream.</summary>
+    [DataTestMethod]
+    [DataRow(true, 6)]
+    [DataRow(true, 7)]
+    [DataRow(true, 8)]
+    [DataRow(false, 6)]
+    [DataRow(false, 7)]
+    [DataRow(false, 8)]
+    [Timeout(30000)]
+    public void WhenAsyncCloseReturnsThenSurvivingExternalStreamReleasesExactlyOnce(bool system, int queueState)
+    {
+        string root = Path.Combine(AcceptancePaths.Results, "hu-roles", $"{system}-{queueState}");
+        Directory.CreateDirectory(root);
+        var start = new System.Diagnostics.ProcessStartInfo(Environment.ProcessPath ?? throw new InvalidOperationException())
+        {
+            UseShellExecute = false, WorkingDirectory = AppContext.BaseDirectory
+        };
+        foreach (string argument in new[] { "--filter", "FullyQualifiedName~WhenHuCloseRoleRunsThenFinalStreamDisposalIsRecorded", "--report-trx", "--report-trx-filename", "role.trx", "--results-directory", root, "--no-progress" })
+            start.ArgumentList.Add(argument);
+        start.Environment["HU_CLOSE_ROLE"] = $"{system}:{queueState}";
+        using var process = System.Diagnostics.Process.Start(start) ?? throw new InvalidOperationException();
+        bool exited = process.WaitForExit(25000);
+        if (!exited) { process.Kill(true); process.WaitForExit(); }
+        File.WriteAllText(Path.Combine(root, "exit.json"), JsonSerializer.Serialize(new { exited, pid = process.Id, exitCode = process.ExitCode, arguments = start.ArgumentList.ToArray() }));
+        Assert.IsTrue(exited);
+        Assert.AreEqual(0, process.ExitCode);
+    }
+
+    /// <summary>Executes exactly one module and queue state in a fresh formal test process.</summary>
+    [TestMethod]
+    [Timeout(22000)]
+    public void WhenHuCloseRoleRunsThenFinalStreamDisposalIsRecorded()
+    {
+        string[] role = (Environment.GetEnvironmentVariable("HU_CLOSE_ROLE") ?? throw new InvalidOperationException()).Split(':');
+        RunAsyncWicDrain(bool.Parse(role[0]), int.Parse(role[1], System.Globalization.CultureInfo.InvariantCulture), retainExternal: true);
+    }
+#endif
+
+    private static void RunAsyncWicDrain(bool system, int queueState, bool retainExternal = false)
     {
         string path = system
             ? Path.Combine(Path.GetDirectoryName(typeof(System.Windows.Media.MediaPlayer).Assembly.Location)!, "wpfgfx_cor3.dll")
@@ -57,6 +96,30 @@ public sealed unsafe partial class UceChannelTests
         using var wic = new SystemWicBitmap();
         nint connection = 0, channel = 0, other = 0, stream = 0, frame = 0, wrapper = 0;
         int disposals = 0, reentry = int.MinValue;
+        int sequence = 0, closeReturned = 0, callbackOrder = 0;
+        int callbackExited = 0;
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+        WicFinalReleaseCapture? ownerCapture = system && queueState == 6 && !retainExternal ? new() : null;
+#endif
+        string stage = "setup";
+        var events = new System.Collections.Concurrent.ConcurrentQueue<object>();
+        var waits = new List<object>();
+        void Event(string name) => events.Enqueue(new { order = Interlocked.Increment(ref sequence), name, stage = Volatile.Read(ref stage), thread = DrainGetCurrentThreadId(), disposals = Volatile.Read(ref disposals) });
+        bool WaitForCallback(string phase)
+        {
+            Volatile.Write(ref stage, phase);
+            Event("wait.before");
+            using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            while (Volatile.Read(ref callbackExited) == 0 && !cancellation.IsCancellationRequested)
+                cancellation.Token.WaitHandle.WaitOne(10);
+            bool finished = Volatile.Read(ref callbackExited) != 0;
+            waits.Add(new { phase, finished, condition = "callback.exit observed", disposals = Volatile.Read(ref disposals) });
+            Event("wait.after");
+            return finished;
+        }
+        uint externalReleaseReferences = uint.MaxValue;
+        var loaded = System.Diagnostics.Process.GetCurrentProcess().Modules.Cast<System.Diagnostics.ProcessModule>().Single(item => item.BaseAddress == module);
+        string actualPath = loaded.FileName;
         uint releaseThread = 0;
         bool completed = false, initialized = false;
         List<object> calls = [];
@@ -69,7 +132,11 @@ public sealed unsafe partial class UceChannelTests
         {
             nint owned = value;
             value = 0;
-            if (owned != 0) ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)owned)[2])(owned);
+            if (owned != 0)
+            {
+                uint references = ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)owned)[2])(owned);
+                calls.Add(new { operation = "Release.External", references });
+            }
         }
         try
         {
@@ -91,9 +158,16 @@ public sealed unsafe partial class UceChannelTests
             nint destroyEntry = (nint)destroy;
             stream = ManagedStreamTests.CreateCallbackStream(module, bmp, () => { }, () =>
             {
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+                ownerCapture?.Capture();
+#endif
+                Event("callback.enter");
                 releaseThread = DrainGetCurrentThreadId();
-                if (!system) reentry = ((delegate* unmanaged[Stdcall]<nint, int>)destroyEntry)(sibling);
+                if (!system && !retainExternal) reentry = ((delegate* unmanaged[Stdcall]<nint, int>)destroyEntry)(sibling);
+                callbackOrder = Interlocked.Increment(ref sequence);
                 Interlocked.Increment(ref disposals);
+                Event("callback.exit");
+                Volatile.Write(ref callbackExited, 1);
             });
             frame = wic.DecodeFrame(stream);
             Check("Wrap", wrap(frame, &wrapper));
@@ -108,12 +182,31 @@ public sealed unsafe partial class UceChannelTests
                 calls.Add(new { operation = "Flush.NullSourceFailure", result = first });
                 Assert.AreEqual(unchecked((int)0x88980406), first);
             }
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+            ownerCapture?.Mark(1);
+#endif
             Check("Transfer", transfer(bitmap, wrapper, channel));
-            ReleaseCom(ref wrapper); ReleaseCom(ref frame);
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+            ownerCapture?.Mark(2);
+#endif
+            ReleaseCom(ref wrapper);
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+            ownerCapture?.Mark(3);
+#endif
+            ReleaseCom(ref frame);
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+            ownerCapture?.Mark(4);
+#endif
             int state = queueState % 3;
             if (state >= 1) Check("CloseBatch", close(channel));
             if (state >= 2) Check("Commit", commit(channel));
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+            ownerCapture?.Mark(5);
+#endif
             Check("Disconnect.ReferenceOnly", disconnect(connection)); connection = 0;
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+            ownerCapture?.Mark(6);
+#endif
             if (!directClose)
             {
                 int afterDisconnect = flush(channel);
@@ -121,21 +214,60 @@ public sealed unsafe partial class UceChannelTests
                 Assert.AreEqual(failed ? unchecked((int)0x88980406) : 0, afterDisconnect);
                 Assert.AreEqual(0, Volatile.Read(ref disposals), "External stream remains owned after disconnect/flush.");
             }
-            ReleaseCom(ref stream);
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+            ownerCapture?.Mark(7);
+#endif
+            if (!retainExternal) ReleaseCom(ref stream);
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+            ownerCapture?.Mark(8);
+#endif
             if (!failed) Assert.AreEqual(0, Volatile.Read(ref disposals), "Pending transport or executed bitmap source retains stream after external release.");
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+            ownerCapture?.Mark(9);
+#endif
             Check("Destroy.Drain", destroy(channel)); channel = 0;
-            Assert.IsTrue(SpinWait.SpinUntil(() => Volatile.Read(ref disposals) == 1, TimeSpan.FromSeconds(5)));
-            if (!failed || (directClose && state < 2)) Assert.AreNotEqual(DrainGetCurrentThreadId(), releaseThread);
-            if (!system)
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+            ownerCapture?.Mark(10);
+#endif
+            closeReturned = Interlocked.Increment(ref sequence);
+            Event("closeReturn");
+            if (retainExternal)
+            {
+                Assert.AreEqual(0, Volatile.Read(ref disposals));
+                nint owned = stream;
+                stream = 0;
+                Volatile.Write(ref stage, "externalRelease");
+                Event("externalRelease.before");
+                externalReleaseReferences = ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)owned)[2])(owned);
+                Event("externalRelease.after");
+                calls.Add(new { operation = "Release.SurvivingExternal", references = externalReleaseReferences });
+                _ = WaitForCallback("afterExternalRelease");
+            }
+            else Assert.IsTrue(SpinWait.SpinUntil(() => Volatile.Read(ref disposals) == 1, TimeSpan.FromSeconds(5)));
+            if (!retainExternal) Assert.IsTrue(WaitForCallback("afterClose"));
+            if (!system && !retainExternal && (!failed || (directClose && state < 2))) Assert.AreNotEqual(DrainGetCurrentThreadId(), releaseThread);
+            if (!system && !retainExternal)
             {
                 Check("Callback.DestroySibling", reentry); other = 0;
             }
             else
             {
+                Volatile.Write(ref stage, "siblingDestroy");
+                Event("siblingDestroy.before");
                 Check("Destroy.Sibling", destroy(other)); other = 0;
+                Event("siblingDestroy.after");
+                if (retainExternal) _ = WaitForCallback("afterSiblingDestroy");
             }
+            Volatile.Write(ref stage, "deinitialize");
+            Event("deinit.before");
             Check("Deinitialize", deinitialize()); initialized = false;
-            if (!system && (!failed || (directClose && state < 2)))
+            Event("deinit.after");
+            if (retainExternal)
+            {
+                Assert.IsTrue(WaitForCallback("afterDeinitialize"));
+                Assert.IsTrue(callbackOrder > closeReturned);
+            }
+            if (!retainExternal && !system && (!failed || (directClose && state < 2)))
                 Assert.IsTrue(SpinWait.SpinUntil(() => !DrainThreadExists(releaseThread), TimeSpan.FromSeconds(5)), "Composition worker must exit after deinitialization.");
             Assert.AreEqual(1, Volatile.Read(ref disposals));
             completed = true;
@@ -147,8 +279,12 @@ public sealed unsafe partial class UceChannelTests
             if (connection != 0) _ = disconnect(connection);
             ReleaseCom(ref wrapper); ReleaseCom(ref frame); ReleaseCom(ref stream);
             if (initialized) _ = deinitialize();
-            File.WriteAllText(Path.Combine(AcceptancePaths.Results, $"async-wic-drain-{system}-{queueState}.json"),
-                JsonSerializer.Serialize(new { system, queueState, completed, path, sha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))), disposals, releaseThread, reentry, calls }, new JsonSerializerOptions { WriteIndented = true }));
+#if WIC_FINAL_RELEASE_OWNER_DIAGNOSTIC
+            ownerCapture?.Mark(11);
+            if (Volatile.Read(ref callbackExited) != 0) ownerCapture?.Write();
+#endif
+            File.WriteAllText(Path.Combine(AcceptancePaths.Results, $"async-wic-drain-{system}-{queueState}-{retainExternal}.json"),
+                JsonSerializer.Serialize(new { system, queueState, retainExternal, completed, path, actualPath, sha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(actualPath))), version = loaded.FileVersionInfo.FileVersion, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), testMvid = typeof(UceChannelTests).Assembly.ManifestModule.ModuleVersionId, testSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(UceChannelTests).Assembly.Location))), pid = Environment.ProcessId, events = events.ToArray(), waits, callbackExited, closeReturned, callbackOrder, externalReleaseReferences, disposals, releaseThread, reentry, calls }, new JsonSerializerOptions { WriteIndented = true }));
         }
     }
 

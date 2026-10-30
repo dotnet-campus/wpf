@@ -2311,6 +2311,22 @@ public sealed unsafe class Direct3D9DeviceManagerTests
         return new Direct3D9DisplaySet(characteristics, 0, 0, () => 0, () => 0);
     }
 
+    [TestMethod]
+    public void WhenKhOldDeviceIsDisposedThenOfficialDestructionNotificationDoesNotMarkSurvivingDeviceUnusable()
+    {
+        using Direct3D9DeviceManager manager = CreateManager();
+        List<bool> statuses = [];
+        manager.AddAdapterStatusListener((_, valid) => statuses.Add(valid));
+        Direct3D9Device oldDevice = manager.CreateDevice(CreateParameters());
+        using Direct3D9Device survivor = manager.CreateDevice(CreateParameters());
+
+        oldDevice.Dispose();
+
+        // Native UnusedNotification calls NotifyDeviceLost even for normal destruction.
+        Assert.AreEqual(("True|True|False", false, 1, 0),
+            (string.Join('|', statuses), survivor.IsUnusable, manager.UsableDeviceCount, manager.UnusableDeviceCount));
+    }
+
     private static Direct3D9DeviceManager CreateManager(List<Direct3D9DeviceCreationParameters>? creations = null)
     {
         return new Direct3D9DeviceManager((parameters, unusable, disposed) =>

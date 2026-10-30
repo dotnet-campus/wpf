@@ -37,7 +37,12 @@ internal static class ExitDiagnostics
         string root = args[full ? 1 : 0];
         if (string.IsNullOrWhiteSpace(root)) throw new ArgumentException(Resources.GetString("ExitArguments"), nameof(args));
         int seconds = int.Parse(args[full ? 2 : 1], CultureInfo.InvariantCulture);
-        if (seconds < 1 || seconds > (full ? 1500 : 120))
+        int maximumSeconds = full ? 1500 : 120;
+#if RESOURCE_LIFECYCLE_TREND
+        if (!full && args[2] == ResourceTrendCoordinator.SupervisionFilter)
+            maximumSeconds = 840;
+#endif
+        if (seconds < 1 || seconds > maximumSeconds)
             throw new ArgumentOutOfRangeException(nameof(args), Resources.GetString("ExitBudget"));
         if (!full && string.IsNullOrWhiteSpace(args[2]))
             throw new ArgumentException(Resources.GetString("ExitArguments"), nameof(args));
@@ -62,6 +67,8 @@ internal static class ExitDiagnostics
             start.ArgumentList.Add(argument);
         start.Environment["WPFGFX_EXIT_STAGES"] = Path.Combine(root, "stages.jsonl");
         start.Environment["WPFGFX_RUN_ROOT"] = root;
+        start.Environment["WPFGFX_SUPERVISOR_PID"] = Environment.ProcessId.ToString(CultureInfo.InvariantCulture);
+        ForegroundTopology.Capture("supervisor-before-child");
         var record = new ExitRecord
         {
             StartedUtc = DateTimeOffset.UtcNow, SupervisorPid = Environment.ProcessId,
@@ -89,6 +96,9 @@ internal static class ExitDiagnostics
         Task? output = null, error = null;
         try
         {
+#if SANDBOX_FOREGROUND_CONTROL_DIAGNOSTIC
+            SandboxForegroundControl.Yield(root, "supervisor-start-once");
+#endif
             if (!process.Start()) throw new InvalidOperationException();
             record.Pid = process.Id;
             Save();
@@ -125,8 +135,9 @@ internal static class ExitDiagnostics
             {
                 record.OutputDrainTimedOut = true;
                 drainCancellation.Cancel();
-                try { await Task.WhenAll(output, error).ConfigureAwait(false); }
+                try { await Task.WhenAll(output, error).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false); }
                 catch (OperationCanceledException) when (drainCancellation.IsCancellationRequested) { }
+                catch (TimeoutException) { record.OutputDrainCancellationTimedOut = true; }
             }
             return record.Cancelled ? 130 : record.TimedOut || record.OutputDrainTimedOut ? 124 : process.ExitCode;
         }
@@ -154,6 +165,9 @@ internal static class ExitDiagnostics
             stdout.Flush(true);
             stderr.Flush(true);
             Save();
+#if SANDBOX_FOREGROUND_CONTROL_DIAGNOSTIC
+            SandboxForegroundControl.Restore(root);
+#endif
         }
     }
 
@@ -182,6 +196,7 @@ internal static class ExitDiagnostics
         public string? ExitHex { get; set; }
         public bool OutputCollected { get; set; }
         public bool OutputDrainTimedOut { get; set; }
+        public bool OutputDrainCancellationTimedOut { get; set; }
         public string? SupervisorError { get; set; }
     }
 }

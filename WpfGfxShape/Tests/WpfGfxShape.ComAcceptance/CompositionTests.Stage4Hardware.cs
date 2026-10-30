@@ -69,7 +69,7 @@ public sealed unsafe partial class D3DImageTests
         Assert.AreEqual(0, resource(channel, 83, &brush));
         Assert.AreEqual(0, resource(channel, 69, &geometry));
         Assert.AreEqual(0, resource(channel, 43, &data));
-        byte[] packet = new byte[32];
+        byte[] packet = new byte[28];
         MemoryMarshal.Write(packet.AsSpan(), 0x8du);
         MemoryMarshal.Write(packet.AsSpan(4), mode);
         MemoryMarshal.Write(packet.AsSpan(8), 1.0);

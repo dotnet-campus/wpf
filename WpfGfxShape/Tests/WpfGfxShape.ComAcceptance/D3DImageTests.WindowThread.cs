@@ -12,6 +12,8 @@ public sealed unsafe partial class D3DImageTests
     public static void StartPresentationThread(TestContext context)
     {
         windowThread = new PresentationWindowThread();
+        if (Environment.GetEnvironmentVariable("WPFGFX_SAMPLER_CRASH_DIAGNOSTIC") == "1")
+            ExitDiagnostics.Stage("sampler ClassInitialize completed pid=" + Environment.ProcessId);
         context.WriteLine("Presentation HWND owner: dedicated STA GetMessage/DispatchMessage; no background brush; WM_PAINT validates only.");
     }
 
@@ -21,6 +23,8 @@ public sealed unsafe partial class D3DImageTests
     {
         windowThread?.Dispose();
         windowThread = null;
+        if (Environment.GetEnvironmentVariable("WPFGFX_SAMPLER_CRASH_DIAGNOSTIC") == "1")
+            ExitDiagnostics.Stage("sampler ClassCleanup completed pid=" + Environment.ProcessId);
     }
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
@@ -48,6 +52,9 @@ public sealed unsafe partial class D3DImageTests
         private void Run()
         {
             id = GetCurrentThreadId();
+#if SANDBOX_DESKTOP_DIAGNOSTIC
+            SandboxDesktopController.Capture("owner-before-message-queue-and-hwnd");
+#endif
             PeekMessageW(out _, 0, 0, 0, 0);
             ready.Set();
             int result;

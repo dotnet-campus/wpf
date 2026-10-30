@@ -9,7 +9,7 @@ namespace WpfGfxShape.Tests;
 public sealed unsafe class BoundsCheckProtectionTests
 {
     [TestMethod]
-    [DataRow(0, 0)]
+    [DataRow(0, unchecked((int)0x80004005))]
     [DataRow(1, 0)]
     [DataRow(-1, 0)]
     [DataRow(2, 0)]

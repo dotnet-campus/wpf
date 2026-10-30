@@ -30,7 +30,7 @@ public sealed unsafe partial class D3DImageTests
     [DllImport("dwmapi.dll")]
     private static extern int DwmGetWindowAttribute(nint window, uint attribute, out uint value, uint size);
 
-    private static void DiagnoseNativePresent(nint window, nint device, bool extended)
+    private static void DiagnoseNativePresent(nint window, nint device, bool extended, nint sceneModule = 0)
     {
         uint currentThread = GetCurrentThreadId();
         char* threadName = stackalloc char[256];
@@ -54,7 +54,16 @@ public sealed unsafe partial class D3DImageTests
         finally { if (screenDc != 0) ReleaseDC(0, screenDc); }
         Console.WriteLine($"PresentSession currentThread={currentThread} threadDesktop={threadDesktop} session={session} sessionQuery={sessionQuery} sessionState={sessionState} sessionError={sessionError} cloakResult=0x{cloakResult:X8} cloaked={cloaked} screenConverted={screenConverted} screenPixel=0x{screenPixel:X8}");
         string observationId = Guid.NewGuid().ToString("N");
-        string path = AcceptancePaths.AotDll;
+        string path = "Unknown";
+        string sha256 = "Unknown";
+        if (sceneModule != 0)
+        {
+            char* modulePath = stackalloc char[32768];
+            uint modulePathLength = GetModuleFileNameW(sceneModule, modulePath, 32768);
+            Assert.IsTrue(modulePathLength > 0 && modulePathLength < 32768);
+            path = new string(modulePath, 0, (int)modulePathLength);
+            sha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+        }
         WindowPoint point = new() { X = 16, Y = 8 };
         int converted = ClientToScreen(window, ref point);
         nint covering = WindowFromPoint(point);
@@ -85,6 +94,6 @@ public sealed unsafe partial class D3DImageTests
         uint pixel;
         try { pixel = GetPixel(dc, 16, 8); }
         finally { if (dc != 0) ReleaseDC(window, dc); }
-        Console.WriteLine($"PresentCondition observationId={observationId} utc={DateTimeOffset.UtcNow:O} process={Environment.ProcessId} session={System.Diagnostics.Process.GetCurrentProcess().SessionId} production={path} sha256={Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)))} target=0x{window:X} ownerPid={owner} ownerThread={thread} root=0x{GetAncestor(window, 2):X} visible={IsWindowVisible(window)} iconic={IsIconic(window)} foreground=0x{GetForegroundWindow():X} client=({client.Left},{client.Top},{client.Right},{client.Bottom}) converted={converted} screen=({point.X},{point.Y}) cover=0x{covering:X} coverOwnerPid={coverOwner} coverOwnerThread={coverThread} coverRoot=0x{GetAncestor(covering, 2):X} coverClass={coverClass} coverTitle={title} coverBounds=({bounds.Left},{bounds.Top},{bounds.Right},{bounds.Bottom}) inputDesktop={desktopName} inputDesktopError={desktopError} nativeControl=d3d9.dll Ex={extended} readOnly=True cooperative=0x{cooperative:X8} pixel=0x{pixel:X8}");
+        Console.WriteLine($"PresentCondition observationId={observationId} utc={DateTimeOffset.UtcNow:O} process={Environment.ProcessId} session={System.Diagnostics.Process.GetCurrentProcess().SessionId} loadedModule={path} sha256={sha256} target=0x{window:X} ownerPid={owner} ownerThread={thread} root=0x{GetAncestor(window, 2):X} visible={IsWindowVisible(window)} iconic={IsIconic(window)} foreground=0x{GetForegroundWindow():X} client=({client.Left},{client.Top},{client.Right},{client.Bottom}) converted={converted} screen=({point.X},{point.Y}) cover=0x{covering:X} coverOwnerPid={coverOwner} coverOwnerThread={coverThread} coverRoot=0x{GetAncestor(covering, 2):X} coverClass={coverClass} coverTitle={title} coverBounds=({bounds.Left},{bounds.Top},{bounds.Right},{bounds.Bottom}) inputDesktop={desktopName} inputDesktopError={desktopError} nativeControl=d3d9.dll Ex={extended} readOnly=True cooperative=0x{cooperative:X8} pixel=0x{pixel:X8}");
     }
 }

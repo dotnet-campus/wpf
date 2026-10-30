@@ -532,6 +532,7 @@ internal static unsafe class InteropDeviceBitmapExports
 
     private static void ApplyAdapterStatus(BitmapState state, bool valid)
     {
+        KiResizeTrace.Record("interop.apply.before", $"bitmap={state.Identity:X} adapter={state.Adapter} luid={state.AdapterLuid:X} valid={valid} front={state.Front:X} hardwareFront={state.HardwareFront:X} surface={state.Surface:X} disabled={state.Disabled} version={state.Version} frontVersion={state.FrontVersion}");
         if (!valid)
         {
             if (state.Fallback)
@@ -557,6 +558,7 @@ internal static unsafe class InteropDeviceBitmapExports
             state.Dirty.Clear();
             state.Dirty.Add(new(0, 0, (int)state.Description.Width, (int)state.Description.Height));
         }
+        KiResizeTrace.Record("interop.apply.after", $"bitmap={state.Identity:X} adapter={state.Adapter} valid={valid} front={state.Front:X} hardwareFront={state.HardwareFront:X} surface={state.Surface:X} disabled={state.Disabled} version={state.Version} frontVersion={state.FrontVersion}");
     }
 
     private static int PresentLocked(BitmapState state, out nint callback, out int available)

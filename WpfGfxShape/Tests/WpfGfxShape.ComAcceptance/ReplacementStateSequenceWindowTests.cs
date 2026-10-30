@@ -19,20 +19,13 @@ public sealed class ReplacementStateSequenceWindowTests
     [TestMethod]
     public async Task WhenWindowImageUpdatesAndResizesThenFreshFramesAndCallbacksConverge()
     {
-        if (Environment.GetEnvironmentVariable("WPFGFX_RUN_ROOT") is not null)
-        {
-            string[] arguments = Environment.GetCommandLineArgs();
-            int index = Array.IndexOf(arguments, "--results-directory");
-            Assert.IsTrue(index >= 0);
-            Assert.AreEqual(0, ReplacementStateSequenceWindowProbe.RunIsolated(arguments[index + 1]));
-            return;
-        }
+        const string method = nameof(WhenWindowImageUpdatesAndResizesThenFreshFramesAndCallbacksConverge);
+        if (WindowSequenceRoleIsolation.ExecuteRole(method, role => ReplacementStateSequenceWindowProbe.RunIsolated(role))) return;
         string root = Path.Combine(AcceptancePaths.Results, "replacement-state-window", Guid.NewGuid().ToString("N"));
-        const string filter = "FullyQualifiedName~WhenWindowImageUpdatesAndResizesThenFreshFramesAndCallbacksConverge";
-        int official = await NativeRun.RoleAsync(root, "--filter", filter, "--results-directory", "original");
-        int candidate = await NativeRun.RoleAsync(root, "--filter", filter, "--results-directory", "candidate");
-        Assert.AreEqual(0, official, "Official control: " + root);
-        Assert.AreEqual(0, candidate, "Candidate: " + root);
+        await WindowSequenceRoleIsolation.RunAsync(root, method, "original");
+        await WindowSequenceRoleIsolation.RunAsync(root, method, "candidate");
+        WindowSequenceRoleIsolation.Validate(root, method, "original");
+        WindowSequenceRoleIsolation.Validate(root, method, "candidate");
         string original = Path.Combine(root, "original");
         string replacement = Path.Combine(root, "candidate");
         string[] files = Directory.GetFiles(original, "*.pbgra32");
@@ -46,18 +39,13 @@ public sealed class ReplacementStateSequenceWindowTests
     [TestMethod]
     public async Task WhenWindowSolidRectangleUpdatesAndResizesThenOfficialContentMatches()
     {
-        if (Environment.GetEnvironmentVariable("WPFGFX_RUN_ROOT") is not null)
-        {
-            string[] arguments = Environment.GetCommandLineArgs();
-            int index = Array.IndexOf(arguments, "--results-directory");
-            Assert.IsTrue(index >= 0);
-            Assert.AreEqual(0, ReplacementStateSequenceWindowProbe.RunIsolated(arguments[index + 1], rectangle: true));
-            return;
-        }
+        const string method = nameof(WhenWindowSolidRectangleUpdatesAndResizesThenOfficialContentMatches);
+        if (WindowSequenceRoleIsolation.ExecuteRole(method, role => ReplacementStateSequenceWindowProbe.RunIsolated(role, rectangle: true))) return;
         string root = Path.Combine(AcceptancePaths.Results, "replacement-rectangle-window", Guid.NewGuid().ToString("N"));
-        const string filter = "FullyQualifiedName~WhenWindowSolidRectangleUpdatesAndResizesThenOfficialContentMatches";
-        int official = await NativeRun.RoleAsync(root, "--filter", filter, "--results-directory", "original");
-        int candidate = await NativeRun.RoleAsync(root, "--filter", filter, "--results-directory", "candidate");
+        await WindowSequenceRoleIsolation.RunAsync(root, method, "original");
+        await WindowSequenceRoleIsolation.RunAsync(root, method, "candidate");
+        WindowSequenceRoleIsolation.Validate(root, method, "original");
+        WindowSequenceRoleIsolation.Validate(root, method, "candidate");
         string[] candidateFrames = Directory.GetFiles(Path.Combine(root, "candidate"), "*.pbgra32");
         var contentEvidence = candidateFrames.Order().Select(file =>
         {
@@ -69,13 +57,33 @@ public sealed class ReplacementStateSequenceWindowTests
                 nonempty = pixels.Any(value => value != 0) };
         }).ToArray();
         File.WriteAllText(Path.Combine(root, "partial-content-evidence.json"), JsonSerializer.Serialize(contentEvidence));
-        Assert.AreEqual(0, official, "Official rectangle control: " + root);
-        Assert.AreEqual(0, candidate, "Candidate rectangle: " + root);
         string[] files = Directory.GetFiles(Path.Combine(root, "original"), "*.pbgra32");
         Assert.HasCount(12, files, root);
         foreach (string file in files)
             CollectionAssert.AreEqual(File.ReadAllBytes(file), File.ReadAllBytes(Path.Combine(root, "candidate", Path.GetFileName(file))), file);
         File.WriteAllText(Path.Combine(root, "comparison.json"), JsonSerializer.Serialize(new { frames = files.Length, threshold = 0, exact = true }));
+    }
+
+    /// <summary>Checks explicit same-exe routing under a supervisor output root without creating parent WPF state.</summary>
+    [TestMethod]
+    public async Task WhenSupervisorOutputRootExistsThenExplicitWindowRolesExecuteInSeparateProcesses()
+    {
+        const string method = nameof(WhenSupervisorOutputRootExistsThenExplicitWindowRolesExecuteInSeparateProcesses);
+        if (WindowSequenceRoleIsolation.ExecuteRole(method, WindowSequenceRoleIsolation.RunControl)) return;
+        string? outputRoot = Environment.GetEnvironmentVariable("WPFGFX_RUN_ROOT");
+        Dispatcher? dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
+        string[] owners = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name is "PresentationCore" or "WindowsBase").Select(a => a.FullName!).Order().ToArray();
+        string root = Path.Combine(NativeRun.PathsRoot, "ka-window-control", Guid.NewGuid().ToString("N"));
+        await WindowSequenceRoleIsolation.RunAsync(root, method, "original");
+        await WindowSequenceRoleIsolation.RunAsync(root, method, "candidate");
+        WindowSequenceRoleIsolation.Validate(root, method, "original");
+        WindowSequenceRoleIsolation.Validate(root, method, "candidate");
+        Assert.AreEqual(outputRoot, Environment.GetEnvironmentVariable("WPFGFX_RUN_ROOT"));
+        Assert.IsNull(Environment.GetEnvironmentVariable("KA_WINDOW_SEQUENCE_ROLE"));
+        Assert.IsNull(Environment.GetEnvironmentVariable("KA_WINDOW_SEQUENCE_METHOD"));
+        CollectionAssert.AreEqual(owners, AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name is "PresentationCore" or "WindowsBase").Select(a => a.FullName!).Order().ToArray());
+        File.WriteAllText(Path.Combine(root, "parent-state.json"), JsonSerializer.Serialize(new { pid = Environment.ProcessId, outputRoot, owners, dispatcherExisted = dispatcher is not null, dispatcherShutdown = dispatcher?.HasShutdownStarted, rolesValidated = 2 }));
+        Assert.IsFalse(dispatcher?.HasShutdownStarted ?? false);
     }
 
     /// <summary>Rejects blank and stale frames independently of official/candidate equality.</summary>

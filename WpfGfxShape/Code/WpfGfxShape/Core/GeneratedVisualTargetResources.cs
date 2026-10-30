@@ -30,7 +30,7 @@ internal readonly struct MilGuidelineSetCommand : IMilResourceUpdateCommand
     internal MilGuidelineSetCommand(uint handle, uint xSize, uint ySize, bool isDynamic) { Type = MilCommand.GuidelineSet; _handle = handle; GuidelinesXSize = xSize; GuidelinesYSize = ySize; IsDynamic = isDynamic ? 1 : 0; }
 }
 
-[StructLayout(LayoutKind.Explicit, Pack = 1, Size = 32)]
+[StructLayout(LayoutKind.Explicit, Pack = 1, Size = 28)]
 internal readonly struct MilBitmapCacheCommand : IMilResourceUpdateCommand
 {
     [FieldOffset(0)] internal readonly MilCommand Type;
@@ -117,7 +117,7 @@ internal sealed class GeneratedBitmapCacheResource : GeneratedDependencyResource
     internal bool EnableClearType { get; private set; }
     internal override int ProcessUpdate(GeneratedProtocolHandleTable table, ReadOnlySpan<byte> value)
     {
-        if (value.Length != 24) return Direct3D9Factory.UceMalformedPacketHResult;
+        if (value.Length != 20) return Direct3D9Factory.UceMalformedPacketHResult;
         double scale = MemoryMarshal.Read<double>(value); uint animationHandle = MemoryMarshal.Read<uint>(value[8..]); int snaps = MemoryMarshal.Read<int>(value[12..]); int clearType = MemoryMarshal.Read<int>(value[16..]);
         if ((snaps is not 0 and not 1) || (clearType is not 0 and not 1) || !TryResolve(table, animationHandle, MilResourceType.DoubleResource, out GeneratedProtocolResource? animation)) return Direct3D9Factory.UceMalformedPacketHResult;
         GeneratedProtocolResource?[] dependencies = [animation]; return CommitDependencies(dependencies, () => { RenderAtScale = scale; RenderAtScaleAnimation = animation; SnapsToDevicePixels = snaps != 0; EnableClearType = clearType != 0; });
@@ -292,11 +292,10 @@ internal sealed class GeneratedTargetResource : GeneratedProtocolResource
             // Out-of-band settings may arrive before the in-band HwndTargetCreate supplies the HWND.
             if (_window != 0 && nextWidth != 0 && nextHeight != 0 && (nextWidth != Width || nextHeight != Height))
             {
-                int result = WpfGfxShape.Abi.HardwareRenderTargetExports.Create(_window, nextWidth, nextHeight, out nint next);
+                KiResizeTrace.Record("resize.begin", $"old={_renderTarget:X} size={Width}x{Height} next={nextWidth}x{nextHeight}");
+                int result = WpfGfxShape.Abi.HardwareRenderTargetExports.Resize(_renderTarget, nextWidth, nextHeight);
+                KiResizeTrace.Record("resize.completed", $"target={_renderTarget:X} size={nextWidth}x{nextHeight}", result);
                 if (result < 0) return result;
-                nint previous = _renderTarget;
-                _renderTarget = next;
-                Direct3D9Factory.Release(previous);
             }
             Width = nextWidth;
             Height = nextHeight;
@@ -324,8 +323,11 @@ internal sealed class GeneratedTargetResource : GeneratedProtocolResource
 
     internal bool CanPresent => _renderingEnabled && _renderTarget != 0 && Width != 0 && Height != 0;
 
-    internal unsafe int Render(bool signalPresent = true)
+    internal int Render(bool signalPresent = true) => Render(signalPresent, out _);
+
+    internal unsafe int Render(bool signalPresent, out bool windowPresented)
     {
+        windowPresented = false;
         nint target = _renderTarget;
         GeneratedVisualResource? root = _root;
         uint width = Width, height = Height;
@@ -334,9 +336,13 @@ internal sealed class GeneratedTargetResource : GeneratedProtocolResource
         ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)target)[1])(target);
         try
         {
-            return WpfGfxShape.Abi.HardwareRenderTargetExports.IsHardware(target)
-                ? WpfGfxShape.Abi.HardwareRenderTargetExports.Render(target, root, ClearColor, signalPresent)
-                : root is null ? 0 : GeneratedVisualRenderer.Render(root, target, width, height);
+            if (WpfGfxShape.Abi.HardwareRenderTargetExports.IsHardware(target))
+            {
+                int result = WpfGfxShape.Abi.HardwareRenderTargetExports.Render(target, root, ClearColor, signalPresent, out windowPresented);
+                windowPresented &= ResourceType == MilResourceType.HwndRenderTarget;
+                return result;
+            }
+            return root is null ? 0 : GeneratedVisualRenderer.Render(root, target, width, height);
         }
         finally
         {

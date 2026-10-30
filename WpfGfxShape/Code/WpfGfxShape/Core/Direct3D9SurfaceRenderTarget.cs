@@ -3732,8 +3732,11 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
         return result;
     }
 
-    internal int Present()
+    internal int Present() => Present(out _);
+
+    internal int Present(out bool windowPresented)
     {
+        windowPresented = false;
         ObjectDisposedException.ThrowIf(_isDisposed, this);
         if (_layerStack.Count > 0)
         {
@@ -3743,7 +3746,7 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
         using Direct3D9DeviceEntryGuard deviceEntry = new(_device);
         try
         {
-            return PresentCore();
+            return PresentCore(null, null, out windowPresented);
         }
         finally
         {
@@ -3809,7 +3812,11 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
     }
 
     private int PresentCore(Direct3D9SurfaceRect? presentRect, IReadOnlyList<Direct3D9SurfaceRect>? dirtyRegion)
+        => PresentCore(presentRect, dirtyRegion, out _);
+
+    private int PresentCore(Direct3D9SurfaceRect? presentRect, IReadOnlyList<Direct3D9SurfaceRect>? dirtyRegion, out bool windowPresented)
     {
+        windowPresented = false;
         if (!_isRenderingEnabled)
         {
             return _displayInvalidHResult;
@@ -3825,6 +3832,8 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
             : new Direct3D9PresentRequest(null, null, null, _presentFlags, _presentParameters.HDeviceWindow);
         Direct3D9DeviceState state = _device.Present(_swapChain, request);
         int result = state.HResult;
+        // Occlusion can be normalized to S_OK by the device without processing a presentation.
+        windowPresented = state.PresentProcessed && result == 0;
 
         if (state.PresentProcessed && _presentParameters.SwapEffect == Swapeffect.Discard)
         {
@@ -4038,6 +4047,24 @@ internal sealed unsafe class Direct3D9SurfaceRenderTarget : IDisposable
             if (result >= 0)
             {
                 ClearInvalidatedRectsCore();
+#if KI_RESIZE_TRACE
+                // Read the real backbuffer through public D3D COM methods, not requested dimensions.
+                SurfaceDesc observed = _renderTargetSurface!.GetDescription();
+                nint observedDevice = 0, identity = 0;
+                Guid unknown = new("00000000-0000-0000-c000-000000000046");
+                int deviceResult = _renderTargetSurface.GetDevice(out observedDevice);
+                try
+                {
+                    int identityResult = deviceResult < 0 ? deviceResult :
+                        ((delegate* unmanaged[Stdcall]<nint, Guid*, nint*, int>)(*(void***)observedDevice)[0])(observedDevice, &unknown, &identity);
+                    KiResizeTrace.Record("target.backbuffer.publicCOM", $"renderer={KiResizeTrace.Id(this)} device={KiResizeTrace.Id(_device)} surface={(nint)_renderTargetSurface.NativeIdentity:X} deviceIUnknown={identity:X} size={observed.Width}x{observed.Height} bounds={GetBounds()}", identityResult);
+                }
+                finally
+                {
+                    Direct3D9Factory.Release(identity);
+                    Direct3D9Factory.Release(observedDevice);
+                }
+#endif
             }
         }
 

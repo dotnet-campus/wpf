@@ -748,9 +748,9 @@ public sealed unsafe partial class CompositionTests
                     Assert.AreEqual(0, createResource(channel, 43, &outerData));
                     renderedChild = 0;
                     Assert.AreEqual(0, createResource(channel, 39, &renderedChild));
-                    byte* modePacket = stackalloc byte[32]; new Span<byte>(modePacket, 32).Clear();
+                    byte* modePacket = stackalloc byte[28]; new Span<byte>(modePacket, 28).Clear();
                     *(uint*)modePacket = 0x8d; *(uint*)(modePacket + 4) = mode; *(double*)(modePacket + 8) = 1;
-                    Assert.AreEqual(0, send(modePacket, 32, 0, channel));
+                    Assert.AreEqual(0, send(modePacket, 28, 0, channel));
                     byte* cachePacket = stackalloc byte[36]; new Span<byte>(cachePacket, 36).Clear();
                     *(uint*)cachePacket = 0x84; *(uint*)(cachePacket + 4) = cache;
                     *(double*)(cachePacket + 8) = 1; *(uint*)(cachePacket + 28) = mode;
@@ -783,7 +783,7 @@ public sealed unsafe partial class CompositionTests
                 Assert.AreEqual(0, createResource(channel, 69, &geometry));
                 byte* packet = stackalloc byte[72]; new Span<byte>(packet, 72).Clear();
                 *(uint*)packet = 0x8d; *(uint*)(packet + 4) = mode; *(double*)(packet + 8) = 1;
-                Assert.AreEqual(0, send(packet, 32, 0, channel));
+                Assert.AreEqual(0, send(packet, 28, 0, channel));
                 new Span<byte>(packet, 72).Clear();
                 *(uint*)packet = 0x84; *(uint*)(packet + 4) = cache; *(double*)(packet + 8) = 1;
                 *(uint*)(packet + 28) = mode; *(uint*)(packet + 32) = visual;

@@ -1,5 +1,7 @@
 # 章程：目标、实现与 ABI 合同
 
+> 用户已撤销原版 wpfgfx 生产媒体委托。不得保留、加载、复制改名原版作为候选媒体服务；仅测试独立 oracle 可加载官方。允许 Windows 公开媒体组件。普通媒体必须实现，但未实现时工厂明确 E_NOTIMPL/null，不能假成功。历史委托绿不认证独立媒体，全部独立媒体能力 Open / NotImplemented。见[删除报告](completed-work/replacement-remove-original-media-delegation.md)。
+
 本页为[章程](00-migration-charter.md)§1–7原规范正文的主题承载，强制执行；不是摘要或状态源。
 
 ## 1. 目标

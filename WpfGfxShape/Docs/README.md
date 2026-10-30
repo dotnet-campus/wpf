@@ -1,6 +1,20 @@
 # WpfGfxShape 文档入口
 
+## 最新：沙箱foreground scope已实现实跑，整体仍Open
+[正式closeout](completed-work/replacement-sandbox-foreground-control-closeout.md)。x86诊断定向1/1/0、full1823/1821/2 child2；两次无精确Prism目标，窗口动作与恢复NotExercised。full owner explorer6252、initial foreground0与official FF80/0保留。默认Release旧红不擦，不能称修复完成；后续从唯一恢复入口读取本轮scope证据与下一实作。
+
+## 最新实证：real-loss x64 ClosedLimited
+[完整收尾](../../Docs/completed-work/replacement-real-loss-fixture-x64-closeout.md)。最终75772232…精确TRX1执行1过、子OS/MTP0，无timeout；首次80fc8661…真lost恢复失败保留。系统HAL fullscreen真失焦→88760868→SW_RESTORE→88760869→Reset0已核；候选产品恢复NotCovered，原始像素日志缺失仅断言支持。累计build1/publish2/sandbox2，本次新增执行0；发布额度已用完。旧full不相减，shader/backend/音频/自然资源/完整替换Open。下方旧最新段落均历史。
+
+当前权威终态：[x64来源重建两有限合同最终收尾](completed-work/replacement-postfailure-source-rebuild-x64-closeout.md)。本轮normal build1/Native publish1/COM publish1均Exit0、四沙箱四角色各1/1/1且actual身份与真实清理通过，源码项目0改；54BC62绑定有限postfailure/isolation。x86 15A545通过、旧20B3红/40D0隔离/KN17及显示冻结账独立保留，整体不升、完整替换Open。来源仅限定快照/真实工具参数Exit/正式clean到实际加载链；压缩摘录不是完整stdout。下一唯一建议仅另授权零执行资源/时序选门审查，不追加运行。下方旧Blocked/待x64均历史，最新状态以本段及唯一恢复入口为准。
+
 唯一恢复入口：[next-session-handoff.md](next-session-handoff.md)。
+
+当前权威状态：[独立交接审计](completed-work/replacement-postfailure-execution-handoff-independent-audit.md)。精确原件支持新15A545…四体x86有限通过；构建来源与第一门原日志仍部分缺失，Blocked、不升整体基线。先恢复原件或另授权有界x86预算，不直接x64；本阶段新增执行0。下方旧状态均为历史。
+
+当前源码交付：[postfailure最小修正静态审核](completed-work/replacement-postfailure-attach-minimal-fix-static.md)，3个生产文件与4个真实scheduler单元已编辑，构建/运行/发布预算0；原20B3红保留，新Native须新身份，完整替换Open。下方x64通过仅历史有限实证，不认证新源码。
+
+最新有限实证：[x64 partition isolation正式执行](completed-work/replacement-supervised-partition-failure-isolation-x64.md)，build1/publish1成功、两沙箱official/candidate各1通过，Native0；当前40D0对照实测x64官方AD1C。上轮零执行是准备条件过严，非缺工具或产品失败。仅与历史x86组成普通错误ABI有限双架构证据，不冒HW/loss/media/full；已收尾停止，完整替换Open。
 状态只见[当前基线](handoffs/current-stable-baseline.md)，历史机器验收不是当前证据。
 
 ## 当前合同

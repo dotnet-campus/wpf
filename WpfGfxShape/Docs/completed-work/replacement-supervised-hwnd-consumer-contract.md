@@ -1,5 +1,11 @@
 # HD 官方 HWND consumer 内容链合同诊断
 
+## HF实时登记：official成功，准备同包唯一candidate
+唯一official task e0036f3dbf3347bb8891145835f4c9df已回收，监督子Exit0/nonTimeout/noKill/drain正常；TRX1执行1通过0失败。actual官方5EBD18E019D7D82144EE068A7D56F47200E2D82A2121E3F3A066DAA6AC36B834；testC61C02D7A3A6F1B4785920037C8CF0E81C1A18EE51352950D9CE99B2A614A12E/MVIDe37ffa74-0079-4cf6-af2d-c1e0671cc2f2/.NET10.0.13 X86 ptr4。native同任务fresh及consumer三色255/16711680/65280均accepted，flags12/context-2/DPI1/1，三事件true，detach/四删除/cleanup/四refs0已亲读。剩余阶段/TRX截断处继续补读，不追加official；现在仅同一包candidate一次，不重编译。
+
+### HF发布留痕
+零源码修改，正常分析器win-x86 Release self-contained .NET/WPF10.0.13正式发布成功，独有artifacts/hf-x86-consumer/obj/bin/publish及com-acceptance-package，显式PublishDir。仅DefineConstants=HB_SURFACE_CONSUMER；正式包离线公开API核得两个准确方法，源码分别RunHbConsumer(true/false)。Contracts、MTP、runtimeconfig与418行package-files清单首尾已核，aot.sha256=75D136F71223DB9EA0830BFBF9CDFC0EAAB748B5067397B682E42323B698EC30，复用HA Native不重建生产。上传源仅新clean com-acceptance-package，readback分离，不上传PublishDir或历史父目录。实际包文件字节可直接取得，未另造清单。当前task0；即将official一次，成功才candidate一次。120秒filtered/外180秒，无变参追Green。
+
 ## HE实时历史登记（已完成；以末尾HE终态为准）
 下列进行中/尚未调用描述是执行阶段留痕，非当前状态；唯一任务现已完成且核心原件核证结束，见末尾HE终态。
 唯一task333b412deb784bc3bdea920f2a519ba7已整task回收。监督39行亲读：子PID836 Exit0/nonTimeout/noKill，test SHA/MVID与HD完全相同；业务77行与native60行已分段亲读，候选actual SHA匹配，红255/蓝16711680/绿65280全等、三事件true、四refs0/cleanup完成。继续核TRX/stages/stdout/stderr及官方旧原件；不追加任务。
@@ -111,3 +117,56 @@ HD旧原件监督39/TRX86/业务77/阶段77/native60/stdout12/stderr空本轮同
 下一唯一任务：**x86同场景official/candidate对照**，先核可用同合同正式包与架构身份、同任务native fresh前置，逐帧三色/事件/refs；本轮不执行、不扩full。Available0/真实callback、native duplicate exactclose、consumer HW backend/目标内容、HWloss、media/resources、最终四格及独立x64Event0仍开放；完整替换未完成。
 
 HE末次补记：唯一候选真实任务及核心原件已读后收束；报告全文和handoff/session-summary/issues最新HE受改节及本补记写后分段回读，旧HD/HB/HC历史保留，未宣称历史全审。
+
+## HF终态：x86同包official/candidate真实可见内容对照通过，停止执行
+HF实时登记是阶段历史；本节为当前状态。新增恰official1+candidate1，无重跑/full/额外控制/COM变体；未出现部署纠正。零源码修改，未重建生产，保留HA Stdcall；未改生产COM/CF/CX/CY、DRDS、NativeRun/ExitDiagnostics、共享VisualCache/historical、捕获/WindowQ、项目打包或默认并行。仅正式测试包新发布一次。
+
+### 两格身份与计数
+|角色|task|监督PID/子PID|子TRX total/executed/passed/failed/notExecuted|子Exit|
+|---|---|---|---|---|
+|official|e0036f3dbf3347bb8891145835f4c9df|2128/4868|1/1/1/0/0|0 / 0x00000000|
+|candidate|71daf6c78a9c4cdabc67748c1c9d8e98|1336/8808|1/1/1/0/0|0 / 0x00000000|
+两份监督均Reason=exited、TimedOut/Cancelled/KillAttempted/KillReturned/OutputDrainTimedOut=false，HasExited/OutputCollected=true，SupervisorError=null。filtered内部120秒、工具外180秒；工具没有单列外层数值Exit，不编造。非MTP监督无父TRX；子Completed，error/timeout/aborted等Counters均0，stdout skipped0，无Failed条目或原生崩溃。
+
+- 两格同一测试DLL SHA **C61C02D7A3A6F1B4785920037C8CF0E81C1A18EE51352950D9CE99B2A614A12E**，MVID **e37ffa74-0079-4cf6-af2d-c1e0671cc2f2**；位于各task根WpfGfxShape.ComAcceptance.dll。actual .NET10.0.13 / X86 / pointer4。
+- official actual **C:\CodingAgentSandbox\Tasks\e0036f3dbf3347bb8891145835f4c9df\wpfgfx_cor3.dll**，SHA **5EBD18E019D7D82144EE068A7D56F47200E2D82A2121E3F3A066DAA6AC36B834**；10.0.13-servicing.26504.104 @Commit4099f83977f4d29604a9aeb971fb0a7bc1d5f699。来源为同包self-contained WPF x86 runtime根官方模块。
+- candidate actual **C:\CodingAgentSandbox\Tasks\71daf6c78a9c4cdabc67748c1c9d8e98\Native\wpfgfx_cor3.dll**，SHA **75D136F71223DB9EA0830BFBF9CDFC0EAAB748B5067397B682E42323B698EC30**；1.0.0+2e2a3c7e64d74642cb46f64247b40e73b4431299。确为HA已验收Native，不是1893370失败产物或官方充候选。
+- 两格WPF ProductVersion **10.0.13-servicing.26504.104+4099f83977f4d29604a9aeb971fb0a7bc1d5f699**，PresentationCore SHA **D2A9C8B691A6AEB4E7417BB700212BD58FDBB9F8ACEB41A24EAC0327F98C170D**。来源为正式自包含包，不借系统未部署runtime。identity通过Load句柄与Process.Modules.BaseAddress相等选actual再hash；**数值基址及WPF完整加载路径未序列化，本轮未直接取得，不编造**。
+
+### 内容/时序/资源证据
+两格均packet92、flags12、context-2/raw24593、实际DPI1/1、format0、producerFormat21、32×16，target rect40,40–72,56，client采样16,8对应screen56,48；Client对象输出{}不补造字段。初始化invalidate/close/commit、async connect、独批Present、DuplicateHandle及原expected/cleanup全部原样。
+
+|层|official|candidate|
+|---|---|---|
+|native backbuffer/duplicated/front ARGB|FFFF0000/FF0000FF/FFFF0000逐帧全等|相同|
+|native Present/frontResult|三次均HR0|三次均HR0|
+|native window/screen COLORREF|255/16711680/255，全等|相同|
+|native提交线程=owner|5152|2848|
+|native GPU completed>submitted|三帧成立|三帧成立|
+|DXGI fresh LastPresent>submissionStart|35700157058442>35700154700583；35700160179770>35700157657018；35700162785610>35700160526307|35700692515950>35700690482570；35700695014903>35700692732830；35700697714476>35700695240918|
+|consumer HWND|10355990|8062454|
+|consumer 红 expected/actual|255/255|255/255|
+|consumer 蓝 expected/actual|16711680/16711680|16711680/16711680|
+|consumer 绿 expected/actual|65280/65280|65280/65280|
+|consumer三event|true/true/true|true/true/true|
+|duplicate转交数值|1988/1984/1492|1644/1644/1744|
+|最终Bitmap/Surface/Device/Factory refs|0/0/0/0|0/0/0/0|
+|DestroyWindow|1|1|
+两格native passed=true，fresh非mouse-only旧帧，前置HWND与consumer先后不同。consumer ColorFill/GPU complete、dirty、separate send、commit、event、consumer flush/DwmFlush及三色accepted完整链成立；后续蓝/绿证明真实更新，不仅事件。所有记录HRESULT0。Detach前后、resource4/3/2/1 unregister HR0且Deleted1、delete close/commit/flush、destroy、disconnect/deinit与cleanup complete均到达。
+
+consumer读回仅window DC，不是consumer screen双读回；native window/screen/front/duplication属于显示前置。没有独立consumer target surface读取API证据，不把producer读回冒consumer证明。**actualconsumerbackend未知/HardwareConsumerProven=false**；Microsoft Basic Render Driver vendor1414/device8C/LUID4E71是native duplication前置，不外推consumer HW或SW。Available0/真实callback未证；测试侧duplicate直接close0及原event自检不证明native exact-once-close，候选重复句柄值可复用，不推断关闭次数。
+
+### 正式包、路径与亲读范围
+正常分析器发布成功，未NoWarn/关闭规则，仅显式HB_SURFACE_CONSUMER；独有obj/bin/publish，显式PublishDir；runtimeconfig includedFrameworks.NET/WPF10.0.13。正式clean source=**artifacts/hf-x86-consumer/com-acceptance-package**，未上传PublishDir/回收根/历史父目录。aot.sha256、Contracts、MTP、418行package-files清单首尾及正式DLL离线API已核；清单和实际包字节保留可得，未额外上传自包含包外无关资产。
+绝对本地根 **d:\lindexi\Code\dotnetcampus\WpfLab\WpfGfxShape\WpfGfxShape\artifacts\hf-x86-consumer**；两格整task分别回收readback/x86-official、readback/x86-candidate，与source分离。
+绝对taskTRX分别：
+- **C:\CodingAgentSandbox\Tasks\e0036f3dbf3347bb8891145835f4c9df\Results\hf-x86-official\TestResults\child.trx**。
+- **C:\CodingAgentSandbox\Tasks\71daf6c78a9c4cdabc67748c1c9d8e98\Results\hf-x86-candidate\TestResults\child.trx**。
+本地各回收根下Results/<同名run>/包含supervision.json39行、TestResults/child.trx86行、hb-consumer.jsonl77行、stages.jsonl77行、stdout.txt12行、stderr空；native Results/bj-fresh-1.json60行。两格以上核心原件均分段亲读，截断处补读；诊断/PPM整回收，未全文或逐图审，不冒全审。HB显式文件原合同已核，不改源码也不为补基址扩跑。历史HD/HE范围仅读同HD报告全部及共享最新HE/HD/HA相关节，未重读旧task全部原件，未冒称全历史复核。
+
+### 默认安全、下一唯一门及未完成声明
+本轮零源码修改；引用HD既有default Release/win-x64正常build成功、98 warnings/0 errors（非HF新跑），HB文件整体#if隔离，默认不发现；此次显式发布不污染默认obj/bin。HA生产修复保留，无full扩跑。
+**下一唯一共享夹具迁移门**：将HD集中认证且x64 HD/HE、x86 HF有限验证的flags/context/实际DPI/初始化invalidate/async+duplicate所有权合同，先逐项映射到共享真实consumer夹具并保留旧断言/cleanup，再设计独立backend/目标消费证据；此轮仅登记，不迁移源码、不扩COM替换。不能直接将HB实验默认化或用新场景成功关闭旧x64Event0/EHANDLE异常。
+consumer实际HW/backend/目标内容、Available callback、native duplicate exactclose、HW loss/恢复、media/resources通知、最终full四格及独立x64Event0/EHANDLE线仍开放；**完整替换未完成**。
+
+HF末次补记：两格已跑且核心原件已读后停止；本HD报告全文及handoff/session-summary/issues最新HF受改节和末次补记写后分段回读，旧历史保留不冒全文。

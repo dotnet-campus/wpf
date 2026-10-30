@@ -11,9 +11,9 @@ internal static unsafe class MediaExports
     [UnmanagedCallersOnly(EntryPoint = "MILFactoryCreateMediaPlayer", CallConvs = [typeof(CallConvStdcall)])]
     private static int CreateMediaPlayer(nint factory, nint eventProxy, byte canOpenAnyMedia, nint* output)
     {
-        if (factory == 0) return InvalidArgument;
         if (output == null) return unchecked((int)0x80004003);
         *output = 0;
+        if (factory == 0) return InvalidArgument;
         try
         {
             int result = Core.Av.SystemMediaSource.Create(eventProxy, canOpenAnyMedia, out nint media);

@@ -1,4 +1,3 @@
-#if HB_SURFACE_CONSUMER
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -8,6 +7,7 @@ namespace WpfGfxShape.ComAcceptance;
 
 public sealed unsafe partial class D3DImageTests
 {
+#if HB_SURFACE_CONSUMER
     /// <summary>Observes a real asynchronous official D3DImage consumer without producer readback.</summary>
     [TestMethod]
     public void WhenHbOfficialSurfaceMutatesThenConsumerWindowMustChange() => RunHbConsumer(true);
@@ -16,16 +16,18 @@ public sealed unsafe partial class D3DImageTests
     [TestMethod]
     public void WhenHbCandidateSurfaceMutatesThenConsumerWindowMustChange() => RunHbConsumer(false);
 
+#endif
+
     [DllImport("user32.dll")]
     private static extern nint GetWindowDpiAwarenessContext(nint window);
 
     [DllImport("user32.dll")]
     private static extern int AreDpiAwarenessContextsEqual(nint first, nint second);
 
-    private static void RunHbConsumer(bool official)
+    private static void RunHbConsumer(bool official, bool observePartition = false, string? outputRoot = null)
     {
         string role = official ? "official" : "candidate";
-        string root = NativeRun.PathsRoot;
+        string root = outputRoot ?? NativeRun.PathsRoot;
         Directory.CreateDirectory(root);
         string trace = Path.Combine(root, "hb-consumer.jsonl");
         void Record(string stage, object? data = null)
@@ -74,10 +76,13 @@ public sealed unsafe partial class D3DImageTests
         var detach = (delegate* unmanaged[Stdcall]<nint, void>)Export("InteropDeviceBitmap_Detach");
         nint window = 0, d3d = 0, device = 0, surface = 0, bitmap = 0, connection = 0, channel = 0;
         bool initialized = false;
+        IfPartitionObservation? partitionObservation = null;
         var handles = new List<uint>();
         using var completion = new EventWaitHandle(false, EventResetMode.ManualReset);
         try
         {
+            if (!observePartition)
+            {
             Record("native fresh prerequisite before", new { SwapEffect = 1, Evidence = Path.Combine(AcceptancePaths.Results, "bj-fresh-1.json") });
             try
             {
@@ -88,6 +93,7 @@ public sealed unsafe partial class D3DImageTests
             {
                 Record("native fresh prerequisite rejected", new { Error = error.ToString(), ConsumerEntered = false });
                 throw;
+            }
             }
             window = CreateOutputWindow("HB independent consumer", 40, 40);
             Assert.AreNotEqual(0, window);
@@ -105,6 +111,11 @@ public sealed unsafe partial class D3DImageTests
             initialized = true;
             Check("async connect", connect(0, &connection));
             Check("channel create", channelCreate(connection, 0, &channel));
+            if (observePartition)
+            {
+                partitionObservation = new IfPartitionObservation(module, connection, channel, Record);
+                partitionObservation.RegisterInitial();
+            }
             uint image = 0, data = 0, visual = 0, destination = 0;
             Check("image resource", resource(channel, 97, &image)); handles.Add(image);
             Check("drawing resource", resource(channel, 43, &data)); handles.Add(data);
@@ -194,14 +205,17 @@ public sealed unsafe partial class D3DImageTests
                 } while (Environment.TickCount64 < deadline);
                 Record("consumer pixel", new { Frame = frame, ProducerColor = colors[frame], Expected = expected, Actual = pixel, Accepted = pixel == expected });
                 Assert.AreEqual(expected, pixel);
+                partitionObservation?.ObserveFrame(frame);
                 Assert.IsTrue(completion.Reset());
                 Assert.IsTrue(completion.Set());
                 Assert.IsTrue(completion.WaitOne(0));
             }
             Record("three consumer frames accepted");
+            partitionObservation?.AssertTransition();
         }
         finally
         {
+            partitionObservation?.Dispose();
             if (bitmap != 0) { Record("detach before"); detach(bitmap); Record("detach after"); }
             if (channel != 0)
             {
@@ -218,7 +232,9 @@ public sealed unsafe partial class D3DImageTests
             if (connection != 0) Check("disconnect", disconnect(connection));
             if (initialized) Check("partition deinitialize", deinitialize());
             uint Drop(nint value) => value == 0 ? 0 : ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)value)[2])(value);
-            Record("refs", new { Bitmap = Drop(bitmap), Surface = Drop(surface), Device = Drop(device), Factory = Drop(d3d) });
+            var refs = new { Bitmap = Drop(bitmap), Surface = Drop(surface), Device = Drop(device), Factory = Drop(d3d) };
+            Record("refs", refs);
+            Assert.AreEqual((0u, 0u, 0u, 0u), (refs.Bitmap, refs.Surface, refs.Device, refs.Factory));
             if (window != 0)
             {
                 int destroyed = DestroyWindow(window);
@@ -229,4 +245,3 @@ public sealed unsafe partial class D3DImageTests
         }
     }
 }
-#endif

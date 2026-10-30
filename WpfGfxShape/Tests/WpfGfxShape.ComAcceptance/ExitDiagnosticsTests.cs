@@ -79,6 +79,36 @@ public sealed class ExitDiagnosticsTests
         Assert.AreEqual("filtered", ExitDiagnostics.Parse(["root", "120", "*"]).Mode);
     }
 
+#if RESOURCE_LIFECYCLE_TREND
+    [TestMethod]
+    [DataRow(121)]
+    [DataRow(840)]
+    public void WhenExactTrendFilterIsUsedThenDedicatedBudgetIsAccepted(int seconds)
+    {
+        Assert.AreEqual(seconds, ExitDiagnostics.Parse(["root", seconds.ToString(System.Globalization.CultureInfo.InvariantCulture), ResourceTrendCoordinator.SupervisionFilter]).Seconds);
+    }
+
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(841)]
+    public void WhenTrendBudgetIsOutsideBoundsThenItIsRejected(int seconds)
+    {
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => ExitDiagnostics.Parse(["root", seconds.ToString(System.Globalization.CultureInfo.InvariantCulture), ResourceTrendCoordinator.SupervisionFilter]));
+    }
+
+    [TestMethod]
+    [DataRow("FullyQualifiedName=WpfGfxShape.ComAcceptance.UceChannelTests.WhenAsyncSharedPartitionSourceClosesThenDuplicateOwnsRealStreamUntilLastReleaseAsync")]
+    [DataRow("FullyQualifiedName~WpfGfxShape.ComAcceptance.UceChannelTests")]
+    [DataRow("FullyQualifiedName~WhenRepeatedAsyncSharedWicLifecyclesCompleteThenEachRoundReleasesOwnershipAsync")]
+    [DataRow("FullyQualifiedName=WpfGfxShape.ComAcceptance.UceChannelTests.WhenRepeatedAsyncSharedWicLifecyclesCompleteThenEachRoundReleasesOwnershipAsync|FullyQualifiedName~ExitDiagnosticsTests")]
+    [DataRow("FullyQualifiedName=WpfGfxShape.ComAcceptance.UceChannelTests.WhenRepeatedAsyncSharedWicLifecyclesCompleteThenEachRoundReleasesOwnershipAsync ")]
+    public void WhenFilterIsNotExactTrendThen840IsRejected(string filter)
+    {
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => ExitDiagnostics.Parse(["root", "840", filter]));
+    }
+
+#endif
+
     [TestMethod]
     public void WhenFullIsExplicitThenModeIsFull()
     {

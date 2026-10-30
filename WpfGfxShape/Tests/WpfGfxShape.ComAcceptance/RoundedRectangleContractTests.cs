@@ -21,14 +21,16 @@ public sealed class RoundedRectangleContractTests
 
     private static async Task CompareAsync(bool experiment)
     {
-        if (Environment.GetEnvironmentVariable("WPFGFX_RUN_ROOT") is not null)
+        string method = experiment ? nameof(WhenCurveControlPointsCrossQuantizationBoundaryThenIndependentOfficialPixelsMatch) : nameof(WhenRoundedContentChangesThenOfficialCornersAndFreshPixelsMatch);
+        string? selectedRole = Environment.GetEnvironmentVariable("JM_ROUNDED_ROLE");
+        if (selectedRole is not null)
         {
-            string[] args = Environment.GetCommandLineArgs();
-            string role = args[Array.IndexOf(args, "--results-directory") + 1];
+            Assert.IsTrue(selectedRole is "original" or "candidate");
+            Assert.AreEqual(method, Environment.GetEnvironmentVariable("JM_ROUNDED_METHOD"));
             Exception? failure = null;
             var thread = new Thread(() =>
             {
-                try { Run(role, experiment); }
+                try { Run(selectedRole, experiment); }
                 catch (Exception exception) { failure = exception; }
             });
             thread.SetApartmentState(ApartmentState.STA);
@@ -37,14 +39,9 @@ public sealed class RoundedRectangleContractTests
             if (failure is not null) throw new AssertFailedException(failure.ToString());
             return;
         }
-        string root = Path.Combine(AcceptancePaths.Results, experiment ? "curve-an" : "rounded-ah", Guid.NewGuid().ToString("N"));
-        string filter = experiment
-            ? "FullyQualifiedName~WhenCurveControlPointsCrossQuantizationBoundaryThenIndependentOfficialPixelsMatch"
-            : "FullyQualifiedName~WhenRoundedContentChangesThenOfficialCornersAndFreshPixelsMatch";
-        int official = await NativeRun.RoleAsync(root, "--filter", filter, "--results-directory", "original");
-        int candidate = await NativeRun.RoleAsync(root, "--filter", filter, "--results-directory", "candidate");
-        Assert.AreEqual(0, official, root);
-        Assert.AreEqual(0, candidate, root);
+        string root = Path.GetFullPath(Path.Combine(NativeRun.PathsRoot, experiment ? "curve-an" : "rounded-ah", Guid.NewGuid().ToString("N")));
+        await JmResolverIsolation.RunAsync(root, method, "original");
+        await JmResolverIsolation.RunAsync(root, method, "candidate");
         var differences = new List<object>();
         bool exact = true;
         for (int frame = 0; frame < (experiment ? 10 : 6); frame++)
@@ -98,7 +95,9 @@ public sealed class RoundedRectangleContractTests
             .Single(m => m.BaseAddress == module).FileName;
         File.WriteAllText(Path.Combine(directory, "identity.json"), JsonSerializer.Serialize(new
         {
-            role, architecture = RuntimeInformation.ProcessArchitecture.ToString(), runtime = RuntimeInformation.FrameworkDescription,
+            role, pid = Environment.ProcessId, testSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(RoundedRectangleContractTests).Assembly.Location))),
+            testMvid = typeof(RoundedRectangleContractTests).Assembly.ManifestModule.ModuleVersionId,
+            architecture = RuntimeInformation.ProcessArchitecture.ToString(), runtime = RuntimeInformation.FrameworkDescription,
             requested = selected, path = actual, version = System.Diagnostics.FileVersionInfo.GetVersionInfo(actual).FileVersion,
             sha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(actual))),
             backend = "RenderTargetBitmap software contract control only; NOT window GPU evidence", hardwareVerified = false

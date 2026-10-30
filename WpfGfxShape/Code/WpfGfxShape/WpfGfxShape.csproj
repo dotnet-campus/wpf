@@ -13,6 +13,9 @@
     <EnableAotAnalyzer>true</EnableAotAnalyzer>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <EnablePInvokeAnalyzer>true</EnablePInvokeAnalyzer>
+    <WpfGfxShapeRuntimeHeapDiagnostic Condition="'$(WpfGfxShapeRuntimeHeapDiagnostic)' == ''">false</WpfGfxShapeRuntimeHeapDiagnostic>
+    <DefineConstants Condition="'$(WpfGfxShapeRuntimeHeapDiagnostic)' == 'true'">$(DefineConstants);WPFGFX_RUNTIME_HEAP_DIAGNOSTIC</DefineConstants>
+    <PublishDir Condition="'$(WpfGfxShapeRuntimeHeapDiagnostic)' == 'true'">$(WpfGfxShapeArtifactsRoot)runtime-heap-owner-r1/native/</PublishDir>
     <WpfGfxShapeDiagnosticAbi Condition="'$(WpfGfxShapeDiagnosticAbi)' == ''">false</WpfGfxShapeDiagnosticAbi>
     <DebuggerSupport Condition="'$(WpfGfxShapeDiagnosticAbi)' != 'true'">false</DebuggerSupport>
     <DefineConstants Condition="'$(WpfGfxShapeDiagnosticAbi)' == 'true'">$(DefineConstants);WPFGFX_DIAGNOSTIC_ABI</DefineConstants>

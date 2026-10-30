@@ -1,5 +1,7 @@
 # E2E-00–09：独立可执行合同
 
+> E2E-08当前更正：禁止生产原版wpfgfx媒体委托；用户已撤销第二模块许可，下方旧有限Closed仅历史。工厂暂 E_NOTIMPL/null，独立媒体全部 Open / NotImplemented。负向契约不替代正向播放验收，测试official oracle保留。见[删除报告](completed-work/replacement-remove-original-media-delegation.md)。
+
 [证据规范](09-test-evidence-and-e2e-contract.md)§9完整条款；与[测试层级/矩阵](testing-levels-and-gates.md)、[证据运行合同](evidence-run-contract.md)、[能力/失败合同](evidence-capabilities-and-failures.md)共同验收，每项独立，不合并降级。
 
 ## 9. E2E 阶梯可执行合同
