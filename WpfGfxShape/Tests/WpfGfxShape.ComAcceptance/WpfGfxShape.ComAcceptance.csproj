@@ -332,5 +332,40 @@
     <None Include="../../artifacts/jh-com-full-convergence/readback/full-x64/Results/jh-full-x64/TestResults/child.trx" Link="inputs/x64.trx" CopyToPublishDirectory="Always" />
     <None Include="../../artifacts/jj-full-closeout/readback/full-x86/Results/jj-full-x86/TestResults/child.trx" Link="inputs/x86.trx" CopyToPublishDirectory="Always" />
   </ItemGroup>
+  <PropertyGroup>
+    <StrictRenderOnly Condition="'$(StrictRenderOnly)' == ''">false</StrictRenderOnly>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'StrictRender'">
+    <StrictRenderOnly>true</StrictRenderOnly>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+    <PublishAot>false</PublishAot>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyMetadata Include="StrictRenderOnly" Value="$(StrictRenderOnly)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(StrictRenderOnly)' == 'true'">
+    <None Include="$(AotDllPath)" Link="Native/wpfgfx_cor3.dll" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <Target Name="PinStrictRenderRuntime" BeforeTargets="ProcessFrameworkReferences" Condition="'$(StrictRenderOnly)' == 'true'">
+    <ItemGroup><FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" /></ItemGroup>
+  </Target>
+  <Target Name="IsolateStrictRenderOfficial" AfterTargets="ComputeFilesToPublish" BeforeTargets="CopyFilesToPublishDirectory" Condition="'$(StrictRenderOnly)' == 'true'">
+    <Error Condition="'$(ComAcceptanceSandbox)' == 'true'" Text="StrictRender uses the dedicated restricted publish, not the full acceptance package." />
+    <ItemGroup>
+      <StrictOfficialGfx Include="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'wpfgfx_cor3.dll' and $([System.String]::Copy('%(ResolvedFileToPublish.FullPath)').Replace('\','/').ToLowerInvariant().Contains('/microsoft.windowsdesktop.app.runtime.win-x64/10.0.13/'))" />
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'wpfgfx_cor3.dll' and '%(ResolvedFileToPublish.RelativePath)' == 'wpfgfx_cor3.dll'" />
+    </ItemGroup>
+    <Error Condition="'@(StrictOfficialGfx)' == ''" Text="Pinned official runtime graphics file missing." />
+    <Copy SourceFiles="@(StrictOfficialGfx)" DestinationFolder="$(PublishDir)Reference" />
+    <WriteLinesToFile File="$(PublishDir)official-source.txt" Lines="@(StrictOfficialGfx->'%(FullPath)')" Overwrite="true" />
+  </Target>
+  <Target Name="StrictRenderCandidateDigest" AfterTargets="Publish" Condition="'$(StrictRenderOnly)' == 'true'">
+    <GetFileHash Files="$(PublishDir)Native/wpfgfx_cor3.dll" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="StrictCandidateHash" /></GetFileHash>
+    <WriteLinesToFile File="$(PublishDir)aot.sha256" Lines="@(StrictCandidateHash->'%(FileHash)')" Overwrite="true" />
+    <Error Condition="Exists('$(PublishDir)wpfgfx_cor3.dll')" Text="Unexpected root graphics module." />
+  </Target>
   <Import Project="ComAcceptance.Package.targets" />
 </Project>

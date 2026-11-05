@@ -11,6 +11,15 @@ internal static class NativeRun
     [STAThread]
     private static int Main(string[] args)
     {
+        if (args.Length > 0 && args[0] == "--strict-render-business")
+            return StrictRenderBusiness.Run(args[1..]);
+        if (args.Length == 2 && args[0] == "--strict-render-audit")
+            return StrictRenderSupervisor.Audit(args[1]);
+        if (args.Length == 1 && args[0] == "--strict-render-observe")
+            return StrictRenderSupervisor.ObserveAsync().GetAwaiter().GetResult();
+        if (args.Length == 1 && args[0] == "--strict-render-supervisor")
+            return StrictRenderSupervisor.RunAsync().GetAwaiter().GetResult();
+        if (AcceptancePaths.Metadata("StrictRenderOnly") == "true") return 64;
         if (args.Length > 0 && args[0] == "--pcore")
             return NativeAcceptance.Pcore.Program.Run(args[1..]);
         return MainAsync(args).GetAwaiter().GetResult();

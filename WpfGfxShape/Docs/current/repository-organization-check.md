@@ -1,12 +1,27 @@
 # 仓库迁后检查与当前维护台账
 
-## 职责与边界
+## 当前追加：正式入口独立取证
+
+两正式测试项目组织完成结论承接，不再运行Tools。此次仅修改正式验收NativeRun.cs、Comparison/StrictRenderSupervisor.cs添加observe/audit，生产及项目配置0修改，无新审计项目。专用publish3、sandbox6；前2次audit路径错误保留，最终冻结包完整独立audit通过，详见[恢复入口](current-recovery.md)。单独build/test0、Native发布/清理/终端/脚本/委派0。仅定向验收读取，未清理重组artifacts或改正常输出机制。以下为上一任务组织及文档历史账；其中“本次未读artifacts/源码修改0/strict未闭合”不描述此次。文档组织完成与x64固定32×32有限认证、未覆盖矩阵及桌面/媒体故障分别记账。
+
+## 职责与边界（上一任务历史）
 
 本页集中维护文档治理范围、已处理事项及待审责任，不维护产品状态或竞争排程。产品状态只见[恢复入口](current-recovery.md)，规则只见[严格双进程合同](current-comparison-contract.md)，产品验收顺序只见[当前矩阵](current-validation-matrix.md)。
 
-本轮仅文档文件工具，委派、终端/脚本、程序执行及 build/test/publish/沙箱均0；生产/测试/工具源码修改0。artifacts 完全忽略，不枚举、不读写、不重组；正常构建机制不变。目录整理工具一次性非幂等，不再运行。
+本次串行核验用户已执行 FinishTestsCleanup 的结果，不重跑清理工具，不盘点、整理、清理或定向读取 artifacts，不改正常输出机制。
 
-## 已确认迁移结果（承接上一检查，不重跑）
+- Tests 一级目录仅 `WpfGfxShape.Tests`、`WpfGfxShape.ComAcceptance`；递归实际 csproj 搜索也仅这两个正式项目。旧 `StrictRenderR28`、`StrictRenderSupervisorR28`、`CandidatePureVideo` 三目录已消失。slnx 实读仅 Code 生产1项目及正式 Tests 2项目。
+- Tools 递归实际仅 `TestsCleanup/FinishTestsCleanup.cs`；旧 `CleanupTests.cs`、`README.md` 已删。FinishTestsCleanup 自身保留正常，工具已完成使命，用户可删除剩余 `Tools/TestsCleanup`，不得重跑旧整理工具或该删除工具。
+- 正式 Tests 范围旧三目录名定向静态搜索无命中；结合两 csproj 的 Compile/Link、Content、ProjectReference、Import/targets 及 NativeRun 分派检查，未见旧路径依赖。已迁入 Harness/StrictRenderBusiness、Comparison/StrictRenderSupervisor、Scenes/StrictRenderGeometry 与 HarnessTests/DispatcherWorkersTests 仍在项目清单；历史 namespace 不作为断引用证据。
+- 删除后专用 Release build：ComAcceptance exit0、172警告/0错误；WpfGfxShape.Tests exit0、0警告/0错误（增量）。前任务4109警告是历史构建账，不能与本次增量结果直接比较或声称已清零；本次可见 CA2007、MSTEST0017/0037/0044/0045 等警告，未顺带大范围修复。
+- 定向安全托管 `AvCompositionNotifierTests` 在 Debug 运行5/5通过、失败0、跳过0、exit0，不加载原版 Native。正式四项 Dispatcher 身份门未满足，未运行、未绕过；不代表 full 或 strict 认证。
+- 本次调用账：专用 build2、定向 test1；清理执行0、publish0、sandbox0、终端/脚本0、委派0。源码/csproj/targets修改0，仅更新四份 current 文档并全文小段回读。strict 独立 raw、父 OS exit、完整模块证据审计仍未闭合，不挪用历史绿，OverallOpen。
+
+## 历史文档治理记录（以下承接上一检查，不属本次执行）
+
+以下“本轮/上轮”保留原文档治理阶段语境，不表示本次重读历史原件或重新验证目录。
+
+### 已确认迁移结果（承接，不重跑）
 
 - 外层 Docs 已不存在；内层 Docs 根为 current、specifications、history、decisions、investigations 和 README。5份原 current 入口、36份规范已到目标位置。
 - completed-work 原内层、outer-root、handoffs-origin 来源保留；handoffs 的 nested-docs-origin、maintenance-output-origin、handoff-output-origin、maintenance-input-origin、receipts-origin 及 maintenance-input-handoff.md 已落地。同名来源不合并覆盖。

@@ -18,6 +18,20 @@
 
 r28证据根（相对项目根）：`artifacts/strict-render-r28/task5-supervised-repeat/Evidence/`，summary、parent-process、readback、manifest-before/after及历史manifest checks；raw SHA为`7F55E138C9605464AE90811BD28B5477871BB3E1AA71F5FD3A1C8B052E0C308B`。599个非Evidence文件与历史402业务包项核对成立。模块仅采样，不是连续拦截；未比较字段、首次父退出缺独立收据、审计外层exit Unknown、官方签名全链未认证均保持报告原边界。本轮只审读报告，不冒称重新审计全部原始产物。
 
+## 当前正式入口有限认证
+
+`strict-merged-observed-verified-run/Evidence/` 已由正式只读audit独立核完整raw/result/process/module/manifest：raw4096逐字节相同、11契约全等、353条模块SHA和692包项全匹配；父4948/子12664、9200真实exit0；父及observer前后快照无gfx/PresentationCore。最终harness SHA及Native来源、执行账详见[恢复入口](current-recovery.md)。这是当前包 x64固定32×32 **PassedLimited**，不是其他矩阵通过。最外层observer/audit独立OSexit Unknown；非连续模块拦截、非签名信任链、非完整生命周期认证。Dispatcher四项/full/桌面/媒体本次NotRun；保留旧失败分账。下一严格路径→变换→裁剪→透明顺序不变。
+
+## 正式合并接续（上一任务历史，不升级上述矩阵）
+
+正式 Harness/StrictRenderBusiness、Scenes/StrictRenderGeometry、Comparison/StrictRenderSupervisor 与 NativeRun 已整合；前任务 Release build exit0。新 strict comparison 摘要差异0、11 contracts相等，有两侧exit0原件；独立 raw、父 OS exit、全 module 取证未闭合，不能记独立审计通过。四项正式 Dispatcher 身份门本轮未运行。
+
+用户已执行 FinishTestsCleanup，本轮串行核验 Tests 一级目录和递归实际 csproj 均仅 WpfGfxShape.Tests、WpfGfxShape.ComAcceptance；旧 StrictRenderR28、StrictRenderSupervisorR28、CandidatePureVideo 三目录已消失。slnx 实读仅生产1项目及正式 Tests 2项目。正式 Compile/Link、Content、ProjectReference、Import/targets、NativeRun 入口未见旧路径依赖；迁入严格业务/监督/场景与 DispatcherWorkersTests 仍在，不把历史 namespace 当断引用。
+
+删除后专用 Release build2：ComAcceptance exit0、172警告/0错误；WpfGfxShape.Tests exit0、0警告/0错误（增量）。前任务4109警告不是本次数字，不能据增量构建声称警告消除，未大范围修警告。定向 test1 在 Debug 运行安全托管 AvCompositionNotifierTests：5通过/0失败/0跳过、exit0，不加载原版 Native；不是 full 或 strict 产品认证。四项 Dispatcher 身份门未满足、未运行、未绕过。独立 raw、父 OS exit、完整模块证据审计仍未闭合，历史绿不转记当前通过。
+
+Tools 递归仅剩 TestsCleanup/FinishTestsCleanup.cs；旧 CleanupTests.cs/README.md 已删，工具完成使命，用户可删除剩余 Tools/TestsCleanup，不再运行。源码/csproj/targets修改0，仅更新四份 current 文档并全文小段回读；正常输出机制不改，artifacts 未盘点整理清理或定向读取。清理执行0、publish0、sandbox0、终端/脚本0、委派0，未重发 Native、未跑 full。
+
 ## 唯一后续顺序（全部待实施/NotRun）
 
 1. **下一严格用例：路径**。复用r28已证的双进程结构而非修改其冻结证据；预注册新caseId，固定非空闭合PathGeometry（线段+Bezier）、同画刷/背景、32×32/Pbgra32/96dpi。两侧同harness/runtime/input/config/调用顺序，仅gfx身份和取证目录不同；先固定官方重复稳定性，再完整raw和业务契约零阈值差分。保存每侧真实退出、实际模块及runtime身份、输入/源码清单、完整raw与清理；首错存证停止，不改expected追绿。
