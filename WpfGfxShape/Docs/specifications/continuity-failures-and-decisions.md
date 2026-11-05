@@ -20,7 +20,7 @@ Decision不能自行授权违反章程或删除兼容范围。DEC-0004已接受�
 
 ## 11. 进度报告
 
-仅报告切片是否完成、Active阶段、正式Closed/Pending数量、硬阻塞、替换资格；这些当前值只从[唯一当前状态](handoffs/current-recovery.md)读取，累计旧基线仅历史。
+仅报告切片是否完成、Active阶段、正式Closed/Pending数量、硬阻塞、替换资格；这些当前值只从[唯一当前状态](../current/current-recovery.md)读取，累计旧基线仅历史。
 分母不可确定计算不报总百分比，单切片100%不等项目100%。
 
 ## 12. 一致性检查

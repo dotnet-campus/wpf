@@ -1,10 +1,10 @@
 # 文档治理：source → current 条款追溯
 
-最新合同修订：[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)将下表/历史合同全部ARM64必需门覆盖为用户范围NA（非Passed），当前仅x86/x64完整矩阵；不是无证删除要求。原Ledger字段保留并显式解释覆盖；历史 parent Blocked 不在本页升级或冒充当前状态。[DEC-0006](decisions/DEC-0006-installed-official-runtime-contract.md)明确已安装官方完整runtime同版同架构独立对照；10.0.12历史身份不改，不再待澄清或补包，见[版本来源](windowsdesktop-version-provenance.md)。
+最新合同修订：[DEC-0005](../decisions/DEC-0005-x86-x64-acceptance-scope.md)将下表/历史合同全部ARM64必需门覆盖为用户范围NA（非Passed），当前仅x86/x64完整矩阵；不是无证删除要求。原Ledger字段保留并显式解释覆盖；历史 parent Blocked 不在本页升级或冒充当前状态。[DEC-0006](../decisions/DEC-0006-installed-official-runtime-contract.md)明确已安装官方完整runtime同版同架构独立对照；10.0.12历史身份不改，不再待澄清或补包，见[版本来源](windowsdesktop-version-provenance.md)。
 
-只追正式条件，不恢复来源中的状态/下一包。按正文操作、结果、失败/寿命与矩阵核对，不以标题相同判等价；这是文本追溯，不是生产验收。[当前对照合同](handoffs/current-comparison-contract.md)覆盖下表旧规则，产品状态仅见[恢复入口](handoffs/current-recovery.md)；不复制长期合同或把有限通过提升为完整替换。
-来源：[历史总规划](history/plans/migration-master-plan.md)§9/批次7–14、历史引用 `investigations/audits/S-20261014-008-independent-plan-audit.md`（本轮目录复核 audits 为空，目标缺失，不能复核其“有限分母与完成定义”，不杜撰替代目标）、[GenProto冻结审计（已清理；合同/说明）](history-index.md)、[原E2E编号入口](09-test-evidence-and-e2e-contract.md)。现行条款含其链接主题页。
-旧七阶段未保留独立逐字快照，阶段审计目标缺失，冻结审计已清理；本轮保全的[旧总计划](handoffs/history/remaining-gap-closure-plan-legacy.md)也未找到旧七阶段标题，不能再称现存七行已复核。下表“七阶段第N行”仅为历史追溯记号；可读长期条款见各主题页，当前状态与执行只见[当前矩阵](handoffs/current-validation-matrix.md)，不重建缺失原件。原E2E旧章标题保留，但无拆分前版本可逐字diff；以下核对的是仍可读取的历史要求与现行完整操作合同。
+只追正式条件，不恢复来源中的状态/下一包。按正文操作、结果、失败/寿命与矩阵核对，不以标题相同判等价；这是文本追溯，不是生产验收。[当前对照合同](../current/current-comparison-contract.md)覆盖下表旧规则，产品状态仅见[恢复入口](../current/current-recovery.md)；不复制长期合同或把有限通过提升为完整替换。
+来源：[历史总规划](../history/plans/migration-master-plan.md)§9/批次7–14、历史引用 `investigations/audits/S-20261014-008-independent-plan-audit.md`（本轮目录复核 audits 为空，目标缺失，不能复核其“有限分母与完成定义”，不杜撰替代目标）、[GenProto冻结审计（已清理；合同/说明）](../history/history-index.md)、[原E2E编号入口](09-test-evidence-and-e2e-contract.md)。现行条款含其链接主题页。
+旧七阶段未保留独立逐字快照，阶段审计目标缺失，冻结审计已清理；本轮保全的[旧总计划](../history/handoffs/remaining-gap-closure-plan-legacy.md)也未找到旧七阶段标题，不能再称现存七行已复核。下表“七阶段第N行”仅为历史追溯记号；可读长期条款见各主题页，当前状态与执行只见[当前矩阵](../current/current-validation-matrix.md)，不重建缺失原件。原E2E旧章标题保留，但无拆分前版本可逐字diff；以下核对的是仍可读取的历史要求与现行完整操作合同。
 
 | source 条款/必须保留的语义 | current 承载与核对结论 |
 |---|---|
@@ -16,7 +16,7 @@
 | §9-6 P0关闭或用户批准明确范围例外 | 主题合同第6项；[DEC-0004](decisions/DEC-0004-process-lifetime-module.md)仅卸载不适用，非通过；x86/资源清理不减 |
 | §9-7 满足全部才称兼容替代 | 主题合同末项，替换为交付资格，不是热换DLL |
 | §9末段 现代化/性能/重构另立计划基线 | 主题合同末项及章程§1/3保留 |
-| 原阶段1 HW backend设备/manager/资源/线程/恢复 | [当前矩阵](handoffs/current-validation-matrix.md)记录未证项；[A/B](plan-module-contracts.md)真实HW/SW、per-device失败寿命，有限Closed不豁免差集。旧七阶段锚点在本轮保全原文中已不存在，不冒称第1行已复核 |
+| 原阶段1 HW backend设备/manager/资源/线程/恢复 | [当前矩阵](../current/current-validation-matrix.md)记录未证项；[A/B](plan-module-contracts.md)真实HW/SW、per-device失败寿命，有限Closed不豁免差集。旧七阶段锚点在本轮保全原文中已不存在，不冒称第1行已复核 |
 | 原阶段2 内容/格式/采样/shader/cache成功失败消费者 | 七阶段第2行；A冻结事务、B sampler/constants/malformed/type/padding/Ddx/inputscope/HDR/compiler完整合同 |
 | 原阶段3 SW像素/变换/裁剪/格式/寿命 | 七阶段第3行；[软件呈现](migration-coupled-domains.md#软件呈现)所有权、FLOAT/HDR消费者及E2E-04/05，不以组件代PresentationCore |
 | 原阶段4 generated协议及历史批次7 producer/consumer | 七阶段第4行；[C](plan-module-contracts.md#c-genproto-required)、[生成协议测试](testing-comparison-and-acceptance.md#7-生成协议测试)冻结ID/布局/golden/router/factory/负例及隔离重放 |
@@ -45,4 +45,4 @@
 | 原C authority/ARM64/core managed/X86独立推导 | 主题合同C保留field/enum/pack/size、实机、physical/required；外部包内容只链接唯一清单 |
 | 消费者双缓冲/D3DImage/媒体/FLOAT/glyph/perf | 主题合同六同名子节保留全格式、重入/并发/替换/loss、真实指针、同格式oracle、严格raw与OOM、合法72字节及最终同SHA验收；有限历史不外推 |
 
-核查边界：本轮只审核本页正文及所链接文件存在性，不重新认证下表各目标全文。缺失阶段审计、已清理冻结审计和拆分前快照仍无法复核，故撤销原“未发现其余条件降级”的整体结论。表格 E2E-03/04 分段回读为两条独立行，未发现文件内粘连；长响应截断的显示粘连不作为修改依据。unload旧门只由DEC-0004覆盖；实际渲染与已清理报告说明见[历史索引](history-index.md)。
+核查边界：本轮只审核本页正文及所链接文件存在性，不重新认证下表各目标全文。缺失阶段审计、已清理冻结审计和拆分前快照仍无法复核，故撤销原“未发现其余条件降级”的整体结论。表格 E2E-03/04 分段回读为两条独立行，未发现文件内粘连；长响应截断的显示粘连不作为修改依据。unload旧门只由DEC-0004覆盖；实际渲染与已清理报告说明见[历史索引](../history/history-index.md)。

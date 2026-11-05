@@ -1,6 +1,6 @@
 # 全部正式门：唯一最小外部输入与验收环境清单
 
-本页只维护交付规格，当前身份见[基线](handoffs/current-stable-baseline.md)，自主工作见[唯一九包](remaining-gap-closure-plan.md)。**不是只剩外部输入**；包到位不自动Satisfied。
+本页只维护交付规格，当前身份见[恢复入口](../current/current-recovery.md)，自主工作见[当前矩阵](../current/current-validation-matrix.md)。**不是只剩外部输入**；包到位不自动Satisfied。
 
 ## 不再请求
 
@@ -33,4 +33,4 @@ Retail player已按真实retail语义和50组官方差分实现，不再请求PR
 ## 总门与历史
 
 C5完整实际闭包、D4及x86/x64全部正式ABI/寿命/七阶段/E2E/strict/full仍未满；两个required/parent Blocked，stage4Closed=false，总门Red。移除ARM64/旧patch/卸载请求没有将其它门降级。
-旧“四类外部输入”、10.0.12唯一目标及ARM64请求在[历史索引](history-index.md)下仅保留当时身份，不作现行交付清单。本次重新生产发布与标准native打包，托管full4224/4224、原生1676/1635pass/41fail/0skip；历史机器验收不是本次证据。
+旧“四类外部输入”、10.0.12唯一目标及ARM64请求在[历史索引](../history/history-index.md)下仅保留当时身份，不作现行交付清单。本次重新生产发布与标准native打包，托管full4224/4224、原生1676/1635pass/41fail/0skip；历史机器验收不是本次证据。

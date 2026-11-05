@@ -1,6 +1,6 @@
 # wpfgfx 测试证据与渐进 E2E Harness 契约
 
-本页是证据主题导航，不复制对照总合同；隔离与比较标准以[当前对照合同](handoffs/current-comparison-contract.md)为准，运行状态只见[恢复入口](handoffs/current-recovery.md)。三主题页分别负责运行工件、逐项E2E、能力/失败分类；E2E-00历史机制证据不替代生产ABI/E2E，也不授权恢复已删除项目。
+本页是证据主题导航，不复制对照总合同；隔离与比较标准以[当前对照合同](../current/current-comparison-contract.md)为准，运行状态只见[恢复入口](../current/current-recovery.md)。三主题页分别负责运行工件、逐项E2E、能力/失败分类；E2E-00历史机制证据不替代生产ABI/E2E，也不授权恢复已删除项目。
 
 ## 1. 目的
 [证据目标](evidence-run-contract.md#1-目的)。

@@ -1,6 +1,6 @@
 # 历史索引与统一纠偏
 
-当前状态只见[恢复入口](../current-recovery.md)，规则见[严格对照合同](../current-comparison-contract.md)，可用计划见[当前严格验收矩阵](../current-validation-matrix.md)。历史“唯一当前”、原版永禁、预算与有限通过均不覆盖当前合同；失败和未知保留。
+当前状态只见[恢复入口](../../current/current-recovery.md)，规则见[严格对照合同](../../current/current-comparison-contract.md)，可用计划见[当前严格验收矩阵](../../current/current-validation-matrix.md)。当前维护职责见[维护台账与迁后检查](../../current/repository-organization-check.md)。历史“唯一当前”、原版永禁、预算与有限通过均不覆盖当前合同；失败和未知保留。
 
 ## 原字节归档
 
@@ -16,11 +16,11 @@
 | replacement-issues-and-plan-status.md | [legacy](replacement-issues-and-plan-status-legacy.md) | 1862→11 | 424198 | [audit](replacement-issues-and-plan-status-audit.json) |
 | wpfgfx-complete-replacement-validation-plan.md | [legacy](wpfgfx-complete-replacement-validation-plan-legacy.md) | 532→11 | 124561 | [audit](wpfgfx-complete-replacement-validation-plan-audit.json) |
 
-各原件UTF-8无BOM。归档先落地，再重新发布工作区未短化原文与落地归档，校验源SHA未变和完整字节一致后生成短入口；任务6独立最终verify见项目根`artifacts/documentation-maintenance/task6-final/verification.json`，任务5收据保留原路径。SHA对象为完整发布输入副本及沙箱归档读回，不冒称原位hash。程序全文读取/逐字节保全不等于助手逐条语义审核，人工读取范围只见[台账](../../documentation-maintenance.md)与矩阵。
+各原件UTF-8无BOM。归档先落地，再重新发布工作区未短化原文与落地归档，校验源SHA未变和完整字节一致后生成短入口；任务6独立最终verify见项目根`artifacts/documentation-maintenance/task6-final/verification.json`，任务5收据保留原路径。SHA对象为完整发布输入副本及沙箱归档读回，不冒称原位hash。程序全文读取/逐字节保全不等于助手逐条语义审核，历史人工读取范围按各阶段记录解释，现行维护责任见[台账](../../current/repository-organization-check.md)，不据旧统计认证当前全覆盖。
 
 ## 任务8：README完整文本保留（文件工具）
 
-[任务8前README完整文本](../../history/readme-before-task8.md)：原60行完整读取，文件工具写入后逐段全文回读，保留历史数字与首尾；现入口60→20行。此项为人工文本保全，不列入上表原字节/SHA审计，未核编码、换行字节或hash，不生成虚假audit。归档内链接按迁移前`Docs/`基准解释，不按`Docs/history/`重解；旧“当前权威”、预算和认证均为原时态，状态只见恢复入口。历史链接不保证原件存在，缺件不能拿无关页面冒替。
+[任务8前README完整文本](../readme-before-task8.md)：原60行完整读取，文件工具写入后逐段全文回读，保留历史数字与首尾；现入口60→20行。此项为人工文本保全，不列入上表原字节/SHA审计，未核编码、换行字节或hash，不生成虚假audit。归档内链接按迁移前`Docs/`基准解释，不按`Docs/history/`重解；旧“当前权威”、预算和认证均为原时态，状态只见恢复入口。历史链接不保证原件存在，缺件不能拿无关页面冒替。
 
 ## 原路径与历史深链
 
@@ -28,7 +28,7 @@
 
 ## 剩余与副本责任
 
-四份规划已保全短化，不是全库语义审完。任务8已全文审四份ABI/Ledger规范及README文本并短化入口；下一批为completed-work两份default-com-acceptance-baseline/failures主题归并及decisions，逐文件范围见[当前台账](../../documentation-maintenance.md)。D2其余规范、D4–D6与investigations继续按[旧完整台账](documentation-maintenance-legacy.md)责任索引；绝大多数文档仍未审。
+四份规划已保全短化，不是全库语义审完。任务8的四份ABI/Ledger规范及README已读记录仅属当时范围；completed-work两份default-com-acceptance-baseline/failures、decisions及其余规范/历史/investigations的当前待审责任见[当前台账](../../current/repository-organization-check.md)。[旧台账原文](documentation-maintenance-legacy.md)只保留任务1–4，不是后续完整收据。下列任务7/11盘点、空写和路径均是迁前历史，不据此重做清理或认证当前数量。
 
 任务7已纠正前账的污染漏盘：Docs实际1102，按结构分现行候选68、历史证据800、与既存artifact同SHA污染231、待判定3；不是1102份权威文档。完整逐文件SHA/来源匹配/显式引用在项目根 `artifacts/documentation-maintenance/task7-audit/Results/pollution-inventory.json`；231项人工复核候选见同目录 `manual-cleanup-whitelist.tsv`，不能把同SHA当创建来源认证。真实legacy/audit及原始报告仍是本索引上表权威落点，不删除。
 
@@ -38,4 +38,4 @@
 
 本次仅更新指定3份文档，无新清空，所有程序执行（含终端、脚本、build/test/publish、Windows沙箱）及委派均0；未扫描全库或复算实时hash。详细收据见项目根 `artifacts/documentation-maintenance/task11-cleanup-results.md`。876→1102为历史清单明细，848旧基准缺逐文件集合，不强行认证差额或当前路径集合；文档治理仍未全完。
 
-专用辅助已隔离为静态12路径白名单 `DocumentationOutput/` 与审计 `Results/`；publish拒绝Docs。回收只指定上述子目录至artifacts，禁止执行器根/runtime/inputs回拉Docs。四份规划再次verify成功仅证明发布副本与审计一致，不是全库语义审核或最终现行页hash。四短入口/矩阵/本索引及台账回读不等于治理完成。下一规范批次与历史报告批次、Unknown未审数和手工清理边界见[当前台账](../../documentation-maintenance.md)。
+专用辅助已隔离为静态12路径白名单 `DocumentationOutput/` 与审计 `Results/`；publish拒绝Docs。回收只指定上述子目录至artifacts，禁止执行器根/runtime/inputs回拉Docs。四份规划再次verify成功仅证明发布副本与审计一致，不是全库语义审核或最终现行页hash。四短入口/矩阵/本索引及台账回读不等于治理完成。当前待审责任与Unknown统计边界见[当前台账](../../current/repository-organization-check.md)，不由上述历史数值推算迁后余量。

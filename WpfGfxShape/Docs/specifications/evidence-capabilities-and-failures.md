@@ -1,8 +1,8 @@
 # 测试证据：能力、失败注入与执行状态
 
-> 依据[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)，当前正式仅x86/x64全部矩阵。下方RealArm64Host及ARM64环境需求只保留历史字段，当前NA-UserScopeDecision，不按CapabilityMissing阻塞、不改Passed、不再索取机器。
+> 依据[DEC-0005](../decisions/DEC-0005-x86-x64-acceptance-scope.md)，当前正式仅x86/x64全部矩阵。下方RealArm64Host及ARM64环境需求只保留历史字段，当前NA-UserScopeDecision，不按CapabilityMissing阻塞、不改Passed、不再索取机器。
 
-[证据规范](09-test-evidence-and-e2e-contract.md)§10–15正式合同，运行状态只见[恢复入口](handoffs/current-recovery.md)；严格比较和归因边界以[当前对照合同](handoffs/current-comparison-contract.md)为准。
+[证据规范](09-test-evidence-and-e2e-contract.md)§10–15正式合同，运行状态只见[恢复入口](../current/current-recovery.md)；严格比较和归因边界以[当前对照合同](../current/current-comparison-contract.md)为准。
 
 ## 10. 环境标签与能力检测
 

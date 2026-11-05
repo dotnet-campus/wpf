@@ -2,7 +2,7 @@
 
 本页仅为冻结历史引用保留路径与锚点，不是恢复入口。
 
-正文已移至[history/plans/native-to-managed-file-map.md](history/plans/native-to-managed-file-map.md)；恢复从[唯一入口](next-session-handoff.md)开始。
+正文已移至[历史映射](../history/plans/native-to-managed-file-map.md)；恢复从[唯一入口](../current/current-recovery.md)开始。
 
 <a id="wpfgfx-原生到-c-文件映射历史证据长档"></a>
 <a id="最新块a映射与身份阶段4-active"></a>

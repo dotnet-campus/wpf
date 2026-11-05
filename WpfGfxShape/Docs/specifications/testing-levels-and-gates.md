@@ -1,11 +1,11 @@
 # 测试策略：分层、E2E 阶梯与批次门禁
 
-[测试策略](06-testing-strategy.md)§1–5完整主题合同；状态只见[基线](handoffs/current-stable-baseline.md)。
+[测试策略](06-testing-strategy.md)§1–5完整主题合同；状态只见[基线](../current/current-recovery.md)。
 
 ## 1. 测试目标
 
 同时证明：内部文件语义、发布 Windows C ABI、资源/COM/线程/callback/失败等价、同输入的结果与副作用差分、未修改真实 PresentationCore 可观察流程。
-T0–T5是证据分类，不授权额外项目或恢复历史GenProto/Ledger治理门；仅Tests托管与ComAcceptance原生两项目，最新用户组织裁决优先，产品行为目标不变；真实消费者为托管 P/Invoke，不要求 C++ NativeCaller、静态 import caller、lib 链接或纯原生消费者，见[DEC-0003](decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md)。
+T0–T5是证据分类，不授权额外项目或恢复历史GenProto/Ledger治理门；仅Tests托管与ComAcceptance原生两项目，最新用户组织裁决优先，产品行为目标不变；真实消费者为托管 P/Invoke，不要求 C++ NativeCaller、静态 import caller、lib 链接或纯原生消费者，见[DEC-0003](../decisions/DEC-0003-managed-pinvoke-abi-integration-tests.md)。
 
 ## 2. 证据分层
 

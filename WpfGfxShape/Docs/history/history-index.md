@@ -1,6 +1,6 @@
 # 历史与已清理材料索引
 
-本页不调度工作，恢复只从[唯一当前入口](handoffs/current-recovery.md)开始。[累计历史纠偏](handoffs/history/README.md)解释旧禁令与有限证据边界；[维护台账](documentation-maintenance.md)列尚未完成的审核。
+本页不调度工作，恢复只从[唯一当前入口](../current/current-recovery.md)开始。[累计历史纠偏](handoffs/README.md)解释旧禁令与有限证据边界；[当前维护台账与迁后检查](../current/repository-organization-check.md)列本次范围及待审责任。以下清理数字与路径为历史记录，不是迁后实时盘点。
 
 ## 已实际清理（不再提供存在链接）
 
@@ -13,7 +13,7 @@
 
 ## 保留原因
 
-- 正式规范、DEC-0001–0006及[唯一总计划](remaining-gap-closure-plan.md)保留；七阶段目标与用户最终兼容目标不减。
+- 正式规范、DEC-0001–0006及[正式主题合同](../specifications/plan-module-contracts.md)与[历史总计划原文](handoffs/remaining-gap-closure-plan-legacy.md)保留；七阶段目标与用户最终兼容目标不减。
 - history/plans/migration-master-plan的原合同来源和native-to-managed-file-map的源码追溯暂保留，不作竞争计划。
 - Ledger records/groups/work-packages保留身份、sourceOwner、依赖及readiness/doneRule；evidence仅留ID与subject合同，不留旧run载荷。
 - 不可再生独立输入、生产manifest/资源声明、正式Tests/Tools保留。

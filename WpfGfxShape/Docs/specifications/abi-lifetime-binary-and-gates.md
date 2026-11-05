@@ -1,13 +1,13 @@
 # ABI Manifest：callback、COM、binary 与验收
 
-> 当前架构门由[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)覆盖为仅x86/x64全部正式矩阵；ARM64 ABI/编译/布局/运行NA-UserScopeDecision，不是Passed，不减x86/x64 callback/COM/寿命/二进制验收。
+> 当前架构门由[DEC-0005](../decisions/DEC-0005-x86-x64-acceptance-scope.md)覆盖为仅x86/x64全部正式矩阵；ARM64 ABI/编译/布局/运行NA-UserScopeDecision，不是Passed，不减x86/x64 callback/COM/寿命/二进制验收。
 
-[ABI 规范](08-abi-manifest-spec.md)§8–14正式合同。产品当前状态只见[恢复入口](handoffs/current-recovery.md)，逐项证据绑定实际产物；执行规则统一见[严格对照合同](handoffs/current-comparison-contract.md)，最终覆盖见[当前验收矩阵](handoffs/current-validation-matrix.md)。
+[ABI 规范](08-abi-manifest-spec.md)§8–14正式合同。产品当前状态只见[恢复入口](../current/current-recovery.md)，逐项证据绑定实际产物；执行规则统一见[严格对照合同](../current/current-comparison-contract.md)，最终覆盖见[当前验收矩阵](../current/current-validation-matrix.md)。
 
 ## 8. Callback manifest
 
 每类单记 native typedef/托管delegate或pointer、调用约定/返回/参数/descriptor offset、同步或长期保存、线程/apartment、delegate/context创建/保活/释放者、CoreCLR token不透明往返、detach阻止新进入/等待在途/释放context、异常策略、process-exit/资源/线程/callback静止、x86栈平衡与各架构运行。
-生产 DLL unload/reload/热替换按[DEC-0004](decisions/DEC-0004-process-lifetime-module.md)不适用，不改历史false。
+生产 DLL unload/reload/热替换按[DEC-0004](../decisions/DEC-0004-process-lifetime-module.md)不适用，不改历史false。
 强制 stream/event proxy/geometry/D3DImage；新callback先建manifest再编码。
 
 ## 9. COM interface manifest

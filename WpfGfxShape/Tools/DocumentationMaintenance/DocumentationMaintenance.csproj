@@ -7,12 +7,10 @@
     <RuntimeFrameworkVersion>10.0.1</RuntimeFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
-    <MaintenanceName Include="final-acceptance-remaining-matrix;remaining-gap-closure-plan;replacement-issues-and-plan-status;wpfgfx-complete-replacement-validation-plan" />
-    <Content Include="@(MaintenanceName->'../../Docs/%(Identity).md')" Link="Input/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
-    <Content Include="../../Docs/handoffs/history/*-legacy.m?;../../Docs/handoffs/history/*-audit.jso?" Link="Input/handoffs/history/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
-    <Content Include="../../Docs/documentation-maintenance.md;../../Docs/README.md;../../Docs/governance-authority-traceability.md;../../Docs/publicabi-family-delivery-plan.md" Link="Input/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
-    <Content Include="../../Docs/handoffs/current-validation-matrix.m?;../../Docs/handoffs/current-recovery.md" Link="Input/handoffs/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
-    <Content Include="../../Docs/handoffs/history/README.md" Link="Input/handoffs/history/README.md" CopyToPublishDirectory="Always" />
+    <Content Include="../../Docs/history/handoffs/*-legacy.m?;../../Docs/history/handoffs/*-audit.jso?;../../Docs/history/handoffs/README.md" Link="Input/history/handoffs/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+    <Content Include="../../Docs/README.md" Link="Input/README.md" CopyToPublishDirectory="Always" />
+    <Content Include="../../Docs/specifications/governance-authority-traceability.md;../../Docs/specifications/publicabi-family-delivery-plan.md" Link="Input/specifications/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+    <Content Include="../../Docs/current/current-validation-matrix.md;../../Docs/current/current-recovery.md;../../Docs/current/repository-organization-check.md" Link="Input/current/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
     <DocsInventory Include="../../Docs/**/*" />
     <Content Include="$(IntermediateOutputPath)docs-files.txt" Link="Input/docs-files.txt" CopyToPublishDirectory="Always" />
   </ItemGroup>

@@ -16,11 +16,11 @@
 - 全量：`dotnet test --project WpfGfxShape.ComAcceptance.csproj -c Release -- --report-trx --report-trx-filename local-final-full.trx`。
 - 定向：`dotnet test --project WpfGfxShape.ComAcceptance.csproj -c Release -- --filter FullyQualifiedName~AcceptancePathsTests --report-trx --report-trx-filename local-paths.trx`。
 
-上述是参数说明，不授权终端调用；执行代理使用专用测试能力或下述标准编译应用沙箱入口。历史从根目录选错 runner 的失败见[冻结工程档](handoffs/completed-work/S-UNDATED-001-SANDBOX-PACKAGE-FINAL-CLOSEOUT.md)，本轮未验证 SDK 搜索路径/专用入口兼容。不要改根 runner 影响其他项目，也不要新增调度层。
+上述是参数说明，不授权终端调用；执行代理使用专用测试能力或下述标准编译应用沙箱入口。历史从根目录选错 runner 的失败见[冻结工程档](../history/completed-work/handoffs-origin/S-UNDATED-001-SANDBOX-PACKAGE-FINAL-CLOSEOUT.md)，本轮未验证 SDK 搜索路径/专用入口兼容。不要改根 runner 影响其他项目，也不要新增调度层。
 
 ## 沙箱直接 exe（无需 SDK runner/Host）
 
-以包根为执行目录，执行文件相对路径 `WpfGfxShape.ComAcceptance.exe`；沙箱专用执行能力的 sourceDirectory 仅设包目录。不得改为历史 `WpfGfxShape.NativeCaller.exe` / `StaticNativeCaller.exe`，也不得上传 `.coding-agent/sandbox-results` 回收目录作为现行包。历史caller的启动/CRT诊断不构成生产验收，其缺原故障exe/项目不列当前生产必需输入；定位结果见[独立报告](../Investigations/NativeCallerStartup/README.md)。
+以包根为执行目录，执行文件相对路径 `WpfGfxShape.ComAcceptance.exe`；沙箱专用执行能力的 sourceDirectory 仅设包目录。不得改为历史 `WpfGfxShape.NativeCaller.exe` / `StaticNativeCaller.exe`，也不得上传 `.coding-agent/sandbox-results` 回收目录作为现行包。历史caller的启动/CRT诊断不构成生产验收，其缺原故障exe/项目不列当前生产必需输入；定位结果见[历史 NativeCaller 启动诊断](../history/nativecaller-startup.md)。
 
 - 全量参数：`--report-trx --report-trx-filename sandbox-full.trx`。
 - 路径/身份/白名单定向参数：`--filter FullyQualifiedName~AcceptancePathsTests --report-trx --report-trx-filename closure-paths.trx`。
@@ -30,5 +30,5 @@
 
 ## 证据与历史边界
 
-当前状态只见[基线](handoffs/current-stable-baseline.md)。小包工程旧 SHA、smoke/full、runner 失败及白名单逐项证据保留于[冻结工程档](handoffs/completed-work/S-UNDATED-001-SANDBOX-PACKAGE-FINAL-CLOSEOUT.md)，不在方法页复制计数。
-旧失败集合不能套作当前失败，也不能把窗口覆盖观察推广为全部仅环境。历史索引见[隔离层](history-index.md)，现行恢复见[唯一入口](next-session-handoff.md)。
+当前状态只见[基线](../current/current-recovery.md)。小包工程旧 SHA、smoke/full、runner 失败及白名单逐项证据保留于[冻结工程档](../history/completed-work/handoffs-origin/S-UNDATED-001-SANDBOX-PACKAGE-FINAL-CLOSEOUT.md)，不在方法页复制计数。
+旧失败集合不能套作当前失败，也不能把窗口覆盖观察推广为全部仅环境。历史索引见[隔离层](../history/history-index.md)，现行恢复见[唯一入口](../current/current-recovery.md)。

@@ -1,6 +1,6 @@
 # 任务边界：任务5已收尾
 
-遵守 [严格对照合同](current-comparison-contract.md)，结论与证据见 [完成报告](../completed-work/replacement-strict-dual-process-first-render.md)。本文不分派下一智能体或新矩阵。
+遵守 [严格对照合同](current-comparison-contract.md)，结论与证据见 [完成报告](../history/completed-work/replacement-strict-dual-process-first-render.md)。本文不分派下一智能体或新矩阵。
 
 - run2完整冻结快照两次新增严格双进程重复通过现有RTB门；两次均为同一业务exe/DLL、runtime与固定输入。599项非Evidence清单一致，第二次前后不变，历史402项包清单匹配。run1不计同包重复。
 - 第二次父/子真实退出与完整输出有收据，首次父退出仍Unknown；审计最外层真实exit仍Unknown，不继续套框架补证。

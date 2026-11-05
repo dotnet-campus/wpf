@@ -1,7 +1,7 @@
 # 连续性：恢复、工作模块与收尾
 
 ## r6历史记录（不调度当前任务）
-[报告](completed-work/sampler-native-crash-x64-r6-closeout.md)：build1/publish1/offline1实际执行，缺image-backed .xdata读取使unwind不可信，caller未知，任务未完成，非外部API能力障碍。offline角色用完需另授offline1修正验证，业务角色不挪用；fixture不改、23红与所有历史保留。这些预算与下一动作仅属于r6历史，当前恢复只见[唯一入口](handoffs/current-recovery.md)；诊断默认关闭，不代正式业务验收。
+[报告](../history/completed-work/sampler-native-crash-x64-r6-closeout.md)：build1/publish1/offline1实际执行，缺image-backed .xdata读取使unwind不可信，caller未知，任务未完成，非外部API能力障碍。offline角色用完需另授offline1修正验证，业务角色不挪用；fixture不改、23红与所有历史保留。这些预算与下一动作仅属于r6历史，当前恢复只见[唯一入口](../current/current-recovery.md)；诊断默认关闭，不代正式业务验收。
 
 [连续性协议](10-session-continuity-protocol.md)§1–7正式合同；强制执行，上位[章程](00-migration-charter.md)。
 
@@ -13,25 +13,25 @@
 
 | 文档 | 唯一职责 |
 |---|---|
-| handoffs/current-recovery.md | 唯一当前状态与恢复导航 |
-| handoffs/current-comparison-contract.md | 唯一权威对照与执行规则 |
-| handoffs/next-code-task.md | 既有分派的边界，不自行领取新任务 |
-| next-session-handoff.md、handoffs/current-execution-rules.md、current-stable-baseline.md、current-work-item.md | 累计历史，未完整保全前不截断重写 |
-| documentation-maintenance.md | 文档逐目录/文件审核状态及下一串行责任，不复制产品状态 |
-| remaining-gap-closure-plan.md、plan-module-contracts.md | 正式条件/依赖，不复制状态 |
-| native-to-managed-file-map.md | 历史映射，旧身份/下步不生效 |
-| handoffs/completed-work/<session-topic>.md | 每切片独立历史 |
-| handoffs/progress-completed-work.md | 冻结不追加 |
+| Docs/current/current-recovery.md | 唯一当前状态与恢复导航 |
+| Docs/current/current-comparison-contract.md | 唯一权威对照与执行规则 |
+| Docs/current/next-code-task.md | 既有分派的边界，不自行领取新任务 |
+| Docs/history/handoffs/*-legacy.md | 完整历史原文，原字节不改，链接按原基准解释 |
+| Docs/current/repository-organization-check.md | 当前目录检查范围、修复及未审项，不复制产品状态 |
+| Docs/specifications/plan-module-contracts.md | 正式条件/依赖，不复制状态 |
+| Docs/history/plans/native-to-managed-file-map.md | 历史映射，旧身份/下步不生效 |
+| Docs/history/completed-work/<session-topic>.md | 每切片独立历史，保留来源子目录 |
+| 历史 progress 累计报告 | 冻结不追加 |
 | Ledger/*.jsonl、Abi/*、Evidence、Decision | 各自机器/决策事实源 |
 
 入口不写完成历史、百分比、长流水、多候选。
 
 ## 3. 会话恢复顺序
 
-1. [唯一入口](handoffs/current-recovery.md)。
-2. [严格对照与执行规则](handoffs/current-comparison-contract.md)。
+1. [唯一入口](../current/current-recovery.md)。
+2. [严格对照与执行规则](../current/current-comparison-contract.md)。
 3. 只按当前入口引用读取具体完成报告，历史结果不移绑。
-4. [任务边界](handoffs/next-code-task.md)与用户本次明确分派；文档专项另读[维护台账](documentation-maintenance.md)。
+4. [任务边界](../current/next-code-task.md)与用户本次明确分派；文档专项另读[维护检查](../current/repository-organization-check.md)。
 5. 按模块读阶段计划/编号规范/原生源码/测试。
 6. 检查已有改动，不覆盖用户修改。
 7. 明确声明/实现/调用者/ownership/测试/完成条件后才编辑代码。
@@ -54,7 +54,7 @@ StaticConfirmed=静态直接支持；ExecutedPassed=实际构建/发布/测试/�
 1. 停止扩大范围。
 2. 执行本切片要求的定向/full/ABI/构建，或记录不能执行原因；文档专轮遵守不执行限制。
 3. 更新受影响Ledger/ABI/Evidence/映射/专题；不向历史映射长档续写当前状态。
-4. 当前状态与最近有限证据只更新handoffs/current-recovery，不追加到累计旧基线。
+4. 当前状态与最近有限证据只更新Docs/current/current-recovery，不追加到累计旧基线。
 5. 已分派任务边界只留一个恢复点；不得把历史建议当新授权。
 6. 完成后新建独立完成档。
 7. 核对链接/路径/ID/状态/范围。

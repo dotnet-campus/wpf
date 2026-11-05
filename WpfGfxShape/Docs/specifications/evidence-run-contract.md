@@ -1,6 +1,6 @@
 # 测试证据：承载、运行、隔离与比较合同
 
-[证据/E2E规范](09-test-evidence-and-e2e-contract.md)§1–8正式主题合同；当前状态只在[唯一恢复入口](handoffs/current-recovery.md)，规则以[严格对照合同](handoffs/current-comparison-contract.md)为准。
+[证据/E2E规范](09-test-evidence-and-e2e-contract.md)§1–8正式主题合同；当前状态只在[唯一恢复入口](../current/current-recovery.md)，规则以[严格对照合同](../current/current-comparison-contract.md)为准。
 
 ## 1. 目的
 

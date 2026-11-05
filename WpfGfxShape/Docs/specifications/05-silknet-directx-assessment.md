@@ -1,10 +1,10 @@
 # Silk.NET 2.23.0 与 wpfgfx 平台互操作边界
 
-> 架构适用范围按[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)仅x86/x64全部正式门；本页ARM64差异仅技术记录，不再构成必需验收，NA而非Passed。
+> 架构适用范围按[DEC-0005](../decisions/DEC-0005-x86-x64-acceptance-scope.md)仅x86/x64全部正式门；本页ARM64差异仅技术记录，不再构成必需验收，NA而非Passed。
 
 > 当前生产 DirectX 绑定固定为 Silk.NET 2.23.0。
 > 本文维护当前采用边界，不再使用旧 Silk.NET 2.11 本地仓库、旧 commit 或 `WP-00G` 作为当前门禁。
-> 当前版本事实以项目包引用和 [`handoffs/current-stable-baseline.md`](handoffs/current-stable-baseline.md) 为准。
+> 当前版本事实以项目包引用和 [恢复入口](../current/current-recovery.md) 为准。
 
 ## 1. 当前结论
 
@@ -93,6 +93,6 @@ Silk.NET 类型或 API 首次进入生产路径前必须核对：
 
 ## 6. 当前状态
 
-本页不声明最近运行通过；实际调用点与证据适用范围只见[基线](handoffs/current-stable-baseline.md)。已覆盖调用点的有限证据不能证明整个 Silk.NET API 面、完整 HW backend、生产 ABI 或最终替换。
+本页不声明最近运行通过；实际调用点与证据适用范围只见[恢复入口](../current/current-recovery.md)。已覆盖调用点的有限证据不能证明整个 Silk.NET API 面、完整 HW backend、生产 ABI 或最终替换。
 
 新增或修改绑定时，验证结果写入 `handoffs/current-stable-baseline.md`，完成切片在 `handoffs/completed-work/` 创建独立历史文件。

@@ -14,7 +14,7 @@
 
 项目级 MTP runner 的 SDK 查找与工作目录有关，传 csproj 路径不等于切换发现起点。历史包工程曾发生 VSTest target 失败且用例未启动；不计为行为 Red/Green。SDK paths/runner 的实际选择须执行代理保留原始证据，本轮未重新验证，不删改配置或升级 SDK。沙箱直接标准 exe 入口不依赖 SDK runner 选择。
 
-运行身份、计数、strict适用版本及真实失败只见[唯一状态源](handoffs/current-recovery.md)。同步perf等旧全量Green不代表当前回归；原始证据按[历史隔离索引](history-index.md)保留。本文不维护逐轮结果。
+运行身份、计数、strict适用版本及真实失败只见[唯一状态源](../current/current-recovery.md)。同步perf等旧全量Green不代表当前回归；原始证据按[历史隔离索引](../history/history-index.md)保留。本文不维护逐轮结果。
 
 ## 项目与依赖
 
@@ -28,7 +28,7 @@
 
 ## 原生边界：生产 DLL 导出与 COM
 
-每个生产 COM 验收业务进程通过同一标准 MTP exe 加载指定实现；“唯一”指正式测试项目，不是让官方/候选共处一个进程。严格对照使用两个独立业务进程，每侧仅加载一种 gfx 实现，同冻结 harness/runtime/input/config/业务顺序，完整像素及业务行为严格差分，详见[当前对照合同](handoffs/current-comparison-contract.md)。官方仅独立对照；禁止双加载、候选委托/fallback、只测官方、role业务补偿及生产测试耦合。测试不得直接访问生产内部 C# 实现。合入ComAcceptance的PublicAbi角色是公开ABI消费者，不是独立项目或新增Host。“全走 COM”指使用真实原生互操作边界，而不是把原生所有入口改造成 COM 方法：
+每个生产 COM 验收业务进程通过同一标准 MTP exe 加载指定实现；“唯一”指正式测试项目，不是让官方/候选共处一个进程。严格对照使用两个独立业务进程，每侧仅加载一种 gfx 实现，同冻结 harness/runtime/input/config/业务顺序，完整像素及业务行为严格差分，详见[当前对照合同](../current/current-comparison-contract.md)。官方仅独立对照；禁止双加载、候选委托/fallback、只测官方、role业务补偿及生产测试耦合。测试不得直接访问生产内部 C# 实现。合入ComAcceptance的PublicAbi角色是公开ABI消费者，不是独立项目或新增Host。“全走 COM”指使用真实原生互操作边界，而不是把原生所有入口改造成 COM 方法：
 
 - 原生 COM 对象（如 IWICBitmap、IWICBitmapLock、IStream）通过真实 COM vtable 调用，遵守 QI、AddRef、Release 和调用约定。
 - 原生 DLL 导出（如 connection/channel/resource、命令提交、位图创建）按原签名调用导出函数，使用原生规定的句柄与参数；不再包装自定义 COM 接口。
@@ -104,4 +104,4 @@ ManagedStream 必须覆盖 MILCreateStreamFromStreamDescriptor、MILIStreamWrite
 
 ## 维护
 
-长期方法仅维护本文；逐轮结果放 completed-work，当前产品恢复仅在[恢复入口](handoffs/current-recovery.md)，分派见其任务边界链接；文档后续批次见[维护台账](documentation-maintenance.md)，旧 current-work-item 不是并行当前入口。旧归档中的 Host 和环境变量做法已经被用户撤销，不再作为实施依据。
+长期方法仅维护本文；逐轮结果放 Docs/history/completed-work，当前产品恢复仅在[恢复入口](../current/current-recovery.md)，分派见其任务边界链接；文档检查范围见[维护检查](../current/repository-organization-check.md)，旧 current-work-item 不是并行当前入口。旧归档中的 Host 和环境变量做法已经被用户撤销，不再作为实施依据。

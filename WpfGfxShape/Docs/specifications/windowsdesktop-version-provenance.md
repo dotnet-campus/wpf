@@ -1,8 +1,10 @@
 # WindowsDesktop 版本来源与自主修复边界
 
+> 下文“本轮/本次读源码”及工程诊断保留原记录时态；此次迁后收尾仅全文读本文、核文档路径/标题并修导航，未读取源码或重验运行证据。缺失原件单独标为不可核。
+
 ## 现行裁决
 
-[DEC-0006](decisions/DEC-0006-installed-official-runtime-contract.md)已Accepted：采用已安装、来源可核验的官方完整.NET10 WindowsDesktop runtime；原版/候选同版同架构隔离对照并各记身份。**10.0.12不是用户指定目标，不再待澄清，不要求用户另交该patch。**
+[DEC-0006](../decisions/DEC-0006-installed-official-runtime-contract.md)已Accepted：采用已安装、来源可核验的官方完整.NET10 WindowsDesktop runtime；原版/候选同版同架构隔离对照并各记身份。**10.0.12不是用户指定目标，不再待澄清，不要求用户另交该patch。**
 历史采集身份与当前运行时定位必须分离。官方完整包括同版同架构PresentationCore、WindowsBase、原版wpfgfx及托管/原生依赖，不是单拷一个DLL，也不是要求购买运行时。
 
 ## 来源链与核验层次
@@ -11,9 +13,9 @@
 |---|---|
 | `Tests/WpfGfxShape.Tests/SystemVideoSampleTests.cs:27–32` | 本轮直接读源码：查找固定 `original-wpf-e07cbceaf453471dacb4cb12c99bdbc2.json`，直接 `NativeLibrary.Load` 其 `NativeDll`；运行时定位错误地依赖历史绝对路径 |
 | `Tests/WpfGfxShape.WpfReference/ReferenceBehaviorTests.cs:397–417,424–440` | 本轮直接读源码：采集实际runtime/架构/PresentationCore/native版本与SHA；从实际DrawingVisual程序集目录找原版native，不强制10.0.12 |
-| 上述历史JSON及[采集档](handoffs/completed-work/wpf-reference-behavior-capture.md) | 既有审计记录：2026-10-10采集.NET10.0.12/X64；Native SHA `501A1CD67D51BB1663870B12AF0F8C0BA29B3D37B8B509BE896D2AAF32DB214A`，位于历史 `C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\10.0.12\`；本轮不重新hash原物 |
-| [历史加载核查](investigations/INCOMPLETE-HW-CACHE-CLOSEOUT/evidence-readback.md) | 原0x8007007E为DLL **or one of its dependencies** 加载失败；不改成已证只有主DLL缺失 |
-| [PresentationCore历史对照](completed-work/PresentationCoreE2E-host-evidence.md) | 10.0.1原版Green/候选Red按原身份有效；后续“不替代目标10.0.12”是派生口径，现由DEC-0006覆盖，不抹除失败 |
+| 上述历史JSON及[采集档](../history/completed-work/handoffs-origin/wpf-reference-behavior-capture.md) | 既有审计记录：2026-10-10采集.NET10.0.12/X64；Native SHA `501A1CD67D51BB1663870B12AF0F8C0BA29B3D37B8B509BE896D2AAF32DB214A`，位于历史 `C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\10.0.12\`；本轮不重新hash原物 |
+| 历史加载核查原路径 `Docs/investigations/INCOMPLETE-HW-CACHE-CLOSEOUT/evidence-readback.md`（Missing：Docs 内未找到原件，不可核） | 原0x8007007E为DLL **or one of its dependencies** 加载失败；不改成已证只有主DLL缺失 |
+| [PresentationCore历史对照](../history/completed-work/PresentationCoreE2E-host-evidence.md) | 10.0.1原版Green/候选Red按原身份有效；后续“不替代目标10.0.12”是派生口径，现由DEC-0006覆盖，不抹除失败 |
 | `global.json` / TFM | SDK选择、`net10.0-windows`不等于强制runtime patch10.0.12 |
 
 本次再次只读核对上述测试加载语句及采集器身份/程序集目录定位代码；未加载DLL、检查当前安装是否完整或重新hash历史原物。路径工程问题有源码依据，原0x8007007E的具体缺失依赖仍未诊断，不能称已修复。

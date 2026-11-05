@@ -5,13 +5,13 @@
 ## 1. 实施原则
 
 原生文件为审计单位，路径/类型/函数/字段/分支/调用/错误/锁/释放可追溯；等价前不重构、改算法、并发/cache/资源策略；不假成功/空实现/批量E_NOTIMPL；无原生合同不造推测API；每生产切片有声明/实现/调用者/所有权/测试。
-一轮一个可验收完整模块，紧密耦合文件可同轮，内部步骤不拆连续小交付，见[执行规则](handoffs/current-execution-rules.md)。
+一轮一个可验收完整模块，紧密耦合文件可同轮，内部步骤不拆连续小交付，见[执行规则](../current/current-comparison-contract.md)。
 
 ## 2. 调查与实现分离
 
 可按项目/ABI族/生成协议/寿命/循环组调查；调查完成不等立即实施。
 依赖顺序：项目/低层类型/ABI/测试 → loader/display/device/resource/use-context → HW target/内容 → SW呈现 → generated protocol → resources/UCE → meta/API/生产ABI/DLL → PresentationCore E2E/替换。
-当前七阶段正式门见[总计划](remaining-gap-closure-plan.md)，不恢复旧批次调度。
+当前七阶段正式门见[主题合同](plan-module-contracts.md)，不恢复旧批次调度。
 
 ## 3. 路径映射
 

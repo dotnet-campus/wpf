@@ -1,6 +1,6 @@
 # E2E-00–09：独立可执行合同
 
-对照隔离与严格判定只以[当前对照合同](handoffs/current-comparison-contract.md)为准；当前产品状态只见[恢复入口](handoffs/current-recovery.md)。[删除报告](completed-work/replacement-remove-original-media-delegation.md)记录撤销生产官方媒体委托及当时 E_NOTIMPL/null，不据此断言当前独立媒体全部未实现；负向契约不替代正向播放验收，历史有限Closed也不等于完整替换。
+对照隔离与严格判定只以[当前对照合同](../current/current-comparison-contract.md)为准；当前产品状态只见[恢复入口](../current/current-recovery.md)。[删除报告](../history/completed-work/replacement-remove-original-media-delegation.md)记录撤销生产官方媒体委托及当时 E_NOTIMPL/null，不据此断言当前独立媒体全部未实现；负向契约不替代正向播放验收，历史有限Closed也不等于完整替换。
 
 [证据规范](09-test-evidence-and-e2e-contract.md)§9完整条款；与[测试层级/矩阵](testing-levels-and-gates.md)、[证据运行合同](evidence-run-contract.md)、[能力/失败合同](evidence-capabilities-and-failures.md)共同验收，每项独立，不合并降级。
 

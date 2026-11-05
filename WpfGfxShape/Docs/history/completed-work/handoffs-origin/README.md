@@ -1,8 +1,8 @@
 # 完成工作历史目录
 
-> 本目录保存启用新归档规则后完成的生产翻译切片。当前工作入口仍是 [`../../next-session-handoff.md`](../../next-session-handoff.md)。
+> 本目录保存启用新归档规则后完成的生产翻译切片。当前工作入口仍是 [唯一当前恢复入口](../../../current/current-recovery.md)。
 
-所有历史ARM64必需、卸载/重载待验及10.0.12唯一目标/待澄清口径分别由DEC-0005/0004/[0006](../../decisions/DEC-0006-installed-official-runtime-contract.md)覆盖；当前仅x86/x64，官方完整runtime同版独立对照。旧失败、golden、SHA及false字段不改，不冒充通过。
+所有历史ARM64必需、卸载/重载待验及10.0.12唯一目标/待澄清口径分别由DEC-0005/0004/[0006](../../../decisions/DEC-0006-installed-official-runtime-contract.md)覆盖；当前仅x86/x64，官方完整runtime同版独立对照。旧失败、golden、SHA及false字段不改，不冒充通过。
 
 ## 归档规则
 

@@ -1,6 +1,6 @@
 # wpfgfx ABI 与托管调用边界基线
 
-> 架构适用性以[DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)为准：正式仅x86/x64全部ABI/配置矩阵；下文ARM64字段/技术说明保留，编译/布局/执行验收NA-UserScopeDecision，不是Passed，不构成阻塞。
+> 架构适用性以[DEC-0005](../decisions/DEC-0005-x86-x64-acceptance-scope.md)为准：正式仅x86/x64全部ABI/配置矩阵；下文ARM64字段/技术说明保留，编译/布局/执行验收NA-UserScopeDecision，不是Passed，不构成阻塞。
 
 > 本文保存 ABI、托管调用方、所有权和生命周期的稳定静态基线，不维护生产 ABI 实现进度。
 > ABI manifest schema 见 [`08-abi-manifest-spec.md`](08-abi-manifest-spec.md)，测试门禁见 [`06-testing-strategy.md`](06-testing-strategy.md)。
@@ -80,7 +80,7 @@
 重要生命周期事实：
 
 - `MILMediaClose`、`MILMediaShutdown`、`MILMediaProcessExitHandler` 是不同动作；
-- 历史 DLL 显式卸载与进程终止 detach 行为不同；生产 DLL 按[DEC-0004](decisions/DEC-0004-process-lifetime-module.md)驻留，卸载/重载/热替换不适用，资源清理仍验收；
+- 历史 DLL 显式卸载与进程终止 detach 行为不同；生产 DLL 按[DEC-0004](../decisions/DEC-0004-process-lifetime-module.md)驻留，卸载/重载/热替换不适用，资源清理仍验收；
 - attach 或 MediaSystem 部分初始化的现有异常行为不得在首次迁移时自行“改进”；
 - callback detach 必须阻止新进入、处理在途调用并释放 context。
 
@@ -125,10 +125,10 @@
 11. 长期 callback、D3DImage 和媒体；
 12. PresentationCore E2E。
 
-实际阶段顺序以 [`remaining-gap-closure-plan.md`](remaining-gap-closure-plan.md) 为准。
+实际阶段顺序以[当前矩阵](../current/current-validation-matrix.md)为准。
 
 ## 10. 状态与承载边界
 
-本文只维护静态 ABI/调用方合同，不维护生产实现清单。当前身份与有限验收见[状态源](handoffs/current-stable-baseline.md)。
+本文只维护静态 ABI/调用方合同，不维护生产实现清单。当前身份与有限验收见[状态源](../current/current-recovery.md)。
 生产 COM 验收由唯一 ComAcceptance 项目直接加载生产 AOT DLL，见[生产测试方法](com-nativeaot-testing-method.md)；旧 probe/ABI Host 只证明机制，不是生产缺口或替代验收。
-完整 PE/资源/行为差分、COM/factory、connection/channel/resource/UCE、架构与 PresentationCore E2E 均按[总计划](remaining-gap-closure-plan.md)的完整条件验收；不得把已有有限实现描述为整体尚未创建，也不得由有限通过授予替换资格。
+完整 PE/资源/行为差分、COM/factory、connection/channel/resource/UCE、架构与 PresentationCore E2E 均按[主题合同](plan-module-contracts.md)的完整条件验收；不得把已有有限实现描述为整体尚未创建，也不得由有限通过授予替换资格。

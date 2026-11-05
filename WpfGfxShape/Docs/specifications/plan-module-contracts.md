@@ -1,6 +1,6 @@
 # 总计划主题合同：A/B/C、消费者与独立 E2E
 
-本页承接[总计划](remaining-gap-closure-plan.md)原“必须关闭的A/B/C与真实消费者差集”“自主依赖与外部前置”的完整条件；不是运行状态源。旧有限结果的适用范围见[基线](handoffs/current-stable-baseline.md)。
+本页承接[历史总计划](../history/handoffs/remaining-gap-closure-plan-legacy.md)原“必须关闭的A/B/C与真实消费者差集”“自主依赖与外部前置”的完整条件；不是运行状态源。旧有限结果的适用范围见[基线](../current/current-recovery.md)。
 
 ## A FrozenGraph/Realize
 

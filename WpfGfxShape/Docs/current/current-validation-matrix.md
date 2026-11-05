@@ -6,7 +6,7 @@
 
 | 能力/调用路径 | x64 严格状态 | x86 严格状态 | 可用证据与缺口 |
 |---|---|---|---|
-| 固定几何公开 WPF RTB，r28 | PassedLimited | NotValidated | [严格报告](../completed-work/replacement-strict-dual-process-first-render.md)：run2 固定32×32、stride128、Pbgra32、96dpi，完整raw4096字节差0、threshold0；同冻结包两次新增独立双进程重复已证，四个业务子exit0。run1 harness不同且缺module/runtime证据，不计同包重复 |
+| 固定几何公开 WPF RTB，r28 | PassedLimited | NotValidated | [严格报告](../history/completed-work/replacement-strict-dual-process-first-render.md)：run2 固定32×32、stride128、Pbgra32、96dpi，完整raw4096字节差0、threshold0；同冻结包两次新增独立双进程重复已证，四个业务子exit0。run1 harness不同且缺module/runtime证据，不计同包重复 |
 | 路径/曲线、stroke/dash、变换、裁剪、透明/mask、brush组合 | NotValidated | NotValidated | 固定几何不能外推完整图形；下一顺序见下节。旧有限差分不自动绑定r28或当前源码 |
 | 图像/WIC、格式、缩放/采样、FLOAT/HDR、shader/cache、多sampler、3D | NotValidated | NotValidated | 需真实producer/consumer及完整输出；不能用编译、PE或组件绿代替 |
 | 文本/glyph、布局、字体/outline、ClearType及复杂脚本 | NotValidated | NotValidated | 旧glyph样本需官方来源、字体身份及完整raw；未认证完整文本能力 |
@@ -31,12 +31,12 @@ r28证据根（相对项目根）：`artifacts/strict-render-r28/task5-supervise
 
 `ReferenceData/original-wpf.json`、`glyph-arial-original.json`的旧原件缺失事实保留，但允许且要求在同任务独立original进程生成对应完整参考，再由candidate相同输入消费/比较；不能用候选输出或报告摘要伪造oracle，不关闭RequireReferenceData。按目标架构和冻结官方runtime分别记录来源、实际模块SHA、生成器源码/程序集MVID/SHA、字体SHA和全部输入参数。
 
-[旧依赖盘点](../completed-work/candidate-desktop-baseline-r19.md#full门两份缺失oracle的实际消费者与字段)列明drawing 450 Samples及完整像素/controls，glyph 32×24×4=3072字节和字体/布局/Bounds等；这是必要恢复规格，不是已生成。官方生成器与完整样本必须对应消费者合同，不从旧hash或局部像素重建。旧“原版永禁/只能等用户提供”已被当前合同覆盖。
+[旧依赖盘点](../history/completed-work/candidate-desktop-baseline-r19.md#full门两份缺失oracle的实际消费者与字段)列明drawing 450 Samples及完整像素/controls，glyph 32×24×4=3072字节和字体/布局/Bounds等；这是必要恢复规格，不是已生成。官方生成器与完整样本必须对应消费者合同，不从旧hash或局部像素重建。旧“原版永禁/只能等用户提供”已被当前合同覆盖。
 
 Native DLL/PDB、精确源码快照、发布收据或原始业务证据若缺失，登记 **EvidenceUnavailable：原件不可复核**，不能用旧摘要“发布exit0/已编码”认证当前产物，也不凭缺件认定功能未实现。恢复原件或独立来源重建后再验；本轮没有核定stageAsync Native原件存在。
 
 ## 历史规划提炼与阅读边界
 
-四份原文均完整机器复制至[历史索引](history/README.md)，内部链接以迁移前`Docs/`解释。人工读取了各头部最新stageAsync/旧同步冲突、总计划的范围/八包与尾部、矩阵的五维/历史HW32与最终裁决、问题表I07–13/八步/旧双线排程及实施方案尾部§6–10；长行截断不计全文审完。
+四份原文均完整机器复制至[历史索引](../history/handoffs/README.md)，内部链接以迁移前`Docs/`解释。人工读取了各头部最新stageAsync/旧同步冲突、总计划的范围/八包与尾部、矩阵的五维/历史HW32与最终裁决、问题表I07–13/八步/旧双线排程及实施方案尾部§6–10；长行截断不计全文审完。
 
 保留其有价值要求：二进制兼容、功能、时序、资源、恢复五维，真实WPF消费者、非空/新帧、固定seed缩减、最终双架构身份及全部适用矩阵。取消互相竞争的旧下一包/预算/原版禁止；旧失败不冲销，旧有限通过不抹除也不升级strict。绝大多数文档仍未审，下一轮再审大档报告，不称全库完成。

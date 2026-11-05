@@ -1,6 +1,6 @@
 # wpfgfx 迁移顺序与工作包门禁
 
-本页及两主题页是现行规范，不维护当前工作。条件见[总计划](remaining-gap-closure-plan.md)，动作见[工作项](handoffs/current-work-item.md)。
+本页及两主题页是现行规范，不维护当前工作。条件见[主题合同](plan-module-contracts.md)，动作见[当前矩阵](../current/current-validation-matrix.md)。
 
 ## 1. 实施原则
 [完整模块、逐文件追溯](migration-implementation-gates.md#1-实施原则)。

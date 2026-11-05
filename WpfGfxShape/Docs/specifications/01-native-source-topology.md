@@ -1,7 +1,7 @@
 # wpfgfx 原生源码与项目拓扑基线
 
 > 本文保存迁移范围所需的稳定拓扑事实，不记录调查过程、当前工作切片或完成比例。
-> 生产分母与 Ledger schema 见 [`07-scope-and-ledger-schema.md`](07-scope-and-ledger-schema.md)，现行映射以 Ledger 与独立完成档的实际来源为准，旧映射只经[历史索引](history-index.md)查证。
+> 生产分母与 Ledger schema 见 [`07-scope-and-ledger-schema.md`](07-scope-and-ledger-schema.md)，现行映射以 Ledger 与独立完成档的实际来源为准，旧映射只经[历史索引](../history/history-index.md)查证。
 
 ## 1. 原生生产边界
 
@@ -97,7 +97,7 @@
 
 ## 7. 当前机器事实状态
 
-本页不维护修复状态或当前数量；状态只见[基线](handoffs/current-stable-baseline.md)，逐项机器事实见 `Ledger/*.jsonl` 与 `Ledger/views/status.md`。
+本页不维护修复状态或当前数量；状态只见[恢复入口](../current/current-recovery.md)，逐项机器事实见 `Ledger/*.jsonl` 与 `Ledger/views/status.md`。
 461 个直接 `ClCompile` 是冻结聚合下限，不是完整分母。必须闭合项目项、磁盘、PCH/include、构建导入、生成、资源、ABI、供应多视图；未闭合不据文件数推整体百分比。
 
 ## 8. 迁移映射规则
@@ -117,7 +117,7 @@
 
 ## 9. 当前事实来源
 
-- 当前映射：Ledger 及本模块独立完成档；旧映射经[历史隔离](history-index.md)查证；
-- 当前阶段：[唯一基线](handoffs/current-stable-baseline.md)；正式剩余条件：[总计划](remaining-gap-closure-plan.md)；
+- 当前映射：Ledger 及本模块独立完成档；旧映射经[历史隔离](../history/history-index.md)查证；
+- 当前阶段：[恢复入口](../current/current-recovery.md)；正式条件：[主题合同](plan-module-contracts.md)；执行顺序：[当前矩阵](../current/current-validation-matrix.md)；
 - Ledger schema：[`07-scope-and-ledger-schema.md`](07-scope-and-ledger-schema.md)；
 - 初始调查细节：`investigations/03b-file-ledger-and-batches.md` 等调查文档。

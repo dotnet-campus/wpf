@@ -46,7 +46,7 @@ Blocked 正交：status 保持已达状态，blocked=true，blockerIds 明确（
 - Scaffolded：仅原名类型/签名/布局/薄入口，无假成功。
 - Translated：逐文件近似直译，验证不足。
 - UnitVerified：规定 T1；DifferentialVerified：规定 T3 原候选差分；Integrated：规定 T4；EndToEndVerified：参与最高已就绪 T5。
-- Accepted：全部要求证据满足，偏差记录获批，无未决 blocker；差分/验收须满足[严格对照合同](handoffs/current-comparison-contract.md)，不得以获批偏差放宽完整像素/业务契约或补偿候选追绿。
+- Accepted：全部要求证据满足，偏差记录获批，无未决 blocker；差分/验收须满足[严格对照合同](../current/current-comparison-contract.md)，不得以获批偏差放宽完整像素/业务契约或补偿候选追绿。
 提升必须有 evidence.jsonl 已执行证据；build 不直接提升 UnitVerified。
 
 ## 7. `groups.jsonl` 合同
@@ -75,9 +75,9 @@ Blocked 正交：status 保持已达状态，blocked=true，blockerIds 明确（
 
 ## 10. 与当前工作的关系
 
-产品当前状态只见[恢复入口](handoffs/current-recovery.md)；逐项事实见Ledger/*.jsonl，经校验派生的views/status.md只供阅读，不独立提升状态。旧baseline不是当前准入权威；本策略不复制修复状态，也不重认证机器记录。
+产品当前状态只见[恢复入口](../current/current-recovery.md)；逐项事实见Ledger/*.jsonl，经校验派生的views/status.md只供阅读，不独立提升状态。旧baseline不是当前准入权威；本策略不复制修复状态，也不重认证机器记录。
 增量补齐 binary Evidence/Artifact、ABI、生成、资源、供应；编码前确认记录/映射/测试，结束回写实际状态/依赖/路径/偏差/证据。
-具体执行顺序只见[当前矩阵](handoffs/current-validation-matrix.md)；实施切片须在Ledger工作包记录Record/Group ID。缺记录先补，不把缺口当已检查/完成；不沿用历史工作项另起当前排程。
+具体执行顺序只见[当前矩阵](../current/current-validation-matrix.md)；实施切片须在Ledger工作包记录Record/Group ID。缺记录先补，不把缺口当已检查/完成；不沿用历史工作项另起当前排程。
 
 ## 11. 完成定义
 

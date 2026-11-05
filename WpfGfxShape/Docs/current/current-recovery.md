@@ -1,8 +1,8 @@
 # 唯一当前恢复入口
 
 1. 先读 [严格对照合同](current-comparison-contract.md)。
-2. 完成报告：[同冻结包严格双进程重复](../completed-work/replacement-strict-dual-process-first-render.md)。
-3. [当前严格替换验收矩阵与后续顺序](current-validation-matrix.md)；[任务边界](next-code-task.md)仅保留任务5边界，历史按需查[索引](history/README.md)。
+2. 完成报告：[同冻结包严格双进程重复](../history/completed-work/replacement-strict-dual-process-first-render.md)。
+3. [当前严格替换验收矩阵与后续顺序](current-validation-matrix.md)；[任务边界](next-code-task.md)仅保留任务5边界，历史按需查[索引](../history/handoffs/README.md)。
 
 ## 当前状态
 
@@ -13,8 +13,8 @@
 
 ## 历史执行账与本轮文档任务
 
-任务5报告的辅助审计 publish1、sandbox2 属于历史业务证据账，不是任务6新增。任务6只改文档与DocumentationMaintenance专用辅助，生产/业务验收改动0；实际专用发布/沙箱、路径回收偏差及最终verify只见[维护台账](../documentation-maintenance.md)，终端/脚本/委派0。
+任务5报告的辅助审计 publish1、sandbox2 属于历史业务证据账，不是任务6新增。任务6只改文档与DocumentationMaintenance专用辅助，生产/业务验收改动0；历史维护记录见[原字节台账归档](../history/handoffs/documentation-maintenance-legacy.md)，该归档只覆盖原索引标明的阶段，不冒充任务6最终verify原件，终端/脚本/委派0。
 
-**文档治理进行中**：任务10已全文治理5份历史报告；文档工作不是产品运行结果，不表示代码全完成。当前strict渲染仍仅上述x64固定32×32有限门，状态不变；下一代码任务仍待按[矩阵](current-validation-matrix.md)扩展路径→变换→裁剪→透明。234项污染/辅助位置仍未清除，本轮未复制或删除。
+**文档治理进行中**：任务10已全文治理5份历史报告；文档工作不是产品运行结果，不表示代码全完成。当前strict渲染仍仅上述x64固定32×32有限门，状态不变；下一代码任务仍待按[矩阵](current-validation-matrix.md)扩展路径→变换→裁剪→透明。旧234项为整理前历史盘点，不作迁后现状；目录整理检查见[当前维护检查](repository-organization-check.md)。
 
-文档已处理、部分读取与未审范围、下一串行文件清单只见 [维护台账](../documentation-maintenance.md)。产品当前状态仍只维护本页；历史累计文件不作为并行恢复入口。
+当前文档维护职责、已知归档范围、缺件与待审名单统一见[当前维护台账与迁后检查](repository-organization-check.md)；旧台账现行原件缺失，不由空输入副本重建，不以历史已读统计认证迁后全覆盖。产品当前状态仍只维护本页；历史累计文件不作为并行恢复入口。
