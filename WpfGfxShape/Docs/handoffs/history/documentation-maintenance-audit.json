@@ -1,0 +1,18 @@
+{
+  "phase": "pointer",
+  "source": "Docs/documentation-maintenance.md",
+  "archive": "Docs/handoffs/history/documentation-maintenance-legacy.md",
+  "sourceBytes": 25599,
+  "sourceLines": 183,
+  "sourceSha256": "4B07911700A49351438794024BF72D558E33B5A1BB0C1B60040495DAD1ABA0C5",
+  "archiveSha256": "4B07911700A49351438794024BF72D558E33B5A1BB0C1B60040495DAD1ABA0C5",
+  "byteExact": true,
+  "utf8Bom": false,
+  "sourceUnchangedSinceArchivePackaging": true,
+  "pointerLines": 27,
+  "pointerBytes": 2979,
+  "pointerSha256": "ACB64E2A6232DCC4167791553E71BD1A629A0C906E64AA192A7233AB744FE4CF",
+  "firstLine": "# \u6587\u6863\u7EF4\u62A4\u53F0\u8D26\uFF08\u4E32\u884C\u4E13\u9879\u4EFB\u52A11\u20134\uFF09",
+  "lastLine": "\u4E0B\u4E00\u6279\uFF1A\u0060handoffs/current-work-item.md\u0060 \u2192 \u0060handoffs/current-execution-rules.md\u0060 \u2192 \u0060handoffs/current-stable-baseline.md\u0060\uFF0C\u672C\u6B21\u5747\u672A\u5F52\u6863\u3002\u5176\u540E\u4ECD\u4E3Afinal-acceptance-remaining-matrix\u3001remaining-gap-closure-plan\u3001replacement-issues-and-plan-status\u3001wpfgfx-complete-replacement-validation-plan\u53CAREADME\u5386\u53F2\u6458\u5F55\uFF1B\u4E0D\u6269\u5C55\u5230\u672A\u5BA1\u89C4\u5212\u6B63\u6587\u3002\u9996\u4EFD\u5B8C\u6210\uFF0C\u4E0D\u4EE3\u8868\u5168\u5E93\u5B8C\u6210\u3002",
+  "boundary": "Published input copies, not in-place hashes; original ledger preserved completely before summary replacement."
+}

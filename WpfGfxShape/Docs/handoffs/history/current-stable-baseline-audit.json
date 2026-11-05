@@ -1,0 +1,20 @@
+{
+  "phase": "pointer",
+  "source": "Docs/handoffs/current-stable-baseline.md",
+  "archive": "Docs/handoffs/history/current-stable-baseline-legacy.md",
+  "sourceBytes": 133913,
+  "sourceLines": 581,
+  "sourceSha256": "2D5444A389C23C15E81D1891A6EDBB40D0A5DCD21942B60C27868729668EDDC4",
+  "archiveBytes": 133913,
+  "archiveLines": 581,
+  "archiveSha256": "2D5444A389C23C15E81D1891A6EDBB40D0A5DCD21942B60C27868729668EDDC4",
+  "byteExact": true,
+  "utf8Bom": false,
+  "pointerLines": 10,
+  "pointerBytes": 445,
+  "pointerSha256": "1B39993B4EBBCA957802B16874E266785C57C2C69AF276C225DFEA8FCB60CB16",
+  "sourceUnchangedSinceArchivePackaging": true,
+  "firstLine": "# \u5386\u53F2\u7D2F\u8BA1\u6709\u9650\u57FA\u7EBF\uFF08\u975E\u5F53\u524D\u5B8C\u6574\u8BA4\u8BC1\uFF09",
+  "lastLine": "HW cache15/PublicHwnd8/shader3/NativeGpu3/SecondSampler3\u4E3A\u5386\u53F2\u672A\u95ED\uFF0C\u4E0D\u7B3C\u7EDF\u5F52\u73AF\u5883\uFF0C\u9700\u5728\u5F53\u524D\u5019\u9009\u91CD\u65B0\u88C1\u51B3\u3002\u4FDD\u62A4\u72B6\u6001\u65E0\u751F\u4EA7\u6D88\u8D39\u8005\uFF0C\u989D\u5916\u539F\u751F\u786C\u5316\u7CBE\u786E\u8303\u56F4/\u5F02\u5E38\u6761\u4EF6unknown/Open\uFF0C\u5982\u5B9E\u62AB\u9732\u4F46\u4E0D\u72EC\u7ACB\u8BBE\u4E3A\u5F53\u524D\u5B8C\u6210\u95E8\u3002\u5F53\u524D\u4ECD\u9700\u5173\u95ED\u53CC\u67B6\u6784 Release \u7684\u4E8C\u8FDB\u5236\u517C\u5BB9\u3001\u5B8C\u6574\u5185\u5BB9\u3001\u65F6\u5E8F\u3001\u8D44\u6E90\u53CA\u771F\u5B9E\u6062\u590D\u80FD\u529B\uFF1B\u4E0D\u8981\u6C42 Debug \u6216\u7EAF C# \u65E0\u6CD5\u53EF\u9760\u76F4\u63A5\u89C2\u6D4B\u7684 ESP/\u5BC4\u5B58\u5668\u63A2\u9488\u3002\u6301\u7EEDHW/\u5A92\u4F53\u53CA\u5B8C\u6574\u751F\u547D\u5468\u671F\u4E0E\u5168\u573A\u666F\u72EC\u7ACB\u8BC1\u636E\u5BA1\u9605\u4ECD\u672A\u6EE1\uFF0C\u6574\u4F53\u672A\u5B8C\u6210\uFF1B\u65E7\u201Cx86\u672A\u5B9E\u8DD1/E_NOTIMPL\u672A\u4FEE\u201D\u4E0D\u518D\u4EE3\u8868\u5F53\u524D\u3002",
+  "boundary": "Complete published input copies, not in-place workspace hashes. Archive fully reread and byte-compared. Pointer phase repackages landed archive and unchanged workspace source. Preservation is not full semantic review."
+}

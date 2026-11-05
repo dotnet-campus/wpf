@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
+    <EnableMSTestRunner>true</EnableMSTestRunner>
+    <RootNamespace>WpfGfxShape.ComAcceptance</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MSTest" Version="4.0.1" />
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+    <Using Include="System.IO" />
+    <Compile Include="../WpfGfxShape.ComAcceptance/AcceptancePaths.cs" Link="AcceptancePaths.cs" />
+    <Compile Include="../WpfGfxShape.ComAcceptance/AcceptancePathsTests.cs" Link="AcceptancePathsTests.cs" />
+    <Compile Include="../WpfGfxShape.ComAcceptance/Pcore/DispatcherWorkers.cs" Link="DispatcherWorkers.cs" />
+    <EmbeddedResource Include="../WpfGfxShape.ComAcceptance/AcceptanceResources.resx" Link="AcceptanceResources.resx" />
+    <AssemblyMetadata Include="ComAcceptanceSandbox" Value="false" />
+  </ItemGroup>
+</Project>

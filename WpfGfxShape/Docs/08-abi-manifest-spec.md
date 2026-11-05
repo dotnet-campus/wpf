@@ -1,6 +1,7 @@
 # wpfgfx ABI Manifest 规范
 
-本页及两主题页共同构成权威 schema；probe不替代生产manifest。当前执行结果只见[基线](handoffs/current-stable-baseline.md)。
+本页及两主题页共同构成权威schema；probe不替代生产manifest。产品当前状态只见[恢复入口](handoffs/current-recovery.md)，本页不认证任何产物。
+公开ABI验证遵循[严格对照合同](handoffs/current-comparison-contract.md)：同一调用逻辑在两个独立业务进程分别调用原版/候选；角色只选择实现身份与取证目录。缺导出/错误签名是产品缺口，不能改候选侧声明、增加上层补偿或放宽比较标准。该执行合同不改变真实ABI签名、布局、错误码或所有权规格；适用范围见[当前验收矩阵](handoffs/current-validation-matrix.md)。
 静态调用边界见[02](02-abi-and-managed-callers.md)，测试见[06](06-testing-strategy.md)。
 
 ## 1. 目的

@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+    <PublishAot>false</PublishAot>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <CandidateNativeDirectory Condition="'$(CandidateNativeDirectory)' == ''">../../artifacts/supervised-native-video-x64-r1/native</CandidateNativeDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(GeometryR27)' == 'true'"><DefineConstants>$(DefineConstants);GEOMETRY_R27</DefineConstants></PropertyGroup>
+  <ItemGroup Condition="'$(GeometryR27)' == 'true'"><Compile Remove="MediaHelpers.cs" /></ItemGroup>
+  <ItemGroup>
+    <Compile Include="../WpfGfxShape.ComAcceptance/Pcore/PureVideoPublic.cs" Link="PureVideoPublic.cs" Condition="'$(GeometryR27)' != 'true'" />
+    <Content Include="$(CandidateNativeDirectory)/wpfgfx_cor3.dll" Link="Native/wpfgfx_cor3.dll" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <Target Name="PinRuntime" BeforeTargets="ProcessFrameworkReferences">
+    <ItemGroup><FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" /></ItemGroup>
+  </Target>
+  <Target Name="ExcludeRuntimeGfx" AfterTargets="ComputeFilesToPublish" BeforeTargets="CopyFilesToPublishDirectory">
+    <ItemGroup><ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'wpfgfx_cor3.dll' and '%(ResolvedFileToPublish.RelativePath)' != 'Native/wpfgfx_cor3.dll' and '%(ResolvedFileToPublish.RelativePath)' != 'Native\wpfgfx_cor3.dll'" /></ItemGroup>
+  </Target>
+  <Target Name="CandidateDigest" AfterTargets="Publish">
+    <GetFileHash Files="$(PublishDir)Native/wpfgfx_cor3.dll" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="CandidateHash" /></GetFileHash>
+    <WriteLinesToFile File="$(PublishDir)aot.sha256" Lines="@(CandidateHash->'%(FileHash)')" Overwrite="true" />
+    <Error Condition="Exists('$(PublishDir)wpfgfx_cor3.dll')" Text="Unexpected root graphics runtime binary." />
+  </Target>
+</Project>

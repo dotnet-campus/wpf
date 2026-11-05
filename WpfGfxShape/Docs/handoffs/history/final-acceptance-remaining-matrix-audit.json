@@ -1,0 +1,20 @@
+{
+  "phase": "pointer",
+  "source": "Docs/final-acceptance-remaining-matrix.md",
+  "archive": "Docs/handoffs/history/final-acceptance-remaining-matrix-legacy.md",
+  "originalLinkBase": "Docs/",
+  "sourceBytes": 135281,
+  "sourceLines": 1006,
+  "sourceSha256": "E97DD1A104864EE952F9790C8F847CBE91CED551C4045529FCD9C28119EB6E14",
+  "archiveBytes": 135281,
+  "archiveLines": 1006,
+  "archiveSha256": "E97DD1A104864EE952F9790C8F847CBE91CED551C4045529FCD9C28119EB6E14",
+  "byteExact": true,
+  "utf8Bom": false,
+  "pointerLines": 11,
+  "pointerSha256": "88267994A9497B583BD87EDD02965E6F4F9B5D8A28CC8881AAC43A9571289FED",
+  "sourceUnchangedSinceArchivePackaging": true,
+  "firstLine": "# \u5B8C\u6574\u66FF\u6362\u6700\u7EC8\u9A8C\u6536\u77E9\u9635",
+  "lastLine": "\u6700\u7EC8\u6E90\u7801\u4FEE\u6539\u540E\u5FC5\u987B\u91CD\u65B0\u9A8C\u8BC1\u6700\u7EC8\u53CC\u67B6\u6784Release\u5B9E\u9645\u4EA7\u7269\uFF1B\u6BCF\u4E2A\u67B6\u6784\u7ED1\u5B9A\u81EA\u5DF1\u7684SHA\u3002\u6CA1\u6709\u672A\u89E3\u91CA\u5173\u952E\u5DEE\u5F02\u6216\u5173\u952E\u672A\u8986\u76D6/\u963B\u585E\uFF0C\u624D\u53EF\u7ED9\u51FA\u5B9E\u9645\u7248\u672C/\u73AF\u5883\u8303\u56F4\u5185\u7684\u5B8C\u6574\u66FF\u6362\u7ED3\u8BBA\u3002\u672C\u8F6E\u65B0\u589E\u4E0A\u8FF0x64\u6709\u9650\u5408\u540C\u771F\u5B9E\u6267\u884C\u7ED3\u679C\uFF0C\u672A\u8FD0\u884C\u6700\u7EC8full\u6216\u5176\u4ED6\u672A\u95ED\u95E8\uFF1B\u6574\u4F53\u672A\u5B8C\u6210\u3002",
+  "boundary": "Complete published input copies, not in-place workspace hashes. Archive fully reread and byte-compared. Pointer phase repackages landed archive and unchanged source. Preservation is not full semantic review."
+}

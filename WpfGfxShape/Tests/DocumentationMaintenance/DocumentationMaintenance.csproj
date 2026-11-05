@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RuntimeFrameworkVersion>10.0.1</RuntimeFrameworkVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <MaintenanceName Include="final-acceptance-remaining-matrix;remaining-gap-closure-plan;replacement-issues-and-plan-status;wpfgfx-complete-replacement-validation-plan" />
+    <Content Include="@(MaintenanceName->'../../Docs/%(Identity).md')" Link="Input/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+    <Content Include="../../Docs/handoffs/history/*-legacy.m?;../../Docs/handoffs/history/*-audit.jso?" Link="Input/handoffs/history/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+    <Content Include="../../Docs/documentation-maintenance.md;../../Docs/README.md;../../Docs/governance-authority-traceability.md;../../Docs/publicabi-family-delivery-plan.md" Link="Input/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+    <Content Include="../../Docs/handoffs/current-validation-matrix.m?;../../Docs/handoffs/current-recovery.md" Link="Input/handoffs/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+    <Content Include="../../Docs/handoffs/history/README.md" Link="Input/handoffs/history/README.md" CopyToPublishDirectory="Always" />
+    <DocsInventory Include="../../Docs/**/*" />
+    <Content Include="$(IntermediateOutputPath)docs-files.txt" Link="Input/docs-files.txt" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../../Docs/**/*" Link="Snapshot/Docs/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+    <Content Include="../../artifacts/documentation-maintenance/**/*" Exclude="../../artifacts/documentation-maintenance/task7*/**/*;../../artifacts/documentation-maintenance/**/*.dll;../../artifacts/documentation-maintenance/**/*.exe;../../artifacts/documentation-maintenance/**/*.pdb" Link="PriorArtifacts/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+    <Content Include="../../artifacts/documentation-maintenance/task6-final-package/*.dll;../../artifacts/documentation-maintenance/task6-final-package/*.exe;../../artifacts/documentation-maintenance/task6-final-package/*.pdb" Link="PriorArtifacts/task6-final-package/%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+    <Content Include="../../artifacts/documentation-maintenance/**/DocumentationMaintenance.dll;../../artifacts/documentation-maintenance/**/DocumentationMaintenance.exe;../../artifacts/documentation-maintenance/**/DocumentationMaintenance.pdb" Exclude="../../artifacts/documentation-maintenance/task7*/**/*;../../artifacts/documentation-maintenance/task6-final-package/*" Link="PriorArtifacts/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <Target Name="RejectDocsPublish" BeforeTargets="PrepareForPublish">
+    <PropertyGroup>
+      <MaintenanceDocsRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)/../../Docs'))</MaintenanceDocsRoot>
+      <MaintenancePublishRoot>$([MSBuild]::NormalizeDirectory('$(PublishDir)'))</MaintenancePublishRoot>
+    </PropertyGroup>
+    <Error Condition="$([System.String]::Copy('$(MaintenancePublishRoot)').StartsWith('$(MaintenanceDocsRoot)', System.StringComparison.OrdinalIgnoreCase))" Text="Documentation maintenance must never publish into Docs." />
+  </Target>
+  <Target Name="WriteDocumentationInventory" BeforeTargets="PrepareForBuild">
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <WriteLinesToFile File="$(IntermediateOutputPath)docs-files.txt" Lines="@(DocsInventory)" Overwrite="true" />
+  </Target>
+</Project>

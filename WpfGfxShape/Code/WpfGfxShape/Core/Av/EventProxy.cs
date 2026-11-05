@@ -50,6 +50,42 @@ internal sealed unsafe class EventProxy
         }
     }
 
+    internal static int CreateCom(nint client, out EventProxy? proxy)
+    {
+        proxy = null;
+        if (client == 0) return unchecked((int)0x80070057);
+        Guid iid = new("342efd8b-669a-4d16-b163-d75f5ffd1a10");
+        nint retained = 0;
+        int result = ((delegate* unmanaged[Stdcall]<nint, Guid*, nint*, int>)(*(nint**)client)[0])(client, &iid, &retained);
+        if (result < 0) return result;
+        if (retained == 0) return unchecked((int)0x80004002);
+        try
+        {
+            EventProxyDescriptor descriptor = new() { Dispose = &ReleaseCom, RaiseEvent = &RaiseCom, Handle = (nuint)retained };
+            result = Create(descriptor, out proxy);
+            if (result >= 0) retained = 0;
+            return result;
+        }
+        finally
+        {
+            if (retained != 0) ((delegate* unmanaged[Stdcall]<nint, uint>)(*(nint**)retained)[2])(retained);
+        }
+    }
+
+    [System.Runtime.InteropServices.UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvStdcall)])]
+    private static void ReleaseCom(EventProxyDescriptor* descriptor)
+    {
+        nint client = (nint)descriptor->Handle;
+        ((delegate* unmanaged[Stdcall]<nint, uint>)(*(nint**)client)[2])(client);
+    }
+
+    [System.Runtime.InteropServices.UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvStdcall)])]
+    private static int RaiseCom(EventProxyDescriptor* descriptor, byte* bytes, uint length)
+    {
+        nint client = (nint)descriptor->Handle;
+        return ((delegate* unmanaged[Stdcall]<nint, byte*, uint, int>)(*(nint**)client)[3])(client, bytes, length);
+    }
+
     internal uint AddRef()
     {
         int current;
@@ -75,22 +111,23 @@ internal sealed unsafe class EventProxy
         int remaining = current - 1;
         if (remaining == 0)
         {
+            EventProxyDescriptor* descriptor;
             lock (_lock)
             {
-                EventProxyDescriptor* descriptor = _descriptor;
+                descriptor = _descriptor;
                 _descriptor = null;
                 _isShutdown = true;
-                try
-                {
-                    descriptor->Dispose(descriptor);
-                }
-                finally
-                {
-                    NativeMemory.Free(descriptor);
-                    if (_nativeRoot.IsAllocated) _nativeRoot.Free();
-                    NativeMemory.Free((void*)_nativeIdentity);
-                    _nativeIdentity = 0;
-                }
+            }
+            try
+            {
+                descriptor->Dispose(descriptor);
+            }
+            finally
+            {
+                NativeMemory.Free(descriptor);
+                if (_nativeRoot.IsAllocated) _nativeRoot.Free();
+                NativeMemory.Free((void*)_nativeIdentity);
+                _nativeIdentity = 0;
             }
         }
 

@@ -1,11 +1,11 @@
 # wpfgfx 测试证据与渐进 E2E Harness 契约
 
-本页与三主题页共同构成完整权威契约，不维护运行数字；E2E-00不替代生产ABI/E2E。状态只见[基线](handoffs/current-stable-baseline.md)。
+本页是证据主题导航，不复制对照总合同；隔离与比较标准以[当前对照合同](handoffs/current-comparison-contract.md)为准，运行状态只见[恢复入口](handoffs/current-recovery.md)。三主题页分别负责运行工件、逐项E2E、能力/失败分类；E2E-00历史机制证据不替代生产ABI/E2E，也不授权恢复已删除项目。
 
 ## 1. 目的
 [证据目标](evidence-run-contract.md#1-目的)。
 ## 2. 当前与目标承载边界
-[标准MTP、历史probe、独立PublicAbi](evidence-run-contract.md#2-当前与目标承载边界)。
+[两项目标准MTP、历史probe与合入的PublicAbi角色](evidence-run-contract.md#2-当前与目标承载边界)。
 ## 3. 测试框架与包版本决策
 [MSTest规则](evidence-run-contract.md#3-测试框架与包版本决策)。
 ## 4. 测试运行单元

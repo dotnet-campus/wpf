@@ -17,7 +17,12 @@ internal static class AcceptancePaths
     }
 
     internal static string AotDll => Path.GetFullPath(Environment.GetEnvironmentVariable("WPFGFX_CANDIDATE_DLL") ?? Resolve(Metadata("AotDllPath"), Sandbox, AppContext.BaseDirectory));
-    internal static string OriginalDll => Path.GetFullPath(Environment.GetEnvironmentVariable("WPFGFX_ORIGINAL_DLL") ?? Path.Combine(Path.GetDirectoryName(typeof(System.Windows.Media.Visual).Assembly.Location)!, "wpfgfx_cor3.dll"));
+    internal static string OriginalDll
+    {
+        // Keep WPF type resolution outside callers that authenticate the candidate first.
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        get => Path.GetFullPath(Environment.GetEnvironmentVariable("WPFGFX_ORIGINAL_DLL") ?? Path.Combine(Path.GetDirectoryName(typeof(System.Windows.Media.Visual).Assembly.Location)!, "wpfgfx_cor3.dll"));
+    }
     internal static bool Sandbox => Metadata("ComAcceptanceSandbox") == "true";
     internal static string Results
     {
@@ -50,8 +55,18 @@ internal static class AcceptancePaths
 
     internal static string ValidateIdentity()
     {
-        string path = AotDll;
+        using var stream = File.OpenRead(AotDll);
+        return ValidateIdentity(stream, Sandbox ? File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "aot.sha256")).Trim() : null);
+    }
+
+    internal static string ValidateCandidateIdentity(string path)
+    {
         using var stream = File.OpenRead(path);
+        return ValidateIdentity(stream, File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "aot.sha256")).Trim());
+    }
+
+    internal static string ValidateIdentity(Stream stream, string? expectedSha)
+    {
         using var pe = new PEReader(stream, PEStreamOptions.LeaveOpen);
         Machine expected = RuntimeInformation.ProcessArchitecture switch
         {
@@ -60,32 +75,25 @@ internal static class AcceptancePaths
             Architecture.X86 => Machine.I386,
             _ => throw new PlatformNotSupportedException()
         };
-        if (pe.PEHeaders.CorHeader is not null || pe.PEHeaders.CoffHeader.Machine != expected)
+        if (pe.PEHeaders.PEHeader is null || pe.PEHeaders.CorHeader is not null || pe.PEHeaders.CoffHeader.Machine != expected)
             throw new InvalidDataException(Resources.GetString("InvalidNativeIdentity"));
         stream.Position = 0;
         string sha = Convert.ToHexString(SHA256.HashData(stream));
-        if (Sandbox && !string.Equals(sha, File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "aot.sha256")).Trim(), StringComparison.OrdinalIgnoreCase))
-            throw new InvalidDataException(Resources.GetString("InvalidNativeIdentity"));
+        if (expectedSha is not null) ValidateDigest(sha, expectedSha);
         return sha;
+    }
+
+    internal static void ValidateDigest(string sha, string expectedSha)
+    {
+        if (!sha.Equals(expectedSha, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidDataException(Resources.GetString("InvalidNativeIdentity"));
+    }
+
+    internal static void ValidateCandidateModules(string path, string[] modules, bool require = true)
+    {
+        if ((require && modules.Length != 1) || modules.Length > 1 || modules.Any(module =>
+            !Path.GetFullPath(module).Equals(Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase)))
+            throw new InvalidOperationException(Resources.GetString("UnexpectedNativeModules"));
     }
 }
 
-[TestClass]
-public sealed class AcceptanceInitialization
-{
-    /// <summary>Rejects an invalid artifact before any production native entry is invoked.</summary>
-    [AssemblyInitialize]
-    public static void Initialize(TestContext context)
-    {
-        string sha = AcceptancePaths.ValidateIdentity();
-        context.WriteLine($"Native AOT artifact: {AcceptancePaths.AotDll}; SHA256={sha}; sandbox={AcceptancePaths.Sandbox}");
-        File.WriteAllText(Path.Combine(AcceptancePaths.Results, "aot-identity.json"), System.Text.Json.JsonSerializer.Serialize(new
-        {
-            AotDllPath = AcceptancePaths.AotDll, Sha256 = sha, Sandbox = AcceptancePaths.Sandbox,
-            ProcessArchitecture = RuntimeInformation.ProcessArchitecture.ToString(), PointerSize = IntPtr.Size,
-            CalibrationResultsPath = AcceptancePaths.Metadata("CalibrationResultsPath"),
-            ResolvedResultsPath = AcceptancePaths.Results, WorkingDirectory = Directory.GetCurrentDirectory(),
-            BaseDirectory = AppContext.BaseDirectory, Arguments = Environment.GetCommandLineArgs()
-        }));
-    }
-}

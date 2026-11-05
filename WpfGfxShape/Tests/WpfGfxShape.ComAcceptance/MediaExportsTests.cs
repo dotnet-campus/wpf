@@ -79,25 +79,9 @@ public sealed unsafe partial class MediaExportsTests
     [TestMethod]
     [DataRow((byte)0)]
     [DataRow((byte)1)]
-    public void WhenCandidateMediaBackendIsNotImplementedThenFactoryFailsWithoutAnObject(byte canOpen)
+    public void WhenCandidateFactoryReceivesRealEventProxyThenPlayerAndRollbackReferencesAreReleased(byte canOpen)
     {
-        nint module = LoadCandidate();
-        var createFactory = (delegate* unmanaged[Stdcall]<nint*, uint, int>)NativeLibrary.GetExport(module, "MILCreateFactory");
-        var createMedia = (delegate* unmanaged[Stdcall]<nint, nint, byte, nint*, int>)NativeLibrary.GetExport(module, "MILFactoryCreateMediaPlayer");
-        nint factory = 0;
-        try
-        {
-            Assert.AreEqual(0, createFactory(&factory, 0x200184C0));
-            nint media = -1;
-
-            int result = createMedia(factory, 0, canOpen, &media);
-
-            Assert.AreEqual((unchecked((int)0x80004001), (nint)0), (result, media));
-        }
-        finally
-        {
-            Release(factory);
-        }
+        VerifyIndependentFactoryContract(canOpen);
     }
 
     // This is a real installed WPF/WMP media object, not a test COM implementation.

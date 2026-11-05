@@ -8,6 +8,7 @@
     <NativeLib>Shared</NativeLib>
     <SelfContained>true</SelfContained>
     <AssemblyName>wpfgfx_cor3</AssemblyName>
+    <AssemblyName Condition="'$(WpfGfxShapeManagedAcceptance)' == 'true' and '$(PublishAot)' != 'true'">WpfGfxShape.ManagedAcceptance</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsAotCompatible>true</IsAotCompatible>
     <EnableAotAnalyzer>true</EnableAotAnalyzer>

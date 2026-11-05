@@ -1,0 +1,67 @@
+using System.Runtime.InteropServices;
+namespace WpfGfxShape.ComAcceptance;
+public sealed unsafe partial class D3DImageTests
+{
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] private static extern uint GetModuleFileNameW(nint module, char* path, uint capacity);
+    private static void LogOccludedDeviceState(nint window, nint device, int originalResult)
+        => throw new NotSupportedException("Candidate resize nativeControl supports only the original non-Ex prerequisite.");
+    [DllImport("d3d9.dll")] private static extern nint Direct3DCreate9(uint version);
+    [DllImport("user32.dll")] private static extern int ShowWindow(nint window, int command);
+    [StructLayout(LayoutKind.Sequential)]
+    private struct PresentParameters
+    {
+        internal uint Width, Height, Format, Count, Multisample, Quality, SwapEffect;
+        internal nint Window;
+        internal int Windowed, AutoDepth;
+        internal uint DepthFormat, Flags, Refresh, Interval;
+    }
+    internal static void RunCandidateNativeControl()
+    {
+        using var owner = new PresentationWindowThread();
+        windowThread = owner;
+        owner.Invoke(() => { RunOwnedNativeControl(); return 0; });
+    }
+    private static void RunOwnedNativeControl()
+    {
+        nint window = 0, factory = 0, device = 0;
+        try
+        {
+            ExitDiagnostics.Stage("nativeControl-before");
+            window = CreateOutputWindow("Two input shader acceptance", 40, 40);
+            Assert.AreNotEqual(0, window);
+            EstablishObservableWindow(window);
+            factory = Direct3DCreate9(32);
+            Assert.AreNotEqual(0, factory);
+            PresentParameters parameters = new() { Width = 32, Height = 16, Count = 1, SwapEffect = 1, Window = window, Windowed = 1 };
+            Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, uint, uint, nint, uint, PresentParameters*, nint*, int>)(*(void***)factory)[16])(factory, 0, 1, window, 0x26, &parameters, &device));
+            PresentNativeControl(window, device, false);
+            DiagnoseNativePresent(window, device, false, NativeLibrary.Load(AcceptancePaths.AotDll));
+            AssertCombinedPixel(window, 0x00563412);
+            ExitDiagnostics.Stage("nativeControl-completed");
+        }
+        catch (Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException)
+        {
+            if (device != 0 && window != 0) DiagnosticImplicitSwapChain(window, device);
+            throw;
+        }
+        finally
+        {
+            Release(device); Release(factory);
+            if (window != 0) DestroyWindow(window);
+            windowThread = null;
+            ExitDiagnostics.Stage("nativeControl-released");
+        }
+    }
+    private static void Release(nint value)
+    {
+        if (value != 0)
+        {
+            uint refs = ((delegate* unmanaged[Stdcall]<nint, uint>)(*(void***)value)[2])(value);
+            ExitDiagnostics.Stage($"nativeControl-release pointer={value:X} refs={refs}");
+        }
+    }
+    private static void ProcessWindowMessages(nint window)
+    {
+        while (PeekMessageW(out WindowMessage message, window, 0, 0, 1) != 0)
+            DispatchMessageW(in message);
+    }

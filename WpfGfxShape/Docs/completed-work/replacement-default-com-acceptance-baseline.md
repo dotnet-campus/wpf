@@ -1,5 +1,21 @@
 # 默认 Release COM 完整适用回归基线 r1
 
+## 历史定位与受覆盖规则（任务9全文审）
+
+本页原位保留各轮默认发现、双架构计数、身份、真实失败及定向取证索引；下文“最新/当前/本轮/授权/下一”均指当时轮次，不是当前默认准入、全等价认证或执行排程。当前状态只见[恢复入口](../handoffs/current-recovery.md)，规则只见[严格对照合同](../handoffs/current-comparison-contract.md)，覆盖范围及唯一后续顺序只见[当前矩阵](../handoffs/current-validation-matrix.md)。不再向本页累计新状态。
+
+> **有来源的适用性更正**：依据上述用户澄清合同，官方原版独立进程对照允许且必须；历史只跑官方的诊断不能单独成为替换验收。旧预算/另授权要求不约束后续任务；“official/candidate/混合角色由每项测试决定”不是同进程双版、不同上层调用或候选专属补偿的许可。严格比较须同上层逻辑、仅DLL不同，完整像素及业务契约零阈值；五像素等有限绿、默认full计数或单侧Passed都不证明全等价。生产不得委托原版/fallback。
+
+按共同主题读历史：**有限绿**是 sampler/resize 等指定身份切片；**真实红**包括原20+3、后续独立full及官方崩溃/显示/未触发loss，不能相减；**身份**须区分包内文件与实际加载模块；**证据缺口**包括普通测试独立exit、部分stages/cleanup、模块身份冲突及未证资源趋势。下文“已读原件”是历史作者的读取事实，不是任务9重新认证，缺件保持Unknown/EvidenceUnavailable，不补造。
+
+> **归因边界更正**：下文r7的fixture根矩阵结论仅是当时技术调查，不能据此宣称所有旧红均由fixture或环境造成、生产已无兼容缺口；没有对应原件及因果复核时仍待核。系统/native前置失败后的两侧业务为NotRun/NotReached，而非通过或已证产品/环境根因。来源为严格合同“对照合同”第7–9条及当前矩阵桌面/生命周期行。媒体默认async、模块进程寿命等生产设计不因本次治理改实现。
+
+> **具体同调用冲突更正**：[post-fixture原报告](replacement-final-acceptance-post-fixture-r1.md)§2明确记载 official resize `flush(channel)` / candidate `present(connection)` 分流。该事实不满足当前“同上层逻辑仅DLL不同”合同，因此其resize/full有限结果不得提升为strict；不据此断定所有用例都同进程双加载，未核的加载方式仍Unknown。
+
+链接实际核验：下文 `../../../Docs/` 相对本页越出项目文档根，不是本页有效相对路径；即使按同目录意图查找，`replacement-resize-e-unexpected-investigation.md`、`replacement-world-transform-resize-crossarch-closeout.md`亦未找到，记EvidenceUnavailable。sampler-world-transform及r2/r3/r5/r6/r7报告已枚举存在；其他同目录正式报告与本页/失败索引可定位。保留旧链接作历史原引用，不伪造重定向或补件，不声称全部原始artifact已核。
+
+以下保留历史正文及原始数字，不追认其原始证据完整性。
+
 ## 最新默认基线：latest-contract-default双arch已执行Failed，收尾完成
 [正式报告](replacement-latest-contract-default-crossarch-closeout.md)、[完整身份分层及全部5失败](replacement-latest-contract-default-failure-index.md)。x64 c71948f3b6d546549ebc844d9936ca67=1823/1823/1821/2，x86 22e93b4d50af424893275cfbd5c2d23f=1823/1823/1820/3（total/executed/passed/failed），child2，其余Counters0。共同official FF80/actual0与foreground FailedNotTriggered，x86另swap3 fresh首红desktop旧F3F3F3。O6双archPassed非旧samecaller复现；本轮无旧32同根malformed失败，不等全部业务覆盖，native gate挡例不冒验证，负控保留。已执行publish2/implicitcompile2/sandbox2、normalbuild/Native0；本次收尾源码及新增执行0。历史42/23/40独立保留不相减。下一推荐official exact resource/消费条件及真实WPF发送序列；备选直接C#独立desktop权限返回/恢复条件实验，均仅建议。根因Unknown，HWbackend/productloss/audio/naturalresources/full矩阵/整体Open，memoryGreen=null。以下旧最新均历史。
 

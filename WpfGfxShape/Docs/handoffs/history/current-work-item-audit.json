@@ -1,0 +1,20 @@
+{
+  "phase": "pointer",
+  "source": "Docs/handoffs/current-work-item.md",
+  "archive": "Docs/handoffs/history/current-work-item-legacy.md",
+  "sourceBytes": 180252,
+  "sourceLines": 867,
+  "sourceSha256": "A934A20EF6935676230B54EC5E93D683CE17A8265C60E92D2D1E92A2D80CCD84",
+  "archiveBytes": 180252,
+  "archiveLines": 867,
+  "archiveSha256": "A934A20EF6935676230B54EC5E93D683CE17A8265C60E92D2D1E92A2D80CCD84",
+  "byteExact": true,
+  "utf8Bom": false,
+  "pointerLines": 10,
+  "pointerBytes": 433,
+  "pointerSha256": "1EBB20E8C1BF0112B91CEFF8E4CC7CCF81944D5876F4F88E771EE53C22016ED5",
+  "sourceUnchangedSinceArchivePackaging": true,
+  "firstLine": "# \u5386\u53F2\u7D2F\u8BA1\u5DE5\u4F5C\u9879\uFF08\u975E\u5F53\u524D\u5B9E\u65BD\u89C4\u683C\uFF09",
+  "lastLine": "\u6700\u65B0\u5DF2\u8FD0\u884C\u8303\u56F4\u4ECD\u89C1[\u57FA\u7EBF](current-stable-baseline.md)\u53CA[\u62A5\u544A](../completed-work/x86-stroke-current-validation.md)\u3002x86 \u76EE\u6807\u56DE\u5F52\u548C x64 \u540C\u6E90\u7801 Release \u6709\u754C\u56DE\u5F52\u5DF2\u901A\u8FC7\uFF0C\u4E0D\u518D\u6CBF\u7528\u201Cx86 \u672A\u5B9E\u8DD1/E_NOTIMPL \u672A\u4FEE\u201D\u3002\u672C\u6B21\u53EA\u662F\u66F4\u65B0\u4EFB\u52A1\u4E0E\u65B9\u6848\uFF0C\u5C1A\u65E0\u65B0\u5B9E\u73B0/\u6D4B\u8BD5\u7ED3\u679C\uFF1B\u6574\u4F53\u672A\u5B8C\u6210\u3002",
+  "boundary": "Complete published input copies, not in-place workspace hashes. Archive fully reread and byte-compared. Pointer phase repackages landed archive and unchanged workspace source. Preservation is not full semantic review."
+}

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>CandidatePureVideo</AssemblyName>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+    <PublishAot>false</PublishAot>
+    <CandidateNativeDirectory>../../artifacts/candidate-media-current-r15/native-x86</CandidateNativeDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../CandidatePureVideo/MediaHelpers.cs" Link="MediaHelpers.cs" />
+    <Content Include="$(CandidateNativeDirectory)/wpfgfx_cor3.dll" Link="Native/wpfgfx_cor3.dll" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <Target Name="PinRuntime" BeforeTargets="ProcessFrameworkReferences">
+    <ItemGroup><FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" /></ItemGroup>
+  </Target>
+  <Target Name="ExcludeRuntimeGfx" AfterTargets="ComputeFilesToPublish" BeforeTargets="CopyFilesToPublishDirectory">
+    <ItemGroup><ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'wpfgfx_cor3.dll' and '%(ResolvedFileToPublish.RelativePath)' != 'Native/wpfgfx_cor3.dll' and '%(ResolvedFileToPublish.RelativePath)' != 'Native\wpfgfx_cor3.dll'" /></ItemGroup>
+  </Target>
+  <Target Name="CandidateDigest" AfterTargets="Publish">
+    <GetFileHash Files="$(PublishDir)Native/wpfgfx_cor3.dll" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="CandidateHash" /></GetFileHash>
+    <WriteLinesToFile File="$(PublishDir)aot.sha256" Lines="@(CandidateHash->'%(FileHash)')" Overwrite="true" />
+    <Error Condition="Exists('$(PublishDir)wpfgfx_cor3.dll')" Text="Unexpected root graphics runtime binary." />
+  </Target>
+</Project>

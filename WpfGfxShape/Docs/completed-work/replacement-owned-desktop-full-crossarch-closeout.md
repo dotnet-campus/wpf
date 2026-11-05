@@ -1,6 +1,15 @@
-# ControlledDesktopFull 双架构正式收尾
+# 历史：ControlledDesktopFull 双架构正式收尾
 
-## 最新失败索引补充（无新运行、不扣红）
+## 治理更正与证据可用性
+
+当前规则只见[集中当前合同](../handoffs/current-comparison-contract.md)。本页1823分母、1/2失败、身份、真实恢复/Active0/句柄记录均保留为历史事实描述，不是当前strict矩阵或新运行收据。
+
+- 来源：本页配置/身份混合角色与[post-fixture §2](replacement-final-acceptance-post-fixture-r1.md#2-调用与包认证)所记official flush/candidate present分流。受控desktop、native loss与job回收有限通过不能升级为仅DLL不同的完整strict对照；恢复/Active0/关闭不等于每项对象refs0或自然资源收敛。真实导出、consumer恢复、音频及回收技术缺口继续保留。
+- 来源：本页3失败及“根因Unknown”。官方初帧与native旧灰不确证候选回归，也不排除产品问题；有desktop不能证明已排除所有环境因果，前置失败保持NotReached，禁止无证误判环境。
+- **EvidenceUnavailable**：检索未找到`artifacts/owned-desktop-full-{x64,x86}-r1/readback/Results`和`artifacts/owned-desktop-full-execution-receipt.md`原件，仅命中文档Snapshot，x64原根不存在。下文TRX、bj-fresh-3.json、supervision、desktop/job journal与“亲读”均为历史作者记录，不是本轮原件复核。两后续报告文档存在，但其task9343原件本轮未取得，旧“现可读/已核”亦仅为历史更正记录，不据此宣布已恢复。
+- 原运行预算及“当前无新增预算”仅限历史轮，撤其当前效力；以下下一行动为历史建议，非当前唯一任务，完整替换仍未证明。
+
+## 历史后续失败索引补充（无新运行、不扣红）
 [official首次协议完整审查](replacement-official-cache-first-send-review.md)：未确证fixture少发必要命令；GetRenderTargetBitmap显示驻留/内部RT消费现场未观测。原两official FF80/0与x86 swap3旧灰三失败全部保留。后续9343单例的精确TestResults/child.trx现可读并已全文核证1/1/0/1、MTP2，testId14e862b3-9b71-843a-9ff5-67f779272c33/executionb229983c-3c5d-4728-8145-f58610649d20；native前置失败，不覆盖本full。旧缺TRX说法纠正，不产生Passed。
 
 ## 后续核证索引（不改变本full结果）
@@ -49,8 +58,8 @@ x64父12828→监督10124→MTP8704；自有 WinSta0/WpfGfxOwned_12828_1a85c2343
 
 原受控单例loss taskb08149f473a141f9b2e6e83bdb2936b6和official task90e5fa15e1344be8a44d501d4283407c均1passed/恢复成功/active0/关闭成功，已回填原desktop closeout，非待写草稿。
 
-## 剩余主要验收与直接行动
-1. 对照full失败与单例通过的 official exact resource/消费状态及真实WPF发送序列，定位可证确定差异后再决定最小测试或产品修正；当前无新增运行预算，不能再追绿。
+## 历史剩余主要验收与当时行动建议
+1. 对照full失败与单例通过的 official exact resource/消费状态及真实WPF发送序列，定位可证确定差异后再决定最小测试或产品修正；该历史轮无新增运行预算而未重跑，不是当前预算限制，也不得改标准追绿。
 2. 独立调查x86 swap3第一帧真实desktop交付，保留Basic Render Driver及原生control失败，不转嫁候选、不放宽期望。
 3. 真实HW backend、product device-loss、audio、natural resource收敛及最终完整替换矩阵仍Open；受控loss绿或候选大多数绿均不足关门。
 4. 后续证据审计需要按原件逐角色完善pcore等actual模块/MVID与desktop绑定全集；本报告明确未将抽样认证冒全集认证。无运行阻塞，但这项审计完整性仍非已完成。

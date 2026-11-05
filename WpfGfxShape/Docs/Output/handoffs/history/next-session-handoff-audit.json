@@ -1,0 +1,20 @@
+{
+  "phase": "archive",
+  "source": "Docs/next-session-handoff.md",
+  "archive": "Docs/handoffs/history/next-session-handoff-legacy.md",
+  "sourceBytes": 614775,
+  "sourceLines": 2484,
+  "sourceSha256": "48D417B980439C99DD4DE736CCD0A85F5507B7DC9292425942C4F5BA5C8BF868",
+  "archiveBytes": 614775,
+  "archiveLines": 2484,
+  "archiveSha256": "48D417B980439C99DD4DE736CCD0A85F5507B7DC9292425942C4F5BA5C8BF868",
+  "byteExact": true,
+  "utf8Bom": false,
+  "pointerLines": 10,
+  "pointerBytes": 477,
+  "pointerSha256": "1D3F413A929701144A902308A51FD641E009EAEBD26C25365DC126D71DB21CF6",
+  "sourceUnchangedSinceArchivePackaging": false,
+  "firstLine": "# \u5386\u53F2\u7D2F\u8BA1\u4EA4\u63A5\uFF08\u539F\u6587\u539F\u4F4D\u4FDD\u7559\uFF0C\u975E\u5F53\u524D\u5165\u53E3\uFF09",
+  "lastLine": "\u6574\u4F53\u672A\u5B8C\u6210\uFF0C\u4E0D\u80FD\u5BA3\u5E03\u5DF2\u53EF\u5B8C\u6574\u66FF\u6362\u3002",
+  "boundary": "Hashes cover complete published input copies and sandbox archive readback, not an in-place hash of workspace files. Pointer phase repackages both workspace source and landed archive and compares every byte and prior source hash before emitting pointer. No product or acceptance logic executed."
+}

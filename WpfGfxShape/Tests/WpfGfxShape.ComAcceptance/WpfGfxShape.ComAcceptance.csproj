@@ -17,6 +17,43 @@
     <AotRuntimeIdentifier Condition="'$(AotRuntimeIdentifier)' == ''">win-x64</AotRuntimeIdentifier>
     <AotDllPath Condition="'$(AotDllPath)' == ''">$(MSBuildThisFileDirectory)../../artifacts/publish/WpfGfxShape/Release/$(AotRuntimeIdentifier)/wpfgfx_cor3.dll</AotDllPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'OfficialWindowHangDiagnostic'">
+    <DefineConstants>$(DefineConstants);OFFICIAL_WINDOW_HANG_DIAGNOSTIC</DefineConstants>
+    <Optimize>true</Optimize>
+    <SelfContained>true</SelfContained>
+    <ComAcceptanceSandbox>true</ComAcceptanceSandbox>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+    <PublishAot>false</PublishAot>
+    <WpfGfxShapeManagedAcceptance>true</WpfGfxShapeManagedAcceptance>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)stage19-final-crossarch/clean-x64/Native/wpfgfx_cor3.dll</AotDllPath>
+    <ComAcceptanceReferenceInputDirectory>$(WpfGfxShapeArtifactsRoot)crossarch-fixture-prerequisites/original-clean-x86/ReferenceData</ComAcceptanceReferenceInputDirectory>
+    <ComAcceptanceGlyphReferenceInput>$(WpfGfxShapeArtifactsRoot)reference-glyph-trusted/readback-original-x86/ReferenceData/glyph-arial-original.json</ComAcceptanceGlyphReferenceInput>
+    <ErrorLog>$(WpfGfxShapeArtifactsRoot)official-window-hang-bounded-compiler.sarif</ErrorLog>
+  </PropertyGroup>
+  <Target Name="PinOfficialWindowHangFrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'OfficialWindowHangDiagnostic'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)' == 'VideoMp4SandboxDiagnostic'">
+    <DefineConstants>$(DefineConstants);VIDEO_MP4_SANDBOX_DIAGNOSTIC</DefineConstants>
+    <Optimize>true</Optimize>
+    <SelfContained>true</SelfContained>
+    <ComAcceptanceSandbox>true</ComAcceptanceSandbox>
+    <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
+    <AotDllPath>$(WpfGfxShapeArtifactsRoot)owned-desktop-full-x64-r1/clean/Native/wpfgfx_cor3.dll</AotDllPath>
+    <ComAcceptancePackageDirectory>$(WpfGfxShapeArtifactsRoot)user-video-mp4-r2/clean/</ComAcceptancePackageDirectory>
+    <PublishDir>$(WpfGfxShapeArtifactsRoot)user-video-mp4-r2/publish/</PublishDir>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'VideoMp4SandboxDiagnostic' or '$(Stage19UserMedia)' == 'true'">
+    <Content Include="$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)../../../TestResults/Video.mp4'))" Link="inputs/Video.mp4" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="PinVideoMp4FrameworkVersions" BeforeTargets="ProcessFrameworkReferences" Condition="'$(Configuration)' == 'VideoMp4SandboxDiagnostic' or '$(Stage19UserMedia)' == 'true'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF" RuntimeFrameworkVersion="10.0.13" />
+    </ItemGroup>
+  </Target>
   <PropertyGroup Condition="'$(Configuration)' == 'CacheConsumerSymbolPreparation'">
     <DefineConstants>$(DefineConstants);SAMPLER_OFFLINE_SYMBOLS;CACHE_CONSUMER_SYMBOL_PREPARATION</DefineConstants>
     <Optimize>true</Optimize>
@@ -273,7 +310,10 @@
   <ItemGroup>
     <Compile Include="../../Code/WpfGfxShape/Core/SoftwareFillBezier.cs" Link="FillInteger/SoftwareFillBezier.cs" />
     <Compile Include="../../Code/WpfGfxShape/Core/Av/MediaFoundationSample.cs" Link="MediaFoundation/MediaFoundationSample.cs" />
+    <Compile Include="../../Code/WpfGfxShape/Core/Av/MediaFoundationReaderCallback.cs" Link="MediaFoundation/MediaFoundationReaderCallback.cs" />
     <Compile Include="../WpfGfxShape.Tests/MediaFoundationResourceTests.cs" Link="MediaFoundation/MediaFoundationResourceTests.cs" />
+    <Compile Include="../WpfGfxShape.Tests/MediaFoundationResourceTests.PropVariant.cs" Link="MediaFoundation/MediaFoundationResourceTests.PropVariant.cs" />
+    <ProjectReference Include="../WpfGfxShape.Tests/WpfGfxShape.Tests.csproj" Aliases="Stage3Production" />
     <PackageReference Include="MSTest" Version="4.0.1" />
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
     <Using Include="System.IO" />

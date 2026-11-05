@@ -2,8 +2,18 @@
   <PropertyGroup>
     <ComAcceptancePackageDirectory Condition="'$(ComAcceptancePackageDirectory)' == ''">$(WpfGfxShapeArtifactsRoot)com-acceptance-package\</ComAcceptancePackageDirectory>
   </PropertyGroup>
+  <PropertyGroup>
+    <ComAcceptanceRequireReferenceData Condition="'$(ComAcceptanceRequireReferenceData)' == ''">$(ComAcceptanceSandbox)</ComAcceptanceRequireReferenceData>
+  </PropertyGroup>
+  <Target Name="ValidateComAcceptanceReferenceInputs" BeforeTargets="PrepareForBuild" Condition="'$(ComAcceptanceRequireReferenceData)' == 'true'">
+    <Error Condition="'$(ComAcceptanceReferenceInputDirectory)' == ''" Text="BlockedMissingTrustedOracle: ComAcceptanceReferenceInputDirectory" />
+    <Error Condition="!Exists('%(ComAcceptanceReferenceInput.Identity)')" Text="BlockedMissingTrustedOracle: %(ComAcceptanceReferenceInput.Identity)" />
+  </Target>
   <ItemGroup Condition="'$(ComAcceptanceReferenceInputDirectory)' != ''">
-    <ComAcceptanceReferenceInput Include="$(ComAcceptanceReferenceInputDirectory)/glyph-arial-original.json;$(ComAcceptanceReferenceInputDirectory)/original-wpf.json" />
+    <ComAcceptanceReferenceInput Include="$(ComAcceptanceReferenceInputDirectory)/glyph-arial-original.json" Condition="'$(ComAcceptanceGlyphReferenceInput)' == ''" />
+    <ComAcceptanceReferenceInput Include="$(ComAcceptanceGlyphReferenceInput)" Condition="'$(ComAcceptanceGlyphReferenceInput)' != ''" />
+    <ComAcceptanceReferenceInput Include="$(ComAcceptanceReferenceInputDirectory)/original-wpf.json" Condition="'$(ComAcceptanceDrawingReferenceInput)' == ''" />
+    <ComAcceptanceReferenceInput Include="$(ComAcceptanceDrawingReferenceInput)" Condition="'$(ComAcceptanceDrawingReferenceInput)' != ''" />
     <None Include="@(ComAcceptanceReferenceInput)" Link="ReferenceData/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
   <Target Name="DisableAcceptanceCoverageRegistration" BeforeTargets="_GenerateSelfRegisteredExtensionsFileInputCache;_GenerateTestingPlatformEntryPointFileInputCache">
@@ -19,7 +29,7 @@
       <AcceptancePackageFile Include="$(TargetDir)Microsoft.Testing.Platform.dll;$(TargetDir)Microsoft.Testing.Extensions.TrxReport.dll;$(TargetDir)Microsoft.Testing.Extensions.TrxReport.Abstractions.dll;$(TargetDir)Microsoft.Testing.Extensions.VSTestBridge.dll;$(TargetDir)Microsoft.VisualStudio.TestPlatform.ObjectModel.dll;$(TargetDir)Microsoft.TestPlatform.AdapterUtilities.dll;$(TargetDir)MSTest.TestAdapter.dll;$(TargetDir)MSTestAdapter.PlatformServices.dll;$(TargetDir)MSTest.TestFramework.dll;$(TargetDir)MSTest.TestFramework.Extensions.dll;$(TargetDir)Microsoft.TestPlatform.CoreUtilities.dll;$(TargetDir)Microsoft.TestPlatform.PlatformAbstractions.dll;$(TargetDir)Microsoft.TestPlatform.Utilities.dll;$(TargetDir)Newtonsoft.Json.dll;$(TargetDir)Microsoft.Testing.Extensions.MSBuild.dll" />
       <AcceptanceReferenceData Include="$(TargetDir)ReferenceData\*.json" />
       <AcceptanceContract Include="$(TargetDir)Contracts\*" />
-      <AcceptancePackageFile Include="@(ReferenceCopyLocalPaths->'$(TargetDir)%(DestinationSubDirectory)%(Filename)%(Extension)')" />
+      <AcceptancePackageFile Include="@(ReferenceCopyLocalPaths->'$(TargetDir)%(DestinationSubDirectory)%(Filename)%(Extension)')" Exclude="$(TargetDir)WpfGfxShape.Tests.pdb;$(TargetDir)WpfGfxShape.ManagedAcceptance.pdb" />
     </ItemGroup>
     <RemoveDuplicates Inputs="@(AcceptancePackageFile->'%(FullPath)')">
       <Output TaskParameter="Filtered" ItemName="AcceptanceUniquePackageFile" />
@@ -29,11 +39,12 @@
         <PackagePath>$([MSBuild]::MakeRelative('$(TargetDir)', '%(AcceptanceUniquePackageFile.FullPath)'))</PackagePath>
       </AcceptanceUniquePackageFile>
     </ItemGroup>
+    <Error Condition="'%(AcceptanceUniquePackageFile.Filename)%(AcceptanceUniquePackageFile.Extension)' == 'WpfGfxShape.Tests.pdb' or '%(AcceptanceUniquePackageFile.Filename)%(AcceptanceUniquePackageFile.Extension)' == 'WpfGfxShape.ManagedAcceptance.pdb'" Text="Project symbols are not clean-package inputs: %(AcceptanceUniquePackageFile.Identity)" />
     <Copy SourceFiles="@(AcceptanceUniquePackageFile)" DestinationFiles="@(AcceptanceUniquePackageFile->'$(ComAcceptancePackageDirectory)%(PackagePath)')" />
     <Copy SourceFiles="@(AcceptanceReferenceData)" DestinationFolder="$(ComAcceptancePackageDirectory)ReferenceData" />
     <Copy SourceFiles="@(AcceptanceContract)" DestinationFolder="$(ComAcceptancePackageDirectory)Contracts" />
     <Copy SourceFiles="$(AotDllPath)" DestinationFolder="$(ComAcceptancePackageDirectory)Native" />
-    <GetFileHash Files="$(AotDllPath)" Algorithm="SHA256">
+    <GetFileHash Files="$(ComAcceptancePackageDirectory)Native\wpfgfx_cor3.dll" Algorithm="SHA256">
       <Output TaskParameter="Items" ItemName="AcceptanceAotIdentity" />
     </GetFileHash>
     <WriteLinesToFile File="$(ComAcceptancePackageDirectory)aot.sha256" Lines="@(AcceptanceAotIdentity->'%(FileHash)')" Overwrite="true" />
@@ -46,9 +57,10 @@
       <AcceptancePublishedFile Include="$(PublishDir)WpfGfxShape.ComAcceptance.exe;$(PublishDir)WpfGfxShape.ComAcceptance.dll;$(PublishDir)WpfGfxShape.ComAcceptance.deps.json;$(PublishDir)WpfGfxShape.ComAcceptance.runtimeconfig.json" />
       <AcceptancePublishedFile Include="$(PublishDir)Microsoft.Testing.Platform.dll;$(PublishDir)Microsoft.Testing.Extensions.TrxReport.dll;$(PublishDir)Microsoft.Testing.Extensions.TrxReport.Abstractions.dll;$(PublishDir)Microsoft.Testing.Extensions.VSTestBridge.dll;$(PublishDir)Microsoft.VisualStudio.TestPlatform.ObjectModel.dll;$(PublishDir)Microsoft.TestPlatform.AdapterUtilities.dll;$(PublishDir)MSTest.TestAdapter.dll;$(PublishDir)MSTestAdapter.PlatformServices.dll;$(PublishDir)MSTest.TestFramework.dll;$(PublishDir)MSTest.TestFramework.Extensions.dll;$(PublishDir)Microsoft.TestPlatform.CoreUtilities.dll;$(PublishDir)Microsoft.TestPlatform.PlatformAbstractions.dll;$(PublishDir)Microsoft.TestPlatform.Utilities.dll;$(PublishDir)Newtonsoft.Json.dll;$(PublishDir)Microsoft.Testing.Extensions.MSBuild.dll" />
       <AcceptancePublishedFile Include="@(RuntimePackAsset->'$(PublishDir)%(DestinationSubPath)')" />
-      <AcceptancePublishedFile Include="@(ReferenceCopyLocalPaths->'$(PublishDir)%(DestinationSubDirectory)%(Filename)%(Extension)')" />
+      <AcceptancePublishedFile Include="@(ReferenceCopyLocalPaths->'$(PublishDir)%(DestinationSubDirectory)%(Filename)%(Extension)')" Exclude="$(PublishDir)WpfGfxShape.Tests.pdb;$(PublishDir)WpfGfxShape.ManagedAcceptance.pdb" />
       <AcceptancePublishedFile Include="$(PublishDir)Contracts\wgx_sdk_version.h;$(PublishDir)Contracts\wpfgfx.def;$(PublishDir)Native\wpfgfx_cor3.dll" />
       <AcceptancePublishedFile Include="@(ComAcceptanceReferenceInput->'$(PublishDir)ReferenceData/%(Filename)%(Extension)')" />
+      <AcceptancePublishedFile Include="$(PublishDir)inputs/Video.mp4" Condition="'$(Configuration)' == 'VideoMp4SandboxDiagnostic' or '$(Stage19UserMedia)' == 'true'" />
       <AcceptancePublishedFile Include="$(PublishDir)inputs/wpfgfx_cor3.pdb" Condition="'$(Configuration)' == 'CacheConsumerSymbolPreparation'" />
       <AcceptancePublishedFile Include="$(PublishDir)inputs/original-present.etl;$(PublishDir)inputs/controller.json" Condition="'$(Configuration)' == 'OriginalPresentOfflineTdhDiagnostic' or '$(Configuration)' == 'DxgKrnlOfflineTdhDiagnostic'" />
     </ItemGroup>
@@ -62,9 +74,11 @@
         <PackagePath>$([MSBuild]::MakeRelative('$(PublishDir)', '%(AcceptancePublishedFile.FullPath)'))</PackagePath>
       </AcceptancePublishedFile>
     </ItemGroup>
+    <Error Condition="'%(AcceptancePublishedFile.Filename)%(AcceptancePublishedFile.Extension)' == 'WpfGfxShape.Tests.pdb' or '%(AcceptancePublishedFile.Filename)%(AcceptancePublishedFile.Extension)' == 'WpfGfxShape.ManagedAcceptance.pdb'" Text="Project symbols are not clean-package inputs: %(AcceptancePublishedFile.Identity)" />
     <Error Condition="!Exists('%(AcceptancePublishedFile.Identity)')" Text="Missing clean-package dependency: %(AcceptancePublishedFile.Identity)" />
     <Copy SourceFiles="@(AcceptancePublishedFile)" DestinationFiles="@(AcceptancePublishedFile->'$(ComAcceptancePackageDirectory)%(PackagePath)')" />
-    <GetFileHash Files="$(PublishDir)Native\wpfgfx_cor3.dll" Algorithm="SHA256">
+    <Copy SourceFiles="$(PublishDir)Native\wpfgfx_cor3.dll" DestinationFiles="$(ComAcceptancePackageDirectory)wpfgfx_cor3.dll" Condition="'$(Stage17CandidateRoot)' == 'true'" />
+    <GetFileHash Files="$(ComAcceptancePackageDirectory)Native\wpfgfx_cor3.dll" Algorithm="SHA256">
       <Output TaskParameter="Items" ItemName="AcceptancePublishedIdentity" />
     </GetFileHash>
     <WriteLinesToFile File="$(ComAcceptancePackageDirectory)aot.sha256" Lines="@(AcceptancePublishedIdentity->'%(FileHash)')" Overwrite="true" />

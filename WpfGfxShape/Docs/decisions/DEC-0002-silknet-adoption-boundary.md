@@ -3,6 +3,10 @@
 > 状态：Accepted  
 > 本地基线：`D:/lindexi/Code/OriginWpf/Silk.NET` @ `ed4b3c299a44e8b6936f6b1c61c0b119e82237cd`
 
+## 当前适用性（任务9）
+
+**技术设计仍有效**：按API家族唯一权威绑定、保留loader/ABI/生命周期、许可及来源要求不变。**部分待核**：本地commit/覆盖调查及“WP-00G前Blocked”为原轮次事实/前置合同，不是当前绑定实现或状态的重新认证。测试与证据提升受[严格合同](../handoffs/current-comparison-contract.md)约束，当前状态只见[恢复入口](../handoffs/current-recovery.md)；本决议不授权候选专属调用补偿或算法替换。
+
 ## 背景
 
 用户计划用 Silk.NET 调用 DirectX，但本地快照并非覆盖 wpfgfx 全部平台面，整体引用还可能改变 loader、依赖和 ABI。

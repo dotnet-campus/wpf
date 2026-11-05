@@ -1,0 +1,37 @@
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
+namespace NativeAcceptance.Pcore;
+internal static class CandidateResizeScene
+{
+    private static object Identity(string path) => new { path, sha256 = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path))) };
+    internal static void Run()
+    {
+        bool rtbLifecycle = Environment.GetCommandLineArgs().LastOrDefault() == "rtb-lifecycle";
+        if (!rtbLifecycle) WpfGfxShape.ComAcceptance.D3DImageTests.RunCandidateNativeControl();
+        string directory = Path.Combine(AppContext.BaseDirectory, "Evidence");
+        var events = new List<object>();
+        var resources = new List<object>();
+        try
+        {
+            for (int cycle = 0; cycle < 3; cycle++)
+            {
+                WeakReference producer = RunCycle(directory, cycle, events, false);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                resources.Add(new { cycle, producerAlive = producer.IsAlive });
+                File.WriteAllText(Path.Combine(directory, "resources.json"), JsonSerializer.Serialize(resources));
+                if (producer.IsAlive) throw new InvalidOperationException("Detached WriteableBitmap producer remained rooted after window close.");
+            }
+        }
+        finally
+        {
+            File.WriteAllText(Path.Combine(directory, "events.json"), JsonSerializer.Serialize(events));
+        }
+    }

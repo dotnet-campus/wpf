@@ -297,6 +297,7 @@ public sealed unsafe partial class D3DImageTests
     [TestMethod]
     public void WhenOriginalPublicHwndTargetDrawsThenWindowContainsHardwarePixels()
     {
+        WindowHangStage("original-TestMethod-start");
         System.Windows.Interop.HwndSource? source = null;
         using ManualResetEventSlim rendered = new();
         try
@@ -307,15 +308,21 @@ public sealed unsafe partial class D3DImageTests
                 Console.WriteLine($"OriginalWpfTarget module={originalPath} sha256={Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(originalPath)))}");
                 var parameters = new System.Windows.Interop.HwndSourceParameters("Original WPF public HWND target", 32, 16)
                 { PositionX = 40, PositionY = 40, WindowStyle = unchecked((int)0x90000000), ExtendedWindowStyle = 8 };
+                WindowHangStage("HwndSource-constructor-start");
                 var target = new System.Windows.Interop.HwndSource(parameters);
+                WindowHangStage("HwndSource-constructor-end");
                 var visual = new System.Windows.Media.DrawingVisual();
                 using (var drawing = visual.RenderOpen())
                     drawing.DrawRectangle(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x12, 0x34, 0x56)), null, new System.Windows.Rect(0, 0, 32, 16));
+                WindowHangStage("RootVisual-start");
                 target.RootVisual = visual;
-                System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ContextIdle, new Action(() => rendered.Set()));
+                WindowHangStage("RootVisual-end-ContextIdle-post");
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ContextIdle, new Action(() => { WindowHangStage("ContextIdle-executing"); rendered.Set(); }));
                 return target;
             });
+            WindowHangStage("ContextIdle-wait-start");
             Assert.IsTrue(rendered.Wait(TimeSpan.FromSeconds(10)), "Original dispatcher did not reach ContextIdle.");
+            WindowHangStage("ContextIdle-wait-end");
             Assert.AreEqual(0, DwmFlush());
             AssertCombinedPixel(source.Handle, 0x00563412u);
         }

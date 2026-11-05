@@ -1,5 +1,21 @@
 # default COM full：失败实例原件索引（历史不覆盖）
 
+## 历史定位与受覆盖规则（任务9全文审）
+
+本页原位保留失败实例、testId、TRX行号、原消息与角色边界，不作当前默认验收权威，不再累计新状态。下文“最新/当前/权威恢复轮/下一/预算”均属对应历史轮。当前只从[恢复入口](../handoffs/current-recovery.md)恢复；唯一规则见[严格对照合同](../handoffs/current-comparison-contract.md)，当前覆盖与顺序见[矩阵](../handoffs/current-validation-matrix.md)。配套[历史基线](replacement-default-com-acceptance-baseline.md)同样受此覆盖。
+
+> **有来源的适用性更正**：依据用户严格合同，原版须在独立业务进程参与同逻辑、同输入、仅DLL不同的完整像素/业务契约对照；禁止同进程双版、fallback、只测原版冒充验收和候选专属补偿。旧full/定向计数不等于全等价；后续绿不能扣旧红。旧授权上限、另授与下一动作不再构成当前执行政策。
+
+共同主题：**有限绿**仅指正文列出的sampler/resize/控制切片；**真实红**保持各独立run的23、40、42等实例集合原义；**身份**区分candidate场景、实际official和独立native控制；**证据缺口**包括PresentCondition冲突、普通测试独立exit、部分Definition/stack未读及sampler实际模块待核。本页完整阅读不等于重新读取TRX/dump或认证链接报告。原文末尾“亲读边界”仍有效，不因任务9而补齐。
+
+> **结论边界更正**：post-fixture段“非candidate生产回归确证”只能读作“尚未确证candidate生产回归”，不能读成已排除产品问题。r7的fixture归因是历史调查结论，不扩展为环境总归因或所有业务已修复。按严格合同第7–9条，前置失败后未进入的业务为NotRun/NotReached；无因果证据保持Unknown。生产媒体默认async、模块进程寿命不因本页治理改变。
+
+> **具体同调用冲突更正**：[post-fixture原报告](replacement-final-acceptance-post-fixture-r1.md)§2明确记载 official resize `flush(channel)` / candidate `present(connection)` 分流，不满足当前仅DLL不同合同；该轮计数保留，但不能作为strict通过依据。其加载方式未全面核实，不凭“混合角色”猜测同进程双加载。
+
+链接实际核验：历史 `../../../Docs/` 链接越出项目文档根；按同目录意图查找，`replacement-resize-e-unexpected-investigation.md`、`replacement-world-transform-resize-crossarch-closeout.md`、`replacement-native-present-return-contract-closeout.md`、`replacement-official-cache-full-r6-closeout.md`四份亦未找到，均EvidenceUnavailable，关联旧锚点无法核验。其余本页同目录报告可枚举；bitmapcache-fix的“4. 全部失败索引与分类”及post-fixture的“3. 全部失败 ResultDefinition 精确映射”标题已实读存在。旧链接保留原引用，不以其他报告冒替、不认证其内部深链/原始artifact。
+
+以下保留历史正文、失败数字与原消息，不以摘要重建缺失原件。
+
 ## 最新独立受控full：3失败实例，不扣默认旧红
 [ControlledDesktopFull全部Result/Definition/Message/identity索引](replacement-owned-desktop-full-crossarch-closeout.md)。x64 1823/1822/1：official resize方法首cache FF80/0；x86 1823/1821/2：相同official红及swap3首帧141414。恢复/核名Default、jobActive0、自有close均true；业务exit2。未重跑，非默认full成功，全部历史默认失败原件独立保留。新增预算normalbuild0/2、publish2/2 implicit2、sandbox2/2、Native0/生产0。
 

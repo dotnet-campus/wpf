@@ -14,6 +14,8 @@ using System.Windows.Threading;
 
 internal static partial class Program
 {
+    // Resolvers and failed workers can outlive the reporting stack in this dedicated role process.
+    private static readonly ConcurrentQueue<IDisposable> DispatcherProcessLeases = new();
     private static int DispatcherAcceptance(string role)
     {
         string destination = Path.Combine(WpfGfxShape.ComAcceptance.NativeRun.PathsRoot, "Results");
@@ -23,19 +25,26 @@ internal static partial class Program
         Directory.CreateDirectory(directory);
         var records = new ConcurrentQueue<object>();
         var failures = new ConcurrentQueue<string>();
-        var resolution = new List<object>();
+        var resolution = new ConcurrentQueue<object>();
         string native = "";
         object? pcIdentity = null;
         object? nativeIdentity = null;
         int joined = 0;
+        string failureStage = "candidate-identity-validation";
+        object? validatedNative = null;
         try
         {
+            native = role == "original" ? WpfGfxShape.ComAcceptance.AcceptancePaths.OriginalDll
+                : WpfGfxShape.ComAcceptance.AcceptancePaths.AotDll;
+            if (role == "candidate") DispatcherProcessLeases.Enqueue(File.OpenRead(native));
+            string? sha = role == "candidate" ? WpfGfxShape.ComAcceptance.AcceptancePaths.ValidateCandidateIdentity(native) : null;
+            if (sha is not null)
+                validatedNative = new { path = native, sha256 = sha, architecture = RuntimeInformation.ProcessArchitecture.ToString() };
+            nativeIdentity = Identity(native, sha);
+            failureStage = "WPF-assembly-load";
             Assembly pc = Assembly.Load("PresentationCore");
             Assembly wb = Assembly.Load("WindowsBase");
             pcIdentity = Identity(pc.Location);
-            native = role == "original" ? WpfGfxShape.ComAcceptance.AcceptancePaths.OriginalDll
-                : WpfGfxShape.ComAcceptance.AcceptancePaths.AotDll;
-            nativeIdentity = Identity(native);
             object gate = new();
             nint loaded = 0;
             foreach (Assembly owner in new[] { pc, wb })
@@ -50,38 +59,50 @@ internal static partial class Program
                             loaded = NativeLibrary.Load(native);
                             ApplyProtection(loaded);
                         }
-                        resolution.Add(new { name, owner = assembly.FullName, thread = Environment.CurrentManagedThreadId });
+                        resolution.Enqueue(new { name, owner = assembly.FullName, thread = Environment.CurrentManagedThreadId });
                         return loaded;
                     }
                 });
+            failureStage = "dispatcher-scenes";
             RunDispatchers(directory, records, failures, ref joined);
             string[] modules = Process.GetCurrentProcess().Modules.Cast<ProcessModule>()
                 .Where(item => item.ModuleName.Equals("wpfgfx_cor3.dll", StringComparison.OrdinalIgnoreCase))
                 .Select(item => item.FileName).ToArray();
             string service = Path.Combine(Path.GetDirectoryName(pc.Location)!, "wpfgfx_cor3.dll");
-            if (resolution.Count == 0 || !modules.Any(path => Path.GetFullPath(path).Equals(Path.GetFullPath(native), StringComparison.OrdinalIgnoreCase))
+            records.Enqueue(new { operation = "module-paths", modules });
+            if (role == "candidate")
+                WpfGfxShape.ComAcceptance.AcceptancePaths.ValidateCandidateModules(native, modules);
+            if (resolution.IsEmpty || role == "original" && (!modules.Any(path => Path.GetFullPath(path).Equals(Path.GetFullPath(native), StringComparison.OrdinalIgnoreCase))
                 || modules.Any(path => !Path.GetFullPath(path).Equals(Path.GetFullPath(native), StringComparison.OrdinalIgnoreCase)
-                    && !Path.GetFullPath(path).Equals(Path.GetFullPath(service), StringComparison.OrdinalIgnoreCase)))
+                    && !Path.GetFullPath(path).Equals(Path.GetFullPath(service), StringComparison.OrdinalIgnoreCase))))
                 throw new InvalidOperationException("Unexpected native module identity.");
-            records.Enqueue(new { operation = "modules", modules = modules.Select(Identity).ToArray(), residentUntilProcessExit = true });
+            records.Enqueue(new { operation = "modules", modules = modules.Select(path => Identity(path)).ToArray(), residentUntilProcessExit = true });
         }
         catch (Exception exception) when (exception is not OutOfMemoryException and not StackOverflowException)
         {
             failures.Enqueue(exception.ToString());
         }
         bool passed = failures.IsEmpty && joined == 6;
-        File.WriteAllText(Path.Combine(directory, "dispatcher.json"), JsonSerializer.Serialize(new
+        string report = JsonSerializer.Serialize(new
         {
             caseId = "E2E-09-concurrent-dispatcher-finite-v1", role, passed, joined,
             runtime = RuntimeInformation.FrameworkDescription, os = RuntimeInformation.OSDescription,
             architecture = RuntimeInformation.ProcessArchitecture.ToString(), presentationCore = pcIdentity,
-            requestedNative = nativeIdentity, harness = Identity(typeof(Program).Assembly.Location),
-            resolutions = resolution, records = records.ToArray(), failures = failures.ToArray(),
+            requestedNative = nativeIdentity, validatedNative, failureStage = passed ? null : failureStage, harness = passed ? Identity(typeof(Program).Assembly.Location) : null,
+            resolutions = resolution.ToArray(), records = records.ToArray(), failures = failures.ToArray(),
             target1012Accepted = false, allE2E09Accepted = false
-        }, new JsonSerializerOptions { WriteIndented = true }));
+        }, new JsonSerializerOptions { WriteIndented = true });
+        try { File.WriteAllText(Path.Combine(directory, "dispatcher.json"), report); }
+        catch (Exception evidenceException) when (evidenceException is IOException or UnauthorizedAccessException)
+        {
+            Console.Error.WriteLine(report);
+            Console.Error.WriteLine(evidenceException);
+            return 1;
+        }
         return passed ? 0 : 1;
     }
 
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private static void RunDispatchers(string directory, ConcurrentQueue<object> records, ConcurrentQueue<string> failures, ref int joined)
     {
         var sharedBrush = new SolidColorBrush(Colors.Red);
@@ -95,23 +116,25 @@ internal static partial class Program
         var affineVisual = new DrawingVisual();
         for (int cycle = 0; cycle < 2; cycle++)
         {
-            using var ready = new CountdownEvent(3);
-            using var start = new ManualResetEventSlim();
-            var threads = new List<Thread>();
+            var owner = new DispatcherWorkers();
+            try
+            {
             for (int worker = 0; worker < 3; worker++)
             {
                 int index = worker, generation = cycle;
                 var thread = new Thread(() =>
                 {
-                    Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-                    int callbacks = 0, stoppedCallbacks = 0;
-                    bool shutdownStarted = false, shutdownFinished = false;
-                    dispatcher.ShutdownStarted += (_, _) => shutdownStarted = true;
-                    dispatcher.ShutdownFinished += (_, _) => shutdownFinished = true;
-                    ready.Signal();
+                    Dispatcher? dispatcher = null;
                     try
                     {
-                        if (!start.Wait(TimeSpan.FromSeconds(20))) throw new TimeoutException("Concurrent start.");
+                        dispatcher = Dispatcher.CurrentDispatcher;
+                        int callbacks = 0, stoppedCallbacks = 0;
+                        bool shutdownStarted = false, shutdownFinished = false;
+                        dispatcher.ShutdownStarted += (_, _) => shutdownStarted = true;
+                        dispatcher.ShutdownFinished += (_, _) => shutdownFinished = true;
+                        owner.Ready.Signal();
+                        if (!owner.Start.Wait(TimeSpan.FromSeconds(20), owner.Stop.Token)) throw new TimeoutException("Concurrent start.");
+                        owner.Stop.Token.ThrowIfCancellationRequested();
                         bool brushRejected = false, visualRejected = false, createRejected = false;
                         try { affineBrush.Color = Colors.Green; }
                         catch (InvalidOperationException) { brushRejected = true; }
@@ -127,6 +150,7 @@ internal static partial class Program
                         var shadow = new DropShadowEffect { BlurRadius = 2, ShadowDepth = 1, Opacity = 0.5, Color = Colors.Black };
                         for (int frame = 0; frame < 6; frame++)
                         {
+                            owner.Stop.Token.ThrowIfCancellationRequested();
                             local.Color = frame % 2 == 0 ? Colors.Green : Colors.Blue;
                             visual.Effect = frame % 3 == 0 ? null : frame % 3 == 1 ? blur : shadow;
                             blur.Radius = frame % 2 + 1;
@@ -151,6 +175,7 @@ internal static partial class Program
                         }
                         visual.Effect = null;
                         using (DrawingContext context = visual.RenderOpen()) { }
+                        owner.Stop.Token.ThrowIfCancellationRequested();
                         string asset = Path.Combine(directory, $"dispatcher-{generation}-{index}.avi");
                         WriteMediaAsset(asset, 0);
                         var player = new MediaPlayer();
@@ -186,23 +211,31 @@ internal static partial class Program
                     }
                     finally
                     {
-                        if (!dispatcher.HasShutdownFinished) dispatcher.InvokeShutdown();
+                        try
+                        {
+                            if (dispatcher is not null && !dispatcher.HasShutdownFinished) dispatcher.InvokeShutdown();
+                        }
+                        catch (Exception exception) when (exception is not OutOfMemoryException and not StackOverflowException)
+                        {
+                            failures.Enqueue($"cycle={generation};worker={index};cleanup: {exception}");
+                        }
                     }
                 });
                 thread.IsBackground = true;
                 thread.SetApartmentState(ApartmentState.STA);
-                threads.Add(thread);
                 thread.Start();
+                owner.Started.Add(thread);
             }
-            if (!ready.Wait(TimeSpan.FromSeconds(20))) throw new TimeoutException("Dispatcher readiness.");
-            start.Set();
-            foreach (Thread thread in threads)
+            if (!owner.Ready.Wait(TimeSpan.FromSeconds(20))) throw new TimeoutException("Dispatcher readiness.");
+            owner.Start.Set();
+            if (!owner.JoinUntil(TimeSpan.FromSeconds(60))) throw new TimeoutException("Dispatcher thread did not terminate.");
+            }
+            finally
             {
-                if (!thread.Join(TimeSpan.FromSeconds(60))) throw new TimeoutException("Dispatcher thread did not terminate.");
-                if (thread.IsAlive) throw new InvalidOperationException("Joined Dispatcher thread remains alive.");
-                joined++;
+                owner.Cleanup(failures, cycle, ref joined);
             }
-            records.Enqueue(new { operation = "joined", cycle, threads = threads.Count, allStopped = threads.All(thread => !thread.IsAlive) });
+            records.Enqueue(new { operation = "joined", cycle, threads = owner.Started.Count, allStopped = owner.Started.All(thread => !thread.IsAlive) });
+            if (!failures.IsEmpty) throw new InvalidOperationException("Dispatcher worker or cleanup failed.");
         }
         Dispatcher.CurrentDispatcher.InvokeShutdown();
         GC.Collect();

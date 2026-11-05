@@ -8,7 +8,7 @@
 
 ## 9. 失败与阻塞
 
-保留错误/配置/log/artifact；标ExecutedFailed或Blocked；区分实现缺陷、环境能力、平台不支持、计划假设错误。
+保留错误/配置/log/artifact；标ExecutedFailed或Blocked；区分实现缺陷、环境能力、平台不支持、计划假设错误。桌面/system control前置失败只确定最早失败阶段，下游业务为NotReached/NotRun；无因果证据不归为环境或产品失败，不冒严格等价通过。
 只修当前根因，不suppression/假成功/绕过；影响范围/架构/强约束则建Decision并请求必要裁决。
 
 ## 10. Decision
@@ -20,7 +20,7 @@ Decision不能自行授权违反章程或删除兼容范围。DEC-0004已接受�
 
 ## 11. 进度报告
 
-仅报告切片是否完成、Active阶段、正式Closed/Pending数量、硬阻塞、替换资格；这些当前值只从[基线](handoffs/current-stable-baseline.md)读取。
+仅报告切片是否完成、Active阶段、正式Closed/Pending数量、硬阻塞、替换资格；这些当前值只从[唯一当前状态](handoffs/current-recovery.md)读取，累计旧基线仅历史。
 分母不可确定计算不报总百分比，单切片100%不等项目100%。
 
 ## 12. 一致性检查

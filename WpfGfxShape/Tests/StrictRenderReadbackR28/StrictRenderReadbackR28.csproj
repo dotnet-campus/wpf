@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion></PropertyGroup>
+  <ItemGroup>
+    <Content Include="C:/Users/lindexi/.nuget/packages/microsoft.windowsdesktop.app.runtime.win-x64/10.0.13/runtimes/win-x64/native/wpfgfx_cor3.dll" Link="Provenance/wpfgfx_cor3.dll" CopyToPublishDirectory="Always" />
+    <Content Include="../../artifacts/strict-render-r28/run1/**/*" Link="Input/run1/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+    <Content Include="../../artifacts/strict-render-r28/run2/**/*" Link="Input/run2/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+</Project>

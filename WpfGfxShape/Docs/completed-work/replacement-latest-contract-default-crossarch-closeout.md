@@ -1,4 +1,13 @@
-# 最新合同默认双架构验收正式收尾
+# 历史：latest-contract 默认双架构验收正式收尾
+
+## 治理更正与证据可用性
+
+本页是历史执行报告，不是当前验收或授权入口；规则只见[集中当前合同](../handoffs/current-comparison-contract.md)。下文“本次/本轮/当前”均指该历史轮，计数、身份、失败、原引用不改。
+
+- 来源：本页全部5失败及[失败索引](replacement-latest-contract-default-failure-index.md)记录早期前置失败与Unknown；它们不确证candidate回归，也不排除产品问题，更不能无因果证据归环境。尚未进入业务保持NotReached。
+- 来源：[post-fixture §2](replacement-final-acceptance-post-fixture-r1.md#2-调用与包认证)明确official `flush(channel)` / candidate `present(connection)`业务分流。旧full及公开cache有限绿不得升级为同逻辑仅DLL不同的strict结果；O6线程技术缺口及清理边界仍保留，不因治理一律废弃。
+- **EvidenceUnavailable**：本轮按名称检索未找到`../../artifacts/latest-contract-default-{x64,x86}-r1/readback/`及`../../artifacts/latest-contract-default-execution-receipt.md`原件，仅命中文档治理Snapshot；x64原根目录检查不存在。故下文TRX行号、SHA、监督与“已读”均为历史记录，非本轮原件复核。失败索引与O6报告文档存在，不代其原始artifact。
+- 历史预算耗尽/另授权及下一选项不约束当前；不授权候选特例补偿、旧容差strict、原版永禁或完整替换已完成。技术调查保留为历史建议，当前顺序由恢复入口及矩阵维护。
 
 ## 终态
 CloseoutCompleted / DefaultFullFailed / OverallOpen，memoryGreen=null。本次仅亲自读写既有证据与文档，无再委派；源码/build/test/publish/sandbox新增执行全部0。下列预算为此前已执行轮次，不是本次新增调用。
@@ -36,9 +45,9 @@ O6 `async-wic-drain-True-6-False` 两arch本轮Passed，完整业务与合同解
 
 HWbackend、official真实cache消费、product consumer loss、audio、natural resources及完整最终full矩阵仍Open；根因Unknown，完整替换未通过。公开28-byte packet产品fix已有公开cache通过，只构成partial/ClosedLimited，不能据此声称当前official cache失败已修或整体绿。
 
-## 下一主任务：两条明确选项，仅建议未执行
-1. **推荐：当前official cache exact resource/消费条件与真实WPF发送序列对照。** 固定本轮official实际SHA及test身份，以现有28-byte产品fix公开cache通过为partial对照，逐项对齐真实WPF产生的资源类型/handle、创建更新引用顺序、source像素可用时机、cache绑定与失效、root/DPI及提交/SyncFlush序列；形成精确packet/资源消费差异，再针对确定差异最小修正并以原FF80像素门验证。不得回退exact20 decoder或泛静态重选门。
+## 历史下一主任务建议：两条选项，当时未执行
+1. **历史推荐：该轮official cache exact resource/消费条件与真实WPF发送序列对照。** 固定本轮official实际SHA及test身份，以现有28-byte产品fix公开cache通过为partial对照，逐项对齐真实WPF产生的资源类型/handle、创建更新引用顺序、source像素可用时机、cache绑定与失效、root/DPI及提交/SyncFlush序列；形成精确packet/资源消费差异，再针对确定差异最小修正并以原FF80像素门验证。不得回退exact20 decoder或泛静态重选门。
 2. 可选：将已证外部foreground竞争纳入可控独立desktop的测试执行条件验证。直接C#使用CreateDesktop/SetThreadDesktop/SwitchDesktop，在建窗口前切线程desktop，逐次记录权限/API返回/GetLastError、实际desktop与foreground、真实loss序列；finally恢复原desktop并关闭handle，拒绝时明确Blocked。不用脚本、随机global设置或操作不明外部owner；这是独立受控条件实验，不能宣称默认full本应隔离，也不能替代默认full验收。
 
-## 同步范围
+## 历史同步范围（不是本轮重新认证）
 本正式报告、failure-index、execution-receipt与next-session-handoff、current-work-item、current-stable-baseline、replacement-issues-and-plan-status、final-acceptance-remaining-matrix、wpfgfx-complete-replacement-validation-plan、default COM baseline/failures同步为本轮终态。入口顶部声明旧“当前”均历史，原历史证据不删除。同步文档逐份回读，不把文档写入当新增运行。

@@ -1,6 +1,6 @@
 # 历史与已清理材料索引
 
-本页不调度工作，恢复只从[next-session-handoff](next-session-handoff.md)开始。
+本页不调度工作，恢复只从[唯一当前入口](handoffs/current-recovery.md)开始。[累计历史纠偏](handoffs/history/README.md)解释旧禁令与有限证据边界；[维护台账](documentation-maintenance.md)列尚未完成的审核。
 
 ## 已实际清理（不再提供存在链接）
 
@@ -23,4 +23,4 @@
 DEC-0004/0005/0006直接承载驻留、仅x86/x64、官方完整runtime合同；重复overlay已删除。
 历史失败没有变通过，旧SHA没有换新身份。Pending/无原物不满足required。
 GenProto历史46/46非当前验收，完整GUID依赖尚未恢复；整体生产未完成。
-[清理记录](completed-work/process-cleanup.md)分列此前Docs/Ledger批次、本次临时回收与最终零运行；现行引用已修，GenProto仅最小build，不冒充full或生产进度。
+[清理记录](completed-work/process-cleanup.md)分列此前Docs/Ledger批次、本次临时回收与最终零运行；该记录属于历史清理范围，不能推导所有现行引用均已修复。GenProto历史最小build不冒充full或生产进度；本轮文档工作不执行任何build。

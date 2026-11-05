@@ -1,6 +1,6 @@
 # E2E-00–09：独立可执行合同
 
-> E2E-08当前更正：禁止生产原版wpfgfx媒体委托；用户已撤销第二模块许可，下方旧有限Closed仅历史。工厂暂 E_NOTIMPL/null，独立媒体全部 Open / NotImplemented。负向契约不替代正向播放验收，测试official oracle保留。见[删除报告](completed-work/replacement-remove-original-media-delegation.md)。
+对照隔离与严格判定只以[当前对照合同](handoffs/current-comparison-contract.md)为准；当前产品状态只见[恢复入口](handoffs/current-recovery.md)。[删除报告](completed-work/replacement-remove-original-media-delegation.md)记录撤销生产官方媒体委托及当时 E_NOTIMPL/null，不据此断言当前独立媒体全部未实现；负向契约不替代正向播放验收，历史有限Closed也不等于完整替换。
 
 [证据规范](09-test-evidence-and-e2e-contract.md)§9完整条款；与[测试层级/矩阵](testing-levels-and-gates.md)、[证据运行合同](evidence-run-contract.md)、[能力/失败合同](evidence-capabilities-and-failures.md)共同验收，每项独立，不合并降级。
 
@@ -34,7 +34,7 @@
 
 - 直接组件harness建立最小SW bitmap/target。
 - 无字体/媒体依赖确定几何/颜色/变换。
-- 规范化像素，与原版逐字节或批准规则比较。
+- 两侧相同冻结规范化后比较完整像素字节，严格零差；不得以批准容差、采样点或候选补偿替代。
 
 ### `E2E-05` 真实 PresentationCore bitmap
 
@@ -54,11 +54,11 @@
 
 ### `E2E-08` media
 
-当前[独立方法族报告](completed-work/PresentationCore-media-E2E08-finite-closeout.md)已证10.0.1/x64两PCM AVI四帧全字节零差、公开事件/引用替换/回调关闭及有限拥有链清理。系统媒体服务双身份与候选UCE/VideoDrawing/RTB分工明确；仅有限Closed，HW媒体/长时持续/架构配置及下列完整合同仍Open，不与PRERELEASE record player混用。
+历史[独立方法族报告](completed-work/PresentationCore-media-E2E08-finite-closeout.md)已证10.0.1/x64两PCM AVI四帧全字节零差、公开事件/引用替换/回调关闭及有限拥有链清理。系统媒体服务双身份与候选UCE/VideoDrawing/RTB分工明确；仅证明当时有限Closed；HW媒体/长时持续/架构配置及下列完整合同不能据此关闭，不与PRERELEASE record player混用。
 
 - 受控小媒体资产、系统组件清单。
 - open/event/frame/position/stop/close/shutdown/process-exit；apartment/state/event thread/timeout/callback。
-- 组件缺失明确环境结果，不混实现失败。
+- 组件缺失须有能力检测证据；前置失败保留最早阶段，两侧未进入业务记 NotRun/NotReached，无因果证据不归环境或产品。
 
 ### `E2E-09` lifecycle closure
 
@@ -67,4 +67,4 @@
 - DLL驻留，unload/reload/热替换按[DEC-0004](decisions/DEC-0004-process-lifetime-module.md)不适用，不记通过/阻塞。
 - 所有目标架构/配置/批准环境矩阵通过才可称完整替换；是交付兼容资格，不是运行期换DLL。
 
-每项绑定独立input/output、原/候选身份、能力/架构/config、原始结果及比较规则；低级通过不替代高级，有限消费者不关闭完整族。
+每项绑定独立input/output、原/候选身份、同冻结harness/runtime/input/config/业务顺序、能力/架构、原始结果及严格比较规则；低级通过不替代高级，有限消费者不关闭完整族。

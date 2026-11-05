@@ -2,7 +2,7 @@
 
 > [DEC-0005](decisions/DEC-0005-x86-x64-acceptance-scope.md)现行适用仅x86/x64：下文schema保留ARM64字段供历史追溯，不要求新增ARM64布局/调用约定执行证据，适用性NA-UserScopeDecision而非Passed；x86/x64逐项条件完整保留。
 
-[ABI 规范](08-abi-manifest-spec.md)§1–7正式合同，不维护实现进度。
+[ABI 规范](08-abi-manifest-spec.md)§1–7正式合同，不维护实现进度。公开调用与差分统一遵循[严格对照合同](handoffs/current-comparison-contract.md)，当前产品状态只见[恢复入口](handoffs/current-recovery.md)。
 
 ## 1. 目的
 
@@ -17,7 +17,8 @@ baselines/original/<configuration>/<rid>/manifest.json；baselines/candidate/<wo
 - managed-declarations：每声明出现及项目包含状态，多项可指一 entry。
 - types：struct/enum/handle/union/packet/fixed array/layout。
 - callbacks：指针/descriptor/线程/寿命；com-interfaces：IID/vtable/ownership/apartment。
-- binaries：具体原/候选 PE与验证。
+- binaries：具体原/候选 PE与验证。original/candidate目录及role只标识来源与证据身份，不授权不同业务调用或候选专属补偿；冻结两侧相同harness/runtime/input/config/调用及释放顺序，分别在独立进程执行。
+- baseline是绑定具体产物的比较输入，不是当前权威状态或完成认证；缺少原件登记EvidenceUnavailable，不用候选输出充当original参考。
 - header 从批准 manifest 生成或人工维护后反校，不成第五签名真相。
 
 ## 3. Entry ID 与状态
@@ -58,7 +59,7 @@ SourceOnlyNotIncluded 不推出 binary 不存在，托管无声明不授权删�
 | errorSemantics | 参数校验/out初始化/返回/异常映射 |
 | resourceSemantics | HMODULE/resource type与ID/借用指针 |
 | configurationBehavior | Debug/Release/PRERELEASE/架构条件 |
-| differenceClass | Common99/ManagedOnly8/DefOnly7/ExtraBinary/ResolvedDecision |
+| differenceClass | Common99/ManagedOnly8/DefOnly7为历史分类名（保留schema兼容），另有ExtraBinary/ResolvedDecision；99/8/7不作为当前计数或门槛 |
 | ledgerRecordIds/requiredEvidenceIds | 实现/声明/生成/资源；ABI/布局/caller/差分/E2E |
 | status | StaticMapped/OriginalBinaryVerified/CandidateExported/CallerVerified/DifferentialVerified/Accepted |
 | decisionIds | 差异/例外裁决 |
@@ -77,7 +78,7 @@ SourceOnlyNotIncluded 不推出 binary 不存在，托管无声明不授权删�
 ## 6. 托管声明记录
 
 每 DllImport(MilCore) 出现单记：文件/类型/方法/行、PresentationCore.csproj或共享编译链实际包含、实际 EntryPoint、CallingConvention/CharSet/ExactSpelling/SetLastError/PreserveSig/BestFitMapping/ThrowOnUnmappableChar、参数返回 MarshalAs/SafeHandle/IntPtr/unsafe pointer、上层直接调用及可达性、abiId、SourceOnlyNotIncluded 原因/项目证据。
-默认元数据也是合同，不能为统一风格改声明迁就候选。
+默认元数据也是合同，不能为统一风格改声明迁就候选。两侧公开ABI调用使用同一签名、参数、错误路径与释放逻辑；候选缺导出或签名不匹配登记产品缺口，不能借role分支换声明、跳过调用或在上层补偿。若是harness本身声明错误，须依据真实ABI修正共同调用逻辑并保留旧失败；不能反改协议规格迁就测试。
 
 ## 7. 类型与布局 manifest
 

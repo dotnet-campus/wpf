@@ -1,7 +1,17 @@
-# latest-contract-default 全部失败实例索引
+# 历史：latest-contract-default 全部失败实例索引
+
+## 治理更正与引用核验
+
+当前规则只见[集中当前合同](../handoffs/current-comparison-contract.md)。本页5失败、原Message（含逐通道<=1）、testId/executionId、身份和行号均保留为历史证据描述；旧容差不是当前strict标准。未到resize/loss/cache不算业务认证，非candidate失败确证也不等于排除产品问题。
+
+**Missing / EvidenceUnavailable**：下列两处原链接`../../../Docs/completed-work/replacement-official-cache-consumer-state-closeout.md`越出项目Docs；在本项目Docs按确切名称查找亦未找到该报告，原路径文本及原链接保留，锚点/内容不可核验。其媒体依赖“已确证/未实现”、音频结论及下一任务仅为未经本轮来源复核的历史归纳，不能认证当前源码或完整替换。
+
+本轮检索未找到`WpfGfxShape/artifacts/latest-contract-default-{arch}-r1/readback/`原件，仅命中文档Snapshot；x64原根不存在。T64/T86、bj-fresh-3.json、supervision及O6 JSON均未重新复核，**EvidenceUnavailable**，不以文档互引补证。正式报告、受控full剩余合同报告文档实际存在，链接均无锚点；不等于artifact已恢复。来源：post-fixture §2明示official flush/candidate present分流，故本索引旧full不是当前strict对照。
+
+以下各“下一/当前/本轮预算/亲读”均限历史轮，不发布当前命令。
 
 ## 收敛裁决索引（失败不扣减）
-[正式终止断点方向与主要媒体缺口](../../../Docs/completed-work/replacement-official-cache-consumer-state-closeout.md)：消费UnknownNotRun，未新增业务实例；公共cache四帧有限通过不抵销旧红。官方wpfgfx媒体依赖/同实体拒绝已确证，无官方副本闭包未实现；音频内容无实证。下一是具体媒体后端/实际音频验收实现，不是entry/return平台。
+[正式终止断点方向与主要媒体缺口](../../../Docs/completed-work/replacement-official-cache-consumer-state-closeout.md)：消费UnknownNotRun，未新增业务实例；公共cache四帧有限通过不抵销旧红。官方wpfgfx媒体依赖/同实体拒绝已确证，无官方副本闭包未实现；音频内容无实证。历史当时建议的下一方向是具体媒体后端/实际音频验收实现，不是entry/return平台；来源缺失，当前效力已撤。
 
 ## cache 诊断后续索引（不改历史失败）
 [正式收尾](../../../Docs/completed-work/replacement-official-cache-consumer-state-closeout.md)：符号准备成功，BusinessRuns0/Breakpoints0，消费UnknownNotRun；不新增业务失败或Passed，不扣除本索引5失败、受控full3失败及全部旧红。最后Release构建尾已读，不替代TRX。MemoryDescriptiveOnly/memoryGreen=null，整体Open。
@@ -10,7 +20,7 @@
 [受控full三红及新合同现场](replacement-controlled-full-remaining-contracts-closeout.md)。本索引旧默认5失败不覆盖、不扣减；新task9343dc00为原official无参单例前置native像素失败，非cache断言重现，原full三红仍Open。x86 output时间门与targetsource身份混同已取原QPC反例，未放宽内容或标Passed。
 
 ## 正式归档
-[正式终态/覆盖边界/预算/下一两条选项](replacement-latest-contract-default-crossarch-closeout.md)。x64 Counters14077=1823/1823/1821/2，x86 Counters14087=1823/1823/1820/3。本次收尾新增源码及执行0；此前COMpublish2/implicitcompile2/sandbox2、normalbuild/Native0。两TRX全Failed与对应stdout限定核证未见88980403/BitmapCache length同根失败，只认本轮无旧32 malformed失败，不冒全部业务覆盖；早期native gate挡例不冒验证，非法32负控保留。O6双archPassed非旧samecaller复现。历史42/23/40独立不相减；根因Unknown，HWbackend/productloss/audio/naturalresources/full矩阵/整体Open。
+[历史终态/覆盖边界/执行账/当时两条建议](replacement-latest-contract-default-crossarch-closeout.md)。x64 Counters14077=1823/1823/1821/2，x86 Counters14087=1823/1823/1820/3。本次收尾新增源码及执行0；此前COMpublish2/implicitcompile2/sandbox2、normalbuild/Native0。两TRX全Failed与对应stdout限定核证未见88980403/BitmapCache length同根失败，只认本轮无旧32 malformed失败，不冒全部业务覆盖；早期native gate挡例不冒验证，非法32负控保留。O6双archPassed非旧samecaller复现。历史42/23/40独立不相减；根因Unknown，HWbackend/productloss/audio/naturalresources/full矩阵/整体Open。
 
 本轮两TRX全部 outcome=Failed 已枚举并按 testId 联结 TestDefinitions：x64 2、x86 3，共5跨架构实例、3个唯一方法，不是旧42相减。全部FQN前缀 `WpfGfxShape.ComAcceptance.D3DImageTests.`。
 

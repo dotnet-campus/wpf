@@ -1,6 +1,6 @@
 # Ledger：生产范围、工件与稳定 ID
 
-[Ledger 规范](07-scope-and-ledger-schema.md)§1–4正式合同；运行状态只见[基线](handoffs/current-stable-baseline.md)，机器事实只认通过 schema 校验的 JSONL。
+[Ledger 规范](07-scope-and-ledger-schema.md)§1–4正式合同；产品运行状态只见[恢复入口](handoffs/current-recovery.md)，逐项机器记录以通过schema校验的JSONL为准；schema通过不认证业务证据充分或当前产物通过。差分/验收按[严格对照合同](handoffs/current-comparison-contract.md)及[当前矩阵](handoffs/current-validation-matrix.md)，旧baseline只作历史来源，不作为准入权威。
 
 ## 1. 目的
 

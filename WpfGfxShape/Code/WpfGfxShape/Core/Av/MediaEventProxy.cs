@@ -8,6 +8,12 @@ internal sealed class MediaEventProxy : IDisposable
     private EventProxy? _proxy;
     private StateThread? _thread;
     private int _lastDispatchResult;
+    private int _callbacksInFlight;
+    private int _itemsInFlight;
+    private bool _disposeReleased;
+    private readonly TaskCompletionSource _completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    internal Task Completion => _completion.Task;
+    internal int CallbacksInFlight { get { lock (_lock) return _callbacksInFlight; } }
 
     private MediaEventProxy(EventProxy proxy) => _proxy = proxy;
     internal int LastDispatchResult => Volatile.Read(ref _lastDispatchResult);
@@ -47,6 +53,7 @@ internal sealed class MediaEventProxy : IDisposable
                 catch (OutOfMemoryException) { return unchecked((int)0x8007000E); }
                 int result = _thread.AddItem(item);
                 transferred = result >= 0;
+                if (transferred) _itemsInFlight++;
                 return result;
             }
         }
@@ -71,20 +78,66 @@ internal sealed class MediaEventProxy : IDisposable
     {
         EventProxy? proxy;
         StateThread? thread;
-        lock (_lock) { proxy = _proxy; thread = _thread; _proxy = null; _thread = null; }
-        proxy?.Release();
-        thread?.Release();
+        lock (_lock)
+        {
+            proxy = _proxy;
+            if (proxy is null) return;
+            thread = _thread;
+            _proxy = null;
+            _thread = null;
+        }
+        try { proxy.Release(); }
+        finally
+        {
+            try { thread?.Release(); }
+            finally
+            {
+                lock (_lock)
+                {
+                    _disposeReleased = true;
+                    if (_itemsInFlight == 0) _completion.TrySetResult();
+                }
+            }
+        }
     }
 
     private sealed class EventItem(MediaEventProxy owner, EventProxy proxy, uint eventType, string? type, string? param, int failureHr) : IAvEventWorkItem
     {
         public void Run()
         {
-            int result = BuildPacket(eventType, failureHr, type, param, out byte[]? packet);
-            if (result >= 0 && packet is not null) result = proxy.RaiseEvent(packet);
-            Volatile.Write(ref owner._lastDispatchResult, result);
+            // Admission is the callback boundary: Dispose cancels queued, not already admitted work.
+            lock (owner._lock)
+            {
+                if (owner._proxy != proxy) return;
+                owner._callbacksInFlight++;
+            }
+            try
+            {
+                int result = BuildPacket(eventType, failureHr, type, param, out byte[]? packet);
+                if (result >= 0 && packet is not null) result = proxy.RaiseEvent(packet);
+                Volatile.Write(ref owner._lastDispatchResult, result);
+            }
+            finally
+            {
+                lock (owner._lock)
+                {
+                    owner._callbacksInFlight--;
+
+                }
+            }
         }
-        public void Dispose() => proxy.Release();
+        public void Dispose()
+        {
+            try { proxy.Release(); }
+            finally
+            {
+                lock (owner._lock)
+                {
+                    owner._itemsInFlight--;
+                    if (owner._disposeReleased && owner._itemsInFlight == 0) owner._completion.TrySetResult();
+                }
+            }
+        }
     }
 
     internal static int BuildPacket(uint eventType, int failureHr, string? type, string? param, out byte[]? packet)

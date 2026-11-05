@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net10.0-windows10.0.19041.0</TargetFramework><UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier><SelfContained>true</SelfContained><PublishAot>false</PublishAot>
+    <StartupObject>NativeAcceptance.Pcore.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="System.IO" />
+    <ProjectReference Include="../DesktopWgcR17/DesktopWgcR17.csproj" />
+    <Compile Remove="ObservationDiagnostic.cs" />
+    <ProjectReference Include="../WpfGfxShape.ComAcceptance/WpfGfxShape.ComAcceptance.csproj" GlobalPropertiesToRemove="ComAcceptanceRequireReferenceData;ComAcceptanceSandbox" AdditionalProperties="ComAcceptanceSandbox=false;CustomAfterMicrosoftCommonTargets=$(MSBuildThisFileDirectory)CandidateFixture.targets;WpfGfxShapeManagedAcceptance=true;AotDllPath=$(MSBuildThisFileDirectory)../../artifacts/candidate-desktop-wgc-r17/Package/Native/wpfgfx_cor3.dll" />
+    <Content Include="../../artifacts/candidate-desktop-wgc-r17/Package/Native/wpfgfx_cor3.dll" Link="Native/wpfgfx_cor3.dll" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  
+  <Target Name="ExcludeRuntimeGfx" AfterTargets="ComputeFilesToPublish" BeforeTargets="CopyFilesToPublishDirectory"><ItemGroup><ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'wpfgfx_cor3.dll' and '%(ResolvedFileToPublish.RelativePath)' != 'Native/wpfgfx_cor3.dll' and '%(ResolvedFileToPublish.RelativePath)' != 'Native\wpfgfx_cor3.dll'" /></ItemGroup></Target>
+  <Target Name="DeduplicateAdapterContent" BeforeTargets="_HandleFileConflictsForPublish" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup><ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(ResolvedFileToPublish.FullPath)').Contains('artifacts\bin\WpfGfxShape.ComAcceptance')) and ('%(ResolvedFileToPublish.Filename)' == 'MSTest.TestAdapter' or '%(ResolvedFileToPublish.Filename)' == 'MSTestAdapter.PlatformServices' or '%(ResolvedFileToPublish.Filename)' == 'MSTestAdapter.PlatformServices.resources')" /></ItemGroup>
+  </Target>
+  <Target Name="GenerateBootstrap" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <Bootstrap>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)../CandidatePureVideo/Program.cs'))</Bootstrap>
+      <Bootstrap>$(Bootstrap.Replace('purevideo-public', 'desktop-resize').Replace('RenderPureVideoPublic();', 'DesktopEntry.Run();').Replace('purevideo-completed', 'desktop-resize-completed'))</Bootstrap>
+    </PropertyGroup>
+    <PropertyGroup>
+      <Bootstrap>$(Bootstrap.Replace('Path.GetFileName(p).Contains("wpfgfx", StringComparison.OrdinalIgnoreCase)', '(Path.GetFileName(p).Equals("wpfgfx.dll", StringComparison.OrdinalIgnoreCase) || (Path.GetFileName(p).StartsWith("wpfgfx_", StringComparison.OrdinalIgnoreCase) &amp;&amp; Path.GetExtension(p).Equals(".dll", StringComparison.OrdinalIgnoreCase)))'))</Bootstrap>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(IntermediateOutputPath)DesktopBootstrap.cs" Lines="$(Bootstrap)" Overwrite="true" />
+    <ItemGroup><Compile Include="$(IntermediateOutputPath)DesktopBootstrap.cs" /></ItemGroup>
+  </Target>
+  <Target Name="Digest" AfterTargets="Publish"><GetFileHash Files="$(PublishDir)Native/wpfgfx_cor3.dll" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="Digest" /></GetFileHash><WriteLinesToFile File="$(PublishDir)aot.sha256" Lines="@(Digest->'%(FileHash)')" Overwrite="true" /><Error Condition="Exists('$(PublishDir)wpfgfx_cor3.dll')" Text="Unexpected root graphics binary." /></Target>
+</Project>

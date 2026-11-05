@@ -1,6 +1,15 @@
-# post-fixture 默认 Release full r1 — Complete report / ExecutedFailed
+# 历史：post-fixture 默认 Release full r1 — Complete report / ExecutedFailed
 
-## 1. 最终结论与预算
+## 治理更正与证据可用性
+
+当前规则只见[集中当前合同](../handoffs/current-comparison-contract.md)。下文“本轮/当前/下一”限历史轮，不是当前排程；原计数、身份、失败及引用保留。
+
+- **实质更正（来源：本页§2、§4）**：official `flush(channel)` / candidate `present(connection)`业务分流是真实历史实现差异，不符合当前相同调用顺序、仅DLL不同合同。历史“误用修正”及candidate resize Passed均只证该轮有限门，不授权候选特例补偿，不是strict等价。原逐通道<=1保留为历史断言，不提升为零容差完整像素比较。
+- **归因更正（来源：本页§3）**：表中“非candidate回归、非resize export错误”只表示实际失败角色为official且尚未进入resize，并非排除产品问题的因果证明。foreground现场不证明环境根因；真实loss未触发、未达恢复与资源长期缺口继续保留。§5创建线程/真实触发调查有技术价值，不作当前唯一任务，也未在本轮重查源码。
+- **EvidenceUnavailable**：按名称检索未找到`../../artifacts/final-acceptance-post-fixture-execution-receipt.md`及`WpfGfxShape/artifacts/final-acceptance-post-fixture-{arch}-r1-readback/`原件，仅命中文档Snapshot，x64原根不存在。`WpfGfxShape/artifacts/resize-export-contract-{arch}-r1/clean`、sampler旧子task原件未核。下文“已读/已核/实际身份”均为历史作者记录，不是本轮原件已复核；无本轮程序或网页执行。
+- 旧0/2、2/2预算和末尾“需授权”不约束当前，官方独立对照允许且必须；完整替换仍未由本报告证明。
+
+## 1. 历史最终结论与执行账
 
 两架构正式默认全适用 full 均已实际执行并完成回读，不是阶段待执行报告；完整替换仍 Open。未重试、未过滤显示/旧 knownfail、未改 skip/expected/阈值、未使用 full 调试配置或扩诊断。
 
@@ -66,7 +75,7 @@
 - 旧full x64 1823/1803/20fail、x86 1823/1820/3fail，23红作为独立历史完整保留；本轮新1823/1821/2分别来自真实Counters，不由定向通过相减生成，也不把所有历史红改善都归功于fixture。
 - 旧x86官方resize connect前00563412≠00F3F3F3是独立显示前置失败；本轮该前置通过不证明偶发问题根治。real-loss触发不足属于另一合同，不与显示采样偶发混为一项。
 
-## 5. real-loss 静态根因范围与明确下一动作（本轮无执行/源码修改）
+## 5. 历史real-loss静态根因范围与当时建议（非当前排程）
 
 已对照旧real-loss失败原件：旧x64 TRX2401起、x862390起，与本轮secondCreate=DEVICELOST / firstCooperative=0一致；不是新增生产回归。
 
@@ -77,7 +86,7 @@
 3. 窗口是专用STA、WS_POPUP|WS_VISIBLE、topmost、32×16；loss测试在创建第一个设备前没有EstablishObservableWindow，也没有GetForegroundWindow==首focus窗口的确认，先创建otherWindow也可能改变激活。实际loss测试没有adapter identifier/GetCreationParameters/GetSwapChain PresentParameters或focus/session轨迹，不借其他native测试的Basic Render Driver描述给它认证adapter/backend；actual deviceHAL由创建请求及S_OK支持，但还缺独立GetCreationParameters核验。没有证据说沙箱不能管理会话。
 4. **已明确违反官方线程合同**：CreateDevice和Reset通过windowThread.Invoke在创建线程执行；两处TestCooperativeLevel却直接在测试线程执行，最后finally的Release在window线程。MULTITHREADED不撤销TestCooperativeLevel必须在创建线程调用的限制；返回0不能当作合规首设备健康/lost判定。恢复轮询里的ProcessWindowMessages也在测试线程，不能泵另一个线程的窗口消息。此缺陷必须先修，但不能保证仅改线程就真实触发lost。
 
-### 下一最小可实施修正与受控真实触发
+### 历史建议：最小修正与受控真实触发（未认证完成）
 
 只需现有C#系统API与正式fixture，不引入模拟/原生辅助/第三Host：
 
@@ -92,7 +101,7 @@
 - https://learn.microsoft.com/en-us/windows/win32/api/d3d9/nf-d3d9-idirect3d9-createdevice — 同应用共享focus；CreateDevice可返回DEVICELOST；Reset/IUnknown/TestCooperativeLevel线程限制。
 - https://learn.microsoft.com/en-us/windows/win32/api/d3d9/nf-d3d9-idirect3ddevice9-testcooperativelevel — 必须创建线程；fullscreen失焦示例及NOTRESET恢复。
 
-本节是可实施下一修正，不是本轮已经修改或执行；预算不挪用。
+本节保留该历史轮的可实施修正建议，不是本轮已经修改或执行，也不产生当前预算或授权限制。
 
 ## 6. 回读闭环与最终矩阵
 
@@ -113,4 +122,4 @@
 |资源自然长期收敛|Open，memoryGreen=null|Open，memoryGreen=null|有限cleanup不等于长期趋势|
 |完整替换§1–10全部门|Open|Open|禁止按通过率关门|
 
-下一工作应修正已确证real-loss线程合同及真实前台触发，并静态定位official共享full初帧差异；需要后续源码与运行授权。本轮两正式full、证据和文档均已收尾，不留下“先回读再报告”尾项。
+历史当时建议修正real-loss线程合同及真实前台触发，并静态定位official共享full初帧差异；旧“需要后续源码与运行授权”不作为当前禁令，当前顺序见恢复入口及矩阵。本轮两正式full、证据和文档均已收尾，不留下“先回读再报告”尾项。

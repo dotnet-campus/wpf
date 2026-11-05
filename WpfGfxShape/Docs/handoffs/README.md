@@ -1,25 +1,20 @@
-# wpfgfx 会话交接归档索引
+# wpfgfx 交接导航
 
-> 当前唯一入口始终是 [`../next-session-handoff.md`](../next-session-handoff.md)。本目录保存当前交接支撑文件、不可覆盖的历史 snapshot 与按主题维护的完成进展归档；恢复工作仍必须先从唯一入口开始。
->
-> 当前执行约束见 [`current-execution-rules.md`](current-execution-rules.md)，稳定基线见 [`current-stable-baseline.md`](current-stable-baseline.md)，当前工作切片见 [`current-work-item.md`](current-work-item.md)。
-> 新完成切片按文件保存在 [`completed-work/`](completed-work/)；旧长期完成归档 [`progress-completed-work.md`（已清理；合同/说明）](../history-index.md) 和 HW render-target 旧历史 [`progress-hw-rendertarget.md`（已清理；合同/说明）](../history-index.md) 均已按用户清理，链接仅指向清理说明，不重建兼容壳。
+## 当前
 
-## 命名
+- [唯一当前恢复入口](current-recovery.md)：简短状态和阅读顺序。
+- [当前权威规则](current-comparison-contract.md)：用户澄清、严格双进程对照与执行边界，规则只维护此一份。
+- [既有任务边界](next-code-task.md)：任务5已收尾，不据旧标题领取任务。
+- [文档维护台账](../documentation-maintenance.md)：本轮审核边界与下一串行清单，不是产品状态源。
 
-`S-YYYYMMDD-NNN-<work-package>.md`；无法可靠取得日期时使用 `S-UNDATED-NNN-<work-package>.md`。
+## 历史
 
-## 归档规则
+- [历史索引与统一纠偏](history/README.md)：旧原版禁令纠正、有限绿边界、原位历史位置和剩余整理范围。
+- `../next-session-handoff.md`、`current-execution-rules.md`、`current-work-item.md`、`current-stable-baseline.md` 仅为保留原文的累计历史，不再作为当前状态源。
+- 完成报告分布于 [本目录 completed-work](completed-work/) 与 [Docs/completed-work](../completed-work/)，不批量覆盖。
+- [首版历史规划](S-UNDATED-001-INITIAL-PLANNING.md) 已过期，不作为实施交接。
 
-- `next-session-handoff.md` 只在导航变化时覆盖；覆盖前把旧版本原样归档。
-- 当前规则、稳定基线和工作切片的常规更新不要求为每轮复制入口快照。
-- 每个新完成切片在 `completed-work/` 中创建一个独立文件；旧累计进度页已清理，不重建兼容壳。
-- 归档文件不作为下一轮任务入口。
-- 历史 snapshot 每项记录 session ID、工作包、结果、下一工作包和归档文件。
-- 规则详见 [`../10-session-continuity-protocol.md`](../10-session-continuity-protocol.md)。
+## 维护约定
 
-## 索引
-
-| Session ID | 本轮工作 | 结果 | 下一工作包 | 文件 |
-|---|---|---|---|---|
-| `S-UNDATED-001` | 首版静态调查与迁移规划 | 历史快照；作为实施交接已完全过期 | 当时为 `WP-00A-BUILD-ISOLATION-AND-PROBE-SCAFFOLD`，现已完成 | [`S-UNDATED-001-INITIAL-PLANNING.md`](S-UNDATED-001-INITIAL-PLANNING.md) |
+当前入口保持简短，不叠加多轮“唯一当前”或预算。规则集中维护；历史结果按原报告范围解释。
+迁移累计旧文前必须完整分段读取、原样归档并回读；读取截断时保留原文件并建立短入口，禁止截断证据。

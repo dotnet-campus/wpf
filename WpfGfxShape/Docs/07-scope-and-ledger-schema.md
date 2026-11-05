@@ -1,7 +1,9 @@
 # wpfgfx 迁移范围与机器可读 Ledger 规范
 
 本页与两主题页共同构成权威规范。生产分母是最终 DLL 完整生产闭包，不等于直接编译下限；没有 Ledger 与测试定义不得编码。
-运行状态只见[基线](handoffs/current-stable-baseline.md)，JSONL 与通过校验的派生视图为机器事实；原调查 revision 不冒充当前。
+产品当前状态只见[恢复入口](handoffs/current-recovery.md)。JSONL保存逐项记录，通过校验的派生视图用于阅读，不独立提升证据状态；原调查revision、旧基线及schema校验成功均不认证当前产物。
+
+Ledger中的ABI/差分证据须满足[严格对照合同](handoffs/current-comparison-contract.md)：原版/候选独立进程、同冻结调用逻辑与输入，不能以role分支补偿候选。公开导出缺失或签名错误记产品缺口及阻塞，不以候选专属调用绕过后提升为DifferentialVerified/Accepted。最终覆盖范围见[当前验收矩阵](handoffs/current-validation-matrix.md)，不改变本规范的生产分母或稳定ID。
 
 ## 1. 目的
 [生产分母定义](ledger-scope-and-identity.md#1-目的)。

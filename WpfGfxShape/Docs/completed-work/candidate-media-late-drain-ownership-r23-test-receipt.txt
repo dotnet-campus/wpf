@@ -1,0 +1,15 @@
+r23 dedicated test receipt (returned fields/excerpt only; not full untruncated stdout)
+Target: WpfGfxShape\Tests\WpfGfxShape.Tests\WpfGfxShape.Tests.csproj
+Tool-recorded command: dotnet test
+Filter: FullyQualifiedName~MediaFoundationResourceTests|FullyQualifiedName~MediaFoundationCallbackEpochTests|FullyQualifiedName~IndependentVideoPlaybackOwnerTests
+Exit code: 0
+Result: success
+Returned log: 62 lines, read lines 1-62.
+Stdout truncation: original 616032 characters; first 596032 characters not returned; last 20000 retained by tool.
+Warnings: CA1416 present; not a warning-free build.
+Returned lines 56-61:
+WpfGfxShape -> d:\lindexi\Code\dotnetcampus\WpfLab\WpfGfxShape\WpfGfxShape\artifacts\bin\WpfGfxShape\Debug\net10.0\wpfgfx_cor3.dll
+WpfGfxShape.Tests -> d:\lindexi\Code\dotnetcampus\WpfLab\WpfGfxShape\WpfGfxShape\artifacts\bin\WpfGfxShape.Tests\Debug\net10.0\WpfGfxShape.Tests.dll
+Test run: .NETCoreApp,Version=v10.0; one matching test file.
+Passed: 33; failed: 0; skipped: 0; total: 33; duration: 5 s.
+No NativeAOT publish, sandbox execution, source freeze, binary SHA/MVID attestation or internal Flush-fault assertion was performed in this round.

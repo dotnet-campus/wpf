@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion></PropertyGroup>
+  <ItemGroup><Content Include="../../artifacts/candidate-desktop-baseline-r19/Package/**/*" Link="Package/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="Always" /></ItemGroup>
+</Project>

@@ -1,0 +1,20 @@
+{
+  "phase": "pointer",
+  "source": "Docs/wpfgfx-complete-replacement-validation-plan.md",
+  "archive": "Docs/handoffs/history/wpfgfx-complete-replacement-validation-plan-legacy.md",
+  "originalLinkBase": "Docs/",
+  "sourceBytes": 124561,
+  "sourceLines": 532,
+  "sourceSha256": "BB15C62C36200913092BE88AB70BD3F4CE2EF054FCD2E9EC58C5D6C09066C68B",
+  "archiveBytes": 124561,
+  "archiveLines": 532,
+  "archiveSha256": "BB15C62C36200913092BE88AB70BD3F4CE2EF054FCD2E9EC58C5D6C09066C68B",
+  "byteExact": true,
+  "utf8Bom": false,
+  "pointerLines": 11,
+  "pointerSha256": "3B39AAF3F4347CEDC117D51972EEC25B080163C0A2ECE188580357BAAABA2B8C",
+  "sourceUnchangedSinceArchivePackaging": true,
+  "firstLine": "# wpfgfx.dll \u5B8C\u6574\u66FF\u6362\u5B9E\u65BD\u4E0E\u9A8C\u8BC1\u65B9\u6848",
+  "lastLine": "\u5F53\u524D\u5386\u53F2\u57FA\u7EBF\u89C1 handoffs/current-stable-baseline.md\u3002\u672C\u6587\u662F\u65B0\u4EFB\u52A1\u65B9\u6848\uFF0C\u4E0D\u662F\u5DF2\u6267\u884C\u62A5\u544A\uFF1B\u6587\u6863\u66F4\u65B0\u4E0D\u4EA7\u751F\u65B0\u7684\u901A\u8FC7\u8BC1\u636E\u3002\u6700\u7EC8\u62A5\u544A\u5FC5\u987B\u5206\u522B\u5217\u51FA\u5DF2\u8BC1\u5B9E\u80FD\u529B\u3001\u5B9E\u9645\u4FEE\u590D\u3001\u5C1A\u5B58\u5DEE\u5F02\u3001\u672A\u8986\u76D6\u6761\u4EF6\u548C\u53EF\u66FF\u6362\u7ED3\u8BBA\u7684\u7248\u672C/\u73AF\u5883\u8303\u56F4\u3002",
+  "boundary": "Complete published input copies, not in-place workspace hashes. Archive fully reread and byte-compared. Pointer phase repackages landed archive and unchanged source. Preservation is not full semantic review."
+}

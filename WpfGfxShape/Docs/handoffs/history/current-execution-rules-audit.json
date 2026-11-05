@@ -1,0 +1,20 @@
+{
+  "phase": "pointer",
+  "source": "Docs/handoffs/current-execution-rules.md",
+  "archive": "Docs/handoffs/history/current-execution-rules-legacy.md",
+  "sourceBytes": 60553,
+  "sourceLines": 219,
+  "sourceSha256": "6994EBD066649C616272244F9DF7A22901CF0BA69653D26F60FBB6FB062CEE4D",
+  "archiveBytes": 60553,
+  "archiveLines": 219,
+  "archiveSha256": "6994EBD066649C616272244F9DF7A22901CF0BA69653D26F60FBB6FB062CEE4D",
+  "byteExact": true,
+  "utf8Bom": false,
+  "pointerLines": 10,
+  "pointerBytes": 445,
+  "pointerSha256": "0CF9174E11FF54AB25A479CBC41A6B25462E3F4318B02D30870B2EDC191C32CD",
+  "sourceUnchangedSinceArchivePackaging": true,
+  "firstLine": "# \u5386\u53F2\u7D2F\u8BA1\u6267\u884C\u89C4\u5219\uFF08\u975E\u5F53\u524D\u6743\u5A01\uFF09",
+  "lastLine": "\u5386\u53F2\u6587\u6863\u4E2D Debug \u5168\u77E9\u9635\u3001\u539F\u751F\u6216\u76F4\u63A5 ESP \u63A2\u9488\u3001\u73AF\u5883\u9519\u8BEF\u5168\u7B49\u4EF7\u3001\u989D\u5916 hardening \u5355\u72EC\u963B\u585E\u53CA\u201C\u672C\u8F6E\u7981\u6B62\u65B0\u589E\u6D4B\u8BD5\u201D\u8981\u6C42\u4E0E\u672C\u89C4\u5219\u51B2\u7A81\u65F6\uFF0C\u4EE5\u672C\u89C4\u5219\u548C\u65B0\u65B9\u6848\u4E3A\u51C6\u3002\u6574\u4F53\u672A\u5B8C\u6210\u3002",
+  "boundary": "Complete published input copies, not in-place workspace hashes. Archive fully reread and byte-compared. Pointer phase repackages landed archive and unchanged workspace source. Preservation is not full semantic review."
+}

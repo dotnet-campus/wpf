@@ -1,6 +1,6 @@
 # 测试证据：承载、运行、隔离与比较合同
 
-[证据/E2E规范](09-test-evidence-and-e2e-contract.md)§1–8正式主题合同；运行数字只在[基线](handoffs/current-stable-baseline.md)。
+[证据/E2E规范](09-test-evidence-and-e2e-contract.md)§1–8正式主题合同；当前状态只在[唯一恢复入口](handoffs/current-recovery.md)，规则以[严格对照合同](handoffs/current-comparison-contract.md)为准。
 
 ## 1. 目的
 
@@ -45,7 +45,8 @@ Original=冻结原DLL；CandidateProbe=非生产probe；CandidateProduction=实�
 
 ## 6. 原/候选切换协议
 
-显式参数或环境文件含role、DLL绝对路径、expected SHA256、架构/config、output、seed、timeout、可选feature/environment labels。
+冻结同一 harness、runtime、input、config 与 business sequence；两独立业务进程各只加载唯一官方或候选 gfx。禁止同进程双加载、fallback、候选委托官方、只测一侧和生产测试耦合。
+显式参数或环境文件含role、DLL绝对路径、expected SHA256、架构/config、output、seed、timeout、可选feature/environment labels。role 仅允许目录、身份选择、取证差异，不能改变业务调用/等待/释放顺序；配置及 labels 不能成为候选补偿开关。
 加载回读实际路径/hash；不依赖PATH/当前目录/覆盖原WPF artifacts。
 PresentationCore首次实现前spike裁决：各独立进程完整部署目录且仅指定role DLL；或不改PInvoke的受控loader隔离；或运行时确实支持且证明名称/路径/加载时机等价的进程resolver。
 上述PresentationCore loader角色不授权恢复COM Host；不改PresentationCore源码/声明迁就候选。
@@ -53,12 +54,12 @@ PresentationCore首次实现前spike裁决：各独立进程完整部署目录�
 ## 7. 结果模型
 
 每case机器JSON：caseId/role/status、input/seed、返回/HRESULT/原语义才有Win32 error、out/结构raw bytes、callback/lock/refcount/resource/thread事件、像素/bytes/file hash、exception/crash/dump、elapsed/memory仅诊断、不稳定字段及规范化规则。
-Comparator独立读取原/候选，按预先批准规则判等，不让candidate自判。
+Comparator独立读取两侧完整原始输出，不加载任一被测 gfx，按冻结严格合同判等，不让candidate自判。桌面/system control前置失败记录最早阶段，下游为NotReached/NotRun；无因果证据不判环境或产品失败。
 
 ## 8. Golden 与差分规则
 
-- 整数/ID/HRESULT/layout/command/refcount事件/默认像素逐bit/byte。
-- 浮点先冻结原分布，记录absolute/relative/ULP及字段；不无据放宽。
+- 整数/ID/HRESULT/layout/command/refcount事件与完整像素严格逐bit/byte；完整业务行为同时比较。
+- 历史浮点 absolute/relative/ULP 实验不放宽当前严格合同；诊断统计不替代严格裁决。
 - 图像存original/candidate/normalized/diff/统计，不肉眼判。
 - 时间戳可逻辑序号化，不删线程身份/相对顺序/锁/callback数。
 - 地址/PID/时间仅schema明确后规范化。

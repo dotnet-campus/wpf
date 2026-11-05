@@ -117,6 +117,12 @@ internal static class GeneratedHardwareVisualRenderer
                 if (geometryResult < 0) return geometryResult;
                 continue;
             }
+            if (instruction.Kind is GeneratedRenderDataKind.DrawVideo or GeneratedRenderDataKind.DrawVideoAnimate)
+            {
+                int videoResult = DrawVideo(instruction, device, target, transform, clip, scaling, compositing);
+                if (videoResult < 0) return videoResult;
+                continue;
+            }
             if (instruction.Kind is not (GeneratedRenderDataKind.DrawImage or GeneratedRenderDataKind.DrawImageAnimate))
                 return Direct3D9Factory.NotImplementedHResult;
             if (instruction.ResourceSlots[0] is GeneratedBitmapSourceResource or GeneratedDoubleBufferedBitmapResource)
@@ -164,9 +170,45 @@ internal static class GeneratedHardwareVisualRenderer
         return stack.Count == 0 ? 0 : Direct3D9Factory.UceMalformedPacketHResult;
     }
 
-    private static unsafe int DrawWic(GeneratedRenderDataInstruction instruction, FrozenVisualTree? frozen,
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<GeneratedMediaPlayerResource, HashSet<string>> VideoPhases = new();
+
+    private static void RecordVideoPhase(GeneratedMediaPlayerResource video, string phase, int result, Av.SystemVideoSample? sample)
+    {
+        string? path = Environment.GetEnvironmentVariable("WPFGFX_DIAGNOSTIC_LOG");
+        if (string.IsNullOrWhiteSpace(path)) return;
+        HashSet<string> phases = VideoPhases.GetOrCreateValue(video);
+        lock (phases)
+        {
+            if (!phases.Add($"{phase}/{result:X8}/{sample is not null}")) return;
+            System.IO.File.AppendAllText(path, $"HWDrawVideo tick={Environment.TickCount64} resource={System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(video)} phase={phase} hr=0x{result:X8} source={sample is not null} pts={sample?.Timestamp}{Environment.NewLine}");
+        }
+    }
+
+    private static int DrawVideo(GeneratedRenderDataInstruction instruction,
         Direct3D9Device device, Direct3D9SurfaceRenderTarget target, GeneratedImageTransform transform,
         Direct3D9SurfaceRect? clip, uint scaling, MilCompositingMode compositing)
+    {
+        if (instruction.ResourceSlots[0] is not GeneratedMediaPlayerResource video) return 0;
+        int hr = video.AcquireSystemFrame(out var sample);
+        RecordVideoPhase(video, "acquire", hr, sample);
+        try
+        {
+            if (hr < 0) return hr;
+            if (sample is null) return 0;
+            hr = DrawWic(instruction, null, device, target, transform, clip, scaling, compositing, sample.Source);
+            RecordVideoPhase(video, "draw-wic-upload-target", hr, sample);
+            return hr;
+        }
+        finally
+        {
+            sample?.Dispose();
+            RecordVideoPhase(video, "lease-released", hr, sample);
+        }
+    }
+
+    private static unsafe int DrawWic(GeneratedRenderDataInstruction instruction, FrozenVisualTree? frozen,
+        Direct3D9Device device, Direct3D9SurfaceRenderTarget target, GeneratedImageTransform transform,
+        Direct3D9SurfaceRect? clip, uint scaling, MilCompositingMode compositing, nint videoSource = 0)
     {
         var resource = instruction.ResourceSlots[0]!;
         FrozenBrush? local = null;
@@ -174,23 +216,32 @@ internal static class GeneratedHardwareVisualRenderer
         nint bitmap = 0, wic = 0, converted = 0;
         try
         {
-            if (captured is null)
+            int hr;
+            if (videoSource != 0)
             {
-                int capture = FrozenBrush.CaptureSourcePure(resource, out local);
-                if (capture < 0) return capture;
-                captured = local;
+                // A video lease exposes MIL pixel formats, not WIC format GUIDs.
+                hr = WpfGfxShape.Abi.MilBitmapSourceAdapter.Create(videoSource, out wic);
             }
-            if (captured is null || !captured.HasContent) return 0;
-            bitmap = captured.AcquireSource();
-            Guid sourceId = new("00000120-a8f2-4877-ba0a-fd2b6645fb94");
-            int hr = ((delegate* unmanaged[Stdcall]<nint, Guid*, nint*, int>)(*(void***)bitmap)[0])(bitmap, &sourceId, &wic);
+            else
+            {
+                if (captured is null)
+                {
+                    int capture = FrozenBrush.CaptureSourcePure(resource, out local);
+                    if (capture < 0) return capture;
+                    captured = local;
+                }
+                if (captured is null || !captured.HasContent) return 0;
+                bitmap = captured.AcquireSource();
+                Guid sourceId = new("00000120-a8f2-4877-ba0a-fd2b6645fb94");
+                hr = ((delegate* unmanaged[Stdcall]<nint, Guid*, nint*, int>)(*(void***)bitmap)[0])(bitmap, &sourceId, &wic);
+            }
             if (hr < 0) return hr;
             uint width, height;
             hr = ((delegate* unmanaged[Stdcall]<nint, uint*, uint*, int>)(*(void***)wic)[3])(wic, &width, &height);
             if (hr < 0) return hr;
             if (width == 0 || height == 0) return 0;
             MilRectD rectangle = MemoryMarshal.Read<MilRectD>(instruction.Data.Span);
-            if (instruction.Kind == GeneratedRenderDataKind.DrawImageAnimate
+            if (instruction.Kind is GeneratedRenderDataKind.DrawImageAnimate or GeneratedRenderDataKind.DrawVideoAnimate
                 && instruction.ResourceSlots[1] is GeneratedValueResource<MilRectD> animated)
                 rectangle = animated.Value;
             if (rectangle.Width <= 0 || rectangle.Height <= 0) return 0;

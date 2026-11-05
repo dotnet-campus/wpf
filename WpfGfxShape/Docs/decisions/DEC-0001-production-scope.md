@@ -3,6 +3,10 @@
 > 状态：Accepted  
 > 日期：当前规划轮次（具体日历日期未可靠取得）
 
+## 当前适用性（任务9）
+
+**技术设计仍有效**：最终DLL生产闭包、旁支边界及移出须用户批准不变。下列项目数量/直接编译数是原调查事实，不冒充当前重新求值。决策Accepted不等于产品Accepted；验收执行遵循[严格合同](../handoffs/current-comparison-contract.md)，状态只见[恢复入口](../handoffs/current-recovery.md)。
+
 ## 背景
 
 用户目标是“整个 wpfgfx 层”迁移到一个 C#/.NET 10 Native AOT 生产项目。`src/Microsoft.DotNet.Wpf/src/WpfGfx` 磁盘树还包含未进入最终 `wpfgfx` DLL 的 `milctrl`、`wpfx` 和 `DbgXHelper` 旁支；若不明确，完成定义会歧义。
@@ -31,7 +35,7 @@
 
 ## 影响
 
-- 具体 schema 见 `07-scope-and-ledger-schema.md`。
+- 具体 schema 见 [Ledger规范](../07-scope-and-ledger-schema.md)。
 - `WP-00I` 必须计算该完整分母。
 - 旁支共享消费关系仍进入 Ledger，但 `scopeDisposition=SidecarEvidence`。
 

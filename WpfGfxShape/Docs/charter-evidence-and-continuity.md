@@ -10,7 +10,7 @@
 - 生产变更必须执行可用定向、全量主测试、ABI 测试与解决方案构建；不能执行记录原因及完成条件影响。
 - 稳定事实、决策、阻塞、结果写对应事实源，不只留对话。
 
-禁止终端命令和脚本。专用 publish/build/test 与沙箱执行已编译验收应用允许，不外推 Shell/脚本许可。历史“本轮仅 Docs Markdown”限制已由用户本次生产删除与测试授权覆盖；具体预算见当前执行规则，不外推发布或沙箱许可。
+禁止终端命令和任何脚本。专用 publish/build/test 与 Windows 沙箱授权继续有效，供后续明确分派使用，不外推 Shell/脚本许可。本轮文档专项代码修改与全部执行为0；旧阶段耗尽预算、另需授权或生产删除授权不移绑为当前限制或动作。权威规则见[严格对照合同](handoffs/current-comparison-contract.md)。
 
 ## 9. 文档先行与跨会话协议
 
@@ -25,9 +25,9 @@
 - [项目形态](04-nativeaot-project-shape.md)：独立 .NET 10 AOT 方案。
 - [互操作评估](05-silknet-directx-assessment.md)：采用边界。
 - [测试策略](06-testing-strategy.md)：体系与门禁。
-- [总计划](remaining-gap-closure-plan.md)、[主题合同](plan-module-contracts.md)：正式条件、依赖、差集；状态只见基线。
+- [总计划](remaining-gap-closure-plan.md)、[主题合同](plan-module-contracts.md)：正式条件、依赖、差集；累计状态待保全，当前状态只见handoffs/current-recovery。
 - [历史总规划](history/plans/migration-master-plan.md)：原工作包树、最终定义，不维护当前状态。
-- [唯一入口](next-session-handoff.md)：恢复导航，唯一动作由工作项维护。
+- [唯一入口](handoffs/current-recovery.md)：当前状态与恢复导航；累计旧交接仅历史。
 - [README](README.md)：分层索引与阅读顺序。
 
 ### 9.2 专题调查文档最低内容
@@ -43,10 +43,10 @@
 
 ## 10. 当前交接结构强制格式
 
-1. `next-session-handoff.md`：仅恢复顺序/导航。
-2. `handoffs/current-execution-rules.md`：执行约束/禁止扩展。
-3. `handoffs/current-stable-baseline.md`：阶段、稳定能力、最近基线。
-4. `handoffs/current-work-item.md`：唯一下步、范围、完成条件、停止点。
+1. `handoffs/current-recovery.md`：唯一当前状态与恢复顺序，不累计多轮“最新”。
+2. `handoffs/current-comparison-contract.md`：唯一权威对照/执行规则。
+3. `handoffs/next-code-task.md`：已分派任务边界，不自行产生新调度。
+4. `next-session-handoff.md` 与 `handoffs/current-execution-rules.md`、`current-stable-baseline.md`、`current-work-item.md`：累计历史，待完整保全；未完整读取不得截断重写。文档进度只见[维护台账](documentation-maintenance.md)。
 5. `handoffs/completed-work/<session-topic>.md`：每切片新独立历史文件。
 6. 旧 `handoffs/progress-completed-work.md` 冻结，不拆、不迁移、不追加。
 7. Ledger/ABI/Evidence/Decision 写各自事实源。

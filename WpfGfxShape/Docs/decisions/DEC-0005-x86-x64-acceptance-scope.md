@@ -11,4 +11,6 @@
 - 旧 `current-user-scope-overrides.json` 中的架构合同归并本页；DLL 驻留归 DEC-0004，runtime 归 DEC-0006。不再维护重复机器 overlay。当前没有机器读取者依赖该 overlay；未来读取合同须显式定义字段，不能把 Markdown 当 JSON。
 - 失去原物的有限验收快照已清理，不以旧 Satisfied 证明当前通过。Ledger evidence 保留 required ID/依赖合同，不承担旧 run 仓库职责。
 
-唯一七阶段条件见 [总计划](../remaining-gap-closure-plan.md)，当前状态见 [基线](../handoffs/current-stable-baseline.md)。
+## 当前适用性（任务9）
+
+**技术范围仍有效**：正式x86/x64，ARM64为NotApplicable而非通过。**历史状态部分待核**：上列GenProto依赖、Blocked/Red及无overlay读取者等是原调查记录，任务9未重查Ledger机器数据或代码，不能作为当前状态认证，也不能擅改为Satisfied。**历史执行政策受覆盖**：七阶段/总门保留适用技术要求，不沿用旧基线、禁原版或预算；执行按[严格合同](../handoffs/current-comparison-contract.md)。当前状态见[恢复入口](../handoffs/current-recovery.md)，适用覆盖与顺序见[当前矩阵](../handoffs/current-validation-matrix.md)。

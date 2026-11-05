@@ -20,11 +20,11 @@
 
 [DropShadow完成档](completed-work/PresentationCore-dropshadow-acceptance.md)收录有效Red E_NOTIMPL→final compare06固定28帧零差，以及最终同SHA Blur14/nested16/image10/primitive双角色四回归零差；五份比较JSON已完整回读，各finite合同Closed，不再回流旧WIP。原[Blur/nested完成档](completed-work/PresentationCore-blur-nested-acceptance.md)历史原身份/原合同不改。本次仅Docs，未新增代码、构建、发布、重跑或清理工件。
 
-最终source/frozen/actual、COM related/full同SHA identity与TRX RunID/Counters已核；普通/GenProto只按真实历史原TRX列示，不冒充最终AOT新跑。精确身份/独立分母只见[状态源](handoffs/current-stable-baseline.md)。COM失败按[当前矩阵33项分账](final-acceptance-remaining-matrix.md#33项失败分账)保留control premise与未到达消费者边界，不全归环境或候选bug；普通旧10.0.12路径加载异常保留原失败、现归自主工程修复。最新同3F291生产SHA strict已真实取得，仅缺MilPlayer_Create/Process、Extra0；不将该报告绑到其它生产SHA或最新smoke。
+最终source/frozen/actual、COM related/full同SHA identity与TRX RunID/Counters已核；普通/GenProto只按真实历史原TRX列示，不冒充最终AOT新跑。精确身份/独立分母只见[状态源](handoffs/current-stable-baseline.md)。COM失败按[历史矩阵原文](handoffs/history/final-acceptance-remaining-matrix-legacy.md)（旧“33项失败分账”锚点已不存在，不能声称已复核该表）保留control premise与未到达消费者边界，不全归环境或候选bug；普通旧10.0.12路径加载异常保留原失败、现归自主工程修复。最新同3F291生产SHA strict已真实取得，仅缺MilPlayer_Create/Process、Extra0；不将该报告绑到其它生产SHA或最新smoke。
 
 本族完整 **Open**：固定28不外推全部参数/动画/透明/格式、并发/OOM、完整refs/close或候选描画/核内fault；已有finally/owning源不替代独立寿命实证。历史生命周期36帧及目标锁12项有限Closed保留，calls=0不代核内恢复；不自造无原生依据的必需核内OOM门。有限像素不代完整方法族/ABI/strict，不为收口扩代码/测试。
 
-后续调度统一服从[九包总计划](remaining-gap-closure-plan.md)：先R1自主解除历史runtime路径绑定，推进R2正式x86/x64全配置，并由R3建立有效HW control；随后R4合包验收 **A/B HW image/visual/cache真实消费者与失败恢复拥有链**，包括冻结/realize、真实成功像素因果、失效/key/version、失败保旧/恢复重试及逆序资源清理。本方法页不另设竞争下一包；不重领已闭softwareeffects，不以单个补测代模块。真实三项来源与x86/x64验收环境条件只见唯一外部页；七阶段与E2E正式总门仍 **Red**。已安装官方runtime同版对照合同已生效，不要求10.0.12，不宣称总计划完成。
+后续调度只服从[当前严格验收矩阵与顺序](handoffs/current-validation-matrix.md)，不再恢复旧R1–R4竞争排程。**A/B HW image/visual/cache真实消费者与失败恢复拥有链**仍是未证合同，包括冻结/realize、成功像素因果、失效/key/version、失败保旧/恢复重试及逆序清理；单个补测不代模块。旧有限Closed非当前strict认证；官方同版独立对照允许，整体OverallOpen。
 
 完整族交付须原生合同、真实成功/边界/失败/关闭差分及最终同 SHA 相关/full/strict 原始证据。不降 required/raw/阈值/skip/golden，不把 PE 缺项减少当项目百分比。
-[总计划](remaining-gap-closure-plan.md)保留七阶段/A/B/C/独立 E2E；[DEC-0004](decisions/DEC-0004-process-lifetime-module.md)规定DLL驻留、不unload，不豁免资源清理或最终兼容验收。
+[主题合同](plan-module-contracts.md)与[独立E2E](e2e-executable-contracts.md)保留长期条件，[当前矩阵](handoffs/current-validation-matrix.md)维护未证项；[DEC-0004](decisions/DEC-0004-process-lifetime-module.md)规定DLL驻留、不unload，不豁免资源清理或最终兼容验收。

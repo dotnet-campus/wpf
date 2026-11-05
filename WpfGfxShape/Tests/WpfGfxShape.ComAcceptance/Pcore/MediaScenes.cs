@@ -159,7 +159,7 @@ internal static partial class Program
         if (error is not null) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(error).Throw();
     }
 
-    private static void WriteMediaAsset(string path, int asset)
+    private static void WriteMediaAsset(string path, int asset, bool includeAudio = true)
     {
         using var stream = File.Create(path);
         using var writer = new BinaryWriter(stream, Encoding.ASCII);
@@ -177,7 +177,7 @@ internal static partial class Program
         }
         long riff = Begin("RIFF", "AVI "), header = Begin("LIST", "hdrl"), main = Begin("avih");
         writer.Write(100000); writer.Write(16080); writer.Write(0); writer.Write(0);
-        writer.Write(40); writer.Write(0); writer.Write(2); writer.Write(1600); writer.Write(2); writer.Write(1);
+        writer.Write(40); writer.Write(0); writer.Write(includeAudio ? 2 : 1); writer.Write(1600); writer.Write(2); writer.Write(1);
         writer.Write(new byte[16]); End(main);
         long list = Begin("LIST", "strl"), info = Begin("strh");
         writer.Write(Encoding.ASCII.GetBytes("vidsDIB ")); writer.Write(0); writer.Write(0);
@@ -187,13 +187,17 @@ internal static partial class Program
         long format = Begin("strf");
         writer.Write(40); writer.Write(2); writer.Write(1); writer.Write((short)1); writer.Write((short)24);
         writer.Write(0); writer.Write(8); writer.Write(new byte[16]); End(format); End(list);
+        if (includeAudio)
+        {
         list = Begin("LIST", "strl"); info = Begin("strh");
         writer.Write(Encoding.ASCII.GetBytes("auds")); writer.Write(0); writer.Write(0); writer.Write(0);
         writer.Write(0); writer.Write(2); writer.Write(16000); writer.Write(0); writer.Write(32000);
         writer.Write(1600); writer.Write(-1); writer.Write(2); writer.Write(new byte[8]); End(info);
         format = Begin("strf");
         writer.Write((short)1); writer.Write((short)1); writer.Write(8000); writer.Write(16000);
-        writer.Write((short)2); writer.Write((short)16); End(format); End(list); End(header);
+        writer.Write((short)2); writer.Write((short)16); End(format); End(list);
+        }
+        End(header);
         long frames = Begin("LIST", "movi");
         for (int frame = 0; frame < 40; frame++)
         {
@@ -201,9 +205,12 @@ internal static partial class Program
             long chunk = Begin("00db");
             writer.Write(new byte[] { (byte)color, (byte)(color >> 8), (byte)(color >> 16), (byte)color, (byte)(color >> 8), (byte)(color >> 16), 0, 0 });
             End(chunk);
-            chunk = Begin("01wb");
-            for (int sample = 0; sample < 800; sample++) writer.Write((short)(1000 * Math.Sin(2 * Math.PI * 440 * (frame * 800 + sample) / 8000)));
-            End(chunk);
+            if (includeAudio)
+            {
+                chunk = Begin("01wb");
+                for (int sample = 0; sample < 800; sample++) writer.Write((short)(1000 * Math.Sin(2 * Math.PI * 440 * (frame * 800 + sample) / 8000)));
+                End(chunk);
+            }
         }
         End(frames); End(riff);
     }

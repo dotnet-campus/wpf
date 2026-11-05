@@ -16,9 +16,7 @@ internal static unsafe class MediaExports
         if (factory == 0) return InvalidArgument;
         try
         {
-            int result = Core.Av.SystemMediaSource.Create(eventProxy, canOpenAnyMedia, out nint media);
-            *output = media;
-            return result;
+            return Core.Av.SystemMediaSource.Create(eventProxy, canOpenAnyMedia, out *output, requireVideoOnly: true);
         }
         catch (OutOfMemoryException) { return unchecked((int)0x8007000E); }
         catch { return unchecked((int)0x8000FFFF); }

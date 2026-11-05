@@ -1,0 +1,28 @@
+# Reference final package 正式交付闭环
+
+## 最终：正式PackageClosed / 精确两门2Passed / 有限十项跨任务8+2Passed / OverallOpen
+
+实际COMpublish1 exit0（13行日志全文读，6条编译warning，RunAnalyzers=false）；唯一sandbox task3f6c4eb9e6ae45a6859278123d80aa87，全任务回收WpfGfxShape/artifacts/reference-final-x86-r1/readback-two-x86。TRX32行全文读：2 total/2 executed/2 passed/0 failed，两精确无参门均Passed，非整类。supervision40/stdout12/stderr空全文读，supervisor4732/child1288，child exit0，Reason=exited/HasExited=true/OutputCollected=true；TimedOut/Cancelled/KillAttempted/OutputDrainTimedOut/OutputDrainCancellationTimedOut均false，SupervisorError=null。工具仅topology及保存路径，无独立OS exit字段，不造OS层退出码。
+
+正式clean在发布前父目录不存在，发布后无Results/TestResults，manifest631行完整分段回读；精确搜索两PDB均无匹配，实际文件未复制，不是只删manifest。Mono.Cecil.Pdb.dll保留，显式native符号入口未改。保留WpfGfxShape.Tests.dll4480512bytes和ManagedAcceptance.dll1757696bytes。实际输入manifest合计191572807bytes/631文件（含manifest及aot），不是回收后Results体积：root297/173601481bytes，Native1/4275712bytes，ReferenceData2/1410052bytes，glyph26507、drawing1383545；manifest25383bytes，aot66bytes。dd业务header/目标文件/完整distribution及PreviousInputs尾部已读，旧任务not-visible不等不存在；巨大逐文件JSON中间未逐行读，完整文件列表以manifest631行及运行FileInfo取证为据。
+
+真实身份：.NET10.0.13 X86/pointer4，runtimeconfig21行确认Core+Desktop均10.0.13；testSHA9F6658D5E8A7AB8B57952AA388371B98DB645B6F475EF123AE62861281FC6DE2/MVIDd3f759e9-918d-400c-8571-daa25b9d1409。Native输入SHA F4D4F13DD2F6DD8EFB47B3455C23921FA8F1B87D1F2494E27A765DE6D29DA68D与GetFileHash产sidecar及运行ValidateIdentity一致；本轮Native0，无新当前源码Native产物，不能冒称current-source Native验证。根official5EBD18E019D7D82144EE068A7D56F47200E2D82A2121E3F3A066DAA6AC36B834/version10,0,1326,50504。复制后glyphSHA4595AF68589B9C82A421EFAA010B26E6B6C156C7ED57F3D610A8B7B76F600255，drawingSHA C62ADF76916FCC7F5309A31DAF8FD754E26FAEFE576441BEE2FA7472869971CC；az消费L1..80与DrawingHeader/ConsumedMask入口3175..3210已读。glyph源actual handle/唯一official模块来自原生成任务09f855，不能冒成本轮actual-loaded模块采集；本轮两门只校验包文件/引用身份，未新增绘制/模块加载或资源释放门。资源refs/cleanup HRESULT未由两门记录，仍Unknown；进程退出及输出排空成功不替代资源证明。
+
+预算实际normal0/run_tests0/COMpublish1/sandbox1/Native0/production0/newfull0，未额外重跑。旧8Passed任务04bd64c73db547de8d7010fb96450bc3加本轮2Passed，仅十个指定实例跨任务闭合；不称同次10/10，不减旧1843/1752/91，不称full或全替换完成。正式新包已验证ComAcceptanceGlyphReferenceInput真实复制，关闭上轮尚未publish及Results污染边界。
+
+## 执行前实质草稿（审计保留）
+本轮由当前代理亲自操作，主代理监督；无终端、脚本、再委派、新Host或证据程序。预算 normalCOMbuild≤1（非必要不使用）、COMpublish≤1、sandbox≤1、Native0、新full0。
+
+上轮真实结果：既有八实例 Passed，official glyph 真实生成后身份门 Passed、上传门 Failed，跨任务有限十项为9Passed1Failed，不能称同次10/10。上轮两个publish先exit1（日志截断，根因Unknown）、后exit0及6编译warnings均保留。第二消费任务复用readback含Results，不是干净正式包。
+
+## PDB边界独立裁决及before/after
+Before：ComAcceptance.Package.targets 两个路径直接转换 ReferenceCopyLocalPaths，导致 WpfGfxShape.Tests.pdb（700420bytes）和 WpfGfxShape.ManagedAcceptance.pdb（584240bytes）纳入文件复制和manifest。DdUploadBoundaryTests既有default断言明确不接受PDB/Results/TestResults；不能放宽断言，不能仅删manifest行。
+已实现After：在最初收集ReferenceCopyLocalPaths转换项时精确排除这两个自有PDB，两个打包兄弟target保持一致；最终文件列表加入同一精确边界failfast。不泛删系统/native符号，不影响显式CacheConsumerSymbolPreparation inputs/wpfgfx_cor3.pdb入口。保留dll/deps/json等运行依赖、固定ReferenceData和GetFileHash真实生成aot.sha256。未改production、测试断言、golden、SDK、TFM或dependency。
+
+## 正式执行预注册
+全新reference-final-x86-r1/publish/及clean/兄弟目录，禁止复用Results污染包；显式F4D4候选验收副本、AotRuntimeIdentifier=win-x86、ComAcceptanceSandbox=true、Release/win-x86/net10.0-windows/selfcontainedtrue/Core+Desktop10.0.13/PublishAot=false/WpfGfxShapeManagedAcceptance=true。
+Drawing输入使用已认证450Tile official文件；Glyph输入精确WpfGfxShape/artifacts/reference-glyph-trusted/readback-original-x86/ReferenceData/glyph-arial-original.json。已读源L1..55：actual handle1852243968/唯一模块任务09f8552e7efc4ea19ff2d34a3f3d67d8根official SHA5EBD18E019D7D82144EE068A7D56F47200E2D82A2121E3F3A066DAA6AC36B834/.NET10.0.13 X86；glyph期待SHA4595AF68589B9C82A421EFAA010B26E6B6C156C7ED57F3D610A8B7B76F600255。不文本读取PNG/DLL，不手写sidecar。
+唯一sandbox只选无参精确OR：WpfGfxShape.ComAcceptance.DdUploadBoundaryTests.WhenPackageIsInspectedThenRuntimeAndInputSizesAreRecorded 与 WpfGfxShape.ComAcceptance.ReferenceRevalidationEvidenceTests.WhenGeneratedOfficialReferencesAreConsumedThenTheirModuleIdentityMatchesThePackage。监督120、外180，全任务独立回收。须实际TRX2/2/0才可声明两门通过。
+
+## 范围与遗留
+此段为执行前草稿原范围，实际结果以上方最终段为准。旧untrusted glyph、全部旧红/timeout/资源Unknown、旧full1843/1752/91、source17 float未完整/source15无golden、audio/AVI16gap/AVsync/cancel/HWloss/resources/full均保留。即使两门过，也仅跨任务有限8+2，不是同次10/10、不newfull、不全替换完成。后续直接x64 hang线程现场及当前源码两arch default full，不再新增Reference微门。

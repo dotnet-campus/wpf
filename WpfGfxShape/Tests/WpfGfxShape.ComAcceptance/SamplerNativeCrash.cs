@@ -9,9 +9,13 @@ using System.Text.Json;
 
 namespace WpfGfxShape.ComAcceptance;
 
-internal static class SamplerNativeCrash
+internal static partial class SamplerNativeCrash
 {
-        private const string Method = nameof(D3DImageTests.WhenHistoricalCaptureOfficialSamplerRunsThenExpectedUpdatesRemain);
+#if OFFICIAL_WINDOW_HANG_DIAGNOSTIC
+    private const string Method = nameof(D3DImageTests.WhenFreshNativeGatePassesThenOfficialAndCandidatePublicTargetsAreCompared);
+#else
+    private const string Method = nameof(D3DImageTests.WhenHistoricalCaptureOfficialSamplerRunsThenExpectedUpdatesRemain);
+#endif
     private const uint Continue = 0x00010002, NotHandled = 0x80010001;
 
     internal static async Task<int> RunChildAsync(string root)
@@ -44,7 +48,11 @@ internal static class SamplerNativeCrash
             throw new InvalidOperationException(nameof(exe));
         string candidate = AcceptancePaths.AotDll;
         string candidateHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(candidate)));
+#if OFFICIAL_WINDOW_HANG_DIAGNOSTIC
+        if (candidateHash != "D9AA1E0ED5E99B29F10AC2DA4635D7F014B0F433C05DF2E5B18F2028836CD09C")
+#else
         if (candidateHash != "632FC2436E1C27C345061B73EF5352205E5B9F1C90A0C1D04ECB538084CB3671")
+#endif
             throw new InvalidOperationException(candidateHash);
         Write(root, "identity.json", new { candidate, candidateHash, official = AcceptancePaths.OriginalDll,
             officialHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(AcceptancePaths.OriginalDll))),
@@ -81,6 +89,9 @@ internal static class SamplerNativeCrash
         if (!created) throw new Win32Exception(createError);
         var watch = Stopwatch.StartNew();
         bool exited = false, secondChance = false, timedOut = false;
+#if OFFICIAL_WINDOW_HANG_DIAGNOSTIC
+        bool snapshotRequested = false, snapshotCaptured = false;
+#endif
         uint? exitCode = null;
         var breakpoints = new HashSet<uint>();
         var processes = new Dictionary<uint, nint>();
@@ -105,6 +116,14 @@ internal static class SamplerNativeCrash
                         Record(new { api = "TerminateProcess", pid = process.Pid, terminated, error = terminated ? 0 : Marshal.GetLastWin32Error() });
                     }
                 }
+#if OFFICIAL_WINDOW_HANG_DIAGNOSTIC
+                if (!snapshotRequested && watch.Elapsed.TotalSeconds > 60 && processes.TryGetValue(process.Pid, out nint debuggee))
+                {
+                    snapshotRequested = true;
+                    bool requested = DebugBreakProcess(debuggee);
+                    Record(new { api = "DebugBreakProcess", requested, error = requested ? 0 : Marshal.GetLastWin32Error(), process.Pid });
+                }
+#endif
                 bool received = WaitForDebugEvent(out DebugEvent item, 250);
                 if (!received)
                 {
@@ -175,6 +194,14 @@ internal static class SamplerNativeCrash
                         {
                             status = Continue;
                         }
+#if OFFICIAL_WINDOW_HANG_DIAGNOSTIC
+                        if (snapshotRequested && !snapshotCaptured && item.Pid == process.Pid && item.ExceptionCode == 0x80000003 && item.FirstChance != 0)
+                        {
+                            snapshotCaptured = true;
+                            CaptureOfficialWindowThreads(root, item.Pid, processes[item.Pid]);
+                            status = Continue;
+                        }
+#endif
                         Record(new { exceptionCode = $"0x{item.ExceptionCode:X8}", address = $"0x{item.ExceptionAddress:X}", item.FirstChance, item.Pid, item.Tid, status });
                         if (item.FirstChance == 0)
                         {

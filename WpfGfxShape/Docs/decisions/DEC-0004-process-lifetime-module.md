@@ -5,6 +5,10 @@
 - unload/reload/热替换验收登记为“不适用（用户明确无此需求）”，不是通过、不是能力缺失待运行；从总计划阻塞与待裁决项移除。不再请求批准进程寿命驻留。
 - 模块驻留不等于允许资源泄漏：COM Release、channel/player 关闭、线程退出、callback 静止、初始化失败资源清理及其他真实生命周期合同保持不变，不能统交 OS 回收。
 - 整个项目最终兼容原 WPF 库、七阶段、A/B/C、E2E-01–09、全部适用架构/配置矩阵与其他正式总门、现行必要外部输入不减（具体范围由DEC-0005/0006及唯一外部页覆盖旧四类清单）。“最终替换资格”指完成后兼容原库的交付验收，不是运行期替换已加载 DLL；当前未取得资格。
-- 本记录是该范围的单一来源，优先于历史规划/冻结归档中的卸载必需或驻留待批准表述；历史证据不改、不将 NativeAotUnloadVerified=false 改写为通过。x86 Shared 有限实测见[核验记录](../investigations/audits/x86-shared-unload-actual-verification-20261014.md)，不外推全 ABI/E2E 完成。
+- 本记录是该范围的单一来源，优先于历史规划/冻结归档中的卸载必需或驻留待批准表述；历史证据不改、不将 NativeAotUnloadVerified=false 改写为通过。x86 Shared有限实测曾引用 `../investigations/audits/x86-shared-unload-actual-verification-20261014.md`，任务9实际枚举及名称查找未找到，记 **EvidenceUnavailable：原件不可复核**；不以同名占位/其他报告补证，不外推全ABI/E2E完成。
+
+## 当前适用性（任务9）
+
+**技术设计仍有效**：进程寿命驻留与对象/线程/callback清理合同分开，不能因严格验收增设同进程卸载或热替换门。**历史执行政策受覆盖**：历史计划/外部清单只按[严格合同](../handoffs/current-comparison-contract.md)与[当前矩阵](../handoffs/current-validation-matrix.md)解释，不维持旧禁原版/另授权政策。**部分待核**：缺失的x86核验原件不影响用户驻留需求生效，但不能证明当前产品通过。当前状态只见[恢复入口](../handoffs/current-recovery.md)。媒体默认async等实现设计也不因文档治理变更。
 
 本次仅文档澄清，未修改代码/配置，未执行命令脚本、构建、测试或发布。

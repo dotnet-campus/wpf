@@ -1,6 +1,6 @@
 # wpfgfx 跨会话连续性、交接与决策协议
 
-强制执行，本页及两主题页共同构成完整协议。上位[章程](00-migration-charter.md)，恢复只从[唯一入口](next-session-handoff.md)。
+强制执行，本页及两主题页共同构成完整协议。上位[章程](00-migration-charter.md)，恢复只从[唯一入口](handoffs/current-recovery.md)。
 
 ## 1. 目的
 [持久事实与历史隔离](continuity-recovery-and-closeout.md#1-目的)。

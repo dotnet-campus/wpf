@@ -4,6 +4,12 @@
 - 日期：2026-06-23
 - 适用范围：Native AOT shared library 的 ABI probe、后续生产导出及测试承载
 
+## 当前适用性（任务9）
+
+**技术设计仍有效**：托管发布后P/Invoke为ABI主证据、真实路径/身份校验、危险场景隔离及不要求C++ NativeCaller不变。**历史执行政策受覆盖**：末尾“以本决策为准”仅适用于测试承载选择，不覆盖用户[严格对照合同](../handoffs/current-comparison-contract.md)。原版与候选必须在不同业务进程运行同一上层调用，仅DLL不同；resolver不可双加载，也不得通过不同签名/参数/释放顺序补偿候选。该决策不禁止原版对照；单侧ABI通过不等于严格等价。
+
+**部分待核**：“新增宿主由下一包确定”等为原实施安排，不认证当前源码、实际发布物或矩阵通过；状态只见[恢复入口](../handoffs/current-recovery.md)。模块卸载场景适用性由[DEC-0004](DEC-0004-process-lifetime-module.md)限定，原ABI/对象清理要求不减。
+
 ## 背景
 
 项目的真实消费者是 WPF 托管代码中的 P/Invoke，而不是独立 C/C++ 应用或通过 import library 静态链接的原生消费者。

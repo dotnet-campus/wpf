@@ -9,4 +9,10 @@
 - 原版/候选须分别记录 runtime、PresentationCore/WindowsBase、native 路径/版本/SHA、进程架构及配置；完整 runtime 不等于只复制一个 DLL。复用已安装官方包，不要求购买或预设两架构均已就绪。
 - 当前版本解释覆盖所有现行文档及其历史承接中“10.0.12 唯一目标”“待澄清 patch”“必须外部提供 10.0.12”的旧说法，不覆盖其他 ABI/寿命/E2E/strict/full 完成条件。
 
+## 当前适用性（任务9）
+
+**技术合同仍有效**：已安装且来源可核的官方完整runtime、同版同架构隔离对照；10.0.12仅历史身份，不恢复为外部必需补包。**历史执行安排受覆盖**：上述测试定位修复是历史待办而非本轮下一工作；唯一后续顺序见[当前矩阵](../handoffs/current-validation-matrix.md)，规则见[严格合同](../handoffs/current-comparison-contract.md)。同runtime不是允许两版同进程；同上层逻辑仅DLL不同，不得只测原版或补偿候选。
+
+**部分待核**：源码行号/修复状态及两架构安装完整性本轮未查，不把历史“本轮未修改”冒充当前源码结论。该版本合同不改变媒体默认async或[DEC-0004](DEC-0004-process-lifetime-module.md)进程寿命设计。当前状态只见[恢复入口](../handoffs/current-recovery.md)。
+
 原 Ledger 的版本合同直接由本决议解释；重复 scope overlay 已归并删除，旧运行结果不构成当前 Satisfied。来源与路径审计：[windowsdesktop-version-provenance](../windowsdesktop-version-provenance.md)。架构范围见 DEC-0005；模块驻留见 DEC-0004。本次仅文档决议，无新构建、发布或测试。

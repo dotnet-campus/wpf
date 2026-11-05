@@ -14,7 +14,7 @@
 
 项目级 MTP runner 的 SDK 查找与工作目录有关，传 csproj 路径不等于切换发现起点。历史包工程曾发生 VSTest target 失败且用例未启动；不计为行为 Red/Green。SDK paths/runner 的实际选择须执行代理保留原始证据，本轮未重新验证，不删改配置或升级 SDK。沙箱直接标准 exe 入口不依赖 SDK runner 选择。
 
-运行身份、计数、strict适用版本及真实失败只见[唯一状态源](handoffs/current-stable-baseline.md)。同步perf等旧全量Green不代表当前回归；原始证据按[历史隔离索引](history-index.md)保留。本文不维护逐轮结果。
+运行身份、计数、strict适用版本及真实失败只见[唯一状态源](handoffs/current-recovery.md)。同步perf等旧全量Green不代表当前回归；原始证据按[历史隔离索引](history-index.md)保留。本文不维护逐轮结果。
 
 ## 项目与依赖
 
@@ -28,7 +28,7 @@
 
 ## 原生边界：生产 DLL 导出与 COM
 
-所有生产 COM 模块验收均在唯一标准 MTP 测试运行器进程中加载生产项目发布的 Native AOT DLL，测试不得直接访问生产内部 C# 实现。合入ComAcceptance的PublicAbi角色是公开ABI消费者，不是独立项目或新增Host。“全走 COM”指使用真实原生互操作边界，而不是把原生所有入口改造成 COM 方法：
+每个生产 COM 验收业务进程通过同一标准 MTP exe 加载指定实现；“唯一”指正式测试项目，不是让官方/候选共处一个进程。严格对照使用两个独立业务进程，每侧仅加载一种 gfx 实现，同冻结 harness/runtime/input/config/业务顺序，完整像素及业务行为严格差分，详见[当前对照合同](handoffs/current-comparison-contract.md)。官方仅独立对照；禁止双加载、候选委托/fallback、只测官方、role业务补偿及生产测试耦合。测试不得直接访问生产内部 C# 实现。合入ComAcceptance的PublicAbi角色是公开ABI消费者，不是独立项目或新增Host。“全走 COM”指使用真实原生互操作边界，而不是把原生所有入口改造成 COM 方法：
 
 - 原生 COM 对象（如 IWICBitmap、IWICBitmapLock、IStream）通过真实 COM vtable 调用，遵守 QI、AddRef、Release 和调用约定。
 - 原生 DLL 导出（如 connection/channel/resource、命令提交、位图创建）按原签名调用导出函数，使用原生规定的句柄与参数；不再包装自定义 COM 接口。
@@ -55,7 +55,7 @@
 - `AotDllPath` 可显式指定待测 AOT DLL；默认按本仓库发布目录计算。
 - 路径在构建时写入测试程序集 metadata；改变路径后应重建测试项目。
 
-不要求 WPFGFX_COM_AOT_DLL 环境变量。缺 DLL、普通托管 DLL、架构不匹配或缺导出都直接测试失败，不跳过。
+不要求 WPFGFX_COM_AOT_DLL 环境变量。缺 DLL、普通托管 DLL、架构不匹配或缺导出都记录加载/身份前置失败，不跳过或记通过；尚未执行的业务断言记 NotRun/NotReached。desktop/system/native control 前置失败无因果证据不得归环境或产品。
 
 测试记录产物绝对路径及 SHA256，并核对 PE 无 CLR header、架构匹配。它只能验证实际加载文件，不能证明其来自当前提交；发布日志/提交对应关系需单独保留。已有产物的失败不能冒称当前代码重新发布后的结果。
 
@@ -104,4 +104,4 @@ ManagedStream 必须覆盖 MILCreateStreamFromStreamDescriptor、MILIStreamWrite
 
 ## 维护
 
-长期方法仅维护本文；逐轮结果放 completed-work，下一任务放 current-work-item。旧归档中的 Host 和环境变量做法已经被用户撤销，不再作为实施依据。
+长期方法仅维护本文；逐轮结果放 completed-work，当前产品恢复仅在[恢复入口](handoffs/current-recovery.md)，分派见其任务边界链接；文档后续批次见[维护台账](documentation-maintenance.md)，旧 current-work-item 不是并行当前入口。旧归档中的 Host 和环境变量做法已经被用户撤销，不再作为实施依据。

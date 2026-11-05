@@ -1,4 +1,13 @@
-# BitmapCache 修正产物默认 full 正式收尾
+# 历史：BitmapCache 修正产物默认 full 正式收尾
+
+## 治理更正与证据可用性
+
+当前规则只见[集中当前合同](../handoffs/current-comparison-contract.md)。本页40/37失败表、身份、原消息、执行账和旧writer技术线索保留；下文“本轮/当前”均限历史轮。
+
+- **来源更正**：[post-fixture §2](replacement-final-acceptance-post-fixture-r1.md#2-调用与包认证)明确official flush/candidate present分流，且本页§3明确full混合角色。公开四帧512/512和旧full不是同逻辑仅DLL不同的strict证明，不授权候选补偿。前置失败不代表consumer已测，不凭未确证生产缺陷就排除产品问题，也不无证归环境。
+- **排程更正（来源：本页§5与[latest-contract历史报告](replacement-latest-contract-default-crossarch-closeout.md#合法writer旧32malformed专项核证)）**：旧32→28是该时点具体技术修复，不是一律废弃；后续报告记载合法writer现28且该轮未见同根malformed。不能继续把“下一唯一直接修复”当当前任务，也不能仅凭后报告摘要认证当前源码或全部cache业务已修复。非法32负控、真实导出/回收与长期资源缺口仍需证据。
+- **EvidenceUnavailable**：检索未找到`../../artifacts/bitmapcache-fix-default-full-{arch}-readback/`及`artifacts/public-cache-contract/default-full-{x64,x86}-receipt.md`、`artifacts/public-cache-contract/default-full-execution.md`原件，只命中文档Snapshot；x64原根不存在。`artifacts/cache-packet-fix-{x64,x86}-r1/clean`未核。§4各原TRX行号/Definition、actual身份及§6清理均为历史记录，不冒称本轮完整原件复核。所谓“产品fix报告”未给唯一原路径，不能猜成其他报告补证。
+- 历史2/2用尽、前轮剩额及“不得选择其他路线”不约束当前；完整替换Open保留，不将文档治理计为产品通过。
 
 状态：两架构默认 Release full 已实际执行并回收，均 Failed；本轮执行收尾完成，完整替换 Open。不是报告草稿。
 
@@ -72,16 +81,16 @@
 精确首红Definition已亲读x64 TRX6931–6935，Result519–530：E方法(2,4286611584)，execution23a784ab-16da-4baf-a44b-42dcd73f206a。x64 official execution f74caa53-7e66-432e-a82a-73badbd4fb00；x86 official131d3c9d-40a0-4f0d-8396-d4f3bb749c38，loss分别0bba0203-b5a6-46e1-9a3d-d0ef4d8ade7b/7770c73e-8a7c-45a2-8fc2-26b3be4bf509。
 本轮未发现已可确认新的生产缺陷；确定夹具仍错，不等于修好夹具后所有HW会绿。其余具体根因未证，不能全归环境。以上分组消息不替代完整原始TRX；尚未逐实例全文回读全部Definition/所有隔离子TRX，故不冒完整独立审计完成。
 
-## 5. 原malformed是否消除及下一唯一直接修复
+## 5. 历史malformed调查及当时直接修复建议（非当前唯一任务）
 生产公开真实managed发28、payload20，双架构公开VisualBrush/BitmapCacheBrush四帧512/512及清理已通过（见产品fix报告）；旧147B公开0x8D malformed/cleanupfailed永久保留。新full仍有0x88980403（-2003303421），已找到仍发旧32的COM夹具：
 - CompositionEffectsTests.SoftwareShader.cs181–183：stackalloc32/send32，首红直接依据。
 - CompositionTests.ActiveRender.cs751–753、784–786：旧32，Stage4 miss/reentry/nested。
 - CompositionTests.Stage4Hardware.cs72–76：new byte[32] 0x8d。
 - D3DImageTests.VisualCache.cs426/448/626：0x8d configuration32/send32。
-下一工作直接将这些合法0x8D writer按独立官方合同改为28（所有字段保留、0x84仍36、非法32负控仍拒绝），补夹具wire断言，先首红定向再验证同族/两arch最终适用矩阵。不要回退生产exact检查或用>=吞包；本轮源码修改预算0故未擅改。不得选择泛门/旧paint线程/捕获路线代替这项已知修复。
+历史当时建议直接将这些合法0x8D writer按独立官方合同改为28（所有字段保留、0x84仍36、非法32负控仍拒绝），补夹具wire断言，先首红定向再验证同族/两arch最终适用矩阵。不要回退生产exact检查或用>=吞包；本轮源码修改预算0故未擅改。当时不得用泛门/旧paint线程/捕获路线掩盖这项已知修复；该历史排程不指定当前唯一任务。
 
 ## 6. 生命周期及剩余主门
 监督完整回收且未kill不等于每项清理无错误。stages x64 21等有visual cleanup complete，373/431/553/611等明确world release commit 0x88980403；x86 stages41/55同错，随后destroy/disconnect0、bitmap/surface/device/windows处理完成。保留cleanup业务错误，不能称全绿。loss stdout明确device/factory/window cleanup complete，但真实loss未触发。official两arch native00563412通过、CreatePixelShader0、初帧FF80读0仍独立红；candidate packet fix不会自动修官方消费。
-actual consumer HW/backend、产品target loss/recovery、实际音频、自然资源与memoryGreen（仍null）、final matrix、完整替换仍Open。先修确定旧fixture writer，再分别处理official合法consumer内容证据/初始前台资格/真实backend输出；不以producer代consumer，不将历史有限绿整体迁移新hash，不以本次默认full已运行冒最终通过。
+actual consumer HW/backend、产品target loss/recovery、实际音频、自然资源与memoryGreen（仍null）、final matrix、完整替换仍Open。历史当时顺序为先修确定旧fixture writer，再分别处理official合法consumer内容证据/初始前台资格/真实backend输出；不以producer代consumer，不将历史有限绿整体迁移新hash，不以本次默认full已运行冒最终通过。
 
 收尾：两次授权full完成，预算用尽无重试，正式报告与状态入口同步；验证执行完成≠产品全部完成。

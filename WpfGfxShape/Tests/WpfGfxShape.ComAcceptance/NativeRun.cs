@@ -9,7 +9,14 @@ internal static class NativeRun
     internal static string PathsRoot => Environment.GetEnvironmentVariable("WPFGFX_RUN_ROOT") ?? AcceptancePaths.Results;
 
     [STAThread]
-    private static async Task<int> Main(string[] args)
+    private static int Main(string[] args)
+    {
+        if (args.Length > 0 && args[0] == "--pcore")
+            return NativeAcceptance.Pcore.Program.Run(args[1..]);
+        return MainAsync(args).GetAwaiter().GetResult();
+    }
+
+    private static async Task<int> MainAsync(string[] args)
     {
 #if SANDBOX_DESKTOP_DIAGNOSTIC
         SandboxDesktopController.Capture("process-entry-before-fixture");

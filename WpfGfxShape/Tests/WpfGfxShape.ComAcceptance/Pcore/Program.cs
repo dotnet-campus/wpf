@@ -19,7 +19,7 @@ internal static partial class Program
     private static string stage = "startup";
     private static string selected = "";
     private static nint module;
-    private static bool mediaScenario;
+    private static string? candidateSha;
     private static string protectionMode = "default";
 
     private static unsafe void ApplyProtection(nint loaded)
@@ -43,7 +43,6 @@ internal static partial class Program
         string role = args.Length is 1 or 2 ? args[0] : "invalid";
         if (role == "compare-dispatcher" || args.Length == 2 && args[1] == "dispatcher" && role is "original" or "candidate")
             return DispatcherAcceptance(role);
-        mediaScenario = args.Length == 2 && args[1] == "media";
         if (args.Length == 2 && args[1] == "blur" || role == "compare-blur") NestedCases = BlurCases;
         if (args.Length == 2 && args[1] == "lifetime" || role == "compare-lifetime") NestedCases = LifetimeCases;
         if (args.Length == 2 && args[1] == "shadow" || role == "compare-shadow") NestedCases = DropShadowCases;
@@ -70,19 +69,53 @@ internal static partial class Program
         Evidence["input"] = new { width = 32, height = 32, dpi = 96, format = "Pbgra32", threshold = 0, seed = 0 };
         try
         {
+            stage = "candidate-identity-validation";
+            selected = role == "candidate" ? WpfGfxShape.ComAcceptance.AcceptancePaths.AotDll
+                : WpfGfxShape.ComAcceptance.AcceptancePaths.OriginalDll;
+            // Deny writes and replacement until all native loads and scene cleanup have finished.
+            using FileStream? candidateLease = role == "candidate" ? File.OpenRead(selected) : null;
+            candidateSha = role == "candidate" ? WpfGfxShape.ComAcceptance.AcceptancePaths.ValidateCandidateIdentity(selected) : null;
+            if (candidateSha is not null)
+                Evidence["validatedNative"] = new { path = selected, sha256 = candidateSha, architecture = RuntimeInformation.ProcessArchitecture.ToString() };
+            Evidence["requestedNative"] = Identity(selected, candidateSha);
+            return RunWpf(args, role, images);
+        }
+        catch (Exception exception) when (exception is not OutOfMemoryException and not StackOverflowException)
+        {
+            Evidence["status"] = "Red";
+            Evidence["exitCode"] = 1;
+            Evidence["failureStage"] = stage;
+            Evidence["exception"] = exception.ToString();
+            Evidence["hresult"] = $"0x{exception.HResult:X8}";
+            FailureCheckpoint();
+            return 1;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static int RunWpf(string[] args, string role, bool images)
+    {
+        bool sceneStarted = false;
+        try
+        {
+            stage = "WPF-assembly-load";
             Assembly pc = Assembly.Load("PresentationCore");
             Assembly wb = Assembly.Load("WindowsBase");
             Evidence["presentationCore"] = Identity(pc.Location);
             Evidence["windowsBase"] = Identity(wb.Location);
-            string original = WpfGfxShape.ComAcceptance.AcceptancePaths.OriginalDll;
-            selected = role == "original" ? original : WpfGfxShape.ComAcceptance.AcceptancePaths.AotDll;
-            Evidence["requestedNative"] = Identity(selected);
-            Evidence["originalRuntimeNative"] = Identity(original);
-            Evidence["frozenCandidate"] = Identity(WpfGfxShape.ComAcceptance.AcceptancePaths.AotDll);
+            if (role == "original")
+            {
+                Evidence["originalRuntimeNative"] = Identity(selected);
+                Evidence["frozenCandidate"] = Identity(WpfGfxShape.ComAcceptance.AcceptancePaths.AotDll);
+            }
+            else Evidence["frozenCandidate"] = Identity(selected, candidateSha);
             foreach (Assembly owner in new[] { pc, wb })
                 NativeLibrary.SetDllImportResolver(owner, Resolve);
             Checkpoint("resolver-installed-before-WPF");
-            if (args.Length == 2 && args[1] == "cache-contract") RenderPublicCacheContract();
+            sceneStarted = true;
+            if (args.Length == 2 && args[1] == "media-unsupported-audio-public") RenderUnsupportedAudioPublic();
+            else if (args.Length == 2 && args[1] == "purevideo-public") RenderPureVideoPublic();
+            else if (args.Length == 2 && args[1] == "cache-contract") RenderPublicCacheContract();
             else if (args.Length == 2 && args[1] == "shaderbounds") RenderShaderBounds();
             else if (args.Length == 2 && args[1] == "media") RenderMedia();
             else if (args.Length == 2 && args[1] == "shadow") RenderDropShadow();
@@ -113,19 +146,26 @@ internal static partial class Program
             Evidence["failureStage"] = stage;
             Evidence["exception"] = exception.ToString();
             Evidence["hresult"] = $"0x{exception.HResult:X8}";
-            VerifyLoaded(false);
-            try
+            if (sceneStarted)
             {
-                Dispatcher.CurrentDispatcher.InvokeShutdown();
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                Evidence["failureCleanup"] = "Dispatcher shutdown and finalizers completed";
+                try { VerifyLoaded(false); }
+                catch (Exception inspectionException) when (inspectionException is not OutOfMemoryException and not StackOverflowException)
+                {
+                    Evidence["failureInspectionException"] = inspectionException.ToString();
+                }
+                try
+                {
+                    Dispatcher.CurrentDispatcher.InvokeShutdown();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    Evidence["failureCleanup"] = "Dispatcher shutdown and finalizers completed";
+                }
+                catch (Exception cleanupException) when (cleanupException is not OutOfMemoryException and not StackOverflowException)
+                {
+                    Evidence["failureCleanupException"] = cleanupException.ToString();
+                }
             }
-            catch (InvalidOperationException cleanupException)
-            {
-                Evidence["failureCleanupException"] = cleanupException.ToString();
-            }
-            Checkpoint("failed");
+            FailureCheckpoint();
             return 1;
         }
     }
@@ -149,30 +189,32 @@ internal static partial class Program
 
     private static void VerifyLoaded(bool require = true)
     {
-        var loaded = new List<object>();
-        foreach (ProcessModule item in Process.GetCurrentProcess().Modules)
-        {
-            if (!item.ModuleName.Equals("wpfgfx_cor3.dll", StringComparison.OrdinalIgnoreCase)) continue;
-            string service = Path.Combine(Path.GetDirectoryName(typeof(MediaPlayer).Assembly.Location)!, "wpfgfx_cor3.dll");
-            if (mediaScenario && !selected.Equals(service, StringComparison.OrdinalIgnoreCase)
-                && Path.GetFullPath(item.FileName).Equals(Path.GetFullPath(service), StringComparison.OrdinalIgnoreCase))
-            {
-                Evidence["systemMediaServiceModule"] = Identity(item.FileName);
-                continue;
-            }
-            loaded.Add(Identity(item.FileName));
-            if (!Path.GetFullPath(item.FileName).Equals(Path.GetFullPath(selected), StringComparison.OrdinalIgnoreCase))
-                throw new InvalidOperationException($"Unexpected WPF native module: {item.FileName}");
-        }
-        Evidence["actualNativeModules"] = loaded;
-        if (require && loaded.Count != 1) throw new InvalidOperationException($"Expected one native WPF module, found {loaded.Count}.");
+        string[] paths = Process.GetCurrentProcess().Modules.Cast<ProcessModule>()
+            .Where(item => item.ModuleName.Equals("wpfgfx_cor3.dll", StringComparison.OrdinalIgnoreCase))
+            .Select(item => item.FileName).ToArray();
+        Evidence["actualNativeModulePaths"] = paths;
+        Evidence["actualNativeModules"] = paths.Select(path => Identity(path)).ToArray();
+        WpfGfxShape.ComAcceptance.AcceptancePaths.ValidateCandidateModules(selected, paths, require);
     }
 
-    private static object Identity(string path)
+    private static object Identity(string path, string? expectedSha = null)
     {
         using FileStream stream = File.OpenRead(path);
         FileVersionInfo version = FileVersionInfo.GetVersionInfo(path);
-        return new { path = Path.GetFullPath(path), sha256 = Convert.ToHexString(SHA256.HashData(stream)), length = stream.Length, fileVersion = version.FileVersion, productVersion = version.ProductVersion };
+        string sha256 = Convert.ToHexString(SHA256.HashData(stream));
+        if (expectedSha is not null)
+            WpfGfxShape.ComAcceptance.AcceptancePaths.ValidateDigest(sha256, expectedSha);
+        return new { path = Path.GetFullPath(path), sha256, length = stream.Length, fileVersion = version.FileVersion, productVersion = version.ProductVersion };
+    }
+
+    private static void FailureCheckpoint()
+    {
+        try { Checkpoint("failed"); }
+        catch (Exception evidenceException) when (evidenceException is IOException or UnauthorizedAccessException)
+        {
+            Evidence["failureEvidenceException"] = evidenceException.ToString();
+            Console.Error.WriteLine(JsonSerializer.Serialize(Evidence));
+        }
     }
 
     private static void Checkpoint(string value)
@@ -303,6 +345,7 @@ internal static partial class Program
 
     private static readonly string[] ImageCases = ["bitmap-direct", "image-basic", "image-tile", "image-matrix-clip-opacity", "drawing-basic", "drawing-tile", "drawing-matrix-clip-opacity", "visual-basic", "visual-tile", "visual-matrix-clip-opacity"];
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private static int CompareImages()
     {
         ValidateBaseline(typeof(System.Windows.Media.Visual).Assembly.Location);
@@ -342,6 +385,7 @@ internal static partial class Program
             throw new InvalidOperationException("PresentationCore differs from original process.");
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private static int CompareFiles()
     {
         ValidateBaseline(typeof(System.Windows.Media.Visual).Assembly.Location);

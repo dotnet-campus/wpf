@@ -7,11 +7,17 @@ public sealed unsafe partial class D3DImageTests
 {
     private static PresentationWindowThread? windowThread;
 
+    [System.Diagnostics.Conditional("OFFICIAL_WINDOW_HANG_DIAGNOSTIC")]
+    private static void WindowHangStage(string stage)
+        => ExitDiagnostics.Stage($"official-window nativeTID={GetCurrentThreadId()} {stage}");
+
     /// <summary>Starts the window owner before running the hardware fixture.</summary>
     [ClassInitialize]
     public static void StartPresentationThread(TestContext context)
     {
+        WindowHangStage("ClassInitialize-start");
         windowThread = new PresentationWindowThread();
+        WindowHangStage("ClassInitialize-end");
         if (Environment.GetEnvironmentVariable("WPFGFX_SAMPLER_CRASH_DIAGNOSTIC") == "1")
             ExitDiagnostics.Stage("sampler ClassInitialize completed pid=" + Environment.ProcessId);
         context.WriteLine("Presentation HWND owner: dedicated STA GetMessage/DispatchMessage; no background brush; WM_PAINT validates only.");
@@ -56,13 +62,19 @@ public sealed unsafe partial class D3DImageTests
             SandboxDesktopController.Capture("owner-before-message-queue-and-hwnd");
 #endif
             PeekMessageW(out _, 0, 0, 0, 0);
+            WindowHangStage("owner-queue-created-ready-setting");
             ready.Set();
             int result;
             while ((result = GetMessageW(out WindowMessage message, 0, 0, 0)) > 0)
             {
                 if (message.Message == 0x8001)
                 {
-                    while (pending.TryDequeue(out Action? action)) action();
+                    while (pending.TryDequeue(out Action? action))
+                    {
+                        WindowHangStage("owner-action-start");
+                        action();
+                        WindowHangStage("owner-action-end");
+                    }
                 }
                 else
                 {
@@ -70,6 +82,7 @@ public sealed unsafe partial class D3DImageTests
                     DispatchMessageW(in message);
                 }
             }
+            WindowHangStage("owner-message-loop-exit");
             if (result < 0) Environment.FailFast("Presentation GetMessage failed: " + Marshal.GetLastWin32Error());
         }
 
@@ -79,6 +92,7 @@ public sealed unsafe partial class D3DImageTests
             T value = default!;
             ExceptionDispatchInfo? failure = null;
             using ManualResetEventSlim completed = new();
+            WindowHangStage($"invoke-enqueue ownerTID={id}");
             pending.Enqueue(() =>
             {
                 try { value = action(); }
@@ -87,7 +101,9 @@ public sealed unsafe partial class D3DImageTests
             });
             if (PostThreadMessageW(id, 0x8001, 0, 0) == 0)
                 throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+            WindowHangStage($"invoke-posted-wait ownerTID={id}");
             completed.Wait();
+            WindowHangStage($"invoke-completed ownerTID={id}");
             failure?.Throw();
             return value;
         }
