@@ -62,6 +62,7 @@ public sealed partial class MediaFoundationResourceTests
                         await media.Completion.WaitAsync(TimeSpan.FromSeconds(10));
                         Assert.AreEqual(IndependentMediaState.Paused, media.State);
                         Assert.AreEqual(0, owner.PublishedFrames);
+                        Assert.AreEqual((1L, 0L, 0L), (media.UiRequestGeneration, media.UiConsumedGeneration, media.UiFrameGeneration));
                         await Task.Delay(150);
                         Assert.AreEqual((IndependentMediaState.Paused, 0), (media.State, owner.PublishedFrames));
                         Assert.AreEqual(0, IdentityRate(media.Pointer, 1));
@@ -220,7 +221,10 @@ public sealed partial class MediaFoundationResourceTests
             long position = owner.LastTimestamp;
             var before = IdentityQuery(identity.Pointer);
             calls.Add(new { operation = "PauseBefore", before.positionHr, before.position, before.videoHr, before.video, naturalSize = IdentityNaturalSize(identity.Pointer), count, wallTicks = clock.Elapsed.Ticks });
-            Assert.AreEqual((0, 5000000L, 0, (byte)1), before);
+            Assert.AreEqual((0, 0, (byte)1), (before.positionHr, before.videoHr, before.video));
+            // Pause freezes the transport clock at control completion, not at the last decoded PTS.
+            Assert.AreEqual(5000000L, position);
+            Assert.AreEqual(owner.Position100ns, before.position);
             long start = clock.Elapsed.Ticks;
             // A fixed wall-clock observation window, independent of image content.
             await Task.Delay(TimeSpan.FromMilliseconds(515));
@@ -244,8 +248,8 @@ public sealed partial class MediaFoundationResourceTests
             Assert.AreEqual(IndependentMediaState.Paused, identity.State);
             Assert.AreEqual(2L, owner.Epoch);
             DurationSnapshot("SeekCompletedLength");
-            int unsupportedRate = IdentityRate(identity.Pointer, 2);
-            calls.Add(new { operation = "Rate2", hr = unsupportedRate });
+            int unsupportedRate = IdentityRate(identity.Pointer, -1);
+            calls.Add(new { operation = "NegativeRate", hr = unsupportedRate });
             Assert.AreEqual(unchecked((int)0x80004001), unsupportedRate);
             int resume = IdentityRate(identity.Pointer, 1);
             calls.Add(new { operation = "Resume", hr = resume });
@@ -257,7 +261,7 @@ public sealed partial class MediaFoundationResourceTests
             Assert.AreEqual(IndependentMediaState.Closed, identity.State);
             var closedLength = IdentityDuration(identity.Pointer);
             calls.Add(new { operation = "ClosedLength", closedLength.lengthHr, closedLength.length, closedLength.pauseHr, closedLength.canPause });
-            Assert.AreEqual((unchecked((int)0x80000013), 0L, unchecked((int)0x80000013), (byte)0), closedLength);
+            Assert.AreEqual((0, 0L, 0, (byte)0), closedLength);
             Assert.AreEqual((21, 39000000L, 2), (owner.PublishedFrames, owner.LastTimestamp, samples.Count));
             Assert.AreEqual(0, identity.Failure);
             CollectionAssert.AreEqual(new uint[] { 1, 11 }.Concat(Enumerable.Repeat(13u, owner.PublishedFrames)).Append(7u).ToArray(), events.Kinds.ToArray());

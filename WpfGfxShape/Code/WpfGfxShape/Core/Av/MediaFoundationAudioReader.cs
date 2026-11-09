@@ -16,6 +16,7 @@ internal sealed unsafe class MediaFoundationAudioReader : IDisposable
     internal AudioPcmFormat Format { get; private set; }
     internal bool Ended { get; private set; }
     internal ulong? Duration100ns { get; private set; }
+    internal int DurationResult { get; private set; }
     private static readonly Guid Major = new("48eba18e-f8c9-4687-bf11-0a74c9f96a8f");
     private static readonly Guid Subtype = new("f7e34c9a-42e8-4714-b74b-cb29d72c35e5");
     private static readonly Guid Audio = new("73647561-0000-0010-8000-00aa00389b71");
@@ -23,12 +24,17 @@ internal sealed unsafe class MediaFoundationAudioReader : IDisposable
     private static readonly Guid Float = new("00000003-0000-0010-8000-00aa00389b71");
     private MediaFoundationAudioReader() { }
     private static nint* Table(nint p) => *(nint**)p;
-    private int Record(string operation, int hr) { Evidence.Add($"{operation}:0x{hr:X8}"); return hr; }
+    private int Record(string operation, int hr)
+    {
+        if (Evidence.Count > 256) Evidence.RemoveRange(0, Evidence.Count - 256);
+        Evidence.Add($"{operation}:0x{hr:X8}");
+        return hr;
+    }
     private void Release(string name, nint value)
     {
         if (value != 0) Evidence.Add($"{name}.Release:{((delegate* unmanaged[Stdcall]<nint, uint>)Table(value)[2])(value)}");
     }
-    internal static int Create(string path, out MediaFoundationAudioReader? owner)
+    internal static int Create(string path, out MediaFoundationAudioReader? owner, bool requireAudioOnlyPcm = false)
     {
         owner = null;
         if (!OperatingSystem.IsWindows()) return unchecked((int)0x80004001);
@@ -46,6 +52,18 @@ internal sealed unsafe class MediaFoundationAudioReader : IDisposable
             hr = pending.Record("MFCreateSourceReaderFromURL", MFCreateSourceReaderFromURL(path, 0, &reader));
             pending._reader = reader;
             if (hr < 0) return hr;
+            if (requireAudioOnlyPcm)
+            {
+                nint videoType = 0;
+                try
+                {
+                    hr = pending.Record("GetNativeVideoType", ((delegate* unmanaged[Stdcall]<nint, uint, uint, nint*, int>)Table(reader)[5])(reader, 0xfffffffc, 0, &videoType));
+                    // Only MF_E_INVALIDSTREAMNUMBER establishes the absence of a video stream.
+                    if (hr >= 0) return InvalidType;
+                    if (hr != unchecked((int)0xc00d36b3)) return hr;
+                }
+                finally { pending.Release("nativeVideoType", videoType); }
+            }
             hr = pending.Record("DeselectAll", ((delegate* unmanaged[Stdcall]<nint, uint, int, int>)Table(reader)[4])(reader, 0xfffffffe, 0));
             if (hr < 0) return hr;
             hr = pending.Record("SelectFirstAudio", ((delegate* unmanaged[Stdcall]<nint, uint, int, int>)Table(reader)[4])(reader, AudioStream, 1));
@@ -53,6 +71,7 @@ internal sealed unsafe class MediaFoundationAudioReader : IDisposable
             hr = pending.RefreshFormat(native: true);
             if (hr < 0) return hr;
             bool compressed = hr == 1;
+            if (requireAudioOnlyPcm && compressed) return InvalidType;
             AudioPcmFormat nativeFormat = pending.Format;
             Guid key;
             if (compressed)
@@ -82,7 +101,8 @@ internal sealed unsafe class MediaFoundationAudioReader : IDisposable
             Variant duration = default;
             key = new("6c990d33-bb8e-477a-8598-0d5d96fcd88a");
             hr = pending.Record("Duration", ((delegate* unmanaged[Stdcall]<nint, uint, Guid*, Variant*, int>)Table(reader)[12])(reader, 0xffffffff, &key, &duration));
-            if (hr >= 0 && duration.Type == 21) pending.Duration100ns = duration.Value;
+            pending.DurationResult = hr < 0 ? hr : duration.Type == 21 ? 0 : InvalidType;
+            if (pending.DurationResult >= 0) pending.Duration100ns = duration.Value;
             pending.Record("PropVariantClear", PropVariantClear(&duration));
             owner = pending;
             return 0;
@@ -93,6 +113,38 @@ internal sealed unsafe class MediaFoundationAudioReader : IDisposable
             if (owner is null) pending.Close();
         }
     }
+    internal static int ProbeAudioOnlyPcm(string path, out bool audioOnly)
+    {
+        audioOnly = false;
+        var probe = new MediaFoundationAudioReader();
+        nint type = 0;
+        int hr = CoInitializeEx(0, 0);
+        if (hr < 0) return hr;
+        probe._com = true;
+        try
+        {
+            hr = MFStartup(0x20070, 0);
+            if (hr < 0) return hr;
+            probe._started = true;
+            nint reader = 0;
+            hr = MFCreateSourceReaderFromURL(path, 0, &reader);
+            probe._reader = reader;
+            if (hr < 0) return hr;
+            hr = ((delegate* unmanaged[Stdcall]<nint, uint, uint, nint*, int>)Table(reader)[5])(reader, 0xfffffffc, 0, &type);
+            if (hr >= 0) return 0;
+            if (hr != unchecked((int)0xc00d36b3)) return hr;
+            hr = probe.RefreshFormat(native: true);
+            if (hr != 0) return hr < 0 ? hr : InvalidType;
+            audioOnly = true;
+            return 0;
+        }
+        finally
+        {
+            probe.Release("probeVideoType", type);
+            probe.Close();
+        }
+    }
+
     private int RefreshFormat(bool native = false)
     {
         nint type = 0;
@@ -169,10 +221,25 @@ internal sealed unsafe class MediaFoundationAudioReader : IDisposable
         }
         finally
         {
-            if (locked) Marshal.ThrowExceptionForHR(Record("Unlock", ((delegate* unmanaged[Stdcall]<nint, int>)Table(buffer)[4])(buffer)));
+            int unlock = locked ? Record("Unlock", ((delegate* unmanaged[Stdcall]<nint, int>)Table(buffer)[4])(buffer)) : 0;
             Release("buffer", buffer); Release("sample", sample);
+            Marshal.ThrowExceptionForHR(unlock);
         }
     }
+    internal int Seek(long timestamp100ns)
+    {
+        CheckThread();
+        if (_closed) return unchecked((int)0x80000013);
+        if (timestamp100ns < 0 || Duration100ns is ulong duration && (ulong)timestamp100ns > duration)
+            return unchecked((int)0x80070057);
+        // Synchronous ReadSample has returned and released its sample before this call.
+        Guid timeFormat = Guid.Empty;
+        Variant position = new() { Type = 20, Value = (ulong)timestamp100ns };
+        int hr = Record($"SetCurrentPosition({timestamp100ns})", ((delegate* unmanaged[Stdcall]<nint, Guid*, Variant*, int>)Table(_reader)[8])(_reader, &timeFormat, &position));
+        if (hr >= 0) Ended = false;
+        return hr;
+    }
+
     private void CheckThread()
     {
         if (_thread != Environment.CurrentManagedThreadId) throw new InvalidOperationException();

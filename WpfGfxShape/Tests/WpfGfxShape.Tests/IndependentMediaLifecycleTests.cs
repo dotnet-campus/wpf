@@ -34,6 +34,8 @@ public sealed unsafe class IndependentMediaLifecycleTests
             Assert.AreEqual(0, events!.RaiseEvent(1));
             Assert.IsTrue(entered.Wait(TimeSpan.FromSeconds(5)));
             Assert.AreEqual(0, events.RaiseEvent(13));
+            events.Invalidate();
+            Assert.IsTrue(events.RaiseEvent(13) < 0);
             events.Dispose();
             Assert.IsFalse(events.Completion.IsCompleted);
             Assert.IsTrue(events.RaiseEvent(13) < 0);
@@ -87,7 +89,8 @@ public sealed unsafe class IndependentMediaLifecycleTests
             media.Completion.GetAwaiter().GetResult();
             nint* table = *(nint**)media.Pointer;
             int rate = ((delegate* unmanaged[Stdcall]<nint, double, int>)table[8])(media.Pointer, 1);
-            Assert.AreEqual((0, 0, unchecked((int)0x80000013), IndependentMediaState.Closed), (first.Result, second.Result, rate, media.State));
+            // Close is reusable, unlike terminal shutdown; a later source-free Rate is a new target.
+            Assert.AreEqual((0, 0, 0, IndependentMediaState.Closed), (first.Result, second.Result, rate, media.State));
         }
         finally { Release(media.Pointer); }
     }

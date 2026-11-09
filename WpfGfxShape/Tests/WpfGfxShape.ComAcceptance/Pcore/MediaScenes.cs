@@ -159,7 +159,7 @@ internal static partial class Program
         if (error is not null) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(error).Throw();
     }
 
-    private static void WriteMediaAsset(string path, int asset, bool includeAudio = true)
+    internal static void WriteMediaAsset(string path, int asset, bool includeAudio = true, int frameCount = 40, int width = 2, int height = 1)
     {
         using var stream = File.Create(path);
         using var writer = new BinaryWriter(stream, Encoding.ASCII);
@@ -177,16 +177,17 @@ internal static partial class Program
         }
         long riff = Begin("RIFF", "AVI "), header = Begin("LIST", "hdrl"), main = Begin("avih");
         writer.Write(100000); writer.Write(16080); writer.Write(0); writer.Write(0);
-        writer.Write(40); writer.Write(0); writer.Write(includeAudio ? 2 : 1); writer.Write(1600); writer.Write(2); writer.Write(1);
+        writer.Write(frameCount); writer.Write(0); writer.Write(includeAudio ? 2 : 1); writer.Write(1600); writer.Write(width); writer.Write(height);
         writer.Write(new byte[16]); End(main);
         long list = Begin("LIST", "strl"), info = Begin("strh");
         writer.Write(Encoding.ASCII.GetBytes("vidsDIB ")); writer.Write(0); writer.Write(0);
-        writer.Write(0); writer.Write(1); writer.Write(10); writer.Write(0); writer.Write(40);
+        writer.Write(0); writer.Write(1); writer.Write(10); writer.Write(0); writer.Write(frameCount);
         writer.Write(8); writer.Write(-1); writer.Write(0);
-        writer.Write((short)0); writer.Write((short)0); writer.Write((short)2); writer.Write((short)1); End(info);
+        writer.Write((short)0); writer.Write((short)0); writer.Write((short)width); writer.Write((short)height); End(info);
         long format = Begin("strf");
-        writer.Write(40); writer.Write(2); writer.Write(1); writer.Write((short)1); writer.Write((short)24);
-        writer.Write(0); writer.Write(8); writer.Write(new byte[16]); End(format); End(list);
+        int stride = (width * 3 + 3) & ~3;
+        writer.Write(40); writer.Write(width); writer.Write(height); writer.Write((short)1); writer.Write((short)24);
+        writer.Write(0); writer.Write(stride * height); writer.Write(new byte[16]); End(format); End(list);
         if (includeAudio)
         {
         list = Begin("LIST", "strl"); info = Begin("strh");
@@ -199,11 +200,16 @@ internal static partial class Program
         }
         End(header);
         long frames = Begin("LIST", "movi");
-        for (int frame = 0; frame < 40; frame++)
+        for (int frame = 0; frame < frameCount; frame++)
         {
             uint color = (asset, frame < 20) switch { (0, true) => 0xffff0000, (0, false) => 0xff0000ff, (1, true) => 0xff00ff00, _ => 0xffffff00 };
             long chunk = Begin("00db");
-            writer.Write(new byte[] { (byte)color, (byte)(color >> 8), (byte)(color >> 16), (byte)color, (byte)(color >> 8), (byte)(color >> 16), 0, 0 });
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                    writer.Write(new byte[] { (byte)color, (byte)(color >> 8), (byte)(color >> 16) });
+                writer.Write(new byte[stride - width * 3]);
+            }
             End(chunk);
             if (includeAudio)
             {

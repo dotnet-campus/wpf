@@ -11,6 +11,12 @@ internal sealed class MediaEventProxy : IDisposable
     private int _callbacksInFlight;
     private int _itemsInFlight;
     private bool _disposeReleased;
+    private bool _invalidated;
+
+    internal void Invalidate()
+    {
+        lock (_lock) _invalidated = true;
+    }
     private readonly TaskCompletionSource _completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
     internal Task Completion => _completion.Task;
     internal int CallbacksInFlight { get { lock (_lock) return _callbacksInFlight; } }
@@ -47,7 +53,7 @@ internal sealed class MediaEventProxy : IDisposable
         {
             lock (_lock)
             {
-                if (_proxy != proxy || _thread is null) return unchecked((int)0x80070006);
+                if (_invalidated || _proxy != proxy || _thread is null) return unchecked((int)0x80070006);
                 EventItem item;
                 try { item = new EventItem(this, proxy, eventType, type, param, failureHr); }
                 catch (OutOfMemoryException) { return unchecked((int)0x8007000E); }
@@ -108,7 +114,7 @@ internal sealed class MediaEventProxy : IDisposable
             // Admission is the callback boundary: Dispose cancels queued, not already admitted work.
             lock (owner._lock)
             {
-                if (owner._proxy != proxy) return;
+                if (owner._invalidated || owner._proxy != proxy) return;
                 owner._callbacksInFlight++;
             }
             try

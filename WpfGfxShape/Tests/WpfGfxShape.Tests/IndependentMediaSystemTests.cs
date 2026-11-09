@@ -23,6 +23,7 @@ public sealed partial class MediaFoundationResourceTests
         List<object> frames = [], samples = [], calls = [];
         Stopwatch clock = Stopwatch.StartNew();
         bool released = false;
+        Exception? callbackError = null;
         IndependentVideoPlaybackOwner? owner = null;
         try
         {
@@ -44,15 +45,29 @@ public sealed partial class MediaFoundationResourceTests
             owner.FrameReady += OnFrame;
             void OnFrame(long timestamp)
             {
-                var query = IdentityQuery(identity.Pointer);
-                Assert.AreEqual((0, timestamp, 0, (byte)1), query);
-                frames.Add(new { timestamp, wallTicks = clock.Elapsed.Ticks, query });
-                if (timestamp == 5000000 || timestamp == 25000000)
-                    samples.Add(RenderPlayerTarget((GeneratedVisualResource)visual!, timestamp, clock.Elapsed.Ticks));
+                try
+                {
+                    var query = IdentityQuery(identity.Pointer);
+                    Assert.AreEqual((0, 0, (byte)1), (query.positionHr, query.videoHr, query.video));
+                    // Transport position is a running clock; the acquired sample carries the exact PTS.
+                    Assert.IsTrue(query.position >= 0 && query.position <= 40000000L);
+                    Assert.AreEqual(0, owner.Frames.Acquire(out SystemVideoSample? sample));
+                    Assert.IsNotNull(sample);
+                    using (sample) Assert.AreEqual(timestamp, sample.Timestamp);
+                    frames.Add(new { timestamp, wallTicks = clock.Elapsed.Ticks, query });
+                    if (timestamp == 5000000 || timestamp == 25000000)
+                        samples.Add(RenderPlayerTarget((GeneratedVisualResource)visual!, timestamp, clock.Elapsed.Ticks));
+                }
+                catch (Exception error)
+                {
+                    callbackError = error;
+                    throw;
+                }
             }
             Assert.AreEqual(0, IdentityRate(identity.Pointer, 1));
             await identity.Completion.WaitAsync(TimeSpan.FromSeconds(15));
             owner.FrameReady -= OnFrame;
+            if (callbackError is not null) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(callbackError).Throw();
             Assert.AreEqual((IndependentMediaState.Ended, 40, 39000000L, 2), (identity.State, owner.PublishedFrames, owner.LastTimestamp, samples.Count));
             calls.Add(new { close = IdentityCall(identity.Pointer, 5) });
             await identity.Completion.WaitAsync(TimeSpan.FromSeconds(10));

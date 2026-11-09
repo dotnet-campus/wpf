@@ -42,7 +42,7 @@ public sealed partial class MediaFoundationResourceTests
             Assert.AreEqual((unchecked((int)0x80070057), unchecked((int)0x80070057), IndependentMediaState.Failed, 1),
                 (failure, media.Failure, media.State, events.Kinds.Count(kind => kind == 8)));
             Assert.AreEqual(unchecked((int)0x80070057), IdentitySeek(media.Pointer, -1));
-            Assert.AreEqual(unchecked((int)0x80004001), IdentityRate(media.Pointer, 2));
+            Assert.AreEqual(0, IdentityRate(media.Pointer, 2));
             var previous = media.Owner;
             IdentityCall(media.Pointer, 5);
             await media.Completion.WaitAsync(TimeSpan.FromSeconds(10));

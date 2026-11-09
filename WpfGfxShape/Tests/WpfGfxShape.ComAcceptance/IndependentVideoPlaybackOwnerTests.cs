@@ -148,6 +148,18 @@ public sealed class IndependentVideoPlaybackOwnerTests
         await tests.WhenRateIsSetDuringRealSeekingThenDeferredIntentIsAcceptedAsync(1);
     }
 
+    /// <summary>Exercises production target application and Close cancellation without an audio endpoint.</summary>
+    [TestMethod]
+    public async Task WhenRateTargetGenerationsRunThenDeferredFailureAndCloseRemainIsolatedAsync()
+    {
+        var tests = new Stage3Production::WpfGfxShape.Tests.MediaFoundationResourceTests();
+        await tests.WhenUnsupportedTargetPrecedesOpenThenApplicationFailsAsync(double.PositiveInfinity);
+        await tests.WhenUnsupportedTargetPrecedesOpenThenApplicationFailsAsync(double.NegativeInfinity);
+        await tests.WhenUnsupportedTargetPrecedesOpenThenApplicationFailsAsync(double.NaN);
+        await tests.WhenUnsupportedTargetPrecedesOpenThenApplicationFailsAsync(-1);
+        await tests.WhenCloseCancelsUnsupportedTargetThenNewOpenUsesResetTargetAsync();
+    }
+
     [TestMethod]
     public Task WhenRealMfOwnerPlaysThenFortyPtsFramesReachEosAndClose()
         => new Stage3Production::WpfGfxShape.Tests.MediaFoundationResourceTests()

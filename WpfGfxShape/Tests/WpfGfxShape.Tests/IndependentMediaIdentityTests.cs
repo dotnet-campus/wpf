@@ -95,7 +95,9 @@ public sealed unsafe class IndependentMediaIdentityTests
             Assert.AreEqual(IndependentMediaState.Closed, first.State);
             Assert.AreEqual(unchecked((int)0x80000013), ((delegate* unmanaged[Stdcall]<nint, long, int>)a[7])(first.Pointer, 0));
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, long, int>)b[7])(second.Pointer, 0));
-            Assert.AreEqual(unchecked((int)0x80004001), ((delegate* unmanaged[Stdcall]<nint, double, int>)b[8])(second.Pointer, 2));
+            Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, double, int>)b[8])(second.Pointer, 2));
+            // Native SetRate admits a source-free target; unsupported application is tested on Open.
+            Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, double, int>)b[8])(second.Pointer, -1));
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, double, int>)b[9])(second.Pointer, 1));
             Assert.AreEqual(1.0, second.TargetVolume);
             Assert.AreEqual(0.5, first.TargetVolume);

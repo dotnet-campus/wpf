@@ -64,6 +64,7 @@ public sealed partial class IndependentAudioTests
                 mvid = typeof(IndependentAudioTests).Assembly.ManifestModule.ModuleVersionId
             }, new JsonSerializerOptions { WriteIndented = true }));
         }
-        Assert.IsTrue(hr == 0 && output.Status == "RenderingSubmittedAndClockAdvanced" && before == Convert.ToHexString(SHA256.HashData(pcm)));
+        Assert.IsTrue(hr == 0 && output.Status == "RenderingSubmittedAndClockAdvanced" && before == Convert.ToHexString(SHA256.HashData(pcm)),
+            $"HRESULT=0x{hr:X8}; Status={output.Status}; {string.Join("; ", output.Evidence)}");
     }
 }

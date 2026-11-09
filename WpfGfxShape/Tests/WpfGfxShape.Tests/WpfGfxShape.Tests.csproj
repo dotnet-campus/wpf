@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <OutputType Condition="'$(EnableMSTestRunner)' == 'true'">Exe</OutputType>
+    <StartupObject Condition="'$(EnableMSTestRunner)' == 'true' and $(DefineConstants.Contains('SANDBOX_TEST_ENTRY_POINT'))">WpfGfxShape.Tests.SandboxTestEntryPoint</StartupObject>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>

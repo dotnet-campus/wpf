@@ -338,7 +338,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'StrictRender'">
     <StrictRenderOnly>true</StrictRenderOnly>
     <SelfContained>true</SelfContained>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
     <RuntimeFrameworkVersion>10.0.13</RuntimeFrameworkVersion>
     <PublishAot>false</PublishAot>
     <Optimize>true</Optimize>
@@ -355,7 +355,7 @@
   <Target Name="IsolateStrictRenderOfficial" AfterTargets="ComputeFilesToPublish" BeforeTargets="CopyFilesToPublishDirectory" Condition="'$(StrictRenderOnly)' == 'true'">
     <Error Condition="'$(ComAcceptanceSandbox)' == 'true'" Text="StrictRender uses the dedicated restricted publish, not the full acceptance package." />
     <ItemGroup>
-      <StrictOfficialGfx Include="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'wpfgfx_cor3.dll' and $([System.String]::Copy('%(ResolvedFileToPublish.FullPath)').Replace('\','/').ToLowerInvariant().Contains('/microsoft.windowsdesktop.app.runtime.win-x64/10.0.13/'))" />
+      <StrictOfficialGfx Include="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'wpfgfx_cor3.dll' and $([System.String]::Copy('%(ResolvedFileToPublish.FullPath)').Replace('\','/').ToLowerInvariant().Contains('/microsoft.windowsdesktop.app.runtime.$(RuntimeIdentifier)/10.0.13/'))" />
       <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'wpfgfx_cor3.dll' and '%(ResolvedFileToPublish.RelativePath)' == 'wpfgfx_cor3.dll'" />
     </ItemGroup>
     <Error Condition="'@(StrictOfficialGfx)' == ''" Text="Pinned official runtime graphics file missing." />

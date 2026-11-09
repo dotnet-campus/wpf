@@ -13,12 +13,12 @@ internal static class NativeRun
     {
         if (args.Length > 0 && args[0] == "--strict-render-business")
             return StrictRenderBusiness.Run(args[1..]);
-        if (args.Length == 2 && args[0] == "--strict-render-audit")
-            return StrictRenderSupervisor.Audit(args[1]);
-        if (args.Length == 1 && args[0] == "--strict-render-observe")
-            return StrictRenderSupervisor.ObserveAsync().GetAwaiter().GetResult();
-        if (args.Length == 1 && args[0] == "--strict-render-supervisor")
-            return StrictRenderSupervisor.RunAsync().GetAwaiter().GetResult();
+        if (args.Length is 2 or 3 && args[0] == "--strict-render-audit")
+            return StrictRenderSupervisor.Audit(args[1], args.Length == 3 ? args[2] : "Results/audit-summary.json");
+        if (args.Length is 1 or 2 && args[0] == "--strict-render-observe")
+            return StrictRenderSupervisor.ObserveAsync(args.Length == 2 ? args[1] : StrictRenderCase.Rectangle).GetAwaiter().GetResult();
+        if (args.Length is 1 or 2 && args[0] == "--strict-render-supervisor")
+            return StrictRenderSupervisor.RunAsync(args.Length == 2 ? args[1] : StrictRenderCase.Rectangle).GetAwaiter().GetResult();
         if (AcceptancePaths.Metadata("StrictRenderOnly") == "true") return 64;
         if (args.Length > 0 && args[0] == "--pcore")
             return NativeAcceptance.Pcore.Program.Run(args[1..]);

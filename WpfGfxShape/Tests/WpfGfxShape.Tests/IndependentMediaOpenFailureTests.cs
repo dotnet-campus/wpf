@@ -76,6 +76,31 @@ public sealed class IndependentMediaOpenFailureTests
         }
     }
 
+    /// <summary>Verifies that querying audio immediately after Open does not expose transport readiness errors.</summary>
+    [TestMethod]
+    public async Task WhenAudioIsQueriedImmediatelyAfterOpenThenUnknownAudioReturnsFalseSuccessfully()
+    {
+        IndependentMediaIdentity identity = IndependentMediaIdentity.Create();
+        try
+        {
+            Open(identity.Pointer);
+            Assert.AreEqual((0, (byte)0), ReadAudio(identity.Pointer));
+        }
+        finally
+        {
+            Close(identity.Pointer);
+            await identity.Completion.WaitAsync(TimeSpan.FromSeconds(5));
+            Direct3D9Factory.Release(identity.Pointer);
+        }
+    }
+
+    private static unsafe (int Result, byte Value) ReadAudio(nint self)
+    {
+        byte value = 7;
+        int result = ((delegate* unmanaged[Stdcall]<nint, byte*, int>)(*(nint**)self)[17])(self, &value);
+        return (result, value);
+    }
+
     private static unsafe int Open(nint self)
     {
         fixed (char* path = " ")

@@ -28,6 +28,7 @@ internal sealed class IndependentVideoPlaybackOwner
     private long _pendingTimestamp, _discardBefore, _origin;
     private bool _pendingEnd, _anchored;
     private readonly Stopwatch _clock = new();
+    private double _rate = 1;
     internal long? Duration100ns { get; private set; }
     internal int DurationResult { get; private set; } = unchecked((int)0xc00d36e6);
     internal uint? Characteristics { get; private set; }
@@ -43,6 +44,38 @@ internal sealed class IndependentVideoPlaybackOwner
     internal bool Ended { get; private set; }
     internal int PublishedFrames { get; private set; }
     internal long LastTimestamp { get; private set; }
+    private readonly object _positionGate = new();
+    private long _position, _positionAnchor;
+    private bool _positionRunning;
+    internal long Position100ns
+    {
+        get { lock (_positionGate) return ReadPosition(); }
+    }
+
+    private long ScaleElapsed(long ticks)
+    {
+        double scaled = ticks * _rate;
+        return scaled >= long.MaxValue ? long.MaxValue : (long)scaled;
+    }
+
+    private long ReadPosition()
+    {
+        long elapsed = _positionRunning ? ScaleElapsed(Stopwatch.GetElapsedTime(_positionAnchor).Ticks) : 0;
+        long position = _position > long.MaxValue - elapsed ? long.MaxValue : _position + elapsed;
+        return Duration100ns is long duration ? Math.Clamp(position, 0, duration) : position;
+    }
+
+    // Only owner control completion changes this timeline; frame publication retains its own PTS.
+    private void SetPositionClock(bool running, long? position = null)
+    {
+        lock (_positionGate)
+        {
+            _position = _closing ? 0 : position ?? ReadPosition();
+            _positionAnchor = Stopwatch.GetTimestamp();
+            _positionRunning = running && !_closing;
+        }
+    }
+
     internal long Epoch { get; private set; }
 
     internal IndependentVideoPlaybackOwner()
@@ -107,7 +140,7 @@ internal sealed class IndependentVideoPlaybackOwner
     }
 
     // Compatibility entry used by the existing production rendering acceptance cases.
-    internal async Task PlayAsync(string path, Action<long> frameInvalidated)
+    internal async Task PlayAsync(string path, Action<long> frameInvalidated, double rate = 1)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         ArgumentNullException.ThrowIfNull(frameInvalidated);
@@ -126,20 +159,38 @@ internal sealed class IndependentVideoPlaybackOwner
                 DurationResult = _prepared.DurationResult;
                 Characteristics = _prepared.Characteristics;
             }
+            SetRate(rate);
             _playCompletion = ended;
             _invalidated = frameInvalidated;
             Ended = false;
             _anchored = false;
             _playing = true;
+            SetPositionClock(true);
         }).ConfigureAwait(false);
         await ended.Task.ConfigureAwait(false);
     }
 
-    internal Task SetPlayingAsync(bool playing) => Enqueue(() =>
+    private void SetRate(double rate)
+    {
+        lock (_positionGate)
+        {
+            SetPositionClock(_positionRunning);
+            if (_anchored)
+            {
+                _origin += Math.Min(long.MaxValue - _origin, ScaleElapsed(_clock.Elapsed.Ticks));
+                _clock.Restart();
+            }
+            _rate = rate;
+        }
+    }
+
+    internal Task SetPlayingAsync(bool playing, double? rate = null) => Enqueue(() =>
     {
         if (_prepared is null || (playing && Ended)) throw new InvalidOperationException();
+        if (rate is > 0) SetRate(rate.Value);
         if (_playing == playing) return;
         _playing = playing;
+        SetPositionClock(playing);
         _anchored = false;
     });
 
@@ -153,6 +204,7 @@ internal sealed class IndependentVideoPlaybackOwner
             Marshal.ThrowExceptionForHR(IndependentMediaIdentity.ValidateSeek(timestamp, Duration100ns));
             if (!IsLocalSeekable) Marshal.ThrowExceptionForHR(unchecked((int)0x80004001));
             Marshal.ThrowExceptionForHR(_prepared.BeginFlush());
+            SetPositionClock(false);
             _seek = completion;
             _seekTarget = timestamp;
             _flush = _prepared.PendingFlush;
@@ -183,6 +235,7 @@ internal sealed class IndependentVideoPlaybackOwner
             _flush = null;
             Epoch++;
             _discardBefore = LastTimestamp = _seekTarget;
+            SetPositionClock(_playing, _seekTarget);
             Ended = false;
             _anchored = false;
             if (!_scrub) { _seek?.TrySetResult(); _seek = null; }
@@ -256,6 +309,7 @@ internal sealed class IndependentVideoPlaybackOwner
             if (!_closing)
             {
                 _closing = true;
+                SetPositionClock(false, 0);
                 _prepared?.RequestCancel();
                 _commands.CompleteAdding();
                 _commandReady.Set();
@@ -295,6 +349,7 @@ internal sealed class IndependentVideoPlaybackOwner
                 catch (Exception error)
                 {
                     _playing = false;
+                    SetPositionClock(false, 0);
                     _preroll?.TrySetException(error);
                     _preroll = null;
                     _seek?.TrySetException(error);
@@ -341,7 +396,7 @@ internal sealed class IndependentVideoPlaybackOwner
             _clock.Restart();
             _anchored = true;
         }
-        long remaining = _pendingTimestamp - _origin - _clock.Elapsed.Ticks;
+        double remaining = (_pendingTimestamp - _origin) / _rate - _clock.Elapsed.Ticks;
         if (remaining > 0)
         {
             // A queued command interrupts the PTS wait; no cross-thread reader calls are needed.
@@ -367,6 +422,7 @@ internal sealed class IndependentVideoPlaybackOwner
     private void FinishPlayback()
     {
         _playing = false;
+        SetPositionClock(false, Duration100ns ?? Position100ns);
         Ended = true;
         _playCompletion?.TrySetResult();
         _playCompletion = null;

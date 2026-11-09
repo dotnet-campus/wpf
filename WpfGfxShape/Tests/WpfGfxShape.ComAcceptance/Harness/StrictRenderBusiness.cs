@@ -18,7 +18,8 @@ internal static partial class StrictRenderBusiness
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static int Run(string[] args)
     {
-        if (args.Length != 4 || args[1] != "geometry-public-r27") return 64;
+        if (args.Length != 4 || !StrictRenderCase.IsKnown(args[1])) return 64;
+        sceneCase = args[1];
         selected = Path.GetFullPath(args[0]);
         output = Path.GetFullPath(args[2]);
         digest = args[3];
@@ -141,7 +142,7 @@ internal static partial class StrictRenderBusiness
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void ExecuteWpf()
     {
-        try { RenderGeometry(); }
+        try { if (StrictRenderCase.IsMedia(sceneCase)) RenderMediaSource(); else RenderGeometry(); }
         finally
         {
             System.Windows.Threading.Dispatcher.CurrentDispatcher.InvokeShutdown();

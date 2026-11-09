@@ -7,12 +7,25 @@ internal static class SandboxTestEntryPoint
 {
     private static async Task<int> Main(string[] args)
     {
-        if (!args.Contains("--results-directory", StringComparer.Ordinal))
+        int resultsIndex = Array.IndexOf(args, "--results-directory");
+        if (resultsIndex < 0)
             args = [.. args, "--results-directory", Path.Combine(AppContext.BaseDirectory, "TestResults")];
+        else if (resultsIndex + 1 < args.Length)
+            args[resultsIndex + 1] = Path.GetFullPath(args[resultsIndex + 1], AppContext.BaseDirectory);
         ITestApplicationBuilder builder = await TestApplication.CreateBuilderAsync(args);
         SelfRegisteredExtensions.AddSelfRegisteredExtensions(builder, args);
         using ITestApplication app = await builder.BuildAsync();
-        return await app.RunAsync();
+        int exitCode = await app.RunAsync();
+        string results = Path.Combine(AppContext.BaseDirectory, "TestResults");
+        Directory.CreateDirectory(results);
+        File.WriteAllText(Path.Combine(results, "process-exit.json"), System.Text.Json.JsonSerializer.Serialize(new
+        {
+            pid = Environment.ProcessId,
+            architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
+            runtime = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+            exitCode
+        }));
+        return exitCode;
     }
 }
 

@@ -24,7 +24,7 @@ public sealed unsafe class IndependentMediaDurationTests
     public void WhenSourceIsUnavailableThenLengthDoesNotLeak(int state)
     {
         int hr = IndependentMediaIdentity.QueryLength((IndependentMediaState)state, 40000000, 0, out long value);
-        Assert.AreEqual((unchecked((int)0x8007139F), 0L), (hr, value));
+        Assert.AreEqual((0, 0L), (hr, value));
     }
 
     [TestMethod]
@@ -78,7 +78,7 @@ public sealed unsafe class IndependentMediaDurationTests
         {
             long value = -1;
             int unopened = length(self, &value);
-            Assert.AreEqual((unchecked((int)0x8007139F), 0L), (unopened, value));
+            Assert.AreEqual((0, 0L), (unopened, value));
             Assert.AreEqual(unchecked((int)0x80004003), length(self, null));
             byte pause = 1;
             int pauseHr = ((delegate* unmanaged[Stdcall]<nint, byte*, int>)table[13])(self, &pause);
@@ -86,7 +86,7 @@ public sealed unsafe class IndependentMediaDurationTests
             Assert.AreEqual(0, ((delegate* unmanaged[Stdcall]<nint, int>)table[5])(self));
             value = -1;
             int closed = length(self, &value);
-            Assert.AreEqual((unchecked((int)0x80000013), 0L), (closed, value));
+            Assert.AreEqual((0, 0L), (closed, value));
         }
         finally { ((delegate* unmanaged[Stdcall]<nint, uint>)table[2])(self); }
         long invalid = -1;
